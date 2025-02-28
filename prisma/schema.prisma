@@ -1,0 +1,197 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  accounts      Account[]
+  sessions      Session[]
+  profile       Profile?
+  workouts      Workout[]
+  mealLogs      MealLog[]
+  weights       Weight[]
+  events        Event[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Profile {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gender              String?
+  birthdate           DateTime?
+  height              Float?   // en cm
+  currentWeight       Float?   // en kg
+  targetWeight        Float?   // en kg
+  activityLevel       String?  // sedentario, ligero, moderado, activo, muy activo
+  goal                String?  // perder peso, mantener peso, ganar músculo
+  dailyCalorieTarget  Int?
+  dailyProteinTarget  Int?
+  dailyCarbTarget     Int?
+  dailyFatTarget      Int?
+  notificationsActive Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+}
+
+model Exercise {
+  id          String             @id @default(cuid())
+  name        String
+  description String?            @db.Text
+  muscleGroup String             // pecho, espalda, piernas, etc.
+  equipment   String?            // mancuernas, máquinas, peso corporal, etc.
+  videoUrl    String?
+  imageUrl    String?
+  sets        WorkoutExercise[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model Workout {
+  id          String            @id @default(cuid())
+  name        String
+  description String?           @db.Text
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises   WorkoutExercise[]
+  events      Event[]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
+
+model WorkoutExercise {
+  id         String   @id @default(cuid())
+  workoutId  String
+  workout    Workout  @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id])
+  sets       Int
+  reps       Int
+  weight     Float?   // en kg
+  restTime   Int?     // en segundos
+  order      Int
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Food {
+  id          String    @id @default(cuid())
+  name        String
+  calories    Int
+  protein     Float     // en gramos
+  carbs       Float     // en gramos
+  fat         Float     // en gramos
+  fiber       Float?    // en gramos
+  sugar       Float?    // en gramos
+  serving     Float     // en gramos
+  category    String    // proteína, carbohidrato, grasa, etc.
+  imageUrl    String?
+  mealEntries MealEntry[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model MealLog {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  mealType  String      // desayuno, almuerzo, cena, merienda
+  entries   MealEntry[]
+  calories  Int
+  protein   Float
+  carbs     Float
+  fat       Float
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model MealEntry {
+  id        String   @id @default(cuid())
+  mealLogId String
+  mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+  foodId    String
+  food      Food     @relation(fields: [foodId], references: [id])
+  quantity  Float    // número de porciones
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Weight {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weight    Float    // en kg
+  date      DateTime
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Event {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  start     DateTime
+  end       DateTime
+  workoutId String?
+  workout   Workout? @relation(fields: [workoutId], references: [id])
+  color     String?
+  allDay    Boolean  @default(false)
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String
+  type      String   // workout, meal, water, weight, etc.
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
