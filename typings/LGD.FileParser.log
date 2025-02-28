@@ -1,2 +1,11 @@
 Stop logging by changing setting "lgd.options.createDebugLog"
 If you have any problems or requests please create an issue on Github.
+
+d:\Aplicaciones web\development\fitness-app\tailwind.config.js: 
+
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
+ERROR: Error occurred parsing value using "any" instead. err: SyntaxError: Invalid or unexpected token
