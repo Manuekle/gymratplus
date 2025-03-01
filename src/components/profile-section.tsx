@@ -168,13 +168,17 @@ export default function ProfileSection() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <div className="text-sm font-medium">Horario preferido</div>
-                  <div className="text-lg">Mañanas (6:00 - 9:00)</div>
+                  <div className="text-xs text-muted-foreground">
+                    Mañanas (6:00 - 9:00)
+                  </div>
                 </div>
                 <div>
                   <div className="text-sm font-medium">
                     Tipo de entrenamiento
                   </div>
-                  <div className="text-lg">Hipertrofia</div>
+                  <div className="text-xs text-muted-foreground">
+                    Hipertrofia
+                  </div>
                 </div>
               </div>
 
@@ -195,10 +199,10 @@ export default function ProfileSection() {
               <Separator />
 
               <div>
-                <div className="text-sm font-medium mb-2">
+                <div className="text-sm font-medium">
                   Lesiones o condiciones
                 </div>
-                <div className="text-muted-foreground">
+                <div className="text-muted-foreground text-xs">
                   Lesión de rodilla (2022) - Recuperado
                 </div>
               </div>

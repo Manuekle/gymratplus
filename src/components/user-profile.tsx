@@ -1,20 +1,25 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import ProfileSection from "@/components/profile-section"
-import HealthMetrics from "@/components/health-metrics"
-import TrainingMetrics from "@/components/training-metrics"
-import NutritionMetrics from "@/components/nutrition-metrics"
+import { useState } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ProfileSection from "@/components/profile-section";
+import HealthMetrics from "@/components/health-metrics";
+import TrainingMetrics from "@/components/training-metrics";
+import NutritionMetrics from "@/components/nutrition-metrics";
 
 export default function UserProfile() {
-  const [activeTab, setActiveTab] = useState("profile")
+  const [activeTab, setActiveTab] = useState("profile");
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold tracking-tight">Mi Perfil de Fitness</h1>
+      <h1 className="text-3xl font-bold tracking-tight">Mi Perfil</h1>
 
-      <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+      <Tabs
+        defaultValue="profile"
+        value={activeTab}
+        onValueChange={setActiveTab}
+        className="space-y-4"
+      >
         <TabsList className="grid grid-cols-4 w-full max-w-3xl">
           <TabsTrigger value="profile">Perfil</TabsTrigger>
           <TabsTrigger value="health">Salud</TabsTrigger>
@@ -39,6 +44,5 @@ export default function UserProfile() {
         </TabsContent>
       </Tabs>
     </div>
-  )
+  );
 }
-

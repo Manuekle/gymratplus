@@ -43,7 +43,9 @@ export default function HealthMetrics() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle>Datos Físicos</CardTitle>
-          <CardDescription>Métricas corporales actuales</CardDescription>
+          <CardDescription className="text-xs">
+            Métricas corporales actuales
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
@@ -102,7 +104,7 @@ export default function HealthMetrics() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Objetivo</label>
               <Select value={goal} onValueChange={setGoal}>
                 <SelectTrigger>
@@ -131,7 +133,7 @@ export default function HealthMetrics() {
               </Select>
             </div>
 
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">
                 Nivel de actividad física
               </label>

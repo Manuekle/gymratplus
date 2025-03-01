@@ -24,13 +24,13 @@ export default function TrainingMetrics() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle>Rutina de Entrenamiento</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             Información sobre tu plan de entrenamiento actual
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="space-y-2">
+            <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Rutina actual</label>
               <Select defaultValue="hypertrophy">
                 <SelectTrigger>
@@ -69,20 +69,28 @@ export default function TrainingMetrics() {
             <div className="space-y-2 pt-2">
               <div className="flex items-center text-sm">
                 <Dumbbell01Icon className="mr-2 h-4 w-4 text-muted-foreground" />
-                <span>Ejercicios principales</span>
+                <span className="text-sm font-medium">
+                  Ejercicios principales
+                </span>
               </div>
               <div className="grid gap-3">
                 <div className="flex justify-between items-center">
-                  <span>Sentadilla</span>
-                  <span className="font-medium">100 kg</span>
+                  <span className="text-xs">Sentadilla</span>
+                  <span className="font-medium text-xs text-muted-foreground">
+                    100 kg
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span>Press de banca</span>
-                  <span className="font-medium">80 kg</span>
+                  <span className="text-xs">Press de banca</span>
+                  <span className="font-medium text-xs text-muted-foreground">
+                    80 kg
+                  </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span>Peso muerto</span>
-                  <span className="font-medium">120 kg</span>
+                  <span className="text-xs">Peso muerto</span>
+                  <span className="font-medium text-xs text-muted-foreground">
+                    120 kg
+                  </span>
                 </div>
               </div>
             </div>
