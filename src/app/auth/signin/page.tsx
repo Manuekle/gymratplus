@@ -42,7 +42,7 @@ export default function SignInPage() {
 
   return (
     <div className="flex h-screen items-center justify-center">
-      <Card className="w-96 shadow-lg">
+      <Card className="w-lg shadow-lg">
         <CardHeader>
           <CardTitle className="text-center">Iniciar Sesión</CardTitle>
         </CardHeader>

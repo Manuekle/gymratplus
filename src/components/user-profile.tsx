@@ -1,26 +1,44 @@
-"use client";
+"use client"
 
-import { useSession } from "next-auth/react";
+import { useState } from "react"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import ProfileSection from "@/components/profile-section"
+import HealthMetrics from "@/components/health-metrics"
+import TrainingMetrics from "@/components/training-metrics"
+import NutritionMetrics from "@/components/nutrition-metrics"
 
 export default function UserProfile() {
-  const { data: session } = useSession();
-
-  if (!session?.user) {
-    return <p>No has iniciado sesión</p>;
-  }
+  const [activeTab, setActiveTab] = useState("profile")
 
   return (
-    <div className="p-4 border rounded-lg shadow-md bg-card text-card-foreground">
-      <h2 className="text-lg font-semibold">Perfil</h2>
-      <p className="text-sm">Nombre: {session.user.name}</p>
-      <p className="text-sm">Email: {session.user.email}</p>
-      {session.user.image && (
-        <img
-          src={session.user.image}
-          alt="Avatar"
-          className="w-16 h-16 rounded-full mt-2"
-        />
-      )}
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold tracking-tight">Mi Perfil de Fitness</h1>
+
+      <Tabs defaultValue="profile" value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid grid-cols-4 w-full max-w-3xl">
+          <TabsTrigger value="profile">Perfil</TabsTrigger>
+          <TabsTrigger value="health">Salud</TabsTrigger>
+          <TabsTrigger value="training">Entrenamiento</TabsTrigger>
+          <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="profile" className="space-y-4">
+          <ProfileSection />
+        </TabsContent>
+
+        <TabsContent value="health" className="space-y-4">
+          <HealthMetrics />
+        </TabsContent>
+
+        <TabsContent value="training" className="space-y-4">
+          <TrainingMetrics />
+        </TabsContent>
+
+        <TabsContent value="nutrition" className="space-y-4">
+          <NutritionMetrics />
+        </TabsContent>
+      </Tabs>
     </div>
-  );
+  )
 }
+
