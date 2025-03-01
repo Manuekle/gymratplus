@@ -15,8 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { Dumbbell, Calendar } from "lucide-react";
 import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
+import { Calendar02Icon, Dumbbell01Icon } from "hugeicons-react";
 
 export default function TrainingMetrics() {
   return (
@@ -49,7 +49,7 @@ export default function TrainingMetrics() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm">
-                  <Calendar className="mr-2 h-4 w-4 text-muted-foreground" />
+                  <Calendar02Icon className="mr-2 h-4 w-4 text-muted-foreground" />
                   <span>Días de entrenamiento por semana</span>
                 </div>
                 <span className="font-medium">5</span>
@@ -68,7 +68,7 @@ export default function TrainingMetrics() {
 
             <div className="space-y-2 pt-2">
               <div className="flex items-center text-sm">
-                <Dumbbell className="mr-2 h-4 w-4 text-muted-foreground" />
+                <Dumbbell01Icon className="mr-2 h-4 w-4 text-muted-foreground" />
                 <span>Ejercicios principales</span>
               </div>
               <div className="grid gap-3">

@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+
 import {
   Select,
   SelectContent,
@@ -15,14 +16,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+
 import {
-  Activity,
-  ArrowDown,
-  ArrowRight,
-  ArrowUp,
-  Scale,
-  Ruler,
-} from "lucide-react";
+  Activity01Icon,
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  ArrowUp01Icon,
+  RulerIcon,
+  WeightScaleIcon,
+} from "hugeicons-react";
 import { useState } from "react";
 import { WeightChart } from "@/components/weight-chart";
 
@@ -48,7 +50,7 @@ export default function HealthMetrics() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Scale className="mr-1 h-4 w-4" />
+                  <WeightScaleIcon className="mr-1 h-4 w-4" />
                   Peso Actual
                 </div>
                 <div className="text-2xl font-bold">{weight} kg</div>
@@ -56,7 +58,7 @@ export default function HealthMetrics() {
 
               <div className="space-y-2">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Ruler className="mr-1 h-4 w-4" />
+                  <RulerIcon className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
                 <div className="text-2xl font-bold">{height} cm</div>
@@ -66,7 +68,7 @@ export default function HealthMetrics() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Activity className="mr-1 h-4 w-4" />
+                  <Activity01Icon className="mr-1 h-4 w-4" />
                   IMC (Índice de Masa Corporal)
                 </div>
                 <span className="text-sm font-medium">{bmi.toFixed(1)}</span>
@@ -109,19 +111,19 @@ export default function HealthMetrics() {
                 <SelectContent>
                   <SelectItem value="lose">
                     <div className="flex items-center">
-                      <ArrowDown className="mr-2 h-4 w-4 text-red-500" />
+                      <ArrowDown01Icon className="mr-2 h-4 w-4 text-red-500" />
                       Bajar de peso
                     </div>
                   </SelectItem>
                   <SelectItem value="maintain">
                     <div className="flex items-center">
-                      <ArrowRight className="mr-2 h-4 w-4 text-amber-500" />
+                      <ArrowRight01Icon className="mr-2 h-4 w-4 text-amber-500" />
                       Mantener peso
                     </div>
                   </SelectItem>
                   <SelectItem value="gain">
                     <div className="flex items-center">
-                      <ArrowUp className="mr-2 h-4 w-4 text-green-500" />
+                      <ArrowUp01Icon className="mr-2 h-4 w-4 text-green-500" />
                       Aumentar peso
                     </div>
                   </SelectItem>

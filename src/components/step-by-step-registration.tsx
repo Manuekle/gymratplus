@@ -16,7 +16,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import {
   UserIcon,
@@ -27,8 +26,10 @@ import {
   Dumbbell01Icon,
   Calendar01Icon,
   Target01Icon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
 } from "hugeicons-react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent } from "./ui/card";
 
 const schema = z.object({
   name: z.string().min(1, "El nombre es requerido"),
@@ -352,13 +353,13 @@ export function StepByStepRegistration() {
               disabled={currentStep === 0}
               variant="outline"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" /> Anterior
+              <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Anterior
             </Button>
             {currentStep === steps.length - 1 ? (
               <Button type="submit">Finalizar</Button>
             ) : (
               <Button type="button" onClick={nextStep}>
-                Siguiente <ArrowRight className="ml-2 h-4 w-4" />
+                Siguiente <ArrowRight01Icon className="ml-2 h-4 w-4" />
               </Button>
             )}
           </div>

@@ -11,7 +11,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell, LogOut, Settings, User } from "lucide-react";
+import {
+  LogoutCircle01Icon,
+  Notification03Icon,
+  Settings01Icon,
+  UserAccountIcon,
+} from "hugeicons-react";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -21,7 +26,7 @@ export function Navbar() {
       <div className="flex h-16 items-center px-4">
         <div className="ml-auto flex items-center space-x-4">
           <Button variant="ghost" size="icon">
-            <Bell className="h-5 w-5" />
+            <Notification03Icon className="h-5 w-5" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -47,18 +52,18 @@ export function Navbar() {
               </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
+                <UserAccountIcon className="mr-2 h-4 w-4" />
                 <span>Perfil</span>
               </DropdownMenuItem>
               <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings01Icon className="mr-2 h-4 w-4" />
                 <span>Ajustes</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
               >
-                <LogOut className="mr-2 h-4 w-4" />
+                <LogoutCircle01Icon className="mr-2 h-4 w-4" />
                 <span>Cerrar sesión</span>
               </DropdownMenuItem>
             </DropdownMenuContent>

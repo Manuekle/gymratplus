@@ -14,8 +14,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Mail, MapPin, Phone, User, Calendar } from "lucide-react";
 import { useState } from "react";
+import {
+  Calendar02Icon,
+  Edit01Icon,
+  Mail01Icon,
+  MapPinIcon,
+  SmartPhone01Icon,
+  UserCircleIcon,
+} from "hugeicons-react";
 
 export default function ProfileSection() {
   const [isEditing, setIsEditing] = useState(false);
@@ -56,11 +63,11 @@ export default function ProfileSection() {
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <MapPin className="h-4 w-4 mr-1" />
+                  <MapPinIcon className="h-4 w-4 mr-1" />
                   <span>Bogota, Colombia</span>
                 </div>
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <Calendar className="h-4 w-4 mr-1" />
+                  <Calendar02Icon className="h-4 w-4 mr-1" />
                   <span>Se unió en Enero 2023</span>
                 </div>
               </div>
@@ -72,7 +79,7 @@ export default function ProfileSection() {
                 className="text-xs"
                 size="sm"
               >
-                <Edit className="h-2 w-2 mr-2" />
+                <Edit01Icon className="h-2 w-2 mr-2" />
                 {isEditing ? "Guardar" : "Editar perfil"}
               </Button>
             </div>
@@ -110,7 +117,7 @@ export default function ProfileSection() {
             ) : (
               <>
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <Mail className="h-5 w-5 text-muted-foreground" />
+                  <Mail01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Email</div>
                     <div className="text-muted-foreground text-xs">
@@ -122,7 +129,7 @@ export default function ProfileSection() {
                 <Separator />
 
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
+                  <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Teléfono</div>
                     <div className="text-muted-foreground text-xs">
@@ -134,7 +141,7 @@ export default function ProfileSection() {
                 <Separator />
 
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <User className="h-5 w-5 text-muted-foreground" />
+                  <UserCircleIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">
                       Contacto de emergencia
