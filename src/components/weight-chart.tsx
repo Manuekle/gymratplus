@@ -79,9 +79,9 @@ export function WeightChart() {
           <Line
             type="monotone"
             dataKey="weight"
-            stroke={isDark ? "#60a5fa" : "#3b82f6"}
+            stroke={isDark ? "#eee" : "#000"}
             strokeWidth={2}
-            dot={{ fill: isDark ? "#60a5fa" : "#3b82f6", r: 4 }}
+            dot={{ fill: isDark ? "#eee" : "#000", r: 4 }}
             activeDot={{ r: 6 }}
           />
         </LineChart>

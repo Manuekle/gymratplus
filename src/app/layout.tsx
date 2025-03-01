@@ -8,7 +8,7 @@ import { AuthProvider } from "@/providers/auth-provider";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fitness App",
+  title: "gymratplus",
   description:
     "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
 };

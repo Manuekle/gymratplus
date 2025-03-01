@@ -1,23 +1,28 @@
 "use client";
 
 import { useTheme } from "next-themes";
-import { Moon, Sun } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Moon02Icon, Sun02Icon } from "hugeicons-react";
+import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
+// import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <Button
-      variant="ghost"
-      size="icon"
+    <DropdownMenuItem
       onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
     >
       {theme === "dark" ? (
-        <Sun className="h-5 w-5" />
+        <>
+          <Sun02Icon className="mr-2 h-4 w-4" />
+          <span>Modo Claro</span>
+        </>
       ) : (
-        <Moon className="h-5 w-5" />
+        <>
+          <Moon02Icon className="mr-2 h-4 w-4" />
+          <span>Modo Oscuro</span>
+        </>
       )}
-    </Button>
+    </DropdownMenuItem>
   );
 }

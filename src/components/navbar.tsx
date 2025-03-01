@@ -17,6 +17,7 @@ import {
   Settings01Icon,
   UserAccountIcon,
 } from "hugeicons-react";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -59,6 +60,10 @@ export function Navbar() {
                 <Settings01Icon className="mr-2 h-4 w-4" />
                 <span>Ajustes</span>
               </DropdownMenuItem>
+              <ThemeToggle />
+              {/* <DropdownMenuItem>
+                <span>{theme === "dark" ? "Modo claro" : "Modo oscuro"}</span>
+              </DropdownMenuItem> */}
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 onSelect={() => signOut({ callbackUrl: "/auth/signin" })}

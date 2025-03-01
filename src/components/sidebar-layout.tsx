@@ -16,11 +16,20 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sidebar";
 
-const navItems = [
-  { title: "Introduction", url: "/" },
-  { title: "Getting Started", url: "/getting-started" },
-  { title: "Components", url: "/components" },
-  { title: "API Reference", url: "/api-reference" },
+import {
+  Calendar02Icon,
+  BodyPartMuscleIcon,
+  Layout01Icon,
+  WeightScaleIcon,
+  Profile02Icon,
+} from "hugeicons-react";
+
+const routes = [
+  { title: "Dashboard", icon: Layout01Icon, url: "/" },
+  { title: "Calendario", icon: Calendar02Icon, url: "/calendar" },
+  { title: "Entrenamientos", icon: BodyPartMuscleIcon, url: "/workouts" },
+  { title: "Nutrición", icon: WeightScaleIcon, url: "/nutrition" },
+  { title: "Perfil", icon: Profile02Icon, url: "/profile" },
 ];
 
 export function SidebarLayout() {
@@ -33,11 +42,11 @@ export function SidebarLayout() {
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
               <Link href="/">
-                <div className="bg-primary text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  {/* <GalleryVerticalEnd className="size-4" /> */}
-                </div>
+                {/* <div className="text-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
+                  <GalleryVerticalEnd className="size-4" />
+                </div> */}
                 <div className="flex flex-col gap-0.5 leading-none">
-                  <span className="font-semibold">Docs</span>
+                  <span className="font-semibold">Fitapp</span>
                   <span className="">v1.0.0</span>
                 </div>
               </Link>
@@ -47,13 +56,16 @@ export function SidebarLayout() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+          <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {navItems.map((item) => (
+              {routes.map((item) => (
                 <SidebarMenuItem key={item.url}>
                   <SidebarMenuButton asChild isActive={pathname === item.url}>
-                    <Link href={item.url}>{item.title}</Link>
+                    <Link href={item.url}>
+                      <item.icon className="h-5 w-5 mr-1" />
+                      <h1 className="text-sm">{item.title}</h1>
+                    </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}

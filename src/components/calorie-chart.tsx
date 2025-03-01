@@ -78,7 +78,7 @@ export function CalorieChart() {
           />
           <Bar
             dataKey="calories"
-            fill={isDark ? "#60a5fa" : "#3b82f6"}
+            fill={isDark ? "#eee" : "#000"}
             radius={[4, 4, 0, 0]}
           />
         </BarChart>

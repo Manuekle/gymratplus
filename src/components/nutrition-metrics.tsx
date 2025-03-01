@@ -11,6 +11,7 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalorieChart } from "@/components/calorie-chart";
 import { MealHistory } from "@/components/meal-history";
+import { Bread04Icon, ChickenThighsIcon, FishFoodIcon } from "hugeicons-react";
 
 export default function NutritionMetrics() {
   // Daily nutrition data
@@ -21,9 +22,9 @@ export default function NutritionMetrics() {
   };
 
   const macros = {
-    protein: { target: 180, consumed: 135 },
-    carbs: { target: 250, consumed: 190 },
-    fat: { target: 80, consumed: 60 },
+    protein: { target: 180, consumed: 105 },
+    carbs: { target: 250, consumed: 200 },
+    fat: { target: 80, consumed: 80 },
   };
 
   return (
@@ -85,8 +86,8 @@ export default function NutritionMetrics() {
             <div className="space-y-6">
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                  <div className="flex items-center gap-2">
+                    <ChickenThighsIcon size={18} />
                     <span className="text-sm">Proteínas</span>
                   </div>
                   <div className="text-sm">
@@ -103,15 +104,15 @@ export default function NutritionMetrics() {
                   value={
                     (macros.protein.consumed / macros.protein.target) * 100
                   }
-                  className="h-2 bg-blue-100"
+                  className="h-2 bg-zinc-700"
                   indicatorClassName="bg-blue-500"
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                  <div className="flex items-center gap-2">
+                    <Bread04Icon size={18} />
                     <span className="text-sm">Carbohidratos</span>
                   </div>
                   <div className="text-sm">
@@ -126,15 +127,15 @@ export default function NutritionMetrics() {
                 </div>
                 <Progress
                   value={(macros.carbs.consumed / macros.carbs.target) * 100}
-                  className="h-2 bg-green-100"
+                  className="h-2 bg-zinc-700"
                   indicatorClassName="bg-green-500"
                 />
               </div>
 
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-yellow-500 mr-2"></div>
+                  <div className="flex items-center gap-2">
+                    <FishFoodIcon size={18} />
                     <span className="text-sm">Grasas</span>
                   </div>
                   <div className="text-sm">
@@ -147,12 +148,12 @@ export default function NutritionMetrics() {
                 </div>
                 <Progress
                   value={(macros.fat.consumed / macros.fat.target) * 100}
-                  className="h-2 bg-yellow-100"
+                  className="h-2 bg-zinc-700"
                   indicatorClassName="bg-yellow-500"
                 />
               </div>
 
-              <div className="pt-2">
+              {/* <div className="pt-2">
                 <div className="text-sm text-muted-foreground mb-2">
                   Distribución de macros
                 </div>
@@ -194,7 +195,7 @@ export default function NutritionMetrics() {
                     }}
                   ></div>
                 </div>
-              </div>
+              </div> */}
             </div>
           </CardContent>
         </Card>

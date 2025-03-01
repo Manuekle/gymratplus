@@ -55,7 +55,7 @@ export default function TrainingMetrics() {
                 <span className="font-medium">5</span>
               </div>
               <Progress value={5 * 14.28} className="h-2" />
-              <div className="grid grid-cols-7 gap-2 text-xs text-center">
+              <div className="grid grid-cols-7 gap-2 text-xs text-center pt-2">
                 <div className="bg-primary/20 rounded-sm py-1">L</div>
                 <div className="bg-primary/20 rounded-sm py-1">M</div>
                 <div className="py-1">X</div>
