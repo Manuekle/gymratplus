@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, useFieldArray } from "react-hook-form";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { X, GripVertical, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 const exerciseSchema = z.object({
@@ -82,7 +81,7 @@ export function WorkoutCreator() {
     },
   });
 
-  const { fields, append, remove, move } = form.useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     name: "exercises",
     keyName: "key",
   });
@@ -98,11 +97,6 @@ export function WorkoutCreator() {
       console.error(error);
     }
   }
-
-  const handleDragEnd = (result: any) => {
-    if (!result.destination) return;
-    move(result.source.index, result.destination.index);
-  };
 
   return (
     <Card className="w-full shadow-lg">
