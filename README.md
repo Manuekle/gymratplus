@@ -1,36 +1,31 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🏗️ Checklist de desarrollo
 
-## Getting Started
+1. Definición de funcionalidades
+   ✅ Calendario para organizar el día (eventos, recordatorios, entrenamientos). ✅ Rutinas de gimnasio personalizadas con planificación semanal.
+   ✅ Registro de alimentación con conteo de calorías y macronutrientes.
+   ✅ Cálculo de peso ideal y calorías necesarias según objetivos.
+   ✅ Inteligencia artificial para sugerir alimentos y ejercicios según progreso. ✅ Notificaciones y recordatorios (ejemplo: "Hoy es día de pierna").
+   ✅ Seguimiento del progreso con estadísticas y gráficos.
 
-First, run the development server:
+2. Arquitectura de la aplicación
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Frontend: Interfaz intuitiva y responsive.
+- Backend: Procesamiento de datos y generación de planes.
+- Base de datos: Almacenamiento de usuarios, rutinas, dietas y estadísticas.
+- IA: Modelo que analiza datos y sugiere rutinas/dietas.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Diseño de la interfaz
+   ✅ Dashboard con vista general del progreso.
+   ✅ Sección de rutinas de ejercicio con animaciones o descripciones.
+   ✅ Sección de alimentación con opciones de comidas recomendadas.
+   ✅ Vista de calendario para organizar entrenamientos y comidas.
+   ✅ Notificaciones y alertas para recordatorios.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Módulos principales
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 📅 Calendario: Organización diaria de entrenamientos y comidas.
+- 🏋️‍♂️ Rutinas de Gym: Creación y seguimiento de entrenamientos.
+- 🍽️ Nutrición: Plan de alimentación basado en objetivos.
+- 📊 Estadísticas: Seguimiento de avances con gráficos.
+- 🤖 IA Sugerencias: Recomendaciones de comidas y ejercicios.
+- 🔔 Notificaciones: Recordatorios automáticos.
