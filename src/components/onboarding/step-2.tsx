@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState } from "react";
@@ -11,6 +12,7 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
+import { Icons } from "@/components/icons";
 
 // This is a template for the second form
 // You can add the specific fields and steps later
@@ -25,7 +27,7 @@ export default function StepOnboarding2({
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Save form data to localStorage whenever it changes
-  const updateFormData = (updates: any) => {
+  const updateFormData = (updates: Partial<typeof formData>) => {
     const newData = { ...formData, ...updates };
     setFormData(newData);
     localStorage.setItem("formTwoData", JSON.stringify(newData));
@@ -148,18 +150,25 @@ export default function StepOnboarding2({
               onClick={handlePrevious}
               disabled={currentStep === 0}
             >
-              Previous
+              Anterior
             </Button>
 
             {currentStep < 3 ? (
-              <Button onClick={handleNext}>Next</Button>
+              <Button onClick={handleNext}>Siguiente</Button>
             ) : (
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-foreground text-white dark:bg-white dark:text-black border"
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </Button>
             )}
           </div>

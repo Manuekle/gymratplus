@@ -4,8 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CalendarIcon, RulerIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+
 import {
   Card,
   CardContent,
@@ -36,6 +37,7 @@ import {
   BodyWeightIcon,
   Clock01Icon,
   PercentSquareIcon,
+  RulerIcon,
   SteakIcon,
   Target02Icon,
   WeightScaleIcon,
@@ -97,8 +99,11 @@ export default function StepOnboarding1({
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ProfileFormData>(() => {
-    const savedData = localStorage.getItem("profileFormData");
-    return savedData ? JSON.parse(savedData) : initialFormData;
+    if (typeof window !== "undefined") {
+      const savedData = localStorage.getItem("profileFormData");
+      return savedData ? JSON.parse(savedData) : initialFormData;
+    }
+    return initialFormData;
   });
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
@@ -702,9 +707,16 @@ export default function StepOnboarding1({
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-background text-white dark:bg-white dark:text-black border"
+                className="bg-foreground text-white dark:bg-white dark:text-black border"
               >
-                {isSubmitting ? "Guardando..." : "Guardar"}
+                {isSubmitting ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </Button>
             )}
           </div>
