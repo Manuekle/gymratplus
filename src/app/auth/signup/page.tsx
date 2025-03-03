@@ -56,7 +56,7 @@ export default function SignUpPage() {
       setErrorMessage("Correo o contraseña incorrectos.");
       setLoading(false);
     } else {
-      router.push("/profile"); // Redirige al perfil después del login
+      router.push("/onboarding"); // Redirige al perfil después del login
     }
   };
 
