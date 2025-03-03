@@ -14,10 +14,9 @@ export default function NutritionSummary() {
   };
 
   return (
-    <div className="bg-black p-6 rounded-lg shadow-sm border">
+    <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          {/* <Utensils className="h-5 w-5 text-green-500" /> */}
           <h2 className="text-lg font-bold">Resumen Nutricional</h2>
         </div>
         <button className="text-xs text-gray-500 flex items-center gap-1">

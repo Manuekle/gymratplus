@@ -1,4 +1,5 @@
 import { ArrowRight, Clock } from "lucide-react";
+import { Button } from "../ui/button";
 
 export default function WorkoutSummary() {
   const currentWeek = {
@@ -44,7 +45,7 @@ export default function WorkoutSummary() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="border p-4 rounded-lg">
-          <p className="text-sm text-white">Semana actual</p>
+          <p className="text-sm font-bold">Semana actual</p>
           <div className="flex items-end mt-1">
             <span className="text-xl text-gray-400 font-bold">
               {currentWeek.completed}
@@ -56,14 +57,14 @@ export default function WorkoutSummary() {
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm text-white">Siguiente entrenamiento</p>
+          <p className="text-sm font-bold">Siguiente entrenamiento</p>
           <p className="mt-1 text-sm font-medium text-gray-500">
             {currentWeek.nextWorkout}
           </p>
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm text-white">Progreso mensual</p>
+          <p className="text-sm font-bold">Progreso mensual</p>
           <div className="flex items-center mt-1">
             <span className="text-xl font-bold text-gray-500">85%</span>
           </div>
@@ -95,9 +96,9 @@ export default function WorkoutSummary() {
       </div>
 
       <div className="mt-4 text-center">
-        <button className="w-full py-2 bg-white text-black rounded-lg text-xs font-medium transition-colors hover:bg-gray-200">
+        <Button className="w-full border rounded-lg text-xs font-medium transition-colors">
           Iniciar nuevo entrenamiento
-        </button>
+        </Button>
       </div>
     </div>
   );

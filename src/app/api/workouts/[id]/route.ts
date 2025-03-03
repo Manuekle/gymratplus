@@ -7,26 +7,51 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
+  if (!params || !params.id) {
+    return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
-  if (!session)
+  if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
 
   try {
     const workout = await prisma.workout.findUnique({
       where: { id: params.id, userId: session.user.id },
-      include: { exercises: true },
+      include: {
+        exercises: {
+          select: {
+            id: true,
+            sets: true,
+            reps: true,
+            weight: true,
+            restTime: true,
+            order: true,
+            notes: true,
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
+      },
     });
 
-    if (!workout)
+    if (!workout) {
       return NextResponse.json(
         { error: "Workout no encontrado" },
         { status: 404 }
       );
+    }
 
     return NextResponse.json(workout);
   } catch (error) {
+    console.error("Error obteniendo workout:", error);
     return NextResponse.json(
-      { error: "Error obteniendo workout" },
+      { error: "Error en el servidor" },
       { status: 500 }
     );
   }

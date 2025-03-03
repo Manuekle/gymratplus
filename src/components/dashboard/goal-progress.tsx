@@ -27,7 +27,7 @@ export default function GoalProgress() {
   ];
 
   return (
-    <div className="bg-black p-6 rounded-lg shadow-sm border">
+    <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Progreso de Objetivos</h2>
         <button className="text-xs text-gray-500 flex items-center gap-1">

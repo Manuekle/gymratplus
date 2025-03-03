@@ -28,7 +28,7 @@ import {
 import { useState } from "react";
 import { WeightChart } from "@/components/weight-chart";
 
-export default function HealthMetrics() {
+export default function HealthPage() {
   const [goal, setGoal] = useState("maintain");
   const [activityLevel, setActivityLevel] = useState("moderate");
 

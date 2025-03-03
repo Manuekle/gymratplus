@@ -1,3 +1,18 @@
+// import UserProfile from "@/components/user-profile";
+// import { Navbar } from "@/components/navbar";
+
+// export default function ProfilePage() {
+//   return (
+//     <div className="min-h-screen bg-background">
+//       <Navbar />
+//       <main className="py-8 px-4 sm:px-6 lg:px-8">
+//         <div className="max-w-7xl mx-auto">
+//           <UserProfile />
+//         </div>
+//       </main>
+//     </div>
+//   );
+// }
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,7 +39,7 @@ import {
   UserCircleIcon,
 } from "hugeicons-react";
 
-export default function ProfileSection() {
+export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
 
   const { data: session } = useSession();
@@ -100,7 +115,7 @@ export default function ProfileSection() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" defaultValue="juan.perez@ejemplo.com" />
+                  <Input id="email" defaultValue={session?.user?.email || ""} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Teléfono</Label>
@@ -121,7 +136,7 @@ export default function ProfileSection() {
                   <div>
                     <div className="font-medium text-sm">Email</div>
                     <div className="text-muted-foreground text-xs">
-                      juan.perez@ejemplo.com
+                      {session?.user?.email}
                     </div>
                   </div>
                 </div>

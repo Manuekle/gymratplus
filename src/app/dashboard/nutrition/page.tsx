@@ -13,7 +13,7 @@ import { CalorieChart } from "@/components/calorie-chart";
 import { MealHistory } from "@/components/meal-history";
 import { Bread04Icon, ChickenThighsIcon, FishFoodIcon } from "hugeicons-react";
 
-export default function NutritionMetrics() {
+export default function NutritionPage() {
   // Daily nutrition data
   const calories = {
     total: 2500,

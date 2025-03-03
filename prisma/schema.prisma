@@ -55,21 +55,29 @@ model User {
   updatedAt     DateTime  @updatedAt
 }
 
-model Profile {
+model Profile { 
   id                  String   @id @default(cuid())
   userId              String   @unique
   user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   gender              String?
   birthdate           DateTime?
-  height              Float?   // en cm
-  currentWeight       Float?   // en kg
-  targetWeight        Float?   // en kg
-  activityLevel       String?  // sedentario, ligero, moderado, activo, muy activo
-  goal                String?  // perder peso, mantener peso, ganar músculo
-  dailyCalorieTarget  Int?
-  dailyProteinTarget  Int?
-  dailyCarbTarget     Int?
-  dailyFatTarget      Int?
+  height              String?   // en cm
+  currentWeight       String?   // en kg
+  targetWeight        String?   // en kg
+  activityLevel       String?   // sedentario, ligero, moderado, activo, muy activo
+  goal                String?   // perder peso, mantener peso, ganar músculo
+  bodyFatPercentage   String?   // % grasa corporal
+  muscleMass          String?   // % masa muscular
+  metabolicRate       String?   // tasa metabólica basal en kcal
+  dailyActivity       String?  // actividad diaria (Ej: trabajo de oficina, trabajo físico)
+  trainingFrequency   Int?     // cantidad de entrenamientos por semana
+  preferredWorkoutTime String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
+  dietaryPreference   String?  // preferencias dietéticas (Ej: vegetariano, keto, etc.)
+  dailyCalorieTarget  Int?     // calorías objetivo diarias (se calcula automáticamente)
+  dailyProteinTarget  Int?     // proteína diaria en gramos (se calcula automáticamente)
+  dailyCarbTarget     Int?     // carbohidratos diarios en gramos (se calcula automáticamente)
+  dailyFatTarget      Int?     // grasas diarias en gramos (se calcula automáticamente)
+  waterIntake         Float?   // consumo de agua en litros por día (se calcula automáticamente)
   notificationsActive Boolean  @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt

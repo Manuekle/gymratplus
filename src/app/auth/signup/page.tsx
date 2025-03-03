@@ -20,7 +20,7 @@ import { useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -34,11 +34,20 @@ export default function SignInPage() {
     setErrorMessage("");
 
     const formData = new FormData(e.currentTarget);
+    const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
+    const repeatPassword = formData.get("repeatPassword") as string;
+
+    if (password !== repeatPassword) {
+      setErrorMessage("Las contraseñas no coinciden.");
+      setLoading(false);
+      return;
+    }
 
     const res = await signIn("credentials", {
       redirect: false,
+      name,
       email,
       password,
     });
@@ -60,15 +69,17 @@ export default function SignInPage() {
       >
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-2xl">
-              Iniciar Sesión
-            </CardTitle>
+            <CardTitle className="text-center text-2xl">Crear Cuenta</CardTitle>
             <CardDescription className="text-center text-xs">
-              Ingresa a tu cuenta para acceder a tu perfil de fitness
+              Regístrate para acceder a todos los beneficios de la plataforma.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <form onSubmit={handleLogin} className="space-y-4 gap-4">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="name">Nombre</Label>
+                <Input id="name" name="name" type="text" required />
+              </div>
               <div className="flex flex-col gap-2">
                 <Label htmlFor="email">Correo electrónico</Label>
                 <Input id="email" name="email" type="email" required />
@@ -77,19 +88,28 @@ export default function SignInPage() {
                 <Label htmlFor="password">Contraseña</Label>
                 <Input id="password" name="password" type="password" required />
               </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="repeatPassword">Repetir Contraseña</Label>
+                <Input
+                  id="repeatPassword"
+                  name="repeatPassword"
+                  type="password"
+                  required
+                />
+              </div>
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Iniciando sesión...
+                    Registrando...
                   </>
                 ) : (
-                  "Iniciar Sesión"
+                  "Registrarse"
                 )}
               </Button>
               {error && (
                 <p className="text-[#E52020] text-xs text-center">
-                  Error al iniciar sesión. Intenta de nuevo.
+                  Error al Registrarse Intenta de nuevo.
                 </p>
               )}
               {errorMessage && (
@@ -112,20 +132,20 @@ export default function SignInPage() {
                 {loadingGoogle ? (
                   <>
                     <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Iniciando sesión con Google...
+                    Registrando...
                   </>
                 ) : (
                   <>
                     <FcGoogle className="mr-2 h-5 w-5" />
-                    Iniciar sesión con Google
+                    Registrarse con Google
                   </>
                 )}
               </Button>
             </div>
             <div className="mt-4 text-center text-xs">
-              No tienes una cuenta?{" "}
-              <Link href="/auth/signup" className="text-primary">
-                Regístrate aquí
+              ¿Ya tienes una cuenta?{" "}
+              <Link href="/auth/signin" className="text-primary">
+                Inicia sesión
               </Link>
             </div>
           </CardContent>

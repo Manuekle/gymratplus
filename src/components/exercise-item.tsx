@@ -2,7 +2,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Delete02Icon, DragDropHorizontalIcon } from "hugeicons-react";
-import { Button } from "@/components/ui/button";
 
 const categoryColors = {
   Strength: "text-red-500",
@@ -18,13 +17,7 @@ interface Exercise {
   reps: number;
 }
 
-export default function ExerciseItem({
-  exercise,
-  handleDelete,
-}: {
-  exercise: Exercise;
-  handleDelete: (id: string) => void;
-}) {
+export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: exercise.id });
 
@@ -40,13 +33,13 @@ export default function ExerciseItem({
         size={24}
         {...attributes}
         {...listeners}
-        className="cursor-grab"
+        className="cursor-grab border-none"
       />
 
       {/* Info del ejercicio */}
       <div className="flex-grow bg-background p-4 rounded-lg shadow-md border justify-between items-center flex">
         <div className="flex-grow bg-background">
-          <h2 className="font-medium text-sm">{exercise.name}</h2>
+          <h2 className="font-medium text-sm">{exercise.exercise.name}</h2>
           <span className="text-xs text-muted-foreground">
             <strong
               className={`text-xs font-medium ${
@@ -63,7 +56,7 @@ export default function ExerciseItem({
         </div>
 
         {/* Categoría con colores */}
-        <button onClick={() => handleDelete(exercise.id)}>
+        <button>
           <Delete02Icon size={16} />
         </button>
       </div>

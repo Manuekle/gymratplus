@@ -65,28 +65,28 @@ export default function ProgressChart() {
       case "weight":
         return {
           dataKey: "weight",
-          color: "#3b82f6",
+          color: "#578FCA",
           unit: "kg",
           title: "Peso",
         };
       case "bodyFat":
         return {
           dataKey: "percentage",
-          color: "#ef4444",
+          color: "#FBA518",
           unit: "%",
           title: "Grasa Corporal",
         };
       case "muscle":
         return {
           dataKey: "percentage",
-          color: "#22c55e",
+          color: "#DE3163",
           unit: "%",
           title: "Masa Muscular",
         };
       default:
         return {
           dataKey: "weight",
-          color: "#3b82f6",
+          color: "#578FCA",
           unit: "kg",
           title: "Peso",
         };
@@ -96,7 +96,7 @@ export default function ProgressChart() {
   const chartConfig = getChartConfig();
 
   return (
-    <div className="bg-black p-6 rounded-lg shadow-sm border">
+    <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Seguimiento de Progreso</h2>
 
@@ -139,7 +139,7 @@ export default function ProgressChart() {
           onClick={() => setDataType("weight")}
           className={`px-3 py-1 text-sm rounded-md ${
             dataType === "weight"
-              ? "bg-blue-500 text-white"
+              ? "bg-[#578FCA] text-white"
               : "text-gray-500 border"
           }`}
         >
@@ -149,7 +149,7 @@ export default function ProgressChart() {
           onClick={() => setDataType("bodyFat")}
           className={`px-3 py-1 text-sm rounded-md ${
             dataType === "bodyFat"
-              ? "bg-red-500 text-white"
+              ? "bg-[#FBA518] text-white"
               : "text-gray-500 border"
           }`}
         >
@@ -159,7 +159,7 @@ export default function ProgressChart() {
           onClick={() => setDataType("muscle")}
           className={`px-3 py-1 text-sm rounded-md ${
             dataType === "muscle"
-              ? "bg-green-500 text-white"
+              ? "bg-[#DE3163] text-white"
               : "text-gray-500 border"
           }`}
         >

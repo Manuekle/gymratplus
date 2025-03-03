@@ -43,16 +43,6 @@ export async function POST(req: Request) {
         name,
         description,
         userId: session.user.id,
-        exercises: {
-          create: exercises.map((exercise: any) => ({
-            exerciseId: exercise.id,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            weight: exercise.weight,
-            restTime: exercise.restTime,
-            order: exercise.order,
-          })),
-        },
       },
     });
 

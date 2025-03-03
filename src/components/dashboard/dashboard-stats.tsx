@@ -11,28 +11,28 @@ export default function DashboardStats() {
       value: "450",
       unit: "kcal",
       change: "+12%",
-      icon: <FireIcon size={28} color={"#eee"} />,
+      icon: <FireIcon size={28} />,
     },
     {
       title: "Entrenamientos",
       value: "4",
       unit: "esta semana",
       change: "+1",
-      icon: <Dumbbell01Icon size={28} color={"#eee"} />,
+      icon: <Dumbbell01Icon size={28} />,
     },
     {
       title: "Actividad diaria",
       value: "68",
       unit: "minutos",
       change: "+8 min",
-      icon: <Activity01Icon size={28} color={"#eee"} />,
+      icon: <Activity01Icon size={28} />,
     },
     {
       title: "Progreso",
       value: "68",
       unit: "%",
       change: "+4%",
-      icon: <Target01Icon size={28} color={"#eee"} />,
+      icon: <Target01Icon size={28} />,
     },
   ];
 
@@ -41,9 +41,9 @@ export default function DashboardStats() {
       {stats.map((stat, index) => (
         <div
           key={index}
-          className="bg-black p-4 rounded-lg shadow-sm border flex items-center gap-4"
+          className="p-4 rounded-lg shadow-sm border flex items-center gap-4"
         >
-          <div className="p-3 rounded-full border bg-zinc-900">{stat.icon}</div>
+          <div className="p-3 rounded-full border">{stat.icon}</div>
           <div>
             <p className="text-sm font-medium text-gray-500">{stat.title}</p>
             <div className="flex items-baseline">

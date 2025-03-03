@@ -1,0 +1,197 @@
+"use client";
+
+import type React from "react";
+
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Dumbbell, Hash, Weight, Clock, Zap } from "lucide-react";
+
+type AddExerciseModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (exercise: {
+    name: string;
+    sets: number;
+    reps: number;
+    weight: number;
+    duration: number;
+    intensity: "Baja" | "Media" | "Alta";
+  }) => void;
+};
+
+export function AddExerciseModal({
+  isOpen,
+  onClose,
+  onSubmit,
+}: AddExerciseModalProps) {
+  const [name, setName] = useState("");
+  const [sets, setSets] = useState("");
+  const [reps, setReps] = useState("");
+  const [weight, setWeight] = useState("");
+  const [duration, setDuration] = useState("");
+  const [intensity, setIntensity] = useState<"Baja" | "Media" | "Alta">(
+    "Media"
+  );
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      name,
+      sets: Number.parseInt(sets),
+      reps: Number.parseInt(reps),
+      weight: Number.parseFloat(weight) || 0,
+      duration: Number.parseInt(duration) || 0,
+      intensity,
+    });
+    onClose();
+    // Reset form
+    setName("");
+    setSets("");
+    setReps("");
+    setWeight("");
+    setDuration("");
+    setIntensity("Media");
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold">
+            Añadir Nuevo Ejercicio
+          </DialogTitle>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Nombre
+              </Label>
+              <div className="col-span-3 relative">
+                <Dumbbell className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="pl-10"
+                  placeholder="Nombre del ejercicio"
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="sets" className="text-right">
+                Series
+              </Label>
+              <div className="col-span-3 relative">
+                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  id="sets"
+                  type="number"
+                  value={sets}
+                  onChange={(e) => setSets(e.target.value)}
+                  className="pl-10"
+                  placeholder="Número de series"
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="reps" className="text-right">
+                Repeticiones
+              </Label>
+              <div className="col-span-3 relative">
+                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  id="reps"
+                  type="number"
+                  value={reps}
+                  onChange={(e) => setReps(e.target.value)}
+                  className="pl-10"
+                  placeholder="Repeticiones por serie"
+                  required
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="weight" className="text-right">
+                Peso (kg)
+              </Label>
+              <div className="col-span-3 relative">
+                <Weight className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  id="weight"
+                  type="number"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="pl-10"
+                  placeholder="Peso en kg (opcional)"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="duration" className="text-right">
+                Duración (min)
+              </Label>
+              <div className="col-span-3 relative">
+                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Input
+                  id="duration"
+                  type="number"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                  className="pl-10"
+                  placeholder="Duración en minutos (opcional)"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="intensity" className="text-right">
+                Intensidad
+              </Label>
+              <div className="col-span-3 relative">
+                <Zap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Select
+                  onValueChange={(value: "Baja" | "Media" | "Alta") =>
+                    setIntensity(value)
+                  }
+                  defaultValue={intensity}
+                >
+                  <SelectTrigger className="pl-10">
+                    <SelectValue placeholder="Selecciona la intensidad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Baja">Baja</SelectItem>
+                    <SelectItem value="Media">Media</SelectItem>
+                    <SelectItem value="Alta">Alta</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button className="text-xs" size="sm" type="submit">
+              Agregar ejercicio
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

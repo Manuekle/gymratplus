@@ -17,8 +17,9 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
 import { Calendar02Icon, Dumbbell01Icon } from "hugeicons-react";
+import WorkoutCreator from "@/components/workouts/workout-creator";
 
-export default function TrainingMetrics() {
+export default function WorkoutPage() {
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
@@ -109,6 +110,8 @@ export default function TrainingMetrics() {
           <ExerciseProgressChart />
         </CardContent>
       </Card>
+
+      <WorkoutCreator />
     </div>
   );
 }
