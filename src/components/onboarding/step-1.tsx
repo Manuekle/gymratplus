@@ -224,9 +224,21 @@ export default function StepOnboarding1({
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
+        <CardTitle>
+          {currentStep === 0 && "Personal Information"}
+          {currentStep === 1 && "Physical Measurements"}
+          {currentStep === 2 && "Health & Fitness"}
+          {currentStep === 3 && "Training & Diet"}
+        </CardTitle>
         <CardDescription>
-          Let us know about yourself so we can personalize your experience
+          {currentStep === 0 &&
+            "Tell us a bit about yourself. This information will help us personalize your experience."}
+          {currentStep === 1 &&
+            "Enter your height, current weight, and target weight to help us calculate your BMI."}
+          {currentStep === 2 &&
+            "Share your activity level, body fat percentage, muscle mass, and fitness goals."}
+          {currentStep === 3 &&
+            "Let us know how often you train, your preferred workout time, and dietary preferences."}
         </CardDescription>
       </CardHeader>
       <CardContent>
