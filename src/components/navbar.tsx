@@ -12,10 +12,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  Door01Icon,
   LogoutCircle01Icon,
   Notification03Icon,
   Settings01Icon,
-  UserAccountIcon,
 } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -68,7 +68,7 @@ export function Navbar() {
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                 >
-                  <LogoutCircle01Icon className="mr-2 h-4 w-4" />
+                  <Door01Icon className="mr-2 h-4 w-4" />
                   <span>Cerrar sesión</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

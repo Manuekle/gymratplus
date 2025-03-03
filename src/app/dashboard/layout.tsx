@@ -30,40 +30,41 @@ export default function DashboardLayout({
           value={pathname.split("/")[2]}
           className="space-y-4"
         >
-          <div className="w-full overflow-x-auto">
-            <TabsList className="flex w-max min-w-full gap-2 px-4">
+          {/* Contenedor con scroll solo en móviles */}
+          <div className="w-full overflow-x-auto md:overflow-visible">
+            <TabsList className="flex md:grid md:grid-cols-5 w-max min-w-full md:w-full gap-2 px-4">
               <TabsTrigger
                 value="dashboard"
                 asChild
-                className="min-w-[100px] whitespace-nowrap"
+                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
               >
                 <Link href="/dashboard/">Dashboard</Link>
               </TabsTrigger>
               <TabsTrigger
                 value="profile"
                 asChild
-                className="min-w-[100px] whitespace-nowrap"
+                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
               >
                 <Link href="/dashboard/profile">Perfil</Link>
               </TabsTrigger>
               <TabsTrigger
                 value="health"
                 asChild
-                className="min-w-[100px] whitespace-nowrap"
+                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
               >
                 <Link href="/dashboard/health">Salud</Link>
               </TabsTrigger>
               <TabsTrigger
                 value="workout"
                 asChild
-                className="min-w-[100px] whitespace-nowrap"
+                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
               >
                 <Link href="/dashboard/workout">Entrenamiento</Link>
               </TabsTrigger>
               <TabsTrigger
                 value="nutrition"
                 asChild
-                className="min-w-[100px] whitespace-nowrap"
+                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
               >
                 <Link href="/dashboard/nutrition">Nutrición</Link>
               </TabsTrigger>
