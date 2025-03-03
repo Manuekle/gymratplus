@@ -19,31 +19,58 @@ export default function DashboardLayout({
       <Navbar />
       <div className="container mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold tracking-tight mb-6 ">
-          Mi Dashboard
+          {!pathname.split("/")[2] && "Dashboard"}
+          {pathname.split("/")[2] === "profile" && "Perfil"}
+          {pathname.split("/")[2] === "health" && "Salud"}
+          {pathname.split("/")[2] === "workout" && "Entrenamiento"}
+          {pathname.split("/")[2] === "nutrition" && "Nutrición"}
         </h1>
         <Tabs
           defaultValue="dashboard"
           value={pathname.split("/")[2]}
           className="space-y-4"
         >
-          <TabsList className="grid grid-cols-5 w-full max-w-3xl">
-            <TabsTrigger value="dashboard" asChild>
-              <Link href="/dashboard/">Dashboard</Link>
-            </TabsTrigger>
-            <TabsTrigger value="profile" asChild>
-              <Link href="/dashboard/profile">Perfil</Link>
-            </TabsTrigger>
-            <TabsTrigger value="health" asChild>
-              <Link href="/dashboard/health">Salud</Link>
-            </TabsTrigger>
-            <TabsTrigger value="workout" asChild>
-              <Link href="/dashboard/workout">Entrenamiento</Link>
-            </TabsTrigger>
-            <TabsTrigger value="nutrition" asChild>
-              <Link href="/dashboard/nutrition">Nutrición</Link>
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto">
+            <TabsList className="flex w-max min-w-full gap-2 px-4">
+              <TabsTrigger
+                value="dashboard"
+                asChild
+                className="min-w-[100px] whitespace-nowrap"
+              >
+                <Link href="/dashboard/">Dashboard</Link>
+              </TabsTrigger>
+              <TabsTrigger
+                value="profile"
+                asChild
+                className="min-w-[100px] whitespace-nowrap"
+              >
+                <Link href="/dashboard/profile">Perfil</Link>
+              </TabsTrigger>
+              <TabsTrigger
+                value="health"
+                asChild
+                className="min-w-[100px] whitespace-nowrap"
+              >
+                <Link href="/dashboard/health">Salud</Link>
+              </TabsTrigger>
+              <TabsTrigger
+                value="workout"
+                asChild
+                className="min-w-[100px] whitespace-nowrap"
+              >
+                <Link href="/dashboard/workout">Entrenamiento</Link>
+              </TabsTrigger>
+              <TabsTrigger
+                value="nutrition"
+                asChild
+                className="min-w-[100px] whitespace-nowrap"
+              >
+                <Link href="/dashboard/nutrition">Nutrición</Link>
+              </TabsTrigger>
+            </TabsList>
+          </div>
         </Tabs>
+
         <div className="mt-6">{children}</div>
       </div>
     </div>

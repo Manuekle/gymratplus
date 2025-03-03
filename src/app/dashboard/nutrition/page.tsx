@@ -104,8 +104,7 @@ export default function NutritionPage() {
                   value={
                     (macros.protein.consumed / macros.protein.target) * 100
                   }
-                  className="h-2 bg-zinc-700"
-                  indicatorClassName="bg-blue-500"
+                  className="h-2 "
                 />
               </div>
 
@@ -127,8 +126,7 @@ export default function NutritionPage() {
                 </div>
                 <Progress
                   value={(macros.carbs.consumed / macros.carbs.target) * 100}
-                  className="h-2 bg-zinc-700"
-                  indicatorClassName="bg-green-500"
+                  className="h-2"
                 />
               </div>
 
@@ -148,8 +146,7 @@ export default function NutritionPage() {
                 </div>
                 <Progress
                   value={(macros.fat.consumed / macros.fat.target) * 100}
-                  className="h-2 bg-zinc-700"
-                  indicatorClassName="bg-yellow-500"
+                  className="h-2"
                 />
               </div>
 
