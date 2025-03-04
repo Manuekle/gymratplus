@@ -29,6 +29,11 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useRouter } from "next/navigation";
+import {
+  Dumbbell01Icon,
+  FloppyDiskIcon,
+  KitchenUtensilsIcon,
+} from "hugeicons-react";
 
 export default function Recommendations() {
   const [recommendations, setRecommendations] = useState<any>(null);
@@ -154,26 +159,26 @@ export default function Recommendations() {
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl font-bold flex items-center">
-          <span className="mr-2">Your Personalized Fitness Plan</span>
+          <span className="mr-2">Tu Plan de Fitness Personalizado</span>
         </CardTitle>
         <CardDescription className="text-muted-foreground">
-          Based on your profile, we've created custom workout and nutrition
-          plans for you
+          Según su perfil, hemos creado planes personalizados de entrenamiento y
+          nutrición para usted
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
         {loading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-600 mb-4" />
-            <p className="text-muted-foreground text-lg">
-              Generating your personalized recommendations...
+            <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+            <p className="text-muted-foreground text-sm">
+              Generando tus recomendaciones personalizadas...
             </p>
           </div>
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-red-500 mb-4">{error}</p>
             <Button onClick={() => router.push("/dashboard/profile")}>
-              Return to Profile
+              Volver al Perfil
             </Button>
           </div>
         ) : recommendations ? (
@@ -189,22 +194,22 @@ export default function Recommendations() {
             >
               <TabsList className="grid w-full grid-cols-2 mb-6">
                 <TabsTrigger value="workout" className="flex items-center">
-                  <Dumbbell className="mr-2 h-4 w-4" />
-                  Workout Plan
+                  <Dumbbell01Icon className="mr-2 h-4 w-4" />
+                  Plan de entrenamiento
                 </TabsTrigger>
                 <TabsTrigger value="nutrition" className="flex items-center">
-                  <Utensils className="mr-2 h-4 w-4" />
-                  Nutrition Plan
+                  <KitchenUtensilsIcon className="mr-2 h-4 w-4" />
+                  Plan nutricional
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="workout">
                 <div className="space-y-6">
-                  <div className="p-4 rounded-lg">
+                  <div>
                     <h3 className="text-lg font-semibold mb-2">
                       {recommendations.workoutPlan.name}
                     </h3>
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       {recommendations.workoutPlan.description}
                     </p>
                   </div>
@@ -219,7 +224,7 @@ export default function Recommendations() {
                           <Table>
                             <TableHeader>
                               <TableRow className="bg-gray-100">
-                                <TableHead>Exercise</TableHead>
+                                <TableHead>Ejercicio</TableHead>
                                 <TableHead className="text-center">
                                   Sets
                                 </TableHead>
@@ -227,9 +232,9 @@ export default function Recommendations() {
                                   Reps
                                 </TableHead>
                                 <TableHead className="text-center">
-                                  Rest
+                                  Descanso
                                 </TableHead>
-                                <TableHead>Notes</TableHead>
+                                <TableHead>Nota</TableHead>
                               </TableRow>
                             </TableHeader>
                             <TableBody>
@@ -261,22 +266,23 @@ export default function Recommendations() {
 
               <TabsContent value="nutrition">
                 <div className="space-y-6">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h3 className="text-lg font-semibold text-green-800 mb-2">
-                      Macronutrient Distribution
+                  <div>
+                    <h3 className="text-lg font-semibold mb-2">
+                      Distribución de Macronutrientes
                     </h3>
                     <div className="flex flex-wrap gap-3 mb-2">
-                      <Badge className="bg-red-500">
-                        {recommendations.nutritionPlan.macros.protein} Protein
+                      <Badge className="bg-[#DE3163]">
+                        {recommendations.nutritionPlan.macros.protein} Proteína
                       </Badge>
-                      <Badge className="bg-yellow-500">
-                        {recommendations.nutritionPlan.macros.carbs} Carbs
+                      <Badge className="bg-[#578FCA]">
+                        {recommendations.nutritionPlan.macros.carbs}{" "}
+                        Carbohidratos
                       </Badge>
-                      <Badge className="bg-blue-500">
-                        {recommendations.nutritionPlan.macros.fat} Fat
+                      <Badge className="bg-[#FBA518]">
+                        {recommendations.nutritionPlan.macros.fat} Grasas
                       </Badge>
                     </div>
-                    <p className="text-green-700">
+                    <p className="text-muted-foreground text-sm">
                       {recommendations.nutritionPlan.macros.description}
                     </p>
                   </div>
@@ -284,26 +290,28 @@ export default function Recommendations() {
                   <Accordion type="single" collapsible className="w-full">
                     <AccordionItem value="breakfast">
                       <AccordionTrigger className="text-lg font-medium">
-                        Breakfast
+                        Desayuno
                       </AccordionTrigger>
                       <AccordionContent>
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-100">
-                              <TableHead>Food</TableHead>
+                              <TableHead>Comida</TableHead>
                               <TableHead className="text-center">
-                                Quantity
+                                Cantidad
                               </TableHead>
                               <TableHead className="text-center">
-                                Calories
+                                Calorías
                               </TableHead>
                               <TableHead className="text-center">
-                                Protein
+                                Proteína
                               </TableHead>
                               <TableHead className="text-center">
-                                Carbs
+                                Carbohidratos
                               </TableHead>
-                              <TableHead className="text-center">Fat</TableHead>
+                              <TableHead className="text-center">
+                                Grasas
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -380,26 +388,28 @@ export default function Recommendations() {
 
                     <AccordionItem value="lunch">
                       <AccordionTrigger className="text-lg font-medium">
-                        Lunch
+                        Almuerzo
                       </AccordionTrigger>
                       <AccordionContent>
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-100">
-                              <TableHead>Food</TableHead>
+                              <TableHead>Comida</TableHead>
                               <TableHead className="text-center">
-                                Quantity
+                                Cantidad
                               </TableHead>
                               <TableHead className="text-center">
-                                Calories
+                                Calorías
                               </TableHead>
                               <TableHead className="text-center">
-                                Protein
+                                Proteína
                               </TableHead>
                               <TableHead className="text-center">
-                                Carbs
+                                Carbohidratos
                               </TableHead>
-                              <TableHead className="text-center">Fat</TableHead>
+                              <TableHead className="text-center">
+                                Grasas
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -472,26 +482,28 @@ export default function Recommendations() {
 
                     <AccordionItem value="dinner">
                       <AccordionTrigger className="text-lg font-medium">
-                        Dinner
+                        Cena
                       </AccordionTrigger>
                       <AccordionContent>
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-100">
-                              <TableHead>Food</TableHead>
+                              <TableHead>Comida</TableHead>
                               <TableHead className="text-center">
-                                Quantity
+                                Cantidad
                               </TableHead>
                               <TableHead className="text-center">
-                                Calories
+                                Calorías
                               </TableHead>
                               <TableHead className="text-center">
-                                Protein
+                                Proteína
                               </TableHead>
                               <TableHead className="text-center">
-                                Carbs
+                                Carbohidratos
                               </TableHead>
-                              <TableHead className="text-center">Fat</TableHead>
+                              <TableHead className="text-center">
+                                Grasas
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -571,20 +583,22 @@ export default function Recommendations() {
                         <Table>
                           <TableHeader>
                             <TableRow className="bg-gray-100">
-                              <TableHead>Food</TableHead>
+                              <TableHead>Comida</TableHead>
                               <TableHead className="text-center">
-                                Quantity
+                                Cantidad
                               </TableHead>
                               <TableHead className="text-center">
-                                Calories
+                                Calorías
                               </TableHead>
                               <TableHead className="text-center">
-                                Protein
+                                Proteína
                               </TableHead>
                               <TableHead className="text-center">
-                                Carbs
+                                Carbohidratos
                               </TableHead>
-                              <TableHead className="text-center">Fat</TableHead>
+                              <TableHead className="text-center">
+                                Grasas
+                              </TableHead>
                             </TableRow>
                           </TableHeader>
                           <TableBody>
@@ -663,14 +677,14 @@ export default function Recommendations() {
               <Button
                 onClick={handleSavePlan}
                 disabled={saving}
-                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                className="flex items-center gap-2"
               >
                 {saving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <Save className="h-4 w-4" />
+                  <FloppyDiskIcon size={18} />
                 )}
-                {saving ? "Guardando..." : "Guardar Plan"}
+                {saving ? "Guardando..." : "Guardar"}
               </Button>
             </div>
           </motion.div>

@@ -586,6 +586,37 @@ export default function StepOnboarding1({
               {currentStep === 3 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
+                    <Label htmlFor="dailyActivity">Daily Activity</Label>
+                    <Select
+                      value={formData.dailyActivity}
+                      onValueChange={(value) =>
+                        updateFormData({ dailyActivity: value })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your daily activity" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="office-work">
+                          Office work (sedentary)
+                        </SelectItem>
+                        <SelectItem value="light-physical">
+                          Light physical work
+                        </SelectItem>
+                        <SelectItem value="moderate-physical">
+                          Moderate physical work
+                        </SelectItem>
+                        <SelectItem value="heavy-physical">
+                          Heavy physical work
+                        </SelectItem>
+                        <SelectItem value="very-heavy-physical">
+                          Very heavy physical work
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
                     <Label>Training Frequency (days per week)</Label>
                     <ToggleGroup
                       type="multiple"

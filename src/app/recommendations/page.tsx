@@ -5,6 +5,7 @@ import Recommendations from "@/components/recommendations";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { ArrowLeft01Icon } from "hugeicons-react";
 
 export default function RecommendationsPage() {
   const router = useRouter();
@@ -18,8 +19,8 @@ export default function RecommendationsPage() {
           onClick={() => router.push("/")}
           className="flex items-center text-muted-foreground"
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Profile
+          <ArrowLeft01Icon className="mr-2 h-4 w-4" />
+          Volver al Perfil
         </Button>
       </div>
       <Recommendations />

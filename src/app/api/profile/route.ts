@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 // Reemplazar la función POST completa con esta versión más robusta
 export async function POST(req: Request) {
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     // Calcular valores automáticos
     const dailyCalorieTarget = calculateDailyCalories(data);
     const { dailyProteinTarget, dailyCarbTarget, dailyFatTarget } =
-      calculateMacros(dailyCalorieTarget);
+      calculateMacros(dailyCalorieTarget, data);
     const waterIntake = calculateWaterIntake(data.currentWeight);
 
     // Manejar la fecha de nacimiento de forma segura
@@ -40,15 +40,7 @@ export async function POST(req: Request) {
     }
 
     // Crear un objeto de respuesta con los datos del perfil y los cálculos
-    // const profile = {
-    //   ...data,
-    //   metabolicRate,
-    //   dailyCalorieTarget,
-    //   dailyProteinTarget,
-    //   dailyCarbTarget,
-    //   dailyFatTarget,
-    //   waterIntake,
-    // };
+
     const profile = await prisma.profile.upsert({
       where: { userId: userId },
       update: {
