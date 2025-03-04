@@ -43,6 +43,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
 
   const { data: session } = useSession();
+  console.log(session);
 
   return (
     <div className="space-y-6">

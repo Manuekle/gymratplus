@@ -1,12 +1,13 @@
 "use client";
 
+import { useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
-
+import { useSession } from "next-auth/react";
 import { motion } from "framer-motion";
 import {
   Card,
@@ -27,6 +28,15 @@ export default function SignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session) {
+      console.log(session);
+      window.location.href = "/dashboard/profile";
+    }
+  }, [session]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

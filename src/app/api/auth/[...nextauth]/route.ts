@@ -4,6 +4,16 @@ import { prisma } from "@/lib/prisma";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { Redis } from "@upstash/redis";
+
+// Inicializar cliente de Redis con Upstash
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL || "",
+  token: process.env.KV_REST_API_TOKEN || "",
+});
+
+// Cache de perfiles de usuario, para evitar consultas repetidas
+const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
@@ -25,14 +35,32 @@ export const authOptions = {
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales requeridas");
         }
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-        });
+        // Intentar obtener el usuario desde la caché
+        const cacheKey = `user:email:${credentials.email}`;
+        const cachedUser = await redis.get(cacheKey);
+
+        let user;
+
+        if (cachedUser) {
+          user = cachedUser;
+        } else {
+          // Si no está en caché, buscar en la base de datos
+          user = await prisma.user.findUnique({
+            where: { email: credentials.email },
+          });
+
+          // Guardar en caché si se encuentra
+          if (user) {
+            await redis.set(cacheKey, user, {
+              ex: 60 * 10, // 10 minutos
+            });
+          }
+        }
 
         if (!user || !user.password) {
           throw new Error("Usuario no encontrado");
@@ -43,27 +71,67 @@ export const authOptions = {
           user.password
         );
 
+        const failedLoginKey = `failed:login:${credentials.email}`;
+
         if (!isPasswordValid) {
+          // Registrar intentos fallidos para posible rate limiting
+          await redis.incr(failedLoginKey);
+          await redis.expire(failedLoginKey, 60 * 30); // Expira en 30 minutos
+
           throw new Error("Contraseña inválida");
         }
 
-        return user;
+        // Limpiar contador de intentos fallidos después de un inicio de sesión exitoso
+        await redis.del(failedLoginKey);
+
+        return {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        };
       },
     }),
   ],
   session: {
     strategy: "jwt",
+    // Aumentar maxAge para sesiones más largas
+    maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+
+        // Almacenar datos básicos en Redis para acceso rápido
+        await redis.hset(`user:${user.id}:data`, {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image,
+          lastLogin: new Date().toISOString(),
+        });
+
+        // Establecer expiración
+        await redis.expire(`user:${user.id}:data`, 30 * 24 * 60 * 60); // 30 días
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.id;
+
+        // Registrar actividad para tracking de usuarios activos
+        await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
+          ex: 60 * 60 * 24 * 7, // Expira en 7 días
+        });
+
+        // Opcionalmente, enriquecer la sesión con datos de Redis
+        const userData = await redis.hgetall(`user:${token.id}:data`);
+        if (userData) {
+          // Puedes añadir campos personalizados a la sesión si los necesitas
+          // Por ejemplo: session.user.permissions = userData.permissions;
+        }
       }
       return session;
     },
@@ -73,12 +141,26 @@ export const authOptions = {
         // Verificar si necesita completar onboarding
         const userId = await getUserIdFromSession();
         if (userId) {
-          const profile = await prisma.profile.findUnique({
-            where: { userId },
-          });
+          // Intentar obtener el perfil desde caché primero
+          const profileCacheKey = `profile:${userId}`;
+          let profile = await redis.get(profileCacheKey);
+
+          if (!profile) {
+            // Si no está en caché, consultar base de datos
+            profile = await prisma.profile.findUnique({
+              where: { userId },
+            });
+
+            // Almacenar en caché para futuras consultas
+            if (profile) {
+              await redis.set(profileCacheKey, profile, {
+                ex: PROFILE_CACHE_TTL,
+              });
+            }
+          }
 
           if (!profile || !profile.height || !profile.currentWeight) {
-            return `${baseUrl}/onboarding`;
+            return `${baseUrl}/`;
           }
         }
         return url;
@@ -91,15 +173,35 @@ export const authOptions = {
     error: "/auth/signin",
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development", // Para ver errores en consola
+  debug: process.env.NODE_ENV === "development",
+
+  // Eventos para mantener caché sincronizada
+  events: {
+    createUser: async ({ user }) => {
+      // Invalidar caché después de crear usuario
+      await redis.del(`user:email:${user.email}`);
+    },
+    updateUser: async ({ user }) => {
+      // Invalidar caché después de actualizar usuario
+      await redis.del(`user:email:${user.email}`);
+      await redis.del(`user:${user.id}:data`);
+      await redis.del(`profile:${user.id}`);
+    },
+    signOut: async ({ token }) => {
+      // Opcional: Limpiar datos de sesión específicos al cerrar sesión
+      if (token?.id) {
+        await redis.del(`user:${token.id}:lastActive`);
+      }
+    },
+  },
 };
 
 const handler = NextAuth(authOptions);
 export { handler as GET, handler as POST };
 
-// Función auxiliar para obtener el ID de usuario de la sesión
+// Función mejorada para obtener el ID de usuario de la sesión
 async function getUserIdFromSession() {
-  // Implementar lógica para obtener el userId de la sesión
-  // Esta es una función simplificada y deberás adaptarla
+  // Esta función es un placeholder. Implementa la lógica adecuada
+  // para obtener el userId de la sesión actual en el contexto de servidor.
   return null;
 }

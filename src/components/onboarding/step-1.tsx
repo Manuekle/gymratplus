@@ -4,9 +4,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Icons } from "@/components/icons";
-
 import {
   Card,
   CardContent,
@@ -30,18 +29,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
-import {
-  Activity03Icon,
-  BirthdayCakeIcon,
-  BodyPartMuscleIcon,
-  BodyWeightIcon,
-  Clock01Icon,
-  PercentSquareIcon,
-  RulerIcon,
-  SteakIcon,
-  Target02Icon,
-  WeightScaleIcon,
-} from "hugeicons-react";
+import { useRouter } from "next/navigation";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
   (i + 140).toString()
@@ -51,13 +39,13 @@ const weightOptions = Array.from({ length: 141 }, (_, i) =>
 ); // 40kg to 180kg
 
 const daysOfWeek = [
-  { id: "lunes", label: "L" },
-  { id: "marte", label: "M" },
-  { id: "miercoles", label: "M" },
-  { id: "jueves", label: "J" },
-  { id: "viernes", label: "V" },
-  { id: "sabado", label: "S" },
-  { id: "domindo", label: "D" },
+  { id: "mon", label: "M" },
+  { id: "tue", label: "T" },
+  { id: "wed", label: "W" },
+  { id: "thu", label: "T" },
+  { id: "fri", label: "F" },
+  { id: "sat", label: "S" },
+  { id: "sun", label: "S" },
 ];
 
 type ProfileFormData = {
@@ -99,20 +87,47 @@ export default function StepOnboarding1({
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ProfileFormData>(() => {
-    if (typeof window !== "undefined") {
-      const savedData = localStorage.getItem("profileFormData");
-      return savedData ? JSON.parse(savedData) : initialFormData;
+    const savedData = localStorage.getItem("profileFormData");
+    if (savedData) {
+      try {
+        const parsed = JSON.parse(savedData);
+        // Convertir la fecha de string a objeto Date si existe
+        if (parsed.birthdate) {
+          parsed.birthdate = new Date(parsed.birthdate);
+        }
+        return parsed;
+      } catch (e) {
+        console.error("Error parsing saved form data:", e);
+        return initialFormData;
+      }
     }
     return initialFormData;
   });
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   const updateFormData = (updates: Partial<ProfileFormData>) => {
+    // Asegurarse de que si updates contiene birthdate, sea un objeto Date válido
+    if (updates.birthdate && !(updates.birthdate instanceof Date)) {
+      try {
+        updates.birthdate = new Date(updates.birthdate);
+      } catch (e) {
+        console.error("Error converting birthdate to Date object:", e);
+      }
+    }
+
     const newData = { ...formData, ...updates };
     setFormData(newData);
-    localStorage.setItem("profileFormData", JSON.stringify(newData));
+    localStorage.setItem(
+      "profileFormData",
+      JSON.stringify(newData, (key, value) => {
+        // Convertir objetos Date a strings ISO para almacenamiento en localStorage
+        if (key === "birthdate" && value instanceof Date) {
+          return value.toISOString();
+        }
+        return value;
+      })
+    );
   };
 
   const handleNext = () => {
@@ -191,16 +206,51 @@ export default function StepOnboarding1({
 
     setIsSubmitting(true);
     try {
+      // Crear una copia del formData para enviar
+      const dataToSend = { ...formData };
+
+      // Eliminar completamente la propiedad birthdate si no es válida
+      if (dataToSend.birthdate) {
+        if (
+          dataToSend.birthdate instanceof Date &&
+          !isNaN(dataToSend.birthdate.getTime())
+        ) {
+          // Si es un objeto Date válido, convertirlo a string ISO
+          dataToSend.birthdate = dataToSend.birthdate.toISOString();
+        } else {
+          // Si no es un objeto Date válido, intentar convertirlo
+          try {
+            const dateObj = new Date(dataToSend.birthdate);
+            if (!isNaN(dateObj.getTime())) {
+              dataToSend.birthdate = dateObj.toISOString();
+            } else {
+              // Si la conversión falla, enviar como string o eliminar
+              console.warn(
+                "Invalid date detected, sending as is:",
+                dataToSend.birthdate
+              );
+            }
+          } catch (e) {
+            console.error("Error converting birthdate:", e);
+            // Si hay un error en la conversión, eliminar la propiedad
+            delete dataToSend.birthdate;
+          }
+        }
+      }
+
+      console.log("Sending data:", dataToSend);
+
       const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(dataToSend),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to submit profile data");
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to submit profile data");
       }
 
       const updatedProfile = await response.json();
@@ -209,13 +259,15 @@ export default function StepOnboarding1({
       toast.success("Profile saved successfully!", {
         description: "Your profile information has been updated.",
       });
-      onComplete();
+
+      // Redirigir a la página de recomendaciones después de guardar el perfil
+      router.push("/recommendations");
     } catch (error) {
+      console.error("Error submitting profile:", error);
       toast.error("Failed to save profile", {
         description:
           "Please try again. If the problem persists, contact support.",
       });
-      console.error(error);
     } finally {
       setIsSubmitting(false);
     }
@@ -224,21 +276,9 @@ export default function StepOnboarding1({
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>
-          {currentStep === 0 && "Personal Information"}
-          {currentStep === 1 && "Physical Measurements"}
-          {currentStep === 2 && "Health & Fitness"}
-          {currentStep === 3 && "Training & Diet"}
-        </CardTitle>
+        <CardTitle>Profile Information</CardTitle>
         <CardDescription>
-          {currentStep === 0 &&
-            "Tell us a bit about yourself. This information will help us personalize your experience."}
-          {currentStep === 1 &&
-            "Enter your height, current weight, and target weight to help us calculate your BMI."}
-          {currentStep === 2 &&
-            "Share your activity level, body fat percentage, muscle mass, and fitness goals."}
-          {currentStep === 3 &&
-            "Let us know how often you train, your preferred workout time, and dietary preferences."}
+          Let us know about yourself so we can personalize your experience
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -260,13 +300,13 @@ export default function StepOnboarding1({
             ))}
           </div>
 
-          <AnimatePresence mode="popLayout">
+          <AnimatePresence mode="wait">
             <motion.div
               key={currentStep}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.1 }}
+              transition={{ duration: 0.2 }}
               className="space-y-4"
             >
               {currentStep === 0 && (
@@ -280,44 +320,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4 text-black dark:text-white">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width={18}
-                            height={18}
-                            className="text-current"
-                            fill="none"
-                          >
-                            <path
-                              d="M19.4995 20V16.5C20.5856 16.5 21.1991 16.5 21.4186 16.0257C21.6381 15.5515 21.3953 14.9028 20.9095 13.6056L19.6676 10.2889C19.2571 9.19253 18.4179 8.5 17.5 8.5C16.5821 8.5 15.7429 9.19253 15.3324 10.2889L14.0905 13.6056C13.6047 14.9028 13.3619 15.5515 13.5814 16.0257C13.8009 16.5 14.4133 16.5 15.4995 16.5V20C15.4995 20.9428 15.4995 21.4142 15.7924 21.7071C16.0853 22 16.5567 22 17.4995 22C18.4423 22 18.9137 22 19.2066 21.7071C19.4995 21.4142 19.4995 20.9428 19.4995 20Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M8.5 4C8.5 5.10457 7.60457 6 6.5 6C5.39543 6 4.5 5.10457 4.5 4C4.5 2.89543 5.39543 2 6.5 2C7.60457 2 8.5 2.89543 8.5 4Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M19.5 4C19.5 5.10457 18.6046 6 17.5 6C16.3954 6 15.5 5.10457 15.5 4C15.5 2.89543 16.3954 2 17.5 2C18.6046 2 19.5 2.89543 19.5 4Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M10.5 12.5C10.5 10.6144 10.5 9.67157 9.91421 9.08579C9.32843 8.5 8.38562 8.5 6.5 8.5C4.61438 8.5 3.67157 8.5 3.08579 9.08579C2.5 9.67157 2.5 10.6144 2.5 12.5V14.5C2.5 15.4428 2.5 15.9142 2.79289 16.2071C3.08579 16.5 3.55719 16.5 4.5 16.5V20C4.5 20.9428 4.5 21.4142 4.79289 21.7071C5.08579 22 5.55719 22 6.5 22C7.44281 22 7.91421 22 8.20711 21.7071C8.5 21.4142 8.5 20.9428 8.5 20V16.5C9.44281 16.5 9.91421 16.5 10.2071 16.2071C10.5 15.9142 10.5 15.4428 10.5 14.5V12.5Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          <SelectValue placeholder="Seleccione su género" />
-                        </div>
+                        <SelectValue placeholder="Select your gender" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
@@ -328,7 +331,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="birthdate">Fecha de nacimiento</Label>
+                    <Label htmlFor="birthdate">Date of Birth</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -338,11 +341,11 @@ export default function StepOnboarding1({
                             !formData.birthdate && "text-muted-foreground"
                           )}
                         >
-                          <BirthdayCakeIcon className="mr-2 h-4 w-4" />
+                          <CalendarIcon className="mr-2 h-4 w-4" />
                           {formData.birthdate ? (
                             format(formData.birthdate, "PPP")
                           ) : (
-                            <span>Seleccione su fecha de nacimiento</span>
+                            <span>Pick a date</span>
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -364,7 +367,7 @@ export default function StepOnboarding1({
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="height">Altura (cm)</Label>
+                    <Label htmlFor="height">Height (cm)</Label>
                     <Select
                       value={formData.height}
                       onValueChange={(value) =>
@@ -372,10 +375,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <RulerIcon size={18} />
-                          <SelectValue placeholder="Seleccione su altura" />
-                        </div>
+                        <SelectValue placeholder="Select your height" />
                       </SelectTrigger>
                       <SelectContent>
                         {heightOptions.map((height) => (
@@ -388,7 +388,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currentWeight">Peso Actual (kg)</Label>
+                    <Label htmlFor="currentWeight">Current Weight (kg)</Label>
                     <Select
                       value={formData.currentWeight}
                       onValueChange={(value) =>
@@ -396,11 +396,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        {/* <SelectValue placeholder="Select your current weight" /> */}
-                        <div className="flex flex-row items-center gap-4">
-                          <WeightScaleIcon size={18} />
-                          <SelectValue placeholder="Seleccione su peso actual" />
-                        </div>
+                        <SelectValue placeholder="Select your current weight" />
                       </SelectTrigger>
                       <SelectContent>
                         {weightOptions.map((weight) => (
@@ -413,7 +409,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="targetWeight">Peso Objetivo (kg)</Label>
+                    <Label htmlFor="targetWeight">Target Weight (kg)</Label>
                     <Select
                       value={formData.targetWeight}
                       onValueChange={(value) =>
@@ -421,10 +417,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <BodyWeightIcon size={18} />
-                          <SelectValue placeholder="Seleccione su peso objetivo" />
-                        </div>
+                        <SelectValue placeholder="Select your target weight" />
                       </SelectTrigger>
                       <SelectContent>
                         {weightOptions.map((weight) => (
@@ -441,7 +434,7 @@ export default function StepOnboarding1({
               {currentStep === 2 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="activityLevel">Nivel de actividad</Label>
+                    <Label htmlFor="activityLevel">Activity Level</Label>
                     <Select
                       value={formData.activityLevel}
                       onValueChange={(value) =>
@@ -449,10 +442,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <Activity03Icon size={18} />
-                          <SelectValue placeholder="Seleccione su nivel de actividad" />
-                        </div>
+                        <SelectValue placeholder="Select your activity level" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="sedentary">
@@ -476,7 +466,7 @@ export default function StepOnboarding1({
 
                   <div className="space-y-2">
                     <Label htmlFor="bodyFatPercentage">
-                      Porcentaje de Grasa Corporal
+                      Body Fat Percentage
                     </Label>
                     <Select
                       value={formData.bodyFatPercentage}
@@ -485,10 +475,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <PercentSquareIcon size={18} />
-                          <SelectValue placeholder="Seleccione su porcentaje de grasa corporal" />
-                        </div>
+                        <SelectValue placeholder="Select your body fat percentage" />
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
@@ -533,9 +520,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="muscleMass">
-                      Massa Muscular (porcentaje)
-                    </Label>
+                    <Label htmlFor="muscleMass">Muscle Mass</Label>
                     <Select
                       value={formData.muscleMass}
                       onValueChange={(value) =>
@@ -543,10 +528,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <BodyPartMuscleIcon size={18} />
-                          <SelectValue placeholder="Seleccione su masa muscular" />
-                        </div>
+                        <SelectValue placeholder="Select your muscle mass" />
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
@@ -581,16 +563,13 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="goal">Objetivo de Salud y Fitness</Label>
+                    <Label htmlFor="goal">Goal</Label>
                     <Select
                       value={formData.goal}
                       onValueChange={(value) => updateFormData({ goal: value })}
                     >
                       <SelectTrigger>
-                        <div className="flex flex-row items-center gap-4">
-                          <Target02Icon size={18} />
-                          <SelectValue placeholder="Seleccione su objetivo" />
-                        </div>
+                        <SelectValue placeholder="Select your goal" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="lose-weight">Lose weight</SelectItem>
@@ -611,17 +590,19 @@ export default function StepOnboarding1({
                     <ToggleGroup
                       type="multiple"
                       variant="outline"
-                      value={selectedDays}
-                      onValueChange={(value) => {
-                        setSelectedDays(value);
-                        updateFormData({ trainingFrequency: value.length });
-                      }}
+                      value={Array.from(
+                        { length: formData.trainingFrequency },
+                        (_, i) => i.toString()
+                      )}
+                      onValueChange={(value) =>
+                        updateFormData({ trainingFrequency: value.length })
+                      }
                       className="justify-start"
                     >
-                      {daysOfWeek.map((day) => (
+                      {daysOfWeek.map((day, index) => (
                         <ToggleGroupItem
                           key={day.id}
-                          value={day.id}
+                          value={index.toString()}
                           aria-label={day.label}
                           className="w-10 h-10"
                         >
@@ -633,7 +614,7 @@ export default function StepOnboarding1({
 
                   <div className="space-y-2">
                     <Label htmlFor="preferredWorkoutTime">
-                      Hora de Entrenamiento Preferida
+                      Preferred Workout Time
                     </Label>
                     <Select
                       value={formData.preferredWorkoutTime}
@@ -642,11 +623,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        {/* <SelectValue placeholder="Select your preferred time" /> */}
-                        <div className="flex flex-row items-center gap-4">
-                          <Clock01Icon size={18} />
-                          <SelectValue placeholder="Seleccione su hora preferida" />
-                        </div>
+                        <SelectValue placeholder="Select your preferred time" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="early-morning">
@@ -669,7 +646,7 @@ export default function StepOnboarding1({
 
                   <div className="space-y-2">
                     <Label htmlFor="dietaryPreference">
-                      Preferencia Dietética
+                      Dietary Preference
                     </Label>
                     <Select
                       value={formData.dietaryPreference}
@@ -678,11 +655,7 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        {/* <SelectValue placeholder="Select your dietary preference" /> */}
-                        <div className="flex flex-row items-center gap-4">
-                          <SteakIcon size={18} />
-                          <SelectValue placeholder="Seleccione su preferencia dietética" />
-                        </div>
+                        <SelectValue placeholder="Select your dietary preference" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="no-preference">
@@ -710,25 +683,18 @@ export default function StepOnboarding1({
               onClick={handlePrevious}
               disabled={currentStep === 0}
             >
-              Anterior
+              Previous
             </Button>
 
             {currentStep < 3 ? (
-              <Button onClick={handleNext}>Siguiente</Button>
+              <Button onClick={handleNext}>Next</Button>
             ) : (
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-foreground text-white dark:bg-white dark:text-black border"
+                className="bg-green-600 hover:bg-green-700"
               >
-                {isSubmitting ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Guardando...
-                  </>
-                ) : (
-                  "Guardar"
-                )}
+                {isSubmitting ? "Submitting..." : "Submit"}
               </Button>
             )}
           </div>

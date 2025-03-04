@@ -16,47 +16,77 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { useSearchParams } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const error = searchParams.get("error");
 
-  const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setErrorMessage("");
+    setError("");
 
     const formData = new FormData(e.currentTarget);
     const name = formData.get("name") as string;
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
-    const repeatPassword = formData.get("repeatPassword") as string;
+    const confirmPassword = formData.get("repeatPassword") as string;
 
-    if (password !== repeatPassword) {
-      setErrorMessage("Las contraseñas no coinciden.");
+    // Validaciones
+    if (password !== confirmPassword) {
+      setError("Las contraseñas no coinciden");
       setLoading(false);
       return;
     }
 
-    const res = await signIn("credentials", {
-      redirect: false,
-      name,
-      email,
-      password,
-    });
-
-    if (res?.error) {
-      setErrorMessage("Correo o contraseña incorrectos.");
+    if (password.length < 8) {
+      setError("La contraseña debe tener al menos 8 caracteres");
       setLoading(false);
-    } else {
-      router.push("/onboarding"); // Redirige al perfil después del login
+      return;
+    }
+
+    try {
+      // Registrar usuario
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Error al registrar usuario");
+      }
+
+      // Iniciar sesión automáticamente
+      const result = await signIn("credentials", {
+        redirect: false,
+        email,
+        password,
+      });
+
+      if (result?.error) {
+        setError(result.error);
+      } else {
+        // Redireccionar a onboarding o dashboard
+        router.push("/onboarding");
+        router.refresh();
+      }
+    } catch (error: any) {
+      setError(error.message || "Ocurrió un error durante el registro");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -75,7 +105,7 @@ export default function SignUpPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <form onSubmit={handleLogin} className="space-y-4 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 gap-4">
               <div className="flex flex-col gap-2">
                 <Label htmlFor="name">Nombre</Label>
                 <Input id="name" name="name" type="text" required />
@@ -112,10 +142,8 @@ export default function SignUpPage() {
                   Error al Registrarse Intenta de nuevo.
                 </p>
               )}
-              {errorMessage && (
-                <p className="text-[#E52020] text-xs text-center">
-                  {errorMessage}
-                </p>
+              {error && (
+                <p className="text-[#E52020] text-xs text-center">{error}</p>
               )}
             </form>
             <div className="border-t pt-4">
@@ -124,7 +152,7 @@ export default function SignUpPage() {
                 className="w-full"
                 onClick={async () => {
                   setLoadingGoogle(true);
-                  await signIn("google", { callbackUrl: "/" });
+                  await signIn("google", { callbackUrl: "/onboarding" });
                   setLoadingGoogle(false);
                 }}
                 disabled={loadingGoogle}
