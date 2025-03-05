@@ -77,7 +77,7 @@ export function ExerciseProgressChart() {
           <Legend
             wrapperStyle={{
               fontSize: 12,
-              color: isDark ? "#e5e7eb" : "#1f2937",
+              color: isDark ? "#e5e7eb" : "#1f2000937",
             }}
           />
           <Line

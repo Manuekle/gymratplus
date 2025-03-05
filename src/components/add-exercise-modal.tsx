@@ -20,7 +20,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Dumbbell, Hash, Weight, Clock, Zap } from "lucide-react";
+import {
+  Clock01Icon,
+  Dumbbell03Icon,
+  GridIcon,
+  WeightScaleIcon,
+  ZapIcon,
+} from "hugeicons-react";
 
 type AddExerciseModalProps = {
   isOpen: boolean;
@@ -84,7 +90,7 @@ export function AddExerciseModal({
                 Nombre
               </Label>
               <div className="col-span-3 relative">
-                <Dumbbell className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Dumbbell03Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Input
                   id="name"
                   value={name}
@@ -100,7 +106,7 @@ export function AddExerciseModal({
                 Series
               </Label>
               <div className="col-span-3 relative">
-                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <GridIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Input
                   id="sets"
                   type="number"
@@ -117,7 +123,7 @@ export function AddExerciseModal({
                 Repeticiones
               </Label>
               <div className="col-span-3 relative">
-                <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <GridIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Input
                   id="reps"
                   type="number"
@@ -134,7 +140,7 @@ export function AddExerciseModal({
                 Peso (kg)
               </Label>
               <div className="col-span-3 relative">
-                <Weight className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <WeightScaleIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Input
                   id="weight"
                   type="number"
@@ -150,7 +156,7 @@ export function AddExerciseModal({
                 Duración (min)
               </Label>
               <div className="col-span-3 relative">
-                <Clock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <Clock01Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Input
                   id="duration"
                   type="number"
@@ -166,7 +172,7 @@ export function AddExerciseModal({
                 Intensidad
               </Label>
               <div className="col-span-3 relative">
-                <Zap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <ZapIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-foreground" />
                 <Select
                   onValueChange={(value: "Baja" | "Media" | "Alta") =>
                     setIntensity(value)

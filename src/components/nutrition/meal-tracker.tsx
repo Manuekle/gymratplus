@@ -3,12 +3,7 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import {
-  Calendar as CalendarIcon,
-  ChevronLeft,
-  ChevronRight,
-  PlusCircle,
-} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -29,6 +24,12 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AddMealForm } from "@/components/nutrition/add-meal-form";
 import { FoodSearch } from "@/components/nutrition/food-search";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Calendar01Icon,
+  PlusSignCircleIcon,
+} from "hugeicons-react";
 
 // Datos de ejemplo
 const userGoals = {
@@ -183,7 +184,7 @@ export function MealTracker() {
               size="icon"
               onClick={() => changeDate(-1)}
             >
-              <ChevronLeft className="h-4 w-4" />
+              <ArrowLeft01Icon className="h-4 w-4 text-foreground" />
             </Button>
             <Popover>
               <PopoverTrigger asChild>
@@ -191,7 +192,7 @@ export function MealTracker() {
                   variant="outline"
                   className="w-[200px] pl-3 text-left font-normal"
                 >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  <Calendar01Icon className="mr-2 h-4 w-4 text-foreground" />
                   {format(date, "PPP", { locale: es })}
                 </Button>
               </PopoverTrigger>
@@ -215,7 +216,7 @@ export function MealTracker() {
                 format(date, "yyyy-MM-dd") === format(new Date(), "yyyy-MM-dd")
               }
             >
-              <ChevronRight className="h-4 w-4" />
+              <ArrowRight01Icon className="h-4 w-4 text-foreground" />
             </Button>
           </div>
         </CardHeader>
@@ -339,7 +340,7 @@ export function MealTracker() {
                               setIsAddMealOpen(true);
                             }}
                           >
-                            <PlusCircle className="mr-2 h-4 w-4" />
+                            <PlusSignCircleIcon className="mr-2 h-4 w-4 text-foreground" />
                             Añadir {type.label.toLowerCase()}
                           </Button>
                         </DialogTrigger>

@@ -4,7 +4,6 @@ import { CustomSonner } from "@/components/custom-sonner";
 import Recommendations from "@/components/recommendations";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 import { ArrowLeft01Icon } from "hugeicons-react";
 
 export default function RecommendationsPage() {

@@ -1,4 +1,9 @@
 import { Toaster as Sonner } from "sonner";
+// At the top of the file, import the Inter font
+import { Inter } from "next/font/google";
+
+// Initialize the Inter font
+const inter = Inter({ subsets: ["latin"] });
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
@@ -6,7 +11,7 @@ const CustomSonner = ({ ...props }: ToasterProps) => {
   return (
     <Sonner
       theme="light"
-      className="toaster group"
+      className={`toaster group ${inter.className}`}
       toastOptions={{
         classNames: {
           toast:

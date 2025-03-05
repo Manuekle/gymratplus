@@ -12,36 +12,141 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Dumbbell, Utensils, Save } from "lucide-react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
-import { useRouter } from "next/navigation";
-import {
-  Dumbbell01Icon,
-  FloppyDiskIcon,
-  KitchenUtensilsIcon,
-} from "hugeicons-react";
+import { Icons } from "@/components/icons";
 
-export default function Recommendations() {
-  const [recommendations, setRecommendations] = useState<any>(null);
-  console.log(recommendations);
-  const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("workout");
+import { useRouter } from "next/navigation";
+import { Download05Icon, FloppyDiskIcon } from "hugeicons-react";
+import { WorkoutPlan } from "./workouts/workout-plan";
+import { MealPlan } from "./nutrition/meal-plan";
+
+export type Recommendations = {
+  workoutPlan: {
+    id: string;
+    name: string;
+    description: string;
+    days: Array<{
+      day: string;
+      exercises: Array<{
+        id: string;
+        name: string;
+        sets: number;
+        reps: number;
+        restTime: number;
+        notes?: string;
+      }>;
+    }>;
+  };
+  nutritionPlan: {
+    macros: {
+      protein: string;
+      carbs: string;
+      fat: string;
+      description: string;
+    };
+    meals: {
+      breakfast: {
+        id: string;
+        mealType: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        entries: Array<{
+          id: string;
+          foodId: string;
+          quantity: number;
+          food: {
+            id: string;
+            name: string;
+            calories: number;
+            protein: number;
+            carbs: number;
+            fat: number;
+            serving: number;
+            category: string;
+          };
+        }>;
+      };
+      lunch: {
+        id: string;
+        mealType: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        entries: Array<{
+          id: string;
+          foodId: string;
+          quantity: number;
+          food: {
+            id: string;
+            name: string;
+            calories: number;
+            protein: number;
+            carbs: number;
+            fat: number;
+            serving: number;
+            category: string;
+          };
+        }>;
+      };
+      dinner: {
+        id: string;
+        mealType: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        entries: Array<{
+          id: string;
+          foodId: string;
+          quantity: number;
+          food: {
+            id: string;
+            name: string;
+            calories: number;
+            protein: number;
+            carbs: number;
+            fat: number;
+            serving: number;
+            category: string;
+          };
+        }>;
+      };
+      snacks: {
+        id: string;
+        mealType: string;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        entries: Array<{
+          id: string;
+          foodId: string;
+          quantity: number;
+          food: {
+            id: string;
+            name: string;
+            calories: number;
+            protein: number;
+            carbs: number;
+            fat: number;
+            serving: number;
+            category: string;
+          };
+        }>;
+      };
+    };
+  };
+};
+
+export default function RecommendationsComponent() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [recommendations, setRecommendations] =
+    useState<Recommendations | null>(null);
+
   const [error, setError] = useState<string | null>(null);
-  const [profile, setProfile] = useState<any>(null);
+  // const [profile, setProfile] = useState<any>(null);
   const [saving, setSaving] = useState(false);
   const router = useRouter();
 
@@ -53,7 +158,7 @@ export default function Recommendations() {
 
         if (response.ok) {
           const profileData = await response.json();
-          setProfile(profileData);
+          // setProfile(profileData);
           return profileData;
         } else {
           // Si no hay perfil en la API, intentamos obtenerlo del localStorage
@@ -75,7 +180,7 @@ export default function Recommendations() {
     const fetchRecommendations = async (profileData) => {
       if (!profileData) return;
 
-      setLoading(true);
+      setIsLoading(true);
       try {
         const response = await fetch("/api/recommendations", {
           method: "POST",
@@ -102,7 +207,7 @@ export default function Recommendations() {
           description: "Please try again later",
         });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
@@ -167,9 +272,9 @@ export default function Recommendations() {
         </CardDescription>
       </CardHeader>
       <CardContent className="p-6">
-        {loading ? (
+        {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
-            <Loader2 className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+            <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
             <p className="text-muted-foreground text-sm">
               Generando tus recomendaciones personalizadas...
             </p>
@@ -187,7 +292,7 @@ export default function Recommendations() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <Tabs
+            {/* <Tabs
               defaultValue="workout"
               value={activeTab}
               onValueChange={setActiveTab}
@@ -672,6 +777,27 @@ export default function Recommendations() {
                   </Accordion>
                 </div>
               </TabsContent>
+            </Tabs> */}
+            <Tabs defaultValue="workout" className="w-full">
+              <TabsList className="grid w-full grid-cols-2 mb-8">
+                <TabsTrigger value="workout">Plan de Entrenamiento</TabsTrigger>
+                <TabsTrigger value="nutrition">Plan Nutricional</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="workout" className="mt-0">
+                <WorkoutPlan
+                  workoutPlan={recommendations.workoutPlan}
+                  isLoading={isLoading}
+                  defaultOpen={["Día 1-0"]}
+                />
+              </TabsContent>
+
+              <TabsContent value="nutrition" className="mt-0">
+                <MealPlan
+                  nutritionPlan={recommendations.nutritionPlan}
+                  isLoading={isLoading}
+                />
+              </TabsContent>
             </Tabs>
             <div className="flex justify-end mt-6">
               <Button
@@ -680,11 +806,9 @@ export default function Recommendations() {
                 className="flex items-center gap-2"
               >
                 {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <FloppyDiskIcon size={18} />
-                )}
-                {saving ? "Guardando..." : "Guardar"}
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                {saving ? "Guardando" : "Guardar"}
               </Button>
             </div>
           </motion.div>

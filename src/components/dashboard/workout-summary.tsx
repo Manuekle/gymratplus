@@ -1,4 +1,4 @@
-import { ArrowRight, Clock } from "lucide-react";
+import { ArrowRight01Icon, Clock01Icon } from "hugeicons-react";
 import { Button } from "../ui/button";
 
 export default function WorkoutSummary() {
@@ -39,7 +39,7 @@ export default function WorkoutSummary() {
           <h2 className="text-lg font-bold">Resumen de Entrenamientos</h2>
         </div>
         <button className="text-xs text-gray-500 flex items-center gap-1">
-          Ver todos <ArrowRight className="h-4 w-4" />
+          Ver todos <ArrowRight01Icon className="h-4 w-4 text-foreground" />
         </button>
       </div>
 
@@ -81,7 +81,7 @@ export default function WorkoutSummary() {
             </div>
             <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
               <div className="flex items-center">
-                <Clock className="h-3 w-3 mr-1" />
+                <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
                 <span>{workout.duration}</span>
               </div>
               <div>

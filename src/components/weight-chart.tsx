@@ -81,7 +81,7 @@ export function WeightChart() {
             dataKey="weight"
             stroke={isDark ? "#eee" : "#000"}
             strokeWidth={2}
-            dot={{ fill: isDark ? "#eee" : "#000", r: 4 }}
+            dot={{ fill: isDark ? "#000" : "#eee", r: 4 }}
             activeDot={{ r: 6 }}
           />
         </LineChart>

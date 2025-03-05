@@ -4,7 +4,6 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -30,6 +29,20 @@ import { Calendar } from "@/components/ui/calendar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { Icons } from "@/components/icons";
+import {
+  Activity03Icon,
+  BirthdayCakeIcon,
+  BodyPartMuscleIcon,
+  BodyWeightIcon,
+  Clock01Icon,
+  PercentSquareIcon,
+  RulerIcon,
+  SteakIcon,
+  Target02Icon,
+  WeightScaleIcon,
+  WorkoutGymnasticsIcon,
+} from "hugeicons-react";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
   (i + 140).toString()
@@ -87,7 +100,10 @@ export default function StepOnboarding1({
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ProfileFormData>(() => {
-    const savedData = localStorage.getItem("profileFormData");
+    const savedData =
+      typeof window !== "undefined"
+        ? localStorage.getItem("profileFormData")
+        : null;
     if (savedData) {
       try {
         const parsed = JSON.parse(savedData);
@@ -105,6 +121,8 @@ export default function StepOnboarding1({
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const updateFormData = (updates: Partial<ProfileFormData>) => {
     // Asegurarse de que si updates contiene birthdate, sea un objeto Date válido
@@ -320,7 +338,44 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your gender" />
+                        <div className="flex flex-row items-center gap-4 text-black dark:text-white">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 24 24"
+                            width={18}
+                            height={18}
+                            className="text-current"
+                            fill="none"
+                          >
+                            <path
+                              d="M19.4995 20V16.5C20.5856 16.5 21.1991 16.5 21.4186 16.0257C21.6381 15.5515 21.3953 14.9028 20.9095 13.6056L19.6676 10.2889C19.2571 9.19253 18.4179 8.5 17.5 8.5C16.5821 8.5 15.7429 9.19253 15.3324 10.2889L14.0905 13.6056C13.6047 14.9028 13.3619 15.5515 13.5814 16.0257C13.8009 16.5 14.4133 16.5 15.4995 16.5V20C15.4995 20.9428 15.4995 21.4142 15.7924 21.7071C16.0853 22 16.5567 22 17.4995 22C18.4423 22 18.9137 22 19.2066 21.7071C19.4995 21.4142 19.4995 20.9428 19.4995 20Z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M8.5 4C8.5 5.10457 7.60457 6 6.5 6C5.39543 6 4.5 5.10457 4.5 4C4.5 2.89543 5.39543 2 6.5 2C7.60457 2 8.5 2.89543 8.5 4Z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M19.5 4C19.5 5.10457 18.6046 6 17.5 6C16.3954 6 15.5 5.10457 15.5 4C15.5 2.89543 16.3954 2 17.5 2C18.6046 2 19.5 2.89543 19.5 4Z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                            <path
+                              d="M10.5 12.5C10.5 10.6144 10.5 9.67157 9.91421 9.08579C9.32843 8.5 8.38562 8.5 6.5 8.5C4.61438 8.5 3.67157 8.5 3.08579 9.08579C2.5 9.67157 2.5 10.6144 2.5 12.5V14.5C2.5 15.4428 2.5 15.9142 2.79289 16.2071C3.08579 16.5 3.55719 16.5 4.5 16.5V20C4.5 20.9428 4.5 21.4142 4.79289 21.7071C5.08579 22 5.55719 22 6.5 22C7.44281 22 7.91421 22 8.20711 21.7071C8.5 21.4142 8.5 20.9428 8.5 20V16.5C9.44281 16.5 9.91421 16.5 10.2071 16.2071C10.5 15.9142 10.5 15.4428 10.5 14.5V12.5Z"
+                              stroke="currentColor"
+                              strokeWidth="1.5"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                          <SelectValue placeholder="Seleccione su género" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="male">Male</SelectItem>
@@ -341,7 +396,7 @@ export default function StepOnboarding1({
                             !formData.birthdate && "text-muted-foreground"
                           )}
                         >
-                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          <BirthdayCakeIcon className="mr-2 h-4 w-4" />
                           {formData.birthdate ? (
                             format(formData.birthdate, "PPP")
                           ) : (
@@ -375,7 +430,10 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your height" />
+                        <div className="flex flex-row items-center gap-4">
+                          <RulerIcon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su altura" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         {heightOptions.map((height) => (
@@ -396,7 +454,13 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your current weight" />
+                        <div className="flex flex-row items-center gap-4">
+                          <WeightScaleIcon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su peso actual" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         {weightOptions.map((weight) => (
@@ -417,7 +481,13 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your target weight" />
+                        <div className="flex flex-row items-center gap-4">
+                          <BodyWeightIcon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su peso objetivo" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         {weightOptions.map((weight) => (
@@ -442,7 +512,13 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your activity level" />
+                        <div className="flex flex-row items-center gap-4">
+                          <Activity03Icon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su nivel de actividad" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="sedentary">
@@ -475,7 +551,13 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your body fat percentage" />
+                        <div className="flex flex-row items-center gap-4">
+                          <PercentSquareIcon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su porcentaje de grasa corporal" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
@@ -528,7 +610,13 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your muscle mass" />
+                        <div className="flex flex-row items-center gap-4">
+                          <BodyPartMuscleIcon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su masa muscular" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
@@ -569,7 +657,10 @@ export default function StepOnboarding1({
                       onValueChange={(value) => updateFormData({ goal: value })}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your goal" />
+                        <div className="flex flex-row items-center gap-4">
+                          <Target02Icon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su objetivo" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="lose-weight">Lose weight</SelectItem>
@@ -594,7 +685,14 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your daily activity" />
+                        {/* <SelectValue placeholder="Select your daily activity" /> */}
+                        <div className="flex flex-row items-center gap-4">
+                          <WorkoutGymnasticsIcon
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su actividad diaria" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="office-work">
@@ -621,19 +719,17 @@ export default function StepOnboarding1({
                     <ToggleGroup
                       type="multiple"
                       variant="outline"
-                      value={Array.from(
-                        { length: formData.trainingFrequency },
-                        (_, i) => i.toString()
-                      )}
-                      onValueChange={(value) =>
-                        updateFormData({ trainingFrequency: value.length })
-                      }
+                      value={selectedDays}
+                      onValueChange={(value) => {
+                        setSelectedDays(value);
+                        updateFormData({ trainingFrequency: value.length });
+                      }}
                       className="justify-start"
                     >
-                      {daysOfWeek.map((day, index) => (
+                      {daysOfWeek.map((day) => (
                         <ToggleGroupItem
                           key={day.id}
-                          value={index.toString()}
+                          value={day.id}
                           aria-label={day.label}
                           className="w-10 h-10"
                         >
@@ -654,7 +750,10 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your preferred time" />
+                        <div className="flex flex-row items-center gap-4">
+                          <Clock01Icon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su hora preferida" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="early-morning">
@@ -686,7 +785,10 @@ export default function StepOnboarding1({
                       }
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your dietary preference" />
+                        <div className="flex flex-row items-center gap-4">
+                          <SteakIcon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su preferencia dietética" />
+                        </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="no-preference">
@@ -714,18 +816,25 @@ export default function StepOnboarding1({
               onClick={handlePrevious}
               disabled={currentStep === 0}
             >
-              Previous
+              Anterior
             </Button>
 
             {currentStep < 3 ? (
-              <Button onClick={handleNext}>Next</Button>
+              <Button onClick={handleNext}>Siguiente</Button>
             ) : (
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="bg-green-600 hover:bg-green-700"
+                className="bg-foreground text-white dark:bg-white dark:text-black border"
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando...
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </Button>
             )}
           </div>
