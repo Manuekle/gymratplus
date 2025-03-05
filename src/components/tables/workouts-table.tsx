@@ -52,7 +52,7 @@ export default function WorkoutsTable() {
   const handleViewDetails = (workout: Workout) => {
     console.log(`Ver detalles de ${workout.name}`);
     router.push(`/dashboard/workout/${workout.id}`);
-    alert(`Navegando a los detalles de la tienda: ${workout.name}`);
+    // alert(`Navegando a los detalles de la tienda: ${workout.name}`);
   };
 
   // const handleEdit = (workout: Workout) => {
@@ -62,7 +62,7 @@ export default function WorkoutsTable() {
 
   const handleDelete = (workout: Workout) => {
     console.log(`Eliminar ${workout.name}`);
-    alert(`¿Estás seguro de que deseas eliminar la tienda: ${workout.name}?`);
+    // alert(`¿Estás seguro de que deseas eliminar la tienda: ${workout.name}?`);
   };
 
   const columns = [

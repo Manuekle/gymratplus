@@ -51,14 +51,14 @@ export default function WorkoutModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="mb-8">
         <Button onClick={() => setOpen(true)} variant="outline">
-          Nuevo ejercicio
+          Crear rutina
         </Button>
       </DialogTrigger>
       <DialogContent className="space-y-0 w-full">
         <DialogHeader>
           <DialogTitle>Crear nueva rutina</DialogTitle>
           <DialogDescription className="text-xs text-zinc-500">
-            Ingresa los datos del ejercicio que deseas agregar
+            Dale un nombre de acuerdo a tu rutina
           </DialogDescription>
         </DialogHeader>
         <Input

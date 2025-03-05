@@ -7,9 +7,9 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  if (!params || !params.id) {
-    return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
-  }
+  // if (!params || !params.id) {
+  //   return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
+  // }
 
   const session = await getServerSession(authOptions);
   if (!session) {

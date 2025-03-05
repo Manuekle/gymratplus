@@ -41,10 +41,10 @@ export default function WorkoutExercise({
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [exerciseData, setExerciseData] = useState({
-    sets: 0,
-    reps: 0,
-    weight: 0,
-    restTime: 0,
+    sets: "",
+    reps: "",
+    weight: "",
+    restTime: "",
     notes: "",
   });
 
@@ -74,10 +74,10 @@ export default function WorkoutExercise({
     if (res.ok) {
       router.refresh();
       setExerciseData({
-        sets: 0,
-        reps: 0,
-        weight: 0,
-        restTime: 0,
+        sets: "",
+        reps: "",
+        weight: "",
+        restTime: "",
         notes: "",
       });
       onClose();
@@ -219,7 +219,7 @@ export default function WorkoutExercise({
           </div>
           <DialogFooter>
             <Button size="sm" className="text-xs" type="submit">
-              Agregar ejercicio
+              Guardar
             </Button>
           </DialogFooter>
         </form>

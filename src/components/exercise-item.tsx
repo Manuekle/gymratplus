@@ -1,18 +1,28 @@
 "use client";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Delete02Icon, DragDropHorizontalIcon } from "hugeicons-react";
+import {
+  Delete02Icon,
+  DragDropHorizontalIcon,
+  EyeIcon,
+  MoreVerticalCircle01Icon,
+  MoreVerticalIcon,
+  WasteIcon,
+} from "hugeicons-react";
 
-const categoryColors = {
-  Strength: "text-red-500",
-  Hypertrophy: "text-purple-500",
-  Endurance: "text-yellow-500",
-};
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuItem,
+  DropdownMenuContent,
+} from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 interface Exercise {
   id: string;
   name: string;
-  category: keyof typeof categoryColors;
+  weight: string;
   sets: number;
   reps: number;
 }
@@ -20,6 +30,8 @@ interface Exercise {
 export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: exercise.id });
+
+  const router = useRouter();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -33,7 +45,7 @@ export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
         size={24}
         {...attributes}
         {...listeners}
-        className="cursor-grab border-none"
+        className="cursor-grab text-muted-foreground"
       />
 
       {/* Info del ejercicio */}
@@ -41,24 +53,28 @@ export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
         <div className="flex-grow bg-background">
           <h2 className="font-medium text-sm">{exercise.exercise.name}</h2>
           <span className="text-xs text-muted-foreground">
-            <strong
-              className={`text-xs font-medium ${
-                categoryColors[exercise.category]
-              }`}
-            >
-              {exercise.category}
-            </strong>{" "}
-            {exercise.sets} x {exercise.reps} reps
+            {exercise.weight || 0}kg - {exercise.sets || 0} x {exercise.reps}{" "}
+            reps
           </span>
-          {/* <p className="text-muted-foreground text-xs">
-            {exercise.sets} x {exercise.reps} reps
-          </p> */}
         </div>
-
-        {/* Categoría con colores */}
-        <button>
-          <Delete02Icon size={16} />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Abrir menú</span>
+              <MoreVerticalIcon className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem className="text-muted-foreground">
+              <EyeIcon className="mr-2 h-4 w-4" />
+              Ver detalles
+            </DropdownMenuItem>
+            <DropdownMenuItem className="text-muted-foreground">
+              <Delete02Icon className="mr-2 h-4 w-4" />
+              Eliminar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

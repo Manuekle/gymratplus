@@ -20,6 +20,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 
 interface Workout {
   id: string;
@@ -76,8 +77,7 @@ export default function WorkoutDetail() {
     }
   };
 
-  if (!session) return <p>Debes iniciar sesión.</p>;
-  if (!workout) return <p>Cargando...</p>;
+  if (!workout) return <WorkoutSkeleton />;
 
   return (
     <div>
@@ -98,7 +98,7 @@ export default function WorkoutDetail() {
           </div>
 
           <Button
-            className="text-xs md:text-sm px-4 md:px-6"
+            className="text-xs px-4 md:px-6"
             size="sm"
             onClick={() => setIsModalOpen(true)}
           >
