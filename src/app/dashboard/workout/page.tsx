@@ -16,10 +16,43 @@ import {
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
-import { Calendar02Icon, Dumbbell01Icon } from "hugeicons-react";
 import WorkoutCreator from "@/components/workouts/workout-creator";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
+interface UserProfile {
+  id: string;
+  activity: {
+    level: string;
+    daily: string;
+    trainingFrequency: number;
+  };
+}
 
 export default function WorkoutPage() {
+  const { data: session } = useSession();
+
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const profile = (session.user as any)?.profile;
+
+    if (!profile) return;
+
+    setUser({
+      id: profile.id,
+      activity: {
+        level: profile.activityLevel,
+        daily: profile.dailyActivity,
+        trainingFrequency: Number(profile.trainingFrequency),
+      },
+    });
+  }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
+
+  console.log(user);
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
@@ -33,7 +66,7 @@ export default function WorkoutPage() {
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Rutina actual</label>
-              <Select defaultValue="hypertrophy">
+              <Select disabled defaultValue="custom">
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu rutina" />
                 </SelectTrigger>
@@ -50,10 +83,12 @@ export default function WorkoutPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm">
-                  <Calendar02Icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                  {/* <Calendar02Icon className="mr-2 h-4 w-4 text-muted-foreground" /> */}
                   <span>Días de entrenamiento por semana</span>
                 </div>
-                <span className="font-medium">5</span>
+                <span className="font-medium">
+                  {user?.activity.trainingFrequency}
+                </span>
               </div>
               <Progress value={5 * 14.28} className="h-2" />
               <div className="grid grid-cols-7 gap-2 text-xs text-center pt-2">
@@ -69,7 +104,7 @@ export default function WorkoutPage() {
 
             <div className="space-y-2 pt-2">
               <div className="flex items-center text-sm">
-                <Dumbbell01Icon className="mr-2 h-4 w-4 text-muted-foreground" />
+                {/* <Dumbbell01Icon className="mr-2 h-4 w-4 text-muted-foreground" /> */}
                 <span className="text-sm font-medium">
                   Ejercicios principales
                 </span>

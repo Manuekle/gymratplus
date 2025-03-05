@@ -97,8 +97,6 @@ export default function HealthPage() {
     user?.activity?.level || ""
   );
 
-  console.log(user);
-
   // Calculate BMI
   const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
   const weight = user?.weight.current;
