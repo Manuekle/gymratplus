@@ -25,49 +25,84 @@ import {
   RulerIcon,
   WeightScaleIcon,
 } from "hugeicons-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { WeightChart } from "@/components/weight-chart";
 import { useSession } from "next-auth/react";
 
-export default function HealthPage() {
-  const [goal, setGoal] = useState("maintain");
-  const [activityLevel, setActivityLevel] = useState("moderate");
+interface UserProfile {
+  id: string;
+  gender: string;
+  height: number;
+  weight: {
+    current: number;
+    target: number;
+  };
+  activity: {
+    level: string;
+    daily: string;
+    trainingFrequency: number;
+  };
+  nutrition: {
+    calorieTarget: number;
+    proteinTarget: number;
+    carbTarget: number;
+    fatTarget: number;
+  };
+  waterIntake: number;
+  goal: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
+export default function HealthPage() {
   const { data: session } = useSession();
 
-  const user = [
-    {
-      id: session?.user?.profile?.id,
-      gender: session?.user?.profile?.gender,
-      height: session?.user?.profile?.height,
+  const [user, setUser] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (!session?.user) return;
+
+    const profile = (session.user as any)?.profile;
+
+    if (!profile) return;
+
+    setUser({
+      id: profile.id,
+      gender: profile.gender,
+      height: Number(profile.height),
       weight: {
-        current: session?.user?.profile?.currentWeight,
-        target: session?.user?.profile?.targetWeight,
+        current: Number(profile.currentWeight),
+        target: Number(profile.targetWeight),
       },
       activity: {
-        level: session?.user?.profile?.activityLevel,
-        daily: session?.user?.profile?.dailyActivity,
-        trainingFrequency: session?.user?.profile?.trainingFrequency,
+        level: profile.activityLevel,
+        daily: profile.dailyActivity,
+        trainingFrequency: Number(profile.trainingFrequency),
       },
       nutrition: {
-        calorieTarget: session?.user?.profile?.dailyCalorieTarget,
-        proteinTarget: session?.user?.profile?.dailyProteinTarget,
-        carbTarget: session?.user?.profile?.dailyCarbTarget,
-        fatTarget: session?.user?.profile?.dailyFatTarget,
+        calorieTarget: Number(profile.dailyCalorieTarget),
+        proteinTarget: Number(profile.dailyProteinTarget),
+        carbTarget: Number(profile.dailyCarbTarget),
+        fatTarget: Number(profile.dailyFatTarget),
       },
-      waterIntake: session?.user?.profile?.waterIntake,
-      goal: session?.user?.profile?.goal,
-      createdAt: session?.user?.profile?.createdAt,
-      updatedAt: session?.user?.profile?.updatedAt,
-    },
-  ];
+      waterIntake: Number(profile.waterIntake),
+      goal: profile.goal,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    });
+  }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
 
-  console.log(user[0]);
+  const [goal, setGoal] = useState(user?.goal);
+  const [activityLevel, setActivityLevel] = useState(
+    user?.activity?.level || ""
+  );
+
+  console.log(user);
 
   // Calculate BMI
-  const heightInMeters = user[0].height / 100; // Convertir cm a metros
-  const weight = user[0].weight.current;
-  const bmi = weight / heightInMeters ** 2;
+  const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
+  const weight = user?.weight.current;
+  const bmi = weight && heightInMeters ? weight / heightInMeters ** 2 : 0;
   console.log(bmi);
   const bodyFat = 18;
 
@@ -93,7 +128,7 @@ export default function HealthPage() {
                   Peso Actual
                 </div>
                 <div className="text-2xl font-bold">
-                  {user[0].weight.current} kg
+                  {user?.weight.current} kg
                 </div>
               </div>
 
@@ -102,7 +137,7 @@ export default function HealthPage() {
                   <RulerIcon className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
-                <div className="text-2xl font-bold">{user[0].height} cm</div>
+                <div className="text-2xl font-bold">{user?.height} cm</div>
               </div>
             </div>
 
@@ -145,12 +180,12 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Objetivo</label>
-              <Select value={goal} onValueChange={setGoal}>
+              <Select disabled value={user?.goal} onValueChange={setGoal}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu objetivo" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="lose">
+                  <SelectItem value="lose-weight">
                     <div className="flex items-center">
                       <ArrowDown01Icon className="mr-2 h-4 w-4 text-red-500" />
                       Bajar de peso
@@ -162,7 +197,7 @@ export default function HealthPage() {
                       Mantener peso
                     </div>
                   </SelectItem>
-                  <SelectItem value="gain">
+                  <SelectItem value="gain-muscle">
                     <div className="flex items-center">
                       <ArrowUp01Icon className="mr-2 h-4 w-4 text-green-500" />
                       Aumentar peso
@@ -176,7 +211,11 @@ export default function HealthPage() {
               <label className="text-sm font-medium">
                 Nivel de actividad física
               </label>
-              <Select value={activityLevel} onValueChange={setActivityLevel}>
+              <Select
+                value={user?.activity?.level}
+                disabled
+                onValueChange={setActivityLevel}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu nivel de actividad" />
                 </SelectTrigger>

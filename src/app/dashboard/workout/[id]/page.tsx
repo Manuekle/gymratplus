@@ -89,16 +89,16 @@ export default function WorkoutDetail() {
         <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
       </Button>
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <div>
-            <CardTitle>{workout.name}</CardTitle>
-            <CardDescription className="text-xs">
+        <CardHeader className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 md:gap-4">
+          <div className="w-full md:w-auto">
+            <CardTitle className="text-lg md:text-xl">{workout.name}</CardTitle>
+            <CardDescription className="text-xs md:text-sm">
               {workout.description}
             </CardDescription>
           </div>
-          {/* <WorkoutExercise workoutId={workout.id} /> */}
+
           <Button
-            className="text-xs px-6"
+            className="text-xs md:text-sm px-4 md:px-6"
             size="sm"
             onClick={() => setIsModalOpen(true)}
           >
