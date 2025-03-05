@@ -27,16 +27,53 @@ import {
 } from "hugeicons-react";
 import { useState } from "react";
 import { WeightChart } from "@/components/weight-chart";
+import { useSession } from "next-auth/react";
 
 export default function HealthPage() {
   const [goal, setGoal] = useState("maintain");
   const [activityLevel, setActivityLevel] = useState("moderate");
 
+  const { data: session } = useSession();
+
+  const user = [
+    {
+      id: session?.user?.profile?.id,
+      gender: session?.user?.profile?.gender,
+      height: session?.user?.profile?.height,
+      weight: {
+        current: session?.user?.profile?.currentWeight,
+        target: session?.user?.profile?.targetWeight,
+      },
+      activity: {
+        level: session?.user?.profile?.activityLevel,
+        daily: session?.user?.profile?.dailyActivity,
+        trainingFrequency: session?.user?.profile?.trainingFrequency,
+      },
+      nutrition: {
+        calorieTarget: session?.user?.profile?.dailyCalorieTarget,
+        proteinTarget: session?.user?.profile?.dailyProteinTarget,
+        carbTarget: session?.user?.profile?.dailyCarbTarget,
+        fatTarget: session?.user?.profile?.dailyFatTarget,
+      },
+      waterIntake: session?.user?.profile?.waterIntake,
+      goal: session?.user?.profile?.goal,
+      createdAt: session?.user?.profile?.createdAt,
+      updatedAt: session?.user?.profile?.updatedAt,
+    },
+  ];
+
+  console.log(user[0]);
+
   // Calculate BMI
-  const weight = 75; // kg
-  const height = 175; // cm
-  const bmi = weight / ((height / 100) * (height / 100));
-  const bodyFat = 18; // %
+  const heightInMeters = user[0].height / 100; // Convertir cm a metros
+  const weight = user[0].weight.current;
+  const bmi = weight / heightInMeters ** 2;
+  console.log(bmi);
+  const bodyFat = 18;
+
+  const minIMC = 15;
+  const maxIMC = 40;
+  const progressValue = ((bmi - minIMC) / (maxIMC - minIMC)) * 100;
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -55,7 +92,9 @@ export default function HealthPage() {
                   <WeightScaleIcon className="mr-1 h-4 w-4" />
                   Peso Actual
                 </div>
-                <div className="text-2xl font-bold">{weight} kg</div>
+                <div className="text-2xl font-bold">
+                  {user[0].weight.current} kg
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -63,7 +102,7 @@ export default function HealthPage() {
                   <RulerIcon className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
-                <div className="text-2xl font-bold">{height} cm</div>
+                <div className="text-2xl font-bold">{user[0].height} cm</div>
               </div>
             </div>
 
@@ -73,9 +112,9 @@ export default function HealthPage() {
                   <Activity01Icon className="mr-1 h-4 w-4" />
                   IMC (Índice de Masa Corporal)
                 </div>
-                <span className="text-sm font-medium">{bmi.toFixed(1)}</span>
+                <span className="text-sm font-medium">{bmi.toFixed(0)}</span>
               </div>
-              <Progress value={bmi * 4} className="h-2" />
+              <Progress value={progressValue} className="h-2" />
               <div className="flex justify-between text-xs text-muted-foreground">
                 <span>Bajo peso</span>
                 <span>Normal</span>

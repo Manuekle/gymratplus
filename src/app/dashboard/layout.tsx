@@ -1,7 +1,5 @@
 "use client";
 
-import type React from "react";
-
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -13,6 +11,9 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+
+  // const { data: session, status } = useSession();
+  // console.log(session);
 
   return (
     <div className="min-h-screen bg-background">

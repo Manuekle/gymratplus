@@ -126,12 +126,31 @@ export const authOptions = {
           ex: 60 * 60 * 24 * 7, // Expira en 7 días
         });
 
-        // Opcionalmente, enriquecer la sesión con datos de Redis
+        // Obtener datos básicos desde Redis
         const userData = await redis.hgetall(`user:${token.id}:data`);
+
         if (userData) {
-          // Puedes añadir campos personalizados a la sesión si los necesitas
-          // Por ejemplo: session.user.permissions = userData.permissions;
+          session.user.name = userData.name;
+          session.user.email = userData.email;
+          session.user.image = userData.image;
         }
+
+        // Obtener el perfil del usuario desde Redis o la BD
+        let profile = await redis.get(`profile:${token.id}`);
+
+        if (!profile) {
+          profile = await prisma.profile.findUnique({
+            where: { userId: token.id },
+          });
+
+          if (profile) {
+            await redis.set(`profile:${token.id}`, profile, {
+              ex: 60 * 60 * 24, // 24 horas
+            });
+          }
+        }
+
+        session.user.profile = profile || null;
       }
       return session;
     },
