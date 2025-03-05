@@ -20,9 +20,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import {
   Apple01Icon,
   Bread01Icon,
+  Bread04Icon,
+  FishFoodIcon,
   FrenchFries02Icon,
   NoodlesIcon,
   RiceBowl01Icon,
+  SteakIcon,
 } from "hugeicons-react";
 
 // Tipos para el plan de comidas
@@ -110,14 +113,17 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
             <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#DE3163] text-white">
+              <SteakIcon size={32} />
               <span className="text-md font-semibold">Proteínas</span>
               <span className="text-sm">{nutritionPlan.macros.protein}</span>
             </div>
             <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#578FCA] text-white">
+              <Bread04Icon size={32} />
               <span className="text-md font-semibold">Carbohidratos</span>
               <span className="text-sm">{nutritionPlan.macros.carbs}</span>
             </div>
             <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#FBA518] text-white">
+              <FishFoodIcon size={32} />
               <span className="text-md font-semibold">Grasas</span>
               <span className="text-sm">{nutritionPlan.macros.fat}</span>
             </div>

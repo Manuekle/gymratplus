@@ -11,7 +11,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = (session.user as { id: string }).id;
     const data = await req.json();
 
     // Calcular valores automáticos

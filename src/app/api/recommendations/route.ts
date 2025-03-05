@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   getOrCreateExercises,
   createFullBodyWorkout,
@@ -10,10 +12,37 @@ import { getOrCreateFoods } from "@/lib/nutrition-utils";
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+    const userId = (session.user as { id: string }).id;
 
-    // Obtener el userId del cuerpo de la solicitud o usar un valor predeterminado
-    const { userId = "cm7p5offb0000yv0wdhw829j8" } = data;
+    // Función para formatear plan de entrenamiento
+    function formatWorkoutPlan(workoutExercises) {
+      // Agrupar ejercicios por día
+      const exercisesByDay = workoutExercises.reduce((acc, ex) => {
+        const day = ex.notes.split(":")[0].trim();
+        if (!acc[day]) acc[day] = [];
+        acc[day].push(ex);
+        return acc;
+      }, {});
+
+      // Formatear cada día
+      return Object.entries(exercisesByDay).map(([day, exercises]) => {
+        return {
+          day,
+          exercises: exercises.map((ex) => ({
+            id: ex.id,
+            name: ex.name || "Ejercicio",
+            sets: ex.sets,
+            reps: ex.reps,
+            restTime: ex.restTime,
+            notes: ex.notes.split(":").slice(1).join(":").trim(),
+          })),
+        };
+      });
+    }
 
     // Buscar el perfil del usuario en la base de datos
     const profile = await prisma.profile.findUnique({
@@ -27,12 +56,91 @@ export async function POST(request: Request) {
       );
     }
 
-    // Usar los datos del perfil para generar recomendaciones
-    const workoutPlan = await generateAndSaveWorkoutPlan(profile);
-    const nutritionPlan = await generateAndSaveNutritionPlan(profile);
+    // Buscar planes existentes con estructura detallada
+    const existingWorkout = await prisma.workout.findFirst({
+      where: { userId },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
+          orderBy: { order: "asc" },
+        },
+      },
+    });
 
-    // Simular un pequeño retraso para mostrar el estado de carga
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const existingMealLogs = await prisma.mealLog.findMany({
+      where: { userId },
+      include: {
+        entries: {
+          include: {
+            food: true,
+          },
+        },
+      },
+      orderBy: { date: "asc" },
+    });
+
+    // Si ya existen, formatear según la estructura requerida
+    if (existingWorkout && existingMealLogs.length > 0) {
+      // Formatear plan de entrenamiento
+      const workoutPlan = {
+        id: existingWorkout.id,
+        name: existingWorkout.name,
+        description: existingWorkout.description,
+        days: formatWorkoutPlan(
+          existingWorkout.exercises.map((we) => ({
+            id: we.id,
+            name: we.exercise.name,
+            sets: we.sets,
+            reps: we.reps,
+            restTime: we.restTime,
+            notes: `${we.notes || "General"}`,
+          }))
+        ),
+      };
+
+      // Formatear plan nutricional
+      const nutritionPlan = {
+        macros: {
+          protein: `${existingMealLogs
+            .reduce((sum, log) => sum + log.protein, 0)
+            .toFixed(0)}g`,
+          carbs: `${existingMealLogs
+            .reduce((sum, log) => sum + log.carbs, 0)
+            .toFixed(0)}g`,
+          fat: `${existingMealLogs
+            .reduce((sum, log) => sum + log.fat, 0)
+            .toFixed(0)}g`,
+          description: "Basado en tus registros de comidas",
+        },
+        meals: {
+          breakfast: existingMealLogs.find(
+            (log) => log.mealType === "breakfast"
+          ),
+          lunch: existingMealLogs.find((log) => log.mealType === "lunch"),
+          dinner: existingMealLogs.find((log) => log.mealType === "dinner"),
+          snacks: existingMealLogs.find((log) => log.mealType === "snack"),
+        },
+      };
+
+      return NextResponse.json({
+        workoutPlan,
+        nutritionPlan,
+      });
+    }
+
+    // Si no existen, generar nuevos planes
+    const workoutPlan = existingWorkout
+      ? existingWorkout
+      : await generateAndSaveWorkoutPlan(profile);
+
+    const nutritionPlan =
+      existingMealLogs.length > 0
+        ? {
+            /* formatear similar a arriba */
+          }
+        : await generateAndSaveNutritionPlan(profile);
 
     return NextResponse.json({
       workoutPlan,

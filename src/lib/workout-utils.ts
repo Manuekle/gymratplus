@@ -12,41 +12,141 @@ export async function getOrCreateExercises() {
 
   // Si no existen, crear ejercicios básicos
   const exercisesToCreate = [
+    // Leg Exercises
     {
       name: "Sentadillas",
       muscleGroup: "piernas",
       equipment: "peso libre",
-      description: "Ejercicio compuesto para piernas",
+      description:
+        "Ejercicio compuesto para piernas, enfocado en cuádriceps, glúteos y pantorrillas",
     },
     {
-      name: "Press de Banca",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para pecho",
+      name: "Zancadas",
+      muscleGroup: "piernas",
+      equipment: "mancuernas",
+      description:
+        "Ejercicio unilateral para desarrollar equilibrio y fuerza en piernas",
+    },
+    {
+      name: "Prensa de Piernas",
+      muscleGroup: "piernas",
+      equipment: "máquina",
+      description:
+        "Ejercicio de aislamiento para cuádriceps con menor estrés en la columna",
     },
     {
       name: "Peso Muerto",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para espalda baja",
+      muscleGroup: "piernas",
+      equipment: "barra",
+      description:
+        "Ejercicio compuesto para cadena posterior, glúteos y espalda baja",
     },
+    {
+      name: "Extensiones de Cuádriceps",
+      muscleGroup: "piernas",
+      equipment: "máquina",
+      description: "Ejercicio de aislamiento para cuádriceps",
+    },
+    {
+      name: "Curl de Femoral",
+      muscleGroup: "piernas",
+      equipment: "máquina",
+      description: "Ejercicio de aislamiento para músculos isquiotibiales",
+    },
+
+    // Chest Exercises
+    {
+      name: "Press de Banca",
+      muscleGroup: "pecho",
+      equipment: "barra",
+      description: "Ejercicio compuesto fundamental para desarrollo del pecho",
+    },
+    {
+      name: "Press de Banca Inclinado",
+      muscleGroup: "pecho",
+      equipment: "mancuernas",
+      description:
+        "Variación del press que enfatiza la parte superior del pecho",
+    },
+    {
+      name: "Aperturas con Mancuernas",
+      muscleGroup: "pecho",
+      equipment: "mancuernas",
+      description:
+        "Ejercicio de aislamiento para definición y estiramiento del pecho",
+    },
+    {
+      name: "Fondos en Paralelas",
+      muscleGroup: "pecho",
+      equipment: "peso corporal",
+      description: "Ejercicio compuesto para pecho y tríceps",
+    },
+
+    // Back Exercises
     {
       name: "Dominadas",
       muscleGroup: "espalda",
       equipment: "peso corporal",
-      description: "Ejercicio para espalda y bíceps",
+      description: "Ejercicio compuesto para espalda alta y bíceps",
     },
+    {
+      name: "Remo con Barra",
+      muscleGroup: "espalda",
+      equipment: "barra",
+      description: "Ejercicio compuesto para espalda media y trapecios",
+    },
+    {
+      name: "Remo con Mancuerna Unilateral",
+      muscleGroup: "espalda",
+      equipment: "mancuerna",
+      description:
+        "Ejercicio de aislamiento para equilibrar fuerza entre lados",
+    },
+    {
+      name: "Pull Ups",
+      muscleGroup: "espalda",
+      equipment: "barra",
+      description: "Variación de dominadas para máximo desarrollo de espalda",
+    },
+
+    // Shoulder Exercises
     {
       name: "Press de Hombros",
       muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para hombros",
+      equipment: "mancuernas",
+      description: "Ejercicio compuesto para desarrollo deltoides",
     },
     {
-      name: "Curl de Bíceps",
+      name: "Elevaciones Laterales",
+      muscleGroup: "hombros",
+      equipment: "mancuernas",
+      description: "Ejercicio de aislamiento para deltoides laterales",
+    },
+    {
+      name: "Face Pulls",
+      muscleGroup: "hombros",
+      equipment: "polea",
+      description: "Ejercicio para rotadores y deltoides posteriores",
+    },
+    {
+      name: "Shrugs",
+      muscleGroup: "hombros",
+      equipment: "mancuernas",
+      description: "Ejercicio para trapecios y parte superior de los hombros",
+    },
+
+    // Arm Exercises
+    {
+      name: "Curl de Bíceps con Barra",
+      muscleGroup: "brazos",
+      equipment: "barra",
+      description: "Ejercicio clásico de aislamiento para bíceps",
+    },
+    {
+      name: "Curl de Martillo",
       muscleGroup: "brazos",
       equipment: "mancuernas",
-      description: "Ejercicio de aislamiento para bíceps",
+      description: "Variación de curl para desarrollo completo del bíceps",
     },
     {
       name: "Extensiones de Tríceps",
@@ -55,52 +155,36 @@ export async function getOrCreateExercises() {
       description: "Ejercicio de aislamiento para tríceps",
     },
     {
-      name: "Elevaciones Laterales",
-      muscleGroup: "hombros",
-      equipment: "mancuernas",
-      description: "Ejercicio de aislamiento para deltoides",
+      name: "Fondos de Tríceps",
+      muscleGroup: "brazos",
+      equipment: "banco",
+      description: "Ejercicio de peso corporal para tríceps",
     },
-    {
-      name: "Zancadas",
-      muscleGroup: "piernas",
-      equipment: "peso corporal",
-      description: "Ejercicio para cuádriceps y glúteos",
-    },
+
+    // Core Exercises
     {
       name: "Plancha",
       muscleGroup: "core",
       equipment: "peso corporal",
-      description: "Ejercicio isométrico para core",
+      description: "Ejercicio isométrico para fortalecimiento del core",
     },
     {
       name: "Crunch Abdominal",
       muscleGroup: "core",
       equipment: "peso corporal",
-      description: "Ejercicio para abdominales",
+      description: "Ejercicio clásico para abdominales superiores",
     },
     {
-      name: "Remo con Barra",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio para espalda media",
-    },
-    {
-      name: "Prensa de Piernas",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio para cuádriceps",
-    },
-    {
-      name: "Fondos de Tríceps",
-      muscleGroup: "brazos",
+      name: "Plancha Lateral",
+      muscleGroup: "core",
       equipment: "peso corporal",
-      description: "Ejercicio para tríceps",
+      description: "Ejercicio para oblicuos y estabilización lateral",
     },
     {
-      name: "Face Pull",
-      muscleGroup: "hombros",
-      equipment: "polea",
-      description: "Ejercicio para deltoides posteriores y rotadores",
+      name: "Russian Twists",
+      muscleGroup: "core",
+      equipment: "peso medicinal",
+      description: "Ejercicio dinámico para oblicuos y rotación del core",
     },
   ];
 
