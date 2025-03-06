@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import {
+  createLegWorkout,
+  createChestTricepsWorkout,
+  createBackBicepsWorkout,
+  createShoulderWorkout,
+  createCoreWorkout,
+} from "@/lib/workout-utils";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -29,11 +36,11 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, description, exercises } = body;
+    const { name, description, exercises, goal, type } = body;
 
-    if (!name || exercises?.length === 0) {
+    if (!name || exercises?.length === 0 || !type) {
       return NextResponse.json(
-        { error: "Nombre y ejercicios requeridos" },
+        { error: "Nombre, ejercicios y tipo de rutina requeridos" },
         { status: 400 }
       );
     }
@@ -45,6 +52,29 @@ export async function POST(req: Request) {
         userId: session.user.id,
       },
     });
+
+    switch (type) {
+      case "leg":
+        await createLegWorkout(workout.id, exercises, goal);
+        break;
+      case "chest-triceps":
+        await createChestTricepsWorkout(workout.id, exercises, goal);
+        break;
+      case "back-biceps":
+        await createBackBicepsWorkout(workout.id, exercises, goal);
+        break;
+      case "shoulder":
+        await createShoulderWorkout(workout.id, exercises, goal);
+        break;
+      case "core":
+        await createCoreWorkout(workout.id, exercises, goal);
+        break;
+      default:
+        return NextResponse.json(
+          { error: "Tipo de rutina no válido" },
+          { status: 400 }
+        );
+    }
 
     return NextResponse.json(workout, { status: 201 });
   } catch (error) {

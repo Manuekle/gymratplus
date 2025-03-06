@@ -4,11 +4,10 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import {
   getOrCreateExercises,
-  createFullBodyWorkout,
-  createUpperLowerSplit,
-  createPushPullLegsSplit,
+  createWorkoutPlan,
+  getRecommendedWorkoutType,
 } from "@/lib/workout-utils";
-import { getOrCreateFoods } from "@/lib/nutrition-utils";
+import { createNutritionPlan } from "@/lib/nutrition-utils";
 
 export async function POST(request: Request) {
   try {
@@ -18,47 +17,42 @@ export async function POST(request: Request) {
     }
     const userId = (session.user as { id: string }).id;
 
-    // Función para formatear plan de entrenamiento
-    function formatWorkoutPlan(workoutExercises) {
-      // Agrupar ejercicios por día
-      const exercisesByDay = workoutExercises.reduce((acc, ex) => {
-        const day = ex.notes.split(":")[0].trim();
-        if (!acc[day]) acc[day] = [];
-        acc[day].push(ex);
-        return acc;
-      }, {});
-
-      // Formatear cada día
-      return Object.entries(exercisesByDay).map(([day, exercises]) => {
-        return {
-          day,
-          exercises: exercises.map((ex) => ({
-            id: ex.id,
-            name: ex.name || "Ejercicio",
-            sets: ex.sets,
-            reps: ex.reps,
-            restTime: ex.restTime,
-            notes: ex.notes.split(":").slice(1).join(":").trim(),
-          })),
-        };
-      });
-    }
-
-    // Buscar el perfil del usuario en la base de datos
+    // Get user profile with detailed information
     const profile = await prisma.profile.findUnique({
       where: { userId },
     });
 
     if (!profile) {
-      return NextResponse.json(
-        { error: "Perfil no encontrado" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // Buscar planes existentes con estructura detallada
-    const existingWorkout = await prisma.workout.findFirst({
+    // Get user's workout history to inform recommendations
+    const workoutHistory = await prisma.workout.findMany({
       where: { userId },
+      include: {
+        exercises: {
+          include: {
+            exercise: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+      take: 5, // Get last 5 workouts
+    });
+
+    // Get user's weight history to track progress
+    const weightHistory = await prisma.weight.findMany({
+      where: { userId },
+      orderBy: { date: "desc" },
+      take: 10,
+    });
+
+    // Check if user already has a recent workout plan (less than 2 weeks old)
+    const existingWorkout = await prisma.workout.findFirst({
+      where: {
+        userId,
+        createdAt: { gte: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000) }, // 2 weeks
+      },
       include: {
         exercises: {
           include: {
@@ -69,6 +63,7 @@ export async function POST(request: Request) {
       },
     });
 
+    // Check if user has meal logs
     const existingMealLogs = await prisma.mealLog.findMany({
       where: { userId },
       include: {
@@ -78,12 +73,19 @@ export async function POST(request: Request) {
           },
         },
       },
-      orderBy: { date: "asc" },
+      orderBy: { date: "desc" },
+      take: 7, // Last week of meals
     });
 
-    // Si ya existen, formatear según la estructura requerida
-    if (existingWorkout && existingMealLogs.length > 0) {
-      // Formatear plan de entrenamiento
+    // If recent plans exist, return them with some adaptive modifications
+    if (existingWorkout) {
+      // Analyze workout adherence and progress
+      const workoutAdherence = await analyzeWorkoutAdherence(
+        userId,
+        existingWorkout.id
+      );
+
+      // Format existing workout with potential modifications based on adherence
       const workoutPlan = {
         id: existingWorkout.id,
         name: existingWorkout.name,
@@ -92,200 +94,344 @@ export async function POST(request: Request) {
           existingWorkout.exercises.map((we) => ({
             id: we.id,
             name: we.exercise.name,
-            sets: we.sets,
-            reps: we.reps,
+            sets: adaptSetsBasedOnProgress(
+              we.sets,
+              workoutAdherence,
+              profile.goal
+            ),
+            reps: adaptRepsBasedOnProgress(
+              we.reps,
+              workoutAdherence,
+              profile.goal
+            ),
             restTime: we.restTime,
-            notes: `${we.notes || "General"}`,
+            notes: we.notes || "General",
           }))
         ),
+        adherence: workoutAdherence,
+        progressMetrics: calculateProgressMetrics(weightHistory, profile),
       };
 
-      // Formatear plan nutricional
-      const nutritionPlan = {
-        macros: {
-          protein: `${existingMealLogs
-            .reduce((sum, log) => sum + log.protein, 0)
-            .toFixed(0)}g`,
-          carbs: `${existingMealLogs
-            .reduce((sum, log) => sum + log.carbs, 0)
-            .toFixed(0)}g`,
-          fat: `${existingMealLogs
-            .reduce((sum, log) => sum + log.fat, 0)
-            .toFixed(0)}g`,
-          description: "Basado en tus registros de comidas",
-        },
-        meals: {
-          breakfast: existingMealLogs.find(
-            (log) => log.mealType === "breakfast"
-          ),
-          lunch: existingMealLogs.find((log) => log.mealType === "lunch"),
-          dinner: existingMealLogs.find((log) => log.mealType === "dinner"),
-          snacks: existingMealLogs.find((log) => log.mealType === "snack"),
-        },
-      };
+      // Format nutrition plan if meal logs exist
+      const nutritionPlan =
+        existingMealLogs.length > 0
+          ? formatExistingNutritionPlan(existingMealLogs, profile)
+          : await createNutritionPlan(profile);
 
       return NextResponse.json({
         workoutPlan,
         nutritionPlan,
+        recommendations: generateRecommendations(
+          profile,
+          workoutAdherence,
+          weightHistory
+        ),
       });
     }
 
-    // Si no existen, generar nuevos planes
-    const workoutPlan = existingWorkout
-      ? existingWorkout
-      : await generateAndSaveWorkoutPlan(profile);
+    // Generate new workout plan based on profile and history
+    const workoutType = getRecommendedWorkoutType(profile, workoutHistory);
 
-    const nutritionPlan =
-      existingMealLogs.length > 0
-        ? {
-            /* formatear similar a arriba */
-          }
-        : await generateAndSaveNutritionPlan(profile);
+    // Determinar la metodología basada en el objetivo
+    let methodology = "standard";
+    if (profile.goal === "lose-weight" || profile.goal === "fat-loss") {
+      methodology = Math.random() > 0.5 ? "circuit" : "hiit";
+    } else if (
+      profile.goal === "gain-muscle" ||
+      profile.goal === "hypertrophy"
+    ) {
+      methodology = Math.random() > 0.5 ? "drop-sets" : "supersets";
+    } else if (profile.goal === "strength") {
+      methodology = "pyramid";
+    }
+
+    const workoutPlan = await generateAndSaveWorkoutPlan(
+      profile,
+      workoutType,
+      workoutHistory,
+      methodology
+    );
+    const nutritionPlan = await createNutritionPlan(profile);
 
     return NextResponse.json({
       workoutPlan,
       nutritionPlan,
+      recommendations: generateRecommendations(profile, null, weightHistory),
     });
   } catch (error) {
-    console.error("Error generando recomendaciones:", error);
+    console.error("Error generating recommendations:", error);
     return NextResponse.json(
-      { error: "Error al generar recomendaciones" },
+      { error: "Error generating recommendations" },
       { status: 500 }
     );
   }
 }
 
-// Actualizar la función para usar el modelo Profile
-async function generateAndSaveWorkoutPlan(profile) {
-  const { id: profileId, userId, gender, goal, trainingFrequency } = profile;
-
-  // Crear un nuevo workout en la base de datos
-  const workout = await prisma.workout.create({
-    data: {
-      name: `Plan de entrenamiento personalizado (${getGoalText(goal)})`,
-      description: `Plan de entrenamiento personalizado para ${
-        gender === "male" ? "hombre" : "mujer"
-      } con objetivo de ${getGoalText(
-        goal
-      )} y frecuencia de ${trainingFrequency} días por semana.`,
-      userId: userId,
+// Analyze how well the user has been following their workout plan
+async function analyzeWorkoutAdherence(userId: string, workoutId: string) {
+  // This would ideally connect to some tracking mechanism
+  // For now, we'll return a mock adherence score
+  const events = await prisma.event.findMany({
+    where: {
+      userId,
+      workoutId,
+      start: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }, // Last 30 days
     },
   });
 
-  // El resto de la función permanece igual
-  const exercises = await getOrCreateExercises();
-
-  let workoutExercises = [];
-
-  if (trainingFrequency <= 3) {
-    workoutExercises = await createFullBodyWorkout(
-      workout.id,
-      exercises,
-      goal,
-      gender
-    );
-  } else if (trainingFrequency <= 5) {
-    workoutExercises = await createUpperLowerSplit(
-      workout.id,
-      exercises,
-      goal,
-      gender
-    );
-  } else {
-    workoutExercises = await createPushPullLegsSplit(
-      workout.id,
-      exercises,
-      goal,
-      gender
-    );
-  }
-
-  const workoutExercisesWithNames = await Promise.all(
-    workoutExercises.map(async (exercise) => {
-      const exerciseDetails = await prisma.exercise.findUnique({
-        where: { id: exercise.exerciseId },
-      });
-      return {
-        ...exercise,
-        name: exerciseDetails ? exerciseDetails.name : "Ejercicio desconocido",
-      };
-    })
-  );
-  console.log(workoutExercises);
-  console.log(workoutExercisesWithNames);
+  // Calculate adherence score (0-100)
+  const adherenceScore =
+    events.length >= 12 ? 100 : Math.round((events.length / 12) * 100);
 
   return {
-    id: workout.id,
-    name: workout.name,
-    description: workout.description,
-    days: formatWorkoutPlan(workoutExercisesWithNames),
+    score: adherenceScore,
+    level:
+      adherenceScore >= 80 ? "high" : adherenceScore >= 50 ? "medium" : "low",
+    completedWorkouts: events.length,
+    recommendedAdjustment:
+      adherenceScore >= 80
+        ? "increase"
+        : adherenceScore <= 30
+        ? "decrease"
+        : "maintain",
   };
 }
 
-// Actualizar la función para usar el modelo Profile
-async function generateAndSaveNutritionPlan(profile) {
-  const { userId, goal, dietaryPreference, gender, dailyCalorieTarget } =
-    profile;
+// Adapt sets based on user progress and adherence
+function adaptSetsBasedOnProgress(
+  currentSets: number,
+  adherence: any,
+  goal: string
+) {
+  if (!adherence) return currentSets;
 
-  // Obtener alimentos de la base de datos o crear nuevos si no existen
-  const foods = await getOrCreateFoods(dietaryPreference);
+  if (
+    adherence.level === "high" &&
+    (goal === "gain-muscle" || goal === "hypertrophy" || goal === "strength")
+  ) {
+    return currentSets + 1; // Increase sets for high adherence and muscle gain goal
+  } else if (adherence.level === "low") {
+    return Math.max(2, currentSets - 1); // Decrease sets for low adherence, minimum 2
+  }
 
-  // Generar planes de comida para cada tipo de comida
-  const breakfast = await createMealLog(
-    userId,
-    "breakfast",
-    foods,
-    goal,
-    dietaryPreference,
-    dailyCalorieTarget
-  );
-  const lunch = await createMealLog(
-    userId,
-    "lunch",
-    foods,
-    goal,
-    dietaryPreference,
-    dailyCalorieTarget
-  );
-  const dinner = await createMealLog(
-    userId,
-    "dinner",
-    foods,
-    goal,
-    dietaryPreference,
-    dailyCalorieTarget
-  );
-  const snacks = await createMealLog(
-    userId,
-    "snack",
-    foods,
-    goal,
-    dietaryPreference,
-    dailyCalorieTarget
-  );
+  return currentSets; // Maintain sets otherwise
+}
 
-  // Devolver el plan completo
+// Adapt reps based on user progress and adherence
+function adaptRepsBasedOnProgress(
+  currentReps: number,
+  adherence: any,
+  goal: string
+) {
+  if (!adherence) return currentReps;
+
+  if (adherence.level === "high") {
+    if ((goal === "gain-muscle" || goal === "hypertrophy") && currentReps < 8) {
+      return currentReps + 2; // Increase weight instead of reps for muscle gain
+    } else if (goal === "strength" && currentReps > 5) {
+      return currentReps - 1; // Decrease reps and increase weight for strength
+    } else if (
+      goal === "lose-weight" ||
+      goal === "fat-loss" ||
+      goal === "endurance"
+    ) {
+      return currentReps + 2; // Increase reps for weight loss and endurance
+    }
+  } else if (adherence.level === "low") {
+    return Math.max(6, currentReps - 2); // Decrease reps for low adherence, minimum 6
+  }
+
+  return currentReps; // Maintain reps otherwise
+}
+
+// Calculate progress metrics based on weight history and profile goals
+function calculateProgressMetrics(weightHistory, profile) {
+  if (!weightHistory || weightHistory.length < 2) {
+    return {
+      weightChange: 0,
+      onTrack: true,
+      recommendation: "Continue with current plan",
+    };
+  }
+
+  const latestWeight = weightHistory[0].weight;
+  const oldestWeight = weightHistory[weightHistory.length - 1].weight;
+  const weightChange = latestWeight - oldestWeight;
+
+  let onTrack = true;
+  let recommendation = "Continue with current plan";
+
+  if (
+    (profile.goal === "lose-weight" || profile.goal === "fat-loss") &&
+    weightChange >= 0
+  ) {
+    onTrack = false;
+    recommendation =
+      "Consider reducing calorie intake or increasing workout intensity";
+  } else if (
+    (profile.goal === "gain-muscle" || profile.goal === "hypertrophy") &&
+    weightChange <= 0
+  ) {
+    onTrack = false;
+    recommendation = "Consider increasing calorie intake, especially protein";
+  }
+
+  return { weightChange, onTrack, recommendation };
+}
+
+// Generate personalized recommendations based on profile and progress
+function generateRecommendations(profile, adherence, weightHistory) {
+  const recommendations = [];
+
+  // Basic recommendations based on profile
+  if (
+    profile.trainingFrequency < 3 &&
+    (profile.goal === "gain-muscle" || profile.goal === "hypertrophy")
+  ) {
+    recommendations.push(
+      "Consider increasing your training frequency to at least 3 days per week for optimal muscle growth"
+    );
+  }
+
+  if (profile.goal === "strength" && profile.trainingFrequency < 4) {
+    recommendations.push(
+      "For optimal strength gains, consider training at least 4 days per week with focus on compound movements"
+    );
+  }
+
+  if (profile.dailyProteinTarget && profile.currentWeight) {
+    const proteinPerKg =
+      profile.dailyProteinTarget / Number.parseFloat(profile.currentWeight);
+    if (
+      (profile.goal === "gain-muscle" || profile.goal === "hypertrophy") &&
+      proteinPerKg < 1.6
+    ) {
+      recommendations.push(
+        "Your protein intake may be too low for your muscle-building goals. Aim for at least 1.6g per kg of bodyweight."
+      );
+    } else if (profile.goal === "strength" && proteinPerKg < 1.8) {
+      recommendations.push(
+        "For optimal strength development, consider increasing your protein intake to at least 1.8g per kg of bodyweight."
+      );
+    }
+  }
+
+  // Adherence-based recommendations
+  if (adherence) {
+    if (adherence.level === "low") {
+      recommendations.push(
+        "Your workout consistency has been low. Consider setting reminders or finding a workout buddy to stay motivated."
+      );
+    } else if (adherence.level === "high" && adherence.score >= 90) {
+      recommendations.push(
+        "Great job staying consistent! You might be ready to increase your workout intensity."
+      );
+    }
+  }
+
+  // Weight progress recommendations
+  if (weightHistory && weightHistory.length >= 2) {
+    const latestWeight = weightHistory[0].weight;
+    const oldestWeight = weightHistory[weightHistory.length - 1].weight;
+    const weightChange = latestWeight - oldestWeight;
+    const weeksPassed = Math.max(
+      1,
+      Math.round(
+        (weightHistory[0].date.getTime() -
+          weightHistory[weightHistory.length - 1].date.getTime()) /
+          (7 * 24 * 60 * 60 * 1000)
+      )
+    );
+
+    if (profile.goal === "lose-weight" || profile.goal === "fat-loss") {
+      const weeklyChange = weightChange / weeksPassed;
+      if (weeklyChange > 0) {
+        recommendations.push(
+          "You're gaining weight instead of losing. Consider reducing your calorie intake by 300-500 calories per day."
+        );
+      } else if (weeklyChange > -0.5 && weeklyChange <= 0) {
+        recommendations.push(
+          "You're losing weight, but at a slow pace. For faster results, you might increase your cardio or slightly reduce calories."
+        );
+      } else if (weeklyChange < -1) {
+        recommendations.push(
+          "You're losing weight quickly. Make sure you're getting enough nutrients and not losing muscle mass."
+        );
+      }
+    } else if (
+      profile.goal === "gain-muscle" ||
+      profile.goal === "hypertrophy"
+    ) {
+      const weeklyChange = weightChange / weeksPassed;
+      if (weeklyChange < 0) {
+        recommendations.push(
+          "You're losing weight instead of gaining. Consider increasing your calorie intake, especially protein and carbs."
+        );
+      } else if (weeklyChange > 0.5) {
+        recommendations.push(
+          "You're gaining weight quickly. Make sure it's mostly muscle by keeping your workouts intense and protein intake high."
+        );
+      }
+    }
+  }
+
+  // Methodology recommendations based on goals
+  if (profile.goal === "lose-weight" || profile.goal === "fat-loss") {
+    recommendations.push(
+      "Consider incorporating HIIT or circuit training into your routine for more efficient fat burning."
+    );
+  } else if (profile.goal === "gain-muscle" || profile.goal === "hypertrophy") {
+    recommendations.push(
+      "Try incorporating drop sets or supersets into your routine to increase muscle hypertrophy."
+    );
+  } else if (profile.goal === "strength") {
+    recommendations.push(
+      "Focus on compound movements with pyramid sets to maximize strength gains."
+    );
+  } else if (profile.goal === "endurance") {
+    recommendations.push(
+      "Consider higher rep ranges (15-20) with shorter rest periods to improve muscular endurance."
+    );
+  } else if (profile.goal === "mobility") {
+    recommendations.push(
+      "Include dynamic stretching before workouts and static stretching after to improve mobility."
+    );
+  }
+
+  return recommendations;
+}
+
+// Format existing nutrition plan from meal logs
+function formatExistingNutritionPlan(mealLogs, profile) {
+  // Calculate average macros from meal logs
+  const totalCalories = mealLogs.reduce((sum, log) => sum + log.calories, 0);
+  const totalProtein = mealLogs.reduce((sum, log) => sum + log.protein, 0);
+  const totalCarbs = mealLogs.reduce((sum, log) => sum + log.carbs, 0);
+  const totalFat = mealLogs.reduce((sum, log) => sum + log.fat, 0);
+
+  const avgCalories = Math.round(totalCalories / mealLogs.length);
+  const avgProtein = Math.round(totalProtein / mealLogs.length);
+  const avgCarbs = Math.round(totalCarbs / mealLogs.length);
+  const avgFat = Math.round(totalFat / mealLogs.length);
+
+  // Group meal logs by type
+  const breakfast = mealLogs.find((log) => log.mealType === "breakfast");
+  const lunch = mealLogs.find((log) => log.mealType === "lunch");
+  const dinner = mealLogs.find((log) => log.mealType === "dinner");
+  const snacks = mealLogs.find((log) => log.mealType === "snack");
 
   return {
     macros: {
-      protein: `${profile.dailyProteinTarget ?? 0}g (${Math.round(
-        ((profile.dailyProteinTarget ?? 0 * 4) /
-          (profile.dailyCalorieTarget ?? 1)) *
-          100
+      protein: `${avgProtein}g (${Math.round(
+        ((avgProtein * 4) / avgCalories) * 100
       )}%)`,
-      carbs: `${profile.dailyCarbTarget ?? 0}g (${Math.round(
-        ((profile.dailyCarbTarget ?? 0 * 4) /
-          (profile.dailyCalorieTarget ?? 1)) *
-          100
+      carbs: `${avgCarbs}g (${Math.round(
+        ((avgCarbs * 4) / avgCalories) * 100
       )}%)`,
-      fat: `${profile.dailyFatTarget ?? 0}g (${Math.round(
-        ((profile.dailyFatTarget ?? 0 * 9) /
-          (profile.dailyCalorieTarget ?? 1)) *
-          100
-      )}%)`,
-      description: `Basado en tu objetivo de ${getGoalText(
-        goal
-      )} y un consumo diario de ${profile.dailyCalorieTarget ?? 0} calorías`,
+      fat: `${avgFat}g (${Math.round(((avgFat * 9) / avgCalories) * 100)}%)`,
+      description: `Based on your recent meal logs and ${getGoalText(
+        profile.goal
+      )} goal`,
     },
     meals: {
       breakfast,
@@ -293,255 +439,125 @@ async function generateAndSaveNutritionPlan(profile) {
       dinner,
       snacks,
     },
+    calorieTarget: profile.dailyCalorieTarget,
+    adherence: {
+      calorieAdherence: Math.round(
+        (avgCalories / profile.dailyCalorieTarget) * 100
+      ),
+      proteinAdherence: Math.round(
+        (avgProtein / profile.dailyProteinTarget) * 100
+      ),
+    },
   };
 }
 
-// Actualizar la función para considerar el objetivo calórico del perfil
-async function createMealLog(
-  userId,
-  mealType,
-  foods,
-  goal,
-  dietaryPreference,
-  dailyCalorieTarget = 2000
+// Generate and save a new workout plan
+async function generateAndSaveWorkoutPlan(
+  profile,
+  workoutType,
+  workoutHistory,
+  methodology = "standard"
 ) {
-  // Seleccionar alimentos apropiados según el tipo de comida y preferencia dietética
-  let selectedFoods = [];
+  const { id: profileId, userId, gender, goal, trainingFrequency } = profile;
 
-  // El resto de la lógica de selección de alimentos permanece igual
-  if (mealType === "breakfast") {
-    const proteinFoods = foods.filter(
-      (f) =>
-        f.category === "proteína" &&
-        f.name !== "Pechuga de pollo" &&
-        f.name !== "Salmón"
-    );
-    const carbFoods = foods.filter(
-      (f) =>
-        f.category === "carbohidrato" &&
-        (f.name === "Avena" || f.name === "Pan integral")
-    );
-    const fruitFoods = foods.filter((f) => f.category === "fruta");
-    const fatFoods = foods.filter(
-      (f) =>
-        f.category === "grasa" &&
-        (f.name === "Aguacate" || f.name === "Almendras")
-    );
-
-    selectedFoods = [
-      proteinFoods[0],
-      carbFoods[0],
-      fruitFoods[0],
-      fatFoods[0],
-    ].filter(Boolean);
-  } else if (mealType === "lunch") {
-    const proteinFoods = foods.filter((f) => f.category === "proteína");
-    const carbFoods = foods.filter(
-      (f) => f.category === "carbohidrato" && f.name !== "Avena"
-    );
-    const vegFoods = foods.filter((f) => f.category === "verdura");
-    const fatFoods = foods.filter(
-      (f) => f.category === "grasa" && f.name === "Aceite de oliva"
-    );
-
-    selectedFoods = [
-      proteinFoods[0],
-      carbFoods[0],
-      vegFoods[0],
-      vegFoods[1],
-      fatFoods[0],
-    ].filter(Boolean);
-  } else if (mealType === "dinner") {
-    const proteinFoods = foods.filter((f) => f.category === "proteína");
-    const vegFoods = foods.filter((f) => f.category === "verdura");
-    const fatFoods = foods.filter((f) => f.category === "grasa");
-
-    const carbFoods =
-      dietaryPreference === "keto"
-        ? []
-        : foods.filter(
-            (f) => f.category === "carbohidrato" && f.name !== "Avena"
-          );
-
-    selectedFoods = [
-      proteinFoods[1] || proteinFoods[0],
-      ...carbFoods.slice(0, 1),
-      vegFoods[0],
-      vegFoods[1],
-      fatFoods[0],
-    ].filter(Boolean);
-  } else if (mealType === "snack") {
-    const proteinFoods = foods.filter(
-      (f) =>
-        f.category === "proteína" &&
-        (f.name === "Yogur griego" || f.name === "Huevos")
-    );
-    const fruitFoods = foods.filter((f) => f.category === "fruta");
-    const nutFoods = foods.filter(
-      (f) => f.category === "grasa" && f.name === "Almendras"
-    );
-
-    selectedFoods = [proteinFoods[0], fruitFoods[0], nutFoods[0]].filter(
-      Boolean
-    );
-  }
-
-  // Ajustar cantidades según el objetivo y las calorías diarias objetivo
-  const multiplier = 1;
-
-  // Distribuir las calorías según el tipo de comida
-  const mealCaloriePercentage = {
-    breakfast: 0.25, // 25% de las calorías diarias
-    lunch: 0.35, // 35% de las calorías diarias
-    dinner: 0.3, // 30% de las calorías diarias
-    snack: 0.1, // 10% de las calorías diarias
-  };
-
-  // Ajustar el multiplicador según las calorías objetivo para este tipo de comida
-  const targetMealCalories =
-    dailyCalorieTarget * mealCaloriePercentage[mealType];
-
-  // Calcular macros totales
-  let totalCalories = 0;
-  let totalProtein = 0;
-  let totalCarbs = 0;
-  let totalFat = 0;
-
-  // Crear entradas de comida
-  const mealEntries = [];
-
-  for (const food of selectedFoods) {
-    // Ajustar la cantidad según la categoría y las calorías objetivo
-    const baseQuantity =
-      food.category === "proteína"
-        ? 1
-        : food.category === "carbohidrato"
-        ? 1
-        : 0.5;
-
-    // Ajustar según el objetivo
-    let quantity = baseQuantity;
-    if (goal === "lose-weight") quantity *= 0.8;
-    if (goal === "gain-muscle") quantity *= 1.2;
-
-    totalCalories += food.calories * quantity;
-    totalProtein += food.protein * quantity;
-    totalCarbs += food.carbs * quantity;
-    totalFat += food.fat * quantity;
-
-    mealEntries.push({
-      foodId: food.id,
-      quantity,
-    });
-  }
-
-  // Crear el registro de comida
-  const mealLog = await prisma.mealLog.create({
+  // Create a new workout in the database
+  const workout = await prisma.workout.create({
     data: {
-      userId,
-      date: new Date(),
-      mealType,
-      calories: Math.round(totalCalories),
-      protein: Math.round(totalProtein * 10) / 10,
-      carbs: Math.round(totalCarbs * 10) / 10,
-      fat: Math.round(totalFat * 10) / 10,
-      entries: {
-        create: mealEntries,
-      },
-    },
-    include: {
-      entries: {
-        include: {
-          food: true,
-        },
-      },
+      name: `${workoutType} Plan (${getGoalText(goal)})`,
+      description: `Personalized ${workoutType} workout plan with ${methodology} methodology for ${
+        gender === "male" ? "male" : "female"
+      } with ${getGoalText(
+        goal
+      )} goal and ${trainingFrequency} days per week frequency.`,
+      userId: userId,
     },
   });
 
-  return mealLog;
+  // Get or create exercises
+  const exercises = await getOrCreateExercises();
+
+  // Create workout plan based on type and user profile
+  const workoutExercises = await createWorkoutPlan(
+    workout.id,
+    exercises,
+    goal,
+    gender,
+    trainingFrequency,
+    workoutType,
+    workoutHistory,
+    methodology
+  );
+
+  // Get exercise details for each workout exercise
+  const workoutExercisesWithNames = await Promise.all(
+    workoutExercises.map(async (exercise) => {
+      const exerciseDetails = await prisma.exercise.findUnique({
+        where: { id: exercise.exerciseId },
+      });
+      return {
+        ...exercise,
+        name: exerciseDetails ? exerciseDetails.name : "Unknown Exercise",
+      };
+    })
+  );
+
+  return {
+    id: workout.id,
+    name: workout.name,
+    description: workout.description,
+    days: formatWorkoutPlan(workoutExercisesWithNames),
+    type: workoutType,
+    methodology,
+  };
 }
 
-// Función para formatear el plan de entrenamiento para la respuesta
+// Format workout plan for response
 function formatWorkoutPlan(workoutExercises) {
-  // Agrupar ejercicios por día
+  // Agrupar ejercicios por día/grupo muscular
   const exercisesByDay = workoutExercises.reduce((acc, ex) => {
-    const day = ex.notes.split(":")[0].trim();
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(ex);
+    // Extraer el grupo muscular del campo notes
+    const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
+    const muscleGroup = muscleGroupMatch
+      ? muscleGroupMatch[1].trim()
+      : "General";
+
+    if (!acc[muscleGroup]) acc[muscleGroup] = [];
+    acc[muscleGroup].push(ex);
     return acc;
   }, {});
 
-  // Formatear cada día
-  return Object.entries(exercisesByDay).map(([day, exercises]) => {
+  // Formatear cada grupo muscular
+  return Object.entries(exercisesByDay).map(([muscleGroup, exercises]) => {
     return {
-      day,
+      day: muscleGroup, // Ahora usamos el grupo muscular como identificador del día
       exercises: exercises.map((ex) => ({
         id: ex.id,
         name: ex.name || "Ejercicio",
         sets: ex.sets,
         reps: ex.reps,
         restTime: ex.restTime,
-        notes: ex.notes.split(":").slice(1).join(":").trim(),
+        notes: ex.notes?.replace(/^[^-]+ - /, "") || "",
       })),
     };
   });
 }
 
-// Función para obtener la distribución de macros según el objetivo
-function getMacrosDistribution(goal) {
-  if (goal === "lose-weight") {
-    return {
-      protein: "40%",
-      carbs: "30%",
-      fat: "30%",
-      description:
-        "Mayor proporción de proteínas para preservar masa muscular durante el déficit calórico",
-    };
-  } else if (goal === "gain-muscle") {
-    return {
-      protein: "35%",
-      carbs: "45%",
-      fat: "20%",
-      description:
-        "Mayor proporción de carbohidratos para proporcionar energía para entrenamientos intensos",
-    };
-  } else {
-    // maintain
-    return {
-      protein: "30%",
-      carbs: "40%",
-      fat: "30%",
-      description:
-        "Distribución equilibrada para mantener el peso y la composición corporal",
-    };
-  }
-}
-
-function getActivityLevelText(activityLevel) {
-  switch (activityLevel) {
-    case "sedentary":
-      return "Sedentario (poco o ningún ejercicio)";
-    case "light":
-      return "Ligeramente activo (ejercicio ligero 1-3 días/semana)";
-    case "moderate":
-      return "Moderadamente activo (ejercicio moderado 3-5 días/semana)";
-    case "active":
-      return "Activo (ejercicio intenso 6-7 días/semana)";
-    case "very-active":
-      return "Muy activo (ejercicio muy intenso y trabajo físico)";
-    default:
-      return activityLevel;
-  }
-}
-
 function getGoalText(goal) {
   switch (goal) {
     case "lose-weight":
-      return "Perder peso";
+    case "fat-loss":
+      return "weight loss";
     case "maintain":
-      return "Mantener peso";
+      return "maintenance";
     case "gain-muscle":
-      return "Ganar músculo";
+    case "hypertrophy":
+      return "muscle gain";
+    case "strength":
+      return "strength";
+    case "endurance":
+      return "endurance";
+    case "mobility":
+      return "mobility and flexibility";
     default:
       return goal;
   }

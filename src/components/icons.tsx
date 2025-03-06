@@ -1,5 +1,5 @@
-import { ReloadIcon } from "hugeicons-react";
+import { Loader2 } from "lucide-react";
 
 export const Icons = {
-  spinner: ReloadIcon,
+  spinner: Loader2,
 };

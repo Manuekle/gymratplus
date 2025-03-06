@@ -16,7 +16,7 @@ import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 
 export default function WorkoutModal() {
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const router = useRouter();
 
   const [workout, setWorkout] = useState({
@@ -48,9 +48,9 @@ export default function WorkoutModal() {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog>
       <DialogTrigger asChild className="mb-8">
-        <Button onClick={() => setOpen(true)} variant="outline">
+        <Button className="text-xs" size="sm">
           Crear rutina
         </Button>
       </DialogTrigger>

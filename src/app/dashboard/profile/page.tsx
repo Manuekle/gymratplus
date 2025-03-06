@@ -1,18 +1,3 @@
-// import UserProfile from "@/components/user-profile";
-// import { Navbar } from "@/components/navbar";
-
-// export default function ProfilePage() {
-//   return (
-//     <div className="min-h-screen bg-background">
-//       <Navbar />
-//       <main className="py-8 px-4 sm:px-6 lg:px-8">
-//         <div className="max-w-7xl mx-auto">
-//           <UserProfile />
-//         </div>
-//       </main>
-//     </div>
-//   );
-// }
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -32,7 +17,6 @@ import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import {
   Calendar02Icon,
-  Edit01Icon,
   Mail01Icon,
   MapPinIcon,
   SmartPhone01Icon,
@@ -95,7 +79,7 @@ export default function ProfilePage() {
                 className="text-xs"
                 size="sm"
               >
-                <Edit01Icon className="h-2 w-2 mr-2" />
+                {/* <Edit01Icon className="h-2 w-2 mr-2" /> */}
                 {isEditing ? "Guardar" : "Editar perfil"}
               </Button>
             </div>

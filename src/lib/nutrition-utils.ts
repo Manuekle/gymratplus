@@ -1,17 +1,36 @@
 import { prisma } from "@/lib/prisma";
 
-// Función para obtener o crear alimentos en la base de datos
-export async function getOrCreateFoods(dietaryPreference) {
-  // Verificar si ya existen alimentos en la base de datos
+// Get or create foods in the database
+export async function getOrCreateFoods(dietaryPreference = "no-preference") {
+  // Check if foods already exist
   const count = await prisma.food.count();
 
   if (count > 0) {
-    // Si ya existen, devolver todos los alimentos
-    return prisma.food.findMany();
+    // If they exist, return all foods filtered by dietary preference
+    const foods = await prisma.food.findMany();
+
+    if (dietaryPreference === "vegetarian") {
+      return foods.filter(
+        (food) =>
+          !food.name.toLowerCase().includes("pollo") &&
+          !food.name.toLowerCase().includes("carne") &&
+          !food.name.toLowerCase().includes("pescado") &&
+          !food.name.toLowerCase().includes("salmón")
+      );
+    } else if (dietaryPreference === "keto") {
+      return foods.filter(
+        (food) =>
+          food.carbs < 10 ||
+          food.category === "proteína" ||
+          food.category === "grasa"
+      );
+    }
+
+    return foods;
   }
 
-  // Lista base de alimentos
-  const baseFoods = [
+  // If they don't exist, create basic foods
+  const foodsToCreate = [
     // Proteins
     {
       name: "Pechuga de pollo",
@@ -19,17 +38,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 31,
       carbs: 0,
       fat: 3.6,
-      category: "proteína",
+      fiber: 0,
+      sugar: 0,
       serving: 100,
-    },
-    {
-      name: "Salmón",
-      calories: 208,
-      protein: 20,
-      carbs: 0,
-      fat: 13,
       category: "proteína",
-      serving: 100,
     },
     {
       name: "Huevos",
@@ -37,37 +49,56 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 13,
       carbs: 1.1,
       fat: 11,
-      category: "proteína",
+      fiber: 0,
+      sugar: 1.1,
       serving: 100,
+      category: "proteína",
     },
     {
-      name: "Atún enlatado",
-      calories: 132,
-      protein: 28,
+      name: "Atún en agua",
+      calories: 116,
+      protein: 25.5,
       carbs: 0,
-      fat: 1.7,
-      category: "proteína",
+      fat: 1,
+      fiber: 0,
+      sugar: 0,
       serving: 100,
+      category: "proteína",
     },
     {
-      name: "Pavo magro",
-      calories: 104,
-      protein: 21,
-      carbs: 0,
-      fat: 2.1,
-      category: "proteína",
+      name: "Yogur griego",
+      calories: 97,
+      protein: 10,
+      carbs: 3.6,
+      fat: 5,
+      fiber: 0,
+      sugar: 3.6,
       serving: 100,
+      category: "proteína",
+    },
+    {
+      name: "Salmón",
+      calories: 208,
+      protein: 20,
+      carbs: 0,
+      fat: 13,
+      fiber: 0,
+      sugar: 0,
+      serving: 100,
+      category: "proteína",
     },
 
-    // Carbohydrates
+    // Carbs
     {
       name: "Arroz integral",
       calories: 112,
       protein: 2.6,
       carbs: 23,
       fat: 0.9,
-      category: "carbohidrato",
+      fiber: 1.8,
+      sugar: 0.4,
       serving: 100,
+      category: "carbohidrato",
     },
     {
       name: "Avena",
@@ -75,8 +106,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 16.9,
       carbs: 66.3,
       fat: 6.9,
-      category: "carbohidrato",
+      fiber: 10.6,
+      sugar: 0,
       serving: 100,
+      category: "carbohidrato",
     },
     {
       name: "Batata",
@@ -84,8 +117,21 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 1.6,
       carbs: 20.1,
       fat: 0.1,
-      category: "carbohidrato",
+      fiber: 3,
+      sugar: 4.2,
       serving: 100,
+      category: "carbohidrato",
+    },
+    {
+      name: "Pan integral",
+      calories: 247,
+      protein: 13,
+      carbs: 41,
+      fat: 3.5,
+      fiber: 7,
+      sugar: 5.7,
+      serving: 100,
+      category: "carbohidrato",
     },
     {
       name: "Quinoa",
@@ -93,17 +139,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 4.4,
       carbs: 21.3,
       fat: 1.9,
-      category: "carbohidrato",
+      fiber: 2.8,
+      sugar: 0.9,
       serving: 100,
-    },
-    {
-      name: "Pan integral",
-      calories: 247,
-      protein: 13,
-      carbs: 43,
-      fat: 3.5,
       category: "carbohidrato",
-      serving: 100,
     },
 
     // Vegetables
@@ -113,17 +152,21 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 2.8,
       carbs: 6.6,
       fat: 0.4,
-      category: "verdura",
+      fiber: 2.6,
+      sugar: 1.7,
       serving: 100,
+      category: "verdura",
     },
     {
-      name: "Espinacas",
+      name: "Espinaca",
       calories: 23,
       protein: 2.9,
       carbs: 3.6,
       fat: 0.4,
-      category: "verdura",
+      fiber: 2.2,
+      sugar: 0.4,
       serving: 100,
+      category: "verdura",
     },
     {
       name: "Zanahoria",
@@ -131,17 +174,21 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 0.9,
       carbs: 9.6,
       fat: 0.2,
-      category: "verdura",
+      fiber: 2.8,
+      sugar: 4.7,
       serving: 100,
+      category: "verdura",
     },
     {
-      name: "Coliflor",
-      calories: 25,
-      protein: 1.9,
-      carbs: 5,
-      fat: 0.3,
-      category: "verdura",
+      name: "Pimiento",
+      calories: 20,
+      protein: 0.9,
+      carbs: 4.6,
+      fat: 0.2,
+      fiber: 1.7,
+      sugar: 2.4,
       serving: 100,
+      category: "verdura",
     },
 
     // Fruits
@@ -151,26 +198,43 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 1.1,
       carbs: 22.8,
       fat: 0.3,
-      category: "fruta",
+      fiber: 2.6,
+      sugar: 12.2,
       serving: 100,
-    },
-    {
-      name: "Frutos rojos",
-      calories: 57,
-      protein: 0.7,
-      carbs: 14.5,
-      fat: 0.3,
       category: "fruta",
-      serving: 100,
     },
     {
       name: "Manzana",
       calories: 52,
       protein: 0.3,
-      carbs: 14,
+      carbs: 13.8,
       fat: 0.2,
-      category: "fruta",
+      fiber: 2.4,
+      sugar: 10.4,
       serving: 100,
+      category: "fruta",
+    },
+    {
+      name: "Fresas",
+      calories: 32,
+      protein: 0.7,
+      carbs: 7.7,
+      fat: 0.3,
+      fiber: 2,
+      sugar: 4.9,
+      serving: 100,
+      category: "fruta",
+    },
+    {
+      name: "Arándanos",
+      calories: 57,
+      protein: 0.7,
+      carbs: 14.5,
+      fat: 0.3,
+      fiber: 2.4,
+      sugar: 10,
+      serving: 100,
+      category: "fruta",
     },
 
     // Fats
@@ -180,8 +244,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 2,
       carbs: 8.5,
       fat: 14.7,
-      category: "grasa",
+      fiber: 6.7,
+      sugar: 0.7,
       serving: 100,
+      category: "grasa",
     },
     {
       name: "Aceite de oliva",
@@ -189,8 +255,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 0,
       carbs: 0,
       fat: 100,
-      category: "grasa",
+      fiber: 0,
+      sugar: 0,
       serving: 100,
+      category: "grasa",
     },
     {
       name: "Almendras",
@@ -198,8 +266,10 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 21.2,
       carbs: 21.7,
       fat: 49.9,
-      category: "grasa",
+      fiber: 12.5,
+      sugar: 4.4,
       serving: 100,
+      category: "grasa",
     },
     {
       name: "Semillas de chía",
@@ -207,286 +277,301 @@ export async function getOrCreateFoods(dietaryPreference) {
       protein: 16.5,
       carbs: 42.1,
       fat: 30.7,
+      fiber: 34.4,
+      sugar: 0,
+      serving: 100,
       category: "grasa",
-      serving: 100,
-    },
-
-    // Dairy and Alternatives
-    {
-      name: "Yogur griego",
-      calories: 97,
-      protein: 9,
-      carbs: 3.6,
-      fat: 5,
-      category: "lácteo",
-      serving: 100,
-    },
-    {
-      name: "Leche",
-      calories: 42,
-      protein: 3.4,
-      carbs: 5,
-      fat: 1,
-      category: "lácteo",
-      serving: 100,
-    },
-    {
-      name: "Leche de almendra",
-      calories: 13,
-      protein: 0.4,
-      carbs: 0.4,
-      fat: 1.1,
-      category: "lácteo",
-      serving: 100,
     },
   ];
 
-  // Alimentos vegetarianos/veganos
-  const vegetarianFoods = [
-    {
-      name: "Tofu",
-      calories: 144,
-      protein: 17,
-      carbs: 2.8,
-      fat: 8.7,
-      category: "proteína",
-      serving: 100,
-    },
-    {
-      name: "Tempeh",
-      calories: 193,
-      protein: 19,
-      carbs: 9.4,
-      fat: 11,
-      category: "proteína",
-      serving: 100,
-    },
-    {
-      name: "Lentejas",
-      calories: 116,
-      protein: 9,
-      carbs: 20,
-      fat: 0.4,
-      category: "proteína",
-      serving: 100,
-    },
-    {
-      name: "Garbanzos",
-      calories: 164,
-      protein: 8.9,
-      carbs: 27.4,
-      fat: 2.6,
-      category: "proteína",
-      serving: 100,
-    },
-    {
-      name: "Quinoa",
-      calories: 120,
-      protein: 4.4,
-      carbs: 21.3,
-      fat: 1.9,
-      category: "carbohidrato",
-      serving: 100,
-    },
-  ];
-
-  // Alimentos para dieta keto
-  const ketoFoods = [
-    {
-      name: "Aguacate",
-      calories: 160,
-      protein: 2,
-      carbs: 8.5,
-      fat: 14.7,
-      category: "grasa",
-      serving: 100,
-    },
-    {
-      name: "Aceite de coco",
-      calories: 862,
-      protein: 0,
-      carbs: 0,
-      fat: 100,
-      category: "grasa",
-      serving: 100,
-    },
-    {
-      name: "Queso cheddar",
-      calories: 402,
-      protein: 25,
-      carbs: 1.3,
-      fat: 33,
-      category: "grasa",
-      serving: 100,
-    },
-    {
-      name: "Tocino",
-      calories: 541,
-      protein: 37,
-      carbs: 1.4,
-      fat: 42,
-      category: "proteína",
-      serving: 100,
-    },
-    {
-      name: "Mantequilla",
-      calories: 717,
-      protein: 0.9,
-      carbs: 0.1,
-      fat: 81,
-      category: "grasa",
-      serving: 100,
-    },
-  ];
-
-  // Seleccionar los alimentos según la preferencia dietética
-  let foodsToCreate = [...baseFoods];
-
-  if (dietaryPreference === "vegetarian" || dietaryPreference === "vegan") {
-    foodsToCreate = [...foodsToCreate, ...vegetarianFoods];
-
-    if (dietaryPreference === "vegan") {
-      foodsToCreate = foodsToCreate.filter(
-        (food) =>
-          ![
-            "Pechuga de pollo",
-            "Salmón",
-            "Huevos",
-            "Yogur griego",
-            "Leche",
-            "Queso cheddar",
-            "Tocino",
-            "Mantequilla",
-          ].includes(food.name)
-      );
-    }
-  } else if (dietaryPreference === "keto") {
-    foodsToCreate = [...foodsToCreate, ...ketoFoods];
-  }
-
-  // Crear todos los alimentos en la base de datos
-  return prisma.$transaction(
+  // Create all foods in the database
+  const createdFoods = await prisma.$transaction(
     foodsToCreate.map((food) => prisma.food.create({ data: food }))
   );
+
+  // Filter foods based on dietary preference
+  if (dietaryPreference === "vegetarian") {
+    return createdFoods.filter(
+      (food) =>
+        !food.name.toLowerCase().includes("pollo") &&
+        !food.name.toLowerCase().includes("carne") &&
+        !food.name.toLowerCase().includes("pescado") &&
+        !food.name.toLowerCase().includes("salmón")
+    );
+  } else if (dietaryPreference === "keto") {
+    return createdFoods.filter(
+      (food) =>
+        food.carbs < 10 ||
+        food.category === "proteína" ||
+        food.category === "grasa"
+    );
+  }
+
+  return createdFoods;
 }
 
-// Enhanced createMealLog function with more intelligent food selection
-export async function createMealLog(
+// Create a nutrition plan based on user profile
+export async function createNutritionPlan(profile) {
+  const { userId, goal, dietaryPreference, gender, dailyCalorieTarget } =
+    profile;
+
+  // Get foods from database or create new ones if they don't exist
+  const foods = await getOrCreateFoods(dietaryPreference);
+
+  // Generate meal plans for each meal type
+  const breakfast = await createMealLog(
+    userId,
+    "breakfast",
+    foods,
+    goal,
+    dietaryPreference,
+    dailyCalorieTarget
+  );
+
+  const lunch = await createMealLog(
+    userId,
+    "lunch",
+    foods,
+    goal,
+    dietaryPreference,
+    dailyCalorieTarget
+  );
+
+  const dinner = await createMealLog(
+    userId,
+    "dinner",
+    foods,
+    goal,
+    dietaryPreference,
+    dailyCalorieTarget
+  );
+
+  const snacks = await createMealLog(
+    userId,
+    "snack",
+    foods,
+    goal,
+    dietaryPreference,
+    dailyCalorieTarget
+  );
+
+  // Return the complete nutrition plan
+  return {
+    macros: {
+      protein: `${profile.dailyProteinTarget ?? 0}g (${Math.round(
+        (((profile.dailyProteinTarget ?? 0) * 4) /
+          (profile.dailyCalorieTarget ?? 2000)) *
+          100
+      )}%)`,
+      carbs: `${profile.dailyCarbTarget ?? 0}g (${Math.round(
+        (((profile.dailyCarbTarget ?? 0) * 4) /
+          (profile.dailyCalorieTarget ?? 2000)) *
+          100
+      )}%)`,
+      fat: `${profile.dailyFatTarget ?? 0}g (${Math.round(
+        (((profile.dailyFatTarget ?? 0) * 9) /
+          (profile.dailyCalorieTarget ?? 2000)) *
+          100
+      )}%)`,
+      description: `Based on your ${getGoalText(
+        goal
+      )} goal and a daily target of ${
+        profile.dailyCalorieTarget ?? 2000
+      } calories`,
+    },
+    meals: {
+      breakfast,
+      lunch,
+      dinner,
+      snacks,
+    },
+    calorieTarget: profile.dailyCalorieTarget,
+  };
+}
+
+// Create a meal log for a specific meal type
+async function createMealLog(
   userId,
   mealType,
   foods,
   goal,
-  dietaryPreference,
+  dietaryPreference = "no-preference",
   dailyCalorieTarget = 2000
 ) {
+  // Select appropriate foods based on meal type and dietary preference
   let selectedFoods = [];
 
-  // Advanced food selection with more intelligent categorization
-  const foodCategories = {
-    protein: foods.filter(
-      (f) => f.category === "proteína" && f.protein / (f.calories / 100) > 0.25
-    ),
-    carbs: foods.filter(
-      (f) => f.category === "carbohidrato" && f.carbs / (f.calories / 100) > 0.5
-    ),
-    vegetables: foods.filter(
-      (f) => f.category === "verdura" && f.calories < 50
-    ),
-    fruits: foods.filter((f) => f.category === "fruta"),
-    fats: foods.filter(
-      (f) => f.category === "grasa" && f.fat / (f.calories / 100) > 0.6
-    ),
-    dairy: foods.filter((f) => f.category === "lácteo"),
-  };
+  // Meal-specific food selection logic
+  if (mealType === "breakfast") {
+    // Filter appropriate breakfast foods
+    const proteinFoods = foods.filter(
+      (f) =>
+        f.category === "proteína" &&
+        (f.name === "Huevos" || f.name === "Yogur griego")
+    );
 
-  // Meal type specific selection with more nuanced approach
-  switch (mealType) {
-    case "breakfast":
-      selectedFoods = [
-        foodCategories.protein[0],
-        foodCategories.carbs[0],
-        foodCategories.fruits[0],
-        foodCategories.fats[0],
-      ].filter(Boolean);
-      break;
+    const carbFoods = foods.filter(
+      (f) =>
+        f.category === "carbohidrato" &&
+        (f.name === "Avena" || f.name === "Pan integral")
+    );
 
-    case "lunch":
-      selectedFoods = [
-        foodCategories.protein[1] || foodCategories.protein[0],
-        foodCategories.carbs[1] || foodCategories.carbs[0],
-        foodCategories.vegetables[0],
-        foodCategories.vegetables[1],
-        foodCategories.fats[1] || foodCategories.fats[0],
-      ].filter(Boolean);
-      break;
+    const fruitFoods = foods.filter((f) => f.category === "fruta");
 
-    case "dinner":
-      selectedFoods = [
-        foodCategories.protein[2] || foodCategories.protein[0],
-        ...(dietaryPreference !== "keto"
-          ? [foodCategories.carbs[2] || foodCategories.carbs[0]]
-          : []),
-        foodCategories.vegetables[2] || foodCategories.vegetables[0],
-        foodCategories.vegetables[3] || foodCategories.vegetables[1],
-        foodCategories.fats[2] || foodCategories.fats[0],
-      ].filter(Boolean);
-      break;
+    const fatFoods = foods.filter(
+      (f) =>
+        f.category === "grasa" &&
+        (f.name === "Aguacate" || f.name === "Almendras")
+    );
 
-    case "snack":
+    // Select foods based on dietary preference
+    if (dietaryPreference === "keto") {
       selectedFoods = [
-        foodCategories.dairy[0],
-        foodCategories.fruits[1],
-        foodCategories.fats.find((f) => f.name === "Almendras"),
+        proteinFoods[0],
+        fatFoods[0],
+        fatFoods[1] || fatFoods[0],
       ].filter(Boolean);
-      break;
+    } else {
+      selectedFoods = [
+        proteinFoods[0],
+        carbFoods[0],
+        fruitFoods[0],
+        fatFoods[0],
+      ].filter(Boolean);
+    }
+  } else if (mealType === "lunch") {
+    // Filter appropriate lunch foods
+    const proteinFoods = foods.filter((f) => f.category === "proteína");
+
+    const carbFoods = foods.filter(
+      (f) => f.category === "carbohidrato" && f.name !== "Avena"
+    );
+
+    const vegFoods = foods.filter((f) => f.category === "verdura");
+
+    const fatFoods = foods.filter(
+      (f) => f.category === "grasa" && f.name === "Aceite de oliva"
+    );
+
+    // Select foods based on dietary preference
+    if (dietaryPreference === "keto") {
+      selectedFoods = [
+        proteinFoods[0],
+        vegFoods[0],
+        vegFoods[1] || vegFoods[0],
+        fatFoods[0],
+      ].filter(Boolean);
+    } else {
+      selectedFoods = [
+        proteinFoods[0],
+        carbFoods[0],
+        vegFoods[0],
+        vegFoods[1] || vegFoods[0],
+        fatFoods[0],
+      ].filter(Boolean);
+    }
+  } else if (mealType === "dinner") {
+    // Filter appropriate dinner foods
+    const proteinFoods = foods.filter((f) => f.category === "proteína");
+    const vegFoods = foods.filter((f) => f.category === "verdura");
+    const fatFoods = foods.filter((f) => f.category === "grasa");
+
+    // Only include carbs if not on keto diet
+    const carbFoods =
+      dietaryPreference === "keto"
+        ? []
+        : foods.filter(
+            (f) => f.category === "carbohidrato" && f.name !== "Avena"
+          );
+
+    // Select foods based on dietary preference
+    selectedFoods = [
+      proteinFoods[1] || proteinFoods[0],
+      ...carbFoods.slice(0, 1),
+      vegFoods[0],
+      vegFoods[1] || vegFoods[0],
+      fatFoods[0],
+    ].filter(Boolean);
+  } else if (mealType === "snack") {
+    // Filter appropriate snack foods
+    const proteinFoods = foods.filter(
+      (f) =>
+        f.category === "proteína" &&
+        (f.name === "Yogur griego" || f.name === "Huevos")
+    );
+
+    const fruitFoods =
+      dietaryPreference === "keto"
+        ? []
+        : foods.filter((f) => f.category === "fruta");
+
+    const nutFoods = foods.filter(
+      (f) =>
+        f.category === "grasa" &&
+        (f.name === "Almendras" || f.name === "Semillas de chía")
+    );
+
+    // Select foods based on dietary preference
+    selectedFoods = [
+      proteinFoods[0],
+      ...fruitFoods.slice(0, 1),
+      nutFoods[0],
+    ].filter(Boolean);
   }
 
-  // Calorie and macro distribution logic
+  // Distribute calories according to meal type
   const mealCaloriePercentage = {
-    breakfast: 0.25,
-    lunch: 0.35,
-    dinner: 0.3,
-    snack: 0.1,
+    breakfast: 0.25, // 25% of daily calories
+    lunch: 0.35, // 35% of daily calories
+    dinner: 0.3, // 30% of daily calories
+    snack: 0.1, // 10% of daily calories
   };
 
+  // Target calories for this meal
   const targetMealCalories =
     dailyCalorieTarget * mealCaloriePercentage[mealType];
 
+  // Calculate macros and create meal entries
   let totalCalories = 0;
   let totalProtein = 0;
   let totalCarbs = 0;
   let totalFat = 0;
-
   const mealEntries = [];
 
-  // Dynamic portion sizing based on goal and target calories
   for (const food of selectedFoods) {
-    let quantity = 1; // Base quantity
+    // Adjust quantity based on food category and goal
+    let baseQuantity = 1.0;
 
-    // Goal-based quantity adjustment
-    if (goal === "lose-weight") quantity *= 0.8;
-    if (goal === "gain-muscle") quantity *= 1.2;
-
-    // Dynamic scaling to hit target calories
-    const foodCalories = food.calories * quantity;
-    const calorieRatio = targetMealCalories / (totalCalories + foodCalories);
-
-    if (calorieRatio > 1.2 || totalCalories === 0) {
-      quantity *= calorieRatio > 1.2 ? 1.2 : 1;
-
-      totalCalories += food.calories * quantity;
-      totalProtein += food.protein * quantity;
-      totalCarbs += food.carbs * quantity;
-      totalFat += food.fat * quantity;
-
-      mealEntries.push({
-        foodId: food.id,
-        quantity,
-      });
+    if (food.category === "proteína") {
+      baseQuantity = goal === "gain-muscle" ? 1.2 : 1.0;
+    } else if (food.category === "carbohidrato") {
+      baseQuantity = goal === "lose-weight" ? 0.8 : 1.0;
+    } else if (food.category === "verdura") {
+      baseQuantity = 1.5; // Always encourage vegetables
+    } else if (food.category === "grasa") {
+      baseQuantity = goal === "lose-weight" ? 0.7 : 1.0;
     }
+
+    // Adjust for meal type
+    if (mealType === "snack") {
+      baseQuantity *= 0.5; // Smaller portions for snacks
+    }
+
+    // Calculate nutrition values for this food
+    const quantity = baseQuantity;
+    totalCalories += food.calories * quantity;
+    totalProtein += food.protein * quantity;
+    totalCarbs += food.carbs * quantity;
+    totalFat += food.fat * quantity;
+
+    // Add to meal entries
+    mealEntries.push({
+      foodId: food.id,
+      quantity,
+    });
   }
 
-  // Create meal log with precise macro tracking
+  // Create the meal log in the database
   const mealLog = await prisma.mealLog.create({
     data: {
       userId,
@@ -510,4 +595,18 @@ export async function createMealLog(
   });
 
   return mealLog;
+}
+
+// Helper function to get text representation of goal
+function getGoalText(goal) {
+  switch (goal) {
+    case "lose-weight":
+      return "weight loss";
+    case "maintain":
+      return "maintenance";
+    case "gain-muscle":
+      return "muscle gain";
+    default:
+      return goal;
+  }
 }

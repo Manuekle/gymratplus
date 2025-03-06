@@ -1,7 +1,5 @@
 "use client";
 
-import WorkoutModal from "@/components/workouts/workout-modal";
-
 import {
   Card,
   CardContent,
@@ -10,10 +8,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import WorkoutsTable from "../tables/workouts-table";
+import { WorkoutGeneratorForm } from "../workout-generator/workout-generator-form";
+// import WorkoutModal from "./workout-modal";
 
 export default function WorkoutCreator() {
   return (
-    <Card>
+    <Card className="col-span-2">
       <CardHeader className="pb-2">
         <CardTitle>Mis Rutinas</CardTitle>
         <CardDescription className="text-xs">
@@ -22,7 +22,8 @@ export default function WorkoutCreator() {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <WorkoutModal />
+          <WorkoutGeneratorForm />
+          {/* <WorkoutModal /> */}
           <WorkoutsTable />
         </div>
       </CardContent>
