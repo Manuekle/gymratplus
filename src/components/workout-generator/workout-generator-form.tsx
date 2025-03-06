@@ -218,7 +218,7 @@ export function WorkoutGeneratorForm() {
                     {isSubmitting ? (
                       <>
                         <Icons.spinner className="h-2 w-2 animate-spin" />
-                        Generarndo
+                        Generando rutina
                       </>
                     ) : (
                       <>Generar rutina</>
