@@ -279,7 +279,7 @@ export default function StepOnboarding1({
       });
 
       // Redirigir a la página de recomendaciones después de guardar el perfil
-      router.push("/recommendations");
+      router.push("/onboarding/recommendations");
     } catch (error) {
       console.error("Error submitting profile:", error);
       toast.error("Failed to save profile", {

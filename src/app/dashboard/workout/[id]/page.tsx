@@ -6,13 +6,7 @@ import { useSession } from "next-auth/react";
 import WorkoutExercise from "../../../../components/workouts/workout-exercise";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft01Icon, Calendar01Icon } from "hugeicons-react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -83,9 +77,14 @@ export default function WorkoutDetail() {
         >
           <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
         </Button>
-        <Button className="text-xs" onClick={() => setIsModalOpen(true)}>
-          Agregar ejercicio
-        </Button>
+        <span className="flex flex-row gap-4">
+          <Button className="text-xs" onClick={() => setIsModalOpen(true)}>
+            Agregar ejercicio
+          </Button>
+          <Button className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90">
+            Comenzar rutina
+          </Button>
+        </span>
       </div>
       <WorkoutExercise
         isOpen={isModalOpen}

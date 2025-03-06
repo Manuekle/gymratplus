@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req });
   const path = req.nextUrl.pathname;
 
-  const protectedRoutes = ["/onboarding", "/recommendations"];
+  const protectedRoutes = ["/onboarding", "/onboarding/recommendations"];
   const isDashboardRoute = path.startsWith("/dashboard");
   const authRoutes = ["/auth/signin", "/auth/signup"];
 
@@ -34,8 +34,8 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/onboarding",
-    "/recommendations",
+    "/onboarding/:path*",
+    "/onboarding/recommendations",
     "/dashboard/:path*",
     "/auth/signin",
     "/auth/signup",
