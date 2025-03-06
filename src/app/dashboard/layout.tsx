@@ -33,7 +33,7 @@ export default function DashboardLayout({
         >
           {/* Contenedor con scroll solo en móviles */}
           <div className="w-full overflow-x-auto md:overflow-visible">
-            <TabsList className="flex md:grid md:grid-cols-5 w-max min-w-full md:w-full gap-2 px-4">
+            <TabsList className="flex flex-wrap h-auto gap-4 tracking-wider">
               <TabsTrigger
                 value="dashboard"
                 asChild

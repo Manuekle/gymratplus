@@ -282,7 +282,7 @@ export function MealTracker() {
           </div>
 
           <Tabs defaultValue="breakfast">
-            <TabsList className="grid grid-cols-4 mb-4">
+            <TabsList className="grid grid-cols-4 mb-4 tracking-wider">
               {mealTypes.map((type) => (
                 <TabsTrigger key={type.id} value={type.id}>
                   {type.label}

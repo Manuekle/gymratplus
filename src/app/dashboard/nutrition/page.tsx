@@ -223,7 +223,7 @@ export default function NutritionPage() {
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="today">
-            <TabsList className="mb-4">
+            <TabsList className="mb-4 tracking-wider">
               <TabsTrigger value="today">Hoy</TabsTrigger>
               <TabsTrigger value="yesterday">Ayer</TabsTrigger>
               <TabsTrigger value="week">Esta semana</TabsTrigger>

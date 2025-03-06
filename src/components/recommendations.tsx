@@ -293,7 +293,7 @@ export default function RecommendationsComponent() {
             transition={{ duration: 0.5 }}
           >
             <Tabs defaultValue="workout" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsList className="grid w-full grid-cols-2 mb-8 tracking-wider">
                 <TabsTrigger value="workout">Plan de Entrenamiento</TabsTrigger>
                 <TabsTrigger value="nutrition">Plan Nutricional</TabsTrigger>
               </TabsList>

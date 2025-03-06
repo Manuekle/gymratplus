@@ -13,7 +13,7 @@ import { WorkoutGeneratorForm } from "../workout-generator/workout-generator-for
 
 export default function WorkoutCreator() {
   return (
-    <Card className="col-span-2">
+    <Card className="col-span-1 md:col-span-2">
       <CardHeader className="pb-2">
         <CardTitle>Mis Rutinas</CardTitle>
         <CardDescription className="text-xs">

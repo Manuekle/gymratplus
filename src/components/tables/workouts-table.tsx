@@ -11,7 +11,7 @@ import {
   createActionsColumn,
 } from "@/components/ui/data-table";
 
-import { EyeIcon, WasteIcon } from "hugeicons-react";
+import { Delete01Icon, EyeIcon, WasteIcon } from "hugeicons-react";
 
 interface Workout {
   id: string;
@@ -68,16 +68,16 @@ export default function WorkoutsTable() {
   const columns = [
     createDateColumn<Workout>("createdAt", "Fecha", "dd MMM yyyy HH:mm"),
     createSortableColumn<Workout>("name", "Nombre"),
-    createSortableColumn<Workout>("description", "Descripción"),
+    // createSortableColumn<Workout>("description", "Descripción"),
     createActionsColumn<Workout>("", [
       {
-        label: "Ver detalles",
+        label: "Ver rutina",
         icon: EyeIcon,
         onClick: handleViewDetails,
       },
       {
         label: "Eliminar",
-        icon: WasteIcon,
+        icon: Delete01Icon,
         onClick: handleDelete,
       },
     ]),

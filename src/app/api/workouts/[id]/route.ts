@@ -47,7 +47,18 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(workout);
+    // Formatear el plan de entrenamiento para la respuesta
+    const formattedWorkout = {
+      id: workout.id,
+      name: workout.name,
+      description: workout.description,
+      days: formatWorkoutPlan(workout.exercises),
+      type: workout.type,
+      methodology: workout.methodology,
+      goal: workout.goal,
+    };
+
+    return NextResponse.json(formattedWorkout);
   } catch (error) {
     console.error("Error obteniendo workout:", error);
     return NextResponse.json(
@@ -55,6 +66,37 @@ export async function GET(
       { status: 500 }
     );
   }
+}
+
+// Format workout plan for response
+function formatWorkoutPlan(workoutExercises) {
+  // Agrupar ejercicios por grupo muscular
+  const exercisesByDay = workoutExercises.reduce((acc, ex) => {
+    // Extraer el grupo muscular del campo notes
+    const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
+    const muscleGroup = muscleGroupMatch
+      ? muscleGroupMatch[1].trim()
+      : "General";
+
+    if (!acc[muscleGroup]) acc[muscleGroup] = [];
+    acc[muscleGroup].push(ex);
+    return acc;
+  }, {});
+
+  // Formatear cada grupo muscular
+  return Object.entries(exercisesByDay).map(([muscleGroup, exercises]) => {
+    return {
+      day: muscleGroup, // Usamos el grupo muscular como identificador del día
+      exercises: exercises.map((ex) => ({
+        id: ex.id,
+        name: ex.exercise.name || "Ejercicio",
+        sets: ex.sets,
+        reps: ex.reps,
+        restTime: ex.restTime,
+        notes: ex.notes?.replace(/^[^-]+ - /, "") || "",
+      })),
+    };
+  });
 }
 
 export async function PUT(

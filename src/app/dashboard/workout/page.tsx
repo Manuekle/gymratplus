@@ -138,7 +138,7 @@ export default function WorkoutPage() {
       <Card>
         <CardHeader className="pb-2">
           <CardTitle>Progreso de Ejercicios</CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs">
             Evolución de tus levantamientos principales
           </CardDescription>
         </CardHeader>
