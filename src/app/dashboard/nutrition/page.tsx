@@ -211,50 +211,6 @@ export default function NutritionPage() {
                   className="h-2"
                 />
               </div>
-
-              {/* <div className="pt-2">
-                <div className="text-sm text-muted-foreground mb-2">
-                  Distribución de macros
-                </div>
-                <div className="flex h-4 rounded-full overflow-hidden">
-                  <div
-                    className="bg-blue-500"
-                    style={{
-                      width: `${
-                        (macros.protein.target /
-                          (macros.protein.target +
-                            macros.carbs.target +
-                            macros.fat.target)) *
-                        100
-                      }%`,
-                    }}
-                  ></div>
-                  <div
-                    className="bg-green-500"
-                    style={{
-                      width: `${
-                        (macros.carbs.target /
-                          (macros.protein.target +
-                            macros.carbs.target +
-                            macros.fat.target)) *
-                        100
-                      }%`,
-                    }}
-                  ></div>
-                  <div
-                    className="bg-yellow-500"
-                    style={{
-                      width: `${
-                        (macros.fat.target /
-                          (macros.protein.target +
-                            macros.carbs.target +
-                            macros.fat.target)) *
-                        100
-                      }%`,
-                    }}
-                  ></div>
-                </div>
-              </div> */}
             </div>
           </CardContent>
         </Card>

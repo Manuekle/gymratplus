@@ -201,15 +201,23 @@ export const authOptions = {
       await redis.del(`user:email:${user.email}`);
     },
     updateUser: async ({ user }) => {
-      // Invalidar caché después de actualizar usuario
-      await redis.del(`user:email:${user.email}`);
-      await redis.del(`user:${user.id}:data`);
-      await redis.del(`profile:${user.id}`);
+      // Obtener el perfil actualizado
+      const updatedProfile = await prisma.profile.findUnique({
+        where: { userId: user.id },
+      });
+
+      if (updatedProfile) {
+        await redis.set(`profile:${user.id}`, updatedProfile, {
+          ex: 60 * 60 * 24, // 24 horas
+        });
+      }
     },
     signOut: async ({ token }) => {
       // Opcional: Limpiar datos de sesión específicos al cerrar sesión
       if (token?.id) {
         await redis.del(`user:${token.id}:lastActive`);
+        await redis.del(`user:${token.id}:data`);
+        await redis.del(`profile:${token.id}`);
       }
     },
   },
