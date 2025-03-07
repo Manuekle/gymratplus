@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -16,6 +15,8 @@ import { ArrowLeft01Icon } from "hugeicons-react"; // Usando tus iconos
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import WorkoutTimerFloat from "@/components/workout-timer-float";
+import { toast } from "sonner";
 
 // Componente de spinner (ajusta según tus componentes)
 const Spinner = () => (
@@ -29,7 +30,6 @@ export default function ActiveWorkout() {
   const [workoutSession, setWorkoutSession] = useState<any>(null);
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [elapsedTime, setElapsedTime] = useState(0);
   const [restTimer, setRestTimer] = useState<{
     active: boolean;
     timeLeft: number;
@@ -57,10 +57,16 @@ export default function ActiveWorkout() {
           setStartTime(new Date(data.createdAt));
         } else {
           // No hay sesión activa, redirigir
+          toast.error("No hay entrenamiento activo", {
+            description: "Serás redirigido para iniciar uno nuevo",
+          });
           setTimeout(() => router.push("/dashboard/workout"), 2000);
         }
       } catch (error) {
         console.error("Error al cargar el entrenamiento activo:", error);
+        toast.error("Error", {
+          description: "No se pudo cargar el entrenamiento activo",
+        });
       } finally {
         setLoading(false);
       }
@@ -68,19 +74,6 @@ export default function ActiveWorkout() {
 
     fetchActiveWorkout();
   }, [router]);
-
-  // Actualizar el tiempo transcurrido
-  useEffect(() => {
-    if (!startTime) return;
-
-    const interval = setInterval(() => {
-      const now = new Date();
-      const elapsed = Math.floor((now.getTime() - startTime.getTime()) / 1000);
-      setElapsedTime(elapsed);
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [startTime]);
 
   // Manejar el temporizador de descanso
   useEffect(() => {
@@ -119,6 +112,10 @@ export default function ActiveWorkout() {
 
   // Iniciar temporizador de descanso
   const startRestTimer = (exerciseId: string, restTime: number) => {
+    // Reproducir sonido al iniciar el descanso
+    const audio = new Audio("/sounds/timer-start.mp3");
+    audio.play().catch((e) => console.log("Error playing sound:", e));
+
     setRestTimer({
       active: true,
       timeLeft: restTime,
@@ -260,37 +257,41 @@ export default function ActiveWorkout() {
           });
           return updated;
         });
+
+        toast.success("Ejercicio completado", {
+          description: "Se ha marcado el ejercicio como completado",
+        });
       }
     } catch (error) {
       console.error("Error al completar ejercicio:", error);
+      toast.error("Error", {
+        description: "No se pudo completar el ejercicio",
+      });
     }
   };
 
   // Completar el entrenamiento
   const completeWorkout = async () => {
-    if (!workoutSession || !startTime) return;
+    if (!workoutSession) return;
 
     setSaving(true);
     try {
-      // Calcular duración en minutos
-      const duration = Math.round(elapsedTime / 60);
-
-      const response = await fetch("/api/workout-session/complete", {
+      // Guardar las notas
+      await fetch("/api/workout-session/notes", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           workoutSessionId: workoutSession.id,
-          duration,
           notes,
         }),
       });
 
-      if (response.ok) {
-        router.push("/dashboard/workout/history");
-      }
+      toast.success("Notas guardadas", {
+        description: "Las notas del entrenamiento han sido guardadas",
+      });
+      setSaving(false);
     } catch (error) {
-      console.error("Error al completar entrenamiento:", error);
-    } finally {
+      console.error("Error al guardar notas:", error);
       setSaving(false);
     }
   };
@@ -321,10 +322,19 @@ export default function ActiveWorkout() {
     );
   }
 
+  console.log(workoutSession);
+
   const progress = calculateProgress();
 
   return (
     <div>
+      {startTime && (
+        <WorkoutTimerFloat
+          workoutSessionId={workoutSession.id}
+          startTime={startTime}
+          onComplete={() => router.push("/dashboard/workout/history")}
+        />
+      )}
       <div className="pt-4">
         <div className="mb-4 flex justify-between w-full items-center">
           <Button
@@ -337,23 +347,18 @@ export default function ActiveWorkout() {
         </div>
         <div className="border rounded-lg p-4 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            {/* <div>
-              <h1 className="text-sm font-bold">Entrenamiento en progreso</h1>
-              <p className="text-muted-foreground">
-                Tiempo: {formatTime(elapsedTime)} | Progreso: {progress}%
-              </p>
-            </div> */}
             <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-md">
-                Entrenamiento en progreso
+              <CardTitle className="text-md font-medium">
+                {workoutSession.notes}
               </CardTitle>
               <CardDescription className="text-xs">
-                Tiempo: {formatTime(elapsedTime)} | Progreso: {progress}%
+                Entrenamiento en progreso
               </CardDescription>
             </div>
             <Button
               onClick={completeWorkout}
               disabled={saving}
+              size="sm"
               className="text-xs"
             >
               {saving ? <Spinner /> : null}
@@ -366,15 +371,17 @@ export default function ActiveWorkout() {
           </div>
 
           {restTimer.active && (
-            <div className="bg-primary/10 p-4 rounded-lg text-center mb-6">
-              <h3 className="text-lg font-medium mb-2">Tiempo de descanso</h3>
-              <div className="text-3xl font-bold">
+            <div className="bg-foreground p-4 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in">
+              <h3 className="text-md tracking-wider mb-2 text-white dark:text-black">
+                Tiempo de descanso
+              </h3>
+              <div className="text-3xl font-bold text-white dark:text-black">
                 {formatTime(restTimer.timeLeft)}
               </div>
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-2"
+                className="mt-2 text-xs "
                 onClick={() =>
                   setRestTimer({ active: false, timeLeft: 0, exerciseId: null })
                 }
@@ -384,7 +391,7 @@ export default function ActiveWorkout() {
             </div>
           )}
 
-          <div className="space-y-6 ">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {workoutSession.exercises.map((exercise: any) => (
               <div
                 key={exercise.id}
@@ -417,6 +424,7 @@ export default function ActiveWorkout() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="text-xs"
                           onClick={() => completeExercise(exercise.id)}
                         >
                           Marcar como completado
@@ -425,22 +433,22 @@ export default function ActiveWorkout() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="pt-6">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-12 gap-2 items-center font-medium text-sm">
-                      <div className="col-span-1"></div>
-                      <div className="col-span-2">Set</div>
-                      <div className="col-span-3">Peso (kg)</div>
-                      <div className="col-span-3">Reps</div>
-                      <div className="col-span-3">Estado</div>
+                    <div className="grid grid-cols-3 gap-2 items-center font-medium text-sm">
+                      {/* <div className="col-span-1"></div> */}
+                      <div className="col-span-1">Set</div>
+                      <div className="col-span-1">Peso (kg)</div>
+                      <div className="col-span-1">Reps</div>
+                      {/* <div className="col-span-3">Estado</div> */}
                     </div>
 
                     {exercise.sets.map((set: any) => (
                       <div
                         key={set.id}
-                        className="grid grid-cols-12 gap-2 items-center"
+                        className="grid grid-cols-3 gap-2 items-center"
                       >
-                        <div className="col-span-1">
+                        {/* <div className="col-span-1">
                           <Checkbox
                             checked={set.completed}
                             onCheckedChange={(checked) =>
@@ -452,17 +460,18 @@ export default function ActiveWorkout() {
                             }
                             disabled={exercise.completed}
                           />
-                        </div>
-                        <div className="col-span-2 text-sm">
+                        </div> */}
+                        <div className="col-span-1 text-sm">
                           {set.setNumber}
                           {set.isDropSet && (
                             <span className="ml-1 text-red-500">*</span>
                           )}
                         </div>
-                        <div className="col-span-3">
+                        <div className="col-span-1">
                           <Input
                             type="number"
                             placeholder="Peso"
+                            min="0"
                             value={set.weight || ""}
                             onChange={(e) =>
                               updateSet(set.id, {
@@ -479,10 +488,11 @@ export default function ActiveWorkout() {
                             className="text-sm"
                           />
                         </div>
-                        <div className="col-span-3">
+                        <div className="col-span-1">
                           <Input
                             type="number"
                             placeholder="Reps"
+                            min="0"
                             value={set.reps || ""}
                             onChange={(e) =>
                               updateSet(set.id, {
@@ -498,7 +508,7 @@ export default function ActiveWorkout() {
                             className="text-sm"
                           />
                         </div>
-                        <div className="col-span-3 text-sm">
+                        {/* <div className="col-span-3 text-sm">
                           {set.completed ? (
                             <Badge variant="outline" className="bg-green-50">
                               Completado
@@ -513,7 +523,7 @@ export default function ActiveWorkout() {
                               Drop Set
                             </span>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     ))}
                   </div>
@@ -522,7 +532,7 @@ export default function ActiveWorkout() {
             ))}
           </div>
 
-          <div className="pt-4">
+          {/* <div className="pt-4">
             <h3 className="text-lg font-medium mb-2">Notas</h3>
             <Textarea
               className="w-full"
@@ -531,7 +541,7 @@ export default function ActiveWorkout() {
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Añade notas sobre tu entrenamiento..."
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

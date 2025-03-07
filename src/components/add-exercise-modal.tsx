@@ -110,6 +110,7 @@ export function AddExerciseModal({
                 <Input
                   id="sets"
                   type="number"
+                  min="0"
                   value={sets}
                   onChange={(e) => setSets(e.target.value)}
                   className="pl-10"
@@ -127,6 +128,7 @@ export function AddExerciseModal({
                 <Input
                   id="reps"
                   type="number"
+                  min="0"
                   value={reps}
                   onChange={(e) => setReps(e.target.value)}
                   className="pl-10"
@@ -144,6 +146,7 @@ export function AddExerciseModal({
                 <Input
                   id="weight"
                   type="number"
+                  min="0"
                   value={weight}
                   onChange={(e) => setWeight(e.target.value)}
                   className="pl-10"
@@ -160,6 +163,7 @@ export function AddExerciseModal({
                 <Input
                   id="duration"
                   type="number"
+                  min="0"
                   value={duration}
                   onChange={(e) => setDuration(e.target.value)}
                   className="pl-10"

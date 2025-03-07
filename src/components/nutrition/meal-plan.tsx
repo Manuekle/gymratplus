@@ -112,21 +112,63 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#DE3163] text-white">
-              <SteakIcon size={32} />
-              <span className="text-md font-semibold">Proteínas</span>
-              <span className="text-sm">{nutritionPlan.macros.protein}</span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#578FCA] text-white">
+            <Card className="bg-gradient-to-br from-pink-50 to-white">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Proteínas</p>
+                    <p className="text-md font-medium">
+                      {nutritionPlan.macros.protein}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center">
+                    <SteakIcon className="h-6 w-6 text-pink-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-sky-50 to-white">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">
+                      Carbohidratos
+                    </p>
+                    <p className="text-md font-medium">
+                      {nutritionPlan.macros.carbs}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-sky-100 flex items-center justify-center">
+                    <SteakIcon className="h-6 w-6 text-sky-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="bg-gradient-to-br from-amber-100 to-white">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Grasas</p>
+                    <p className="text-md font-medium">
+                      {nutritionPlan.macros.fat}
+                    </p>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+                    <SteakIcon className="h-6 w-6 text-amber-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            {/* <Card className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#578FCA] text-white">
               <Bread04Icon size={32} />
               <span className="text-md font-semibold">Carbohidratos</span>
               <span className="text-sm">{nutritionPlan.macros.carbs}</span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#FBA518] text-white">
+            </Card>
+            <Card className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#FBA518] text-white">
               <FishFoodIcon size={32} />
               <span className="text-md font-semibold">Grasas</span>
               <span className="text-sm">{nutritionPlan.macros.fat}</span>
-            </div>
+            </Card> */}
           </div>
         </CardContent>
       </Card>

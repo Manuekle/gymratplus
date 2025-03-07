@@ -131,6 +131,7 @@ export default function WorkoutExercise({
                 <Input
                   id="sets"
                   type="number"
+                  min="0"
                   name="sets"
                   placeholder="Sets"
                   value={exerciseData.sets}
@@ -149,6 +150,7 @@ export default function WorkoutExercise({
                 <Input
                   id="reps"
                   type="number"
+                  min="0"
                   name="reps"
                   placeholder="Reps"
                   value={exerciseData.reps}
@@ -167,6 +169,7 @@ export default function WorkoutExercise({
                 <Input
                   id="restTime"
                   type="number"
+                  min="0"
                   name="restTime"
                   placeholder="Descanso (s)"
                   value={exerciseData.restTime}
@@ -188,6 +191,7 @@ export default function WorkoutExercise({
                   id="weight"
                   type="number"
                   name="weight"
+                  min="0"
                   placeholder="Peso (kg)"
                   value={exerciseData.weight}
                   onChange={(e) =>

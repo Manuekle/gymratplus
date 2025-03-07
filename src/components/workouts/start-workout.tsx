@@ -157,11 +157,6 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
         );
       }
 
-      // toast({
-      //   title: "Entrenamiento anterior finalizado",
-      //   description: "Iniciando nuevo entrenamiento...",
-      // });
-
       toast.error("Entrenamiento anterior finalizado", {
         description: "Iniciando nuevo entrenamiento...",
       });
@@ -189,14 +184,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       }, 500);
     } catch (error) {
       console.error("Error:", error);
-      // toast({
-      //   title: "Error",
-      //   description:
-      //     error instanceof Error
-      //       ? error.message
-      //       : "Error al procesar la operación",
-      //   variant: "destructive",
-      // });
+
       toast.error("Error", {
         description: "Error al procesar la operación",
       });

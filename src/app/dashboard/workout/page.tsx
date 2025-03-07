@@ -19,7 +19,8 @@ import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
 import WorkoutCreator from "@/components/workouts/workout-creator";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import { WorkoutGeneratorForm } from "@/components/workout-generator/workout-generator-form";
+// import { WorkoutGeneratorForm } from "@/components/workout-generator/workout-generator-form";
+import WorkoutHistory from "@/components/workouts/workout-history";
 
 interface UserProfile {
   id: string;
@@ -146,19 +147,8 @@ export default function WorkoutPage() {
           <ExerciseProgressChart />
         </CardContent>
       </Card>
-      {/* <Card>
-        <CardHeader className="pb-2">
-          <CardTitle>Progreso de Ejercicios</CardTitle>
-          <CardDescription>
-            Evolución de tus levantamientos principales
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <WorkoutGeneratorForm />
-        </CardContent>
-      </Card> */}
-
       <WorkoutCreator />
+      <WorkoutHistory />
     </div>
   );
 }
