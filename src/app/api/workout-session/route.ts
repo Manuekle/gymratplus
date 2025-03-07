@@ -1,5 +1,4 @@
-// app/api/workout-sessions/route.ts
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -12,73 +11,72 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const { workoutId, dayName } = await req.json();
+    const { day, exercises } = await req.json();
 
-    // Obtener el workout con sus ejercicios
-    const workout = await prisma.workout.findUnique({
-      where: { id: workoutId },
-      include: {
-        exercises: {
-          include: {
-            exercise: true, // Trae los detalles del ejercicio
-          },
-          orderBy: {
-            order: "asc",
-          },
-        },
-      },
+    if (!day || !exercises || !exercises.length) {
+      return NextResponse.json(
+        { error: "Datos inválidos proporcionados" },
+        { status: 400 }
+      );
+    }
+
+    console.log("Día recibido:", day);
+    console.log("Ejercicios recibidos:", exercises);
+
+    // Buscar el workout del usuario (asumiendo que tiene uno activo)
+    // Si necesitas un workoutId específico, deberías incluirlo en la solicitud
+    const userWorkout = await prisma.workout.findFirst({
+      where: { userId: session.user.id },
+      orderBy: { createdAt: "desc" },
     });
 
-    if (!workout) {
+    if (!userWorkout) {
       return NextResponse.json(
-        { error: "Entrenamiento no encontrado" },
+        { error: "No se encontró un entrenamiento activo para el usuario" },
         { status: 404 }
       );
     }
 
-    console.log("Ejercicios en workout:", workout.exercises);
-    console.log("Día recibido:", dayName);
-
-    // Convertir "Pecho y Tríceps" en ["Pecho", "Tríceps"]
-    const muscleGroups = dayName
-      .split(/\s*y\s*|\s*,\s*/) // Divide por "y", ",", espacios extras
-      .map((muscle) => muscle.trim().toLowerCase());
-
-    console.log("Grupos musculares a filtrar:", muscleGroups);
-
-    // Filtrar los ejercicios que coincidan con cualquiera de los grupos musculares
-    const filteredExercises = workout.exercises.filter((workoutExercise) =>
-      muscleGroups.includes(workoutExercise.exercise.muscleGroup.toLowerCase())
-    );
-
-    console.log("Ejercicios filtrados:", filteredExercises);
-
-    if (filteredExercises.length === 0) {
-      return NextResponse.json(
-        { error: `No hay ejercicios para el día: ${dayName}` },
-        { status: 404 }
-      );
-    }
-
-    // Crear la sesión de entrenamiento con los ejercicios filtrados
+    // Crear la sesión de entrenamiento con los ejercicios proporcionados
     const workoutSession = await prisma.workoutSession.create({
       data: {
         userId: session.user.id,
-        workoutId: workout.id,
-        notes: `Día: ${dayName}`,
+        workoutId: userWorkout.id,
+        notes: `Día: ${day}`,
         exercises: {
-          create: filteredExercises.map((workoutExercise) => ({
-            exerciseId: workoutExercise.exerciseId,
-            sets: {
-              create: Array.from({ length: workoutExercise.sets }).map(
-                (_, index) => ({
-                  setNumber: index + 1,
-                  isDropSet:
-                    workoutExercise.notes?.includes("Drop set") || false,
-                })
-              ),
-            },
-          })),
+          create: await Promise.all(
+            exercises.map(async (exercise) => {
+              // Buscar el ejercicio en la base de datos por nombre
+              const exerciseRecord = await prisma.exercise.findFirst({
+                where: { name: exercise.name },
+              });
+
+              if (!exerciseRecord) {
+                console.error(`Ejercicio no encontrado: ${exercise.name}`);
+                // Puedes manejar esto de diferentes maneras, aquí simplemente usamos un ID predeterminado
+                // o podrías crear el ejercicio si no existe
+                throw new Error(`Ejercicio no encontrado: ${exercise.name}`);
+              }
+
+              return {
+                exerciseId: exerciseRecord.id,
+                completed: false,
+                sets: {
+                  create: Array.from({ length: exercise.sets }).map(
+                    (_, index) => ({
+                      setNumber: index + 1,
+                      reps: exercise.reps || null,
+                      weight: null, // Será completado por el usuario durante el entrenamiento
+                      isDropSet:
+                        exercise.notes?.toLowerCase().includes("drop set") ||
+                        false,
+                      completed: false,
+                    })
+                  ),
+                },
+              };
+            })
+          ),
         },
       },
       include: {
@@ -91,11 +89,15 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json(workoutSession);
+    return NextResponse.json({
+      success: true,
+      message: "Sesión de entrenamiento creada exitosamente",
+      workoutSession,
+    });
   } catch (error) {
-    console.error("Error al iniciar entrenamiento:", error);
+    console.error("Error al crear sesión de entrenamiento:", error);
     return NextResponse.json(
-      { error: "Error al iniciar entrenamiento" },
+      { error: "Error al crear sesión de entrenamiento" },
       { status: 500 }
     );
   }
