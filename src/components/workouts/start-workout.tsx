@@ -71,26 +71,6 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
     if (!selectedDay || exercises.length === 0) return;
   }, [selectedDay, exercises]);
 
-  // const handleStartWorkout = async () => {
-  //   setLoading(true);
-
-  //   try {
-  //     const response = await fetch("/api/workout-session", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ workoutId: workout.id, dayName: selectedDay }),
-  //     });
-  //     // Redirigir a la página de la sesión activa
-  //     // if (response) {
-  //     // }
-
-  //   } catch (error) {
-  //     console.error("Error al iniciar el entrenamiento:", error);
-  //     alert("Error al iniciar el entrenamiento. Inténtalo de nuevo.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
   return (
     <Dialog>
       <DialogTrigger asChild className="mb-8">
