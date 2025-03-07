@@ -38,74 +38,77 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  accounts      Account[]
-  sessions      Session[]
-  profile       Profile?
-  workouts      Workout[]
-  mealLogs      MealLog[]
-  weights       Weight[]
-  events        Event[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id              String           @id @default(cuid())
+  name            String?
+  email           String?          @unique
+  emailVerified   DateTime?
+  image           String?
+  password        String?
+  accounts        Account[]
+  sessions        Session[]
+  profile         Profile?
+  workouts        Workout[]
+  workoutSessions WorkoutSession[] // Relación con WorkoutSession
+  mealLogs        MealLog[]
+  weights         Weight[]
+  events          Event[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
-model Profile { 
-  id                  String   @id @default(cuid())
-  userId              String   @unique
-  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gender              String?
-  birthdate           DateTime?
-  height              String?   // en cm
-  currentWeight       String?   // en kg
-  targetWeight        String?   // en kg
-  activityLevel       String?   // sedentario, ligero, moderado, activo, muy activo
-  goal                String?   // perder peso, mantener peso, ganar músculo
-  bodyFatPercentage   String?   // % grasa corporal
-  muscleMass          String?   // % masa muscular
-  metabolicRate       Int?   // tasa metabólica basal en kcal
-  dailyActivity       String?  // actividad diaria (Ej: trabajo de oficina, trabajo físico)
-  trainingFrequency   Int?     // cantidad de entrenamientos por semana
+model Profile {
+  id                   String    @id @default(cuid())
+  userId               String    @unique
+  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gender               String?
+  birthdate            DateTime?
+  height               String? // en cm
+  currentWeight        String? // en kg
+  targetWeight         String? // en kg
+  activityLevel        String? // sedentario, ligero, moderado, activo, muy activo
+  goal                 String? // perder peso, mantener peso, ganar músculo
+  bodyFatPercentage    String? // % grasa corporal
+  muscleMass           String? // % masa muscular
+  metabolicRate        Int? // tasa metabólica basal en kcal
+  dailyActivity        String? // actividad diaria (Ej: trabajo de oficina, trabajo físico)
+  trainingFrequency    Int? // cantidad de entrenamientos por semana
   preferredWorkoutTime String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
-  dietaryPreference   String?  // preferencias dietéticas (Ej: vegetariano, keto, etc.)
-  dailyCalorieTarget  Int?     // calorías objetivo diarias (se calcula automáticamente)
-  dailyProteinTarget  Int?     // proteína diaria en gramos (se calcula automáticamente)
-  dailyCarbTarget     Int?     // carbohidratos diarios en gramos (se calcula automáticamente)
-  dailyFatTarget      Int?     // grasas diarias en gramos (se calcula automáticamente)
-  waterIntake         Float?   // consumo de agua en litros por día (se calcula automáticamente)
-  notificationsActive Boolean  @default(true)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  dietaryPreference    String? // preferencias dietéticas (Ej: vegetariano, keto, etc.)
+  dailyCalorieTarget   Int? // calorías objetivo diarias (se calcula automáticamente)
+  dailyProteinTarget   Int? // proteína diaria en gramos (se calcula automáticamente)
+  dailyCarbTarget      Int? // carbohidratos diarios en gramos (se calcula automáticamente)
+  dailyFatTarget       Int? // grasas diarias en gramos (se calcula automáticamente)
+  waterIntake          Float? // consumo de agua en litros por día (se calcula automáticamente)
+  notificationsActive  Boolean   @default(true)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 model Exercise {
-  id          String             @id @default(cuid())
-  name        String
-  description String?            @db.Text
-  muscleGroup String             // pecho, espalda, piernas, etc.
-  equipment   String?            // mancuernas, máquinas, peso corporal, etc.
-  videoUrl    String?
-  imageUrl    String?
-  sets        WorkoutExercise[]
-  createdAt   DateTime           @default(now())
-  updatedAt   DateTime           @updatedAt
+  id               String            @id @default(cuid())
+  name             String
+  description      String?           @db.Text
+  muscleGroup      String // pecho, espalda, piernas, etc.
+  equipment        String? // mancuernas, máquinas, peso corporal, etc.
+  videoUrl         String?
+  imageUrl         String?
+  sets             WorkoutExercise[]
+  exerciseSessions ExerciseSession[] // Relación inversa con ExerciseSession
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 }
 
 model Workout {
-  id          String            @id @default(cuid())
-  name        String
-  description String?           @db.Text
-  userId      String
-  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  exercises   WorkoutExercise[]
-  events      Event[]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id              String            @id @default(cuid())
+  name            String
+  description     String?           @db.Text
+  userId          String
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercises       WorkoutExercise[]
+  workoutSessions WorkoutSession[] // Relación con WorkoutSession
+  events          Event[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model WorkoutExercise {
@@ -116,8 +119,8 @@ model WorkoutExercise {
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
   sets       Int
   reps       Int
-  weight     Float?   // en kg
-  restTime   Int?     // en segundos
+  weight     Float? // en kg
+  restTime   Int? // en segundos
   order      Int
   notes      String?
   createdAt  DateTime @default(now())
@@ -128,13 +131,13 @@ model Food {
   id          String      @id @default(cuid())
   name        String
   calories    Int
-  protein     Float       // en gramos
-  carbs       Float       // en gramos
-  fat         Float       // en gramos
-  fiber       Float?      // en gramos
-  sugar       Float?      // en gramos
-  serving     Float       // en gramos
-  category    String      // proteína, carbohidrato, grasa, etc.
+  protein     Float // en gramos
+  carbs       Float // en gramos
+  fat         Float // en gramos
+  fiber       Float? // en gramos
+  sugar       Float? // en gramos
+  serving     Float // en gramos
+  category    String // proteína, carbohidrato, grasa, etc.
   imageUrl    String?
   mealEntries MealEntry[]
   createdAt   DateTime    @default(now())
@@ -146,7 +149,7 @@ model MealLog {
   userId    String
   user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   date      DateTime
-  mealType  String      // desayuno, almuerzo, cena, merienda
+  mealType  String // desayuno, almuerzo, cena, merienda
   entries   MealEntry[]
   calories  Int
   protein   Float
@@ -162,7 +165,7 @@ model MealEntry {
   mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
   foodId    String
   food      Food     @relation(fields: [foodId], references: [id])
-  quantity  Float    // número de porciones
+  quantity  Float // número de porciones
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -171,7 +174,7 @@ model Weight {
   id        String   @id @default(cuid())
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weight    Float    // en kg
+  weight    Float // en kg
   date      DateTime
   notes     String?
   createdAt DateTime @default(now())
@@ -198,9 +201,48 @@ model Notification {
   id        String   @id @default(cuid())
   title     String
   message   String
-  type      String   // workout, meal, water, weight, etc.
+  type      String // workout, meal, water, weight, etc.
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
+model WorkoutSession {
+  id        String            @id @default(cuid())
+  userId    String
+  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutId String
+  workout   Workout           @relation(fields: [workoutId], references: [id])
+  date      DateTime          @default(now())
+  completed Boolean           @default(false)
+  duration  Int? // duración en minutos
+  exercises ExerciseSession[]
+  notes     String?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+}
+
+model ExerciseSession {
+  id               String         @id @default(cuid())
+  workoutSessionId String
+  workoutSession   WorkoutSession @relation(fields: [workoutSessionId], references: [id], onDelete: Cascade)
+  exerciseId       String
+  exercise         Exercise       @relation(fields: [exerciseId], references: [id])
+  completed        Boolean        @default(false)
+  sets             SetSession[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+}
+
+model SetSession {
+  id                String          @id @default(cuid())
+  exerciseSessionId String
+  exerciseSession   ExerciseSession @relation(fields: [exerciseSessionId], references: [id], onDelete: Cascade)
+  setNumber         Int // número de serie (1, 2, 3...)
+  weight            Float? // peso utilizado
+  reps              Int? // repeticiones realizadas
+  isDropSet         Boolean         @default(false)
+  completed         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+}

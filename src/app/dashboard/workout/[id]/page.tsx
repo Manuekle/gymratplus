@@ -10,13 +10,14 @@ import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import StartWorkout from "@/components/workouts/start-workout";
 
 interface Workout {
   id: string;
   name: string;
   description: string;
   type: string;
-  days: string[];
+  days: { day: string }[];
   exercises: {
     id: string;
     name: string;
@@ -41,7 +42,7 @@ export default function WorkoutDetail() {
       if (res.ok) {
         const data = await res.json();
         setWorkout(data);
-        console.log(data);
+        // console.log(data);
       } else {
         router.push("/workouts");
       }
@@ -49,21 +50,6 @@ export default function WorkoutDetail() {
 
     fetchWorkout();
   }, [id, session, router]);
-
-  // const handleDragEnd = (event: import("@dnd-kit/core").DragEndEvent) => {
-  //   const { active, over } = event;
-  //   if (over && active.id !== over.id) {
-  //     const oldIndex = workout?.exercises.findIndex((e) => e.id === active.id);
-  //     const newIndex = workout?.exercises.findIndex((e) => e.id === over.id);
-
-  //     if (oldIndex !== undefined && newIndex !== undefined) {
-  //       setWorkout((prev) => ({
-  //         ...prev!,
-  //         exercises: arrayMove(prev!.exercises, oldIndex, newIndex),
-  //       }));
-  //     }
-  //   }
-  // };
 
   if (!workout) return <WorkoutSkeleton />;
 
@@ -81,9 +67,7 @@ export default function WorkoutDetail() {
           <Button className="text-xs" onClick={() => setIsModalOpen(true)}>
             Agregar ejercicio
           </Button>
-          <Button className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90">
-            Comenzar rutina
-          </Button>
+          <StartWorkout workout={workout} />
         </span>
       </div>
       <WorkoutExercise
