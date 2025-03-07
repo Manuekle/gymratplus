@@ -23,9 +23,9 @@ export default function RecommendationsPage() {
       <CustomSonner position="top-center" />
       <div className="mb-6">
         <Button
-          variant="ghost"
+          variant="outline"
           onClick={() => router.push("/")}
-          className="flex items-center text-muted-foreground"
+          className="flex items-center text-muted-foreground text-xs"
         >
           <ArrowLeft01Icon className="mr-2 h-4 w-4" />
           Volver al Perfil

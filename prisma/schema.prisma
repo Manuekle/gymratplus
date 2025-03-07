@@ -48,7 +48,10 @@ model User {
   sessions        Session[]
   profile         Profile?
   workouts        Workout[]
+  bodyMetrics     BodyMetrics[]
   workoutSessions WorkoutSession[] // Relación con WorkoutSession
+  customFoods     Food[]
+  mealTemplates   MealTemplate[]
   mealLogs        MealLog[]
   weights         Weight[]
   events          Event[]
@@ -82,6 +85,21 @@ model Profile {
   notificationsActive  Boolean   @default(true)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt
+}
+
+model BodyMetrics {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  weight    Float // Peso en kg
+  chest     Float? // Medida del pecho en cm
+  waist     Float? // Medida de la cintura en cm
+  hips      Float? // Medida de las caderas en cm
+  thighs    Float? // Medida de los muslos en cm
+  arms      Float? // Medida de los brazos en cm
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Exercise {
@@ -128,20 +146,24 @@ model WorkoutExercise {
 }
 
 model Food {
-  id          String      @id @default(cuid())
-  name        String
-  calories    Int
-  protein     Float // en gramos
-  carbs       Float // en gramos
-  fat         Float // en gramos
-  fiber       Float? // en gramos
-  sugar       Float? // en gramos
-  serving     Float // en gramos
-  category    String // proteína, carbohidrato, grasa, etc.
-  imageUrl    String?
-  mealEntries MealEntry[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id            String          @id @default(cuid())
+  name          String
+  calories      Int
+  protein       Float // en gramos
+  carbs         Float // en gramos
+  fat           Float // en gramos
+  fiber         Float? // en gramos
+  sugar         Float? // en gramos
+  serving       Float // en gramos
+  category      String // proteína, carbohidrato, grasa, etc.
+  imageUrl      String?
+  isFavorite    Boolean         @default(false)
+  userId        String? // Para alimentos personalizados
+  user          User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  mealEntries   MealEntry[]
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  TemplateEntry TemplateEntry[]
 }
 
 model MealLog {
@@ -168,6 +190,28 @@ model MealEntry {
   quantity  Float // número de porciones
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model MealTemplate {
+  id        String          @id @default(cuid())
+  name      String
+  userId    String
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mealType  String // breakfast, lunch, dinner, snack
+  entries   TemplateEntry[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model TemplateEntry {
+  id             String       @id @default(cuid())
+  mealTemplateId String
+  mealTemplate   MealTemplate @relation(fields: [mealTemplateId], references: [id], onDelete: Cascade)
+  foodId         String
+  food           Food         @relation(fields: [foodId], references: [id])
+  quantity       Float
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
 }
 
 model Weight {

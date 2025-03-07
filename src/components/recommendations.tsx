@@ -282,7 +282,11 @@ export default function RecommendationsComponent() {
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-[#DE3163] text-sm pb-14">{error}</p>
-            <Button onClick={() => router.push("/dashboard/profile")}>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/dashboard/profile")}
+              className="text-xs"
+            >
               Volver al Perfil
             </Button>
           </div>
