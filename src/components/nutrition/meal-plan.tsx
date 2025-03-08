@@ -19,9 +19,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Apple01Icon,
-  Bread01Icon,
-  Bread04Icon,
-  FishFoodIcon,
   FrenchFries02Icon,
   NoodlesIcon,
   RiceBowl01Icon,
@@ -159,16 +156,6 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                 </div>
               </CardContent>
             </Card>
-            {/* <Card className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#578FCA] text-white">
-              <Bread04Icon size={32} />
-              <span className="text-md font-semibold">Carbohidratos</span>
-              <span className="text-sm">{nutritionPlan.macros.carbs}</span>
-            </Card>
-            <Card className="flex flex-col items-center justify-center p-4 rounded-lg bg-[#FBA518] text-white">
-              <FishFoodIcon size={32} />
-              <span className="text-md font-semibold">Grasas</span>
-              <span className="text-sm">{nutritionPlan.macros.fat}</span>
-            </Card> */}
           </div>
         </CardContent>
       </Card>

@@ -12,19 +12,15 @@ import {
 } from "recharts";
 import { useEffect, useState } from "react";
 
-const data = [
-  { day: "Lun", calories: 2350 },
-  { day: "Mar", calories: 2450 },
-  { day: "Mié", calories: 2200 },
-  { day: "Jue", calories: 2300 },
-  { day: "Vie", calories: 2500 },
-  { day: "Sáb", calories: 2700 },
-  { day: "Dom", calories: 2400 },
-];
+interface CalorieChartProps {
+  data: { day: string; calories: number }[];
+}
 
-export function CalorieChart() {
+export function CalorieChart({ data }: CalorieChartProps) {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
+  console.log(data);
 
   useEffect(() => {
     setMounted(true);

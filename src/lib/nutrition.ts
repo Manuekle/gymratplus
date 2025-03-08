@@ -1,173 +1,143 @@
-// @/lib/nutrition.ts
+import type { Profile } from "@prisma/client";
 
-/**
- * Calcula los valores nutricionales según la cantidad de porción
- */
-export function calculateNutritionByQuantity(
-  food: {
-    calories: number;
-    protein: number;
-    carbs: number;
-    fat: number;
-    fiber?: number | null;
-    sugar?: number | null;
-    serving: number;
-  },
-  quantity: number
+// Calculate nutrition totals for a meal
+export function calculateMealNutrition(
+  entries: { foodId: string; quantity: number }[],
+  foodsMap: Record<string, any>
 ) {
-  return {
-    calories: Math.round(food.calories * quantity),
-    protein: parseFloat((food.protein * quantity).toFixed(1)),
-    carbs: parseFloat((food.carbs * quantity).toFixed(1)),
-    fat: parseFloat((food.fat * quantity).toFixed(1)),
-    fiber: food.fiber ? parseFloat((food.fiber * quantity).toFixed(1)) : null,
-    sugar: food.sugar ? parseFloat((food.sugar * quantity).toFixed(1)) : null,
-  };
+  let calories = 0;
+  let protein = 0;
+  let carbs = 0;
+  let fat = 0;
+
+  entries.forEach((entry) => {
+    const food = foodsMap[entry.foodId];
+    if (food) {
+      calories += Math.round(food.calories * entry.quantity);
+      protein += Number.parseFloat((food.protein * entry.quantity).toFixed(1));
+      carbs += Number.parseFloat((food.carbs * entry.quantity).toFixed(1));
+      fat += Number.parseFloat((food.fat * entry.quantity).toFixed(1));
+    }
+  });
+
+  return { calories, protein, carbs, fat };
 }
 
-/**
- * Calcula los valores nutricionales totales de múltiples entradas de comida
- */
-export function calculateTotalNutrition(
-  entries: Array<{
-    food: {
-      calories: number;
-      protein: number;
-      carbs: number;
-      fat: number;
+// Calculate macro targets based on profile data
+export function calculateMacroTargets(profile: Profile) {
+  // Default values if calculation isn't possible
+  let calories = 2000;
+  let protein = 150;
+  let carbs = 200;
+  let fat = 65;
+
+  if (profile) {
+    // Calculate BMR using Mifflin-St Jeor Equation
+    let bmr = 0;
+
+    if (
+      profile.gender &&
+      profile.birthdate &&
+      profile.height &&
+      profile.currentWeight
+    ) {
+      const age = calculateAge(profile.birthdate);
+      const height = Number.parseFloat(profile.height);
+      const weight = Number.parseFloat(profile.currentWeight);
+
+      if (profile.gender.toLowerCase() === "male") {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+      }
+    } else if (profile.metabolicRate) {
+      // Use provided metabolic rate if available
+      bmr = profile.metabolicRate;
+    }
+
+    // Apply activity multiplier
+    const activityMultipliers: Record<string, number> = {
+      sedentary: 1.2,
+      ligero: 1.375,
+      moderado: 1.55,
+      activo: 1.725,
+      "muy activo": 1.9,
     };
-    quantity: number;
-  }>
-) {
-  return entries.reduce(
-    (total, entry) => {
-      const { food, quantity } = entry;
-      return {
-        calories: total.calories + Math.round(food.calories * quantity),
-        protein: parseFloat(
-          (total.protein + food.protein * quantity).toFixed(1)
-        ),
-        carbs: parseFloat((total.carbs + food.carbs * quantity).toFixed(1)),
-        fat: parseFloat((total.fat + food.fat * quantity).toFixed(1)),
-      };
-    },
-    { calories: 0, protein: 0, carbs: 0, fat: 0 }
-  );
+
+    const activityLevel = profile.activityLevel?.toLowerCase() || "moderado";
+    const multiplier = activityMultipliers[activityLevel] || 1.55;
+
+    // Calculate TDEE (Total Daily Energy Expenditure)
+    let tdee = bmr * multiplier;
+
+    // Adjust based on goal
+    if (profile.goal) {
+      if (profile.goal.toLowerCase().includes("perder")) {
+        tdee -= 500; // Caloric deficit for weight loss
+      } else if (profile.goal.toLowerCase().includes("ganar")) {
+        tdee += 500; // Caloric surplus for muscle gain
+      }
+    }
+
+    calories = Math.round(tdee);
+
+    // Calculate macros based on goal
+    if (profile.goal?.toLowerCase().includes("ganar")) {
+      // Higher protein and carbs for muscle gain
+      const weight = Number.parseFloat(profile.currentWeight || "0");
+      protein = Math.round(weight * 2.2); // 2.2g per kg of bodyweight
+      fat = Math.round((calories * 0.25) / 9); // 25% of calories from fat
+      carbs = Math.round((calories - protein * 4 - fat * 9) / 4); // Remaining calories from carbs
+    } else if (profile.goal?.toLowerCase().includes("perder")) {
+      // Higher protein, moderate carbs for weight loss
+      const weight = Number.parseFloat(profile.currentWeight || "0");
+      protein = Math.round(weight * 2); // 2g per kg of bodyweight
+      fat = Math.round((calories * 0.3) / 9); // 30% of calories from fat
+      carbs = Math.round((calories - protein * 4 - fat * 9) / 4); // Remaining calories from carbs
+    } else {
+      // Balanced macros for maintenance
+      const weight = Number.parseFloat(profile.currentWeight || "0");
+      protein = Math.round(weight * 1.8); // 1.8g per kg of bodyweight
+      fat = Math.round((calories * 0.3) / 9); // 30% of calories from fat
+      carbs = Math.round((calories - protein * 4 - fat * 9) / 4); // Remaining calories from carbs
+    }
+  }
+
+  return { calories, protein, carbs, fat };
 }
 
-/**
- * Calcula el porcentaje de calorías aportado por cada macronutriente
- */
-export function calculateMacroPercentages(
-  protein: number,
-  carbs: number,
-  fat: number
-) {
-  const proteinCalories = protein * 4;
-  const carbsCalories = carbs * 4;
-  const fatCalories = fat * 9;
-  const totalCalories = proteinCalories + carbsCalories + fatCalories;
+// Helper function to calculate age from birthdate
+function calculateAge(birthdate: Date): number {
+  const today = new Date();
+  const birth = new Date(birthdate);
+  let age = today.getFullYear() - birth.getFullYear();
+  const monthDiff = today.getMonth() - birth.getMonth();
 
-  if (totalCalories === 0) return { protein: 0, carbs: 0, fat: 0 };
+  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
 
-  return {
-    protein: Math.round((proteinCalories / totalCalories) * 100),
-    carbs: Math.round((carbsCalories / totalCalories) * 100),
-    fat: Math.round((fatCalories / totalCalories) * 100),
+  return age;
+}
+
+// Calculate water intake recommendation based on weight and activity level
+export function calculateWaterIntake(
+  weight: number,
+  activityLevel: string
+): number {
+  // Base recommendation: 30-35ml per kg of body weight
+  const baseIntake = (weight * 33) / 1000; // Convert to liters
+
+  // Adjust for activity level
+  const activityMultipliers: Record<string, number> = {
+    sedentary: 1.0,
+    ligero: 1.1,
+    moderado: 1.2,
+    activo: 1.3,
+    "muy activo": 1.5,
   };
-}
 
-/**
- * Compara valores con objetivos y calcula adherencia
- */
-export function calculateAdherence(actual: number, target: number): number {
-  if (target === 0) return 100;
-  const adherence = Math.round((actual / target) * 100);
-  return Math.min(adherence, 100); // Máximo 100%
-}
+  const multiplier = activityMultipliers[activityLevel.toLowerCase()] || 1.2;
 
-/**
- * Calcula valores por defecto según perfil
- */
-export function calculateDefaultTargets(profile: {
-  gender?: string | null;
-  weight?: string | null;
-  activityLevel?: string | null;
-  goal?: string | null;
-}) {
-  // Implementar cálculos basados en datos del perfil
-  const weight = profile.weight ? parseFloat(profile.weight) : 70;
-  const isMale = profile.gender === "male";
-  const activityMultiplier = getActivityMultiplier(profile.activityLevel);
-  const goalMultiplier = getGoalMultiplier(profile.goal);
-
-  // Cálculo base de calorías (fórmula simplificada)
-  const baseCals = isMale
-    ? 10 * weight + 6.25 * 175 - 5 * 30 + 5
-    : 10 * weight + 6.25 * 165 - 5 * 30 - 161;
-
-  // Ajustar por actividad y objetivo
-  const totalCals = Math.round(baseCals * activityMultiplier * goalMultiplier);
-
-  // Calcular macros
-  let protein = 0,
-    carbs = 0,
-    fat = 0;
-
-  if (profile.goal === "gain-muscle") {
-    protein = Math.round(weight * 2); // 2g por kg
-    fat = Math.round(weight * 1); // 1g por kg
-    // Carbos con las calorías restantes
-    const remainingCals = totalCals - (protein * 4 + fat * 9);
-    carbs = Math.round(remainingCals / 4);
-  } else if (profile.goal === "lose-weight") {
-    protein = Math.round(weight * 2.2); // 2.2g por kg
-    fat = Math.round(weight * 0.8); // 0.8g por kg
-    // Carbos con las calorías restantes
-    const remainingCals = totalCals - (protein * 4 + fat * 9);
-    carbs = Math.round(remainingCals / 4);
-  } else {
-    // mantener
-    protein = Math.round(weight * 1.8); // 1.8g por kg
-    fat = Math.round(weight * 1); // 1g por kg
-    // Carbos con las calorías restantes
-    const remainingCals = totalCals - (protein * 4 + fat * 9);
-    carbs = Math.round(remainingCals / 4);
-  }
-
-  return {
-    calories: totalCals,
-    protein,
-    carbs,
-    fat,
-  };
-}
-
-// Funciones auxiliares
-function getActivityMultiplier(level?: string | null): number {
-  switch (level) {
-    case "sedentary":
-      return 1.2;
-    case "lightly-active":
-      return 1.375;
-    case "moderately-active":
-      return 1.55;
-    case "very-active":
-      return 1.725;
-    case "extra-active":
-      return 1.9;
-    default:
-      return 1.375; // Por defecto
-  }
-}
-
-function getGoalMultiplier(goal?: string | null): number {
-  switch (goal) {
-    case "lose-weight":
-      return 0.8;
-    case "gain-muscle":
-      return 1.1;
-    default:
-      return 1.0; // mantener peso
-  }
+  return Number.parseFloat((baseIntake * multiplier).toFixed(1));
 }

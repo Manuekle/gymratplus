@@ -37,7 +37,6 @@ export function WorkoutGeneratorForm() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [workoutResult, setWorkoutResult] = useState<any>(null);
-  //   const { toast } = useToast();
 
   const totalSteps = 5;
 
