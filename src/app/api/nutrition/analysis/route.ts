@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
-// GET - Get weekly nutrition analysis
+// GET - Get nutrition analysis for the last 7 days
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
@@ -12,25 +12,23 @@ export async function GET(req: NextRequest) {
     }
 
     const today = new Date();
-    // Obtener el inicio de la semana (lunes)
-    const startOfWeek = new Date(today);
-    startOfWeek.setDate(
-      today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)
-    );
-    startOfWeek.setHours(0, 0, 0, 0);
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 6); // Últimos 7 días
 
-    // Obtener el final de la semana (domingo)
-    const endOfWeek = new Date(startOfWeek);
-    endOfWeek.setDate(startOfWeek.getDate() + 6);
-    endOfWeek.setHours(23, 59, 59, 999);
-
-    // Obtener registros de comidas de la semana
-    const weekLogs = await prisma.mealLog.findMany({
+    // Obtener registros de los últimos 7 días
+    const mealLogs = await prisma.mealLog.findMany({
       where: {
         userId: session.user.id,
         date: {
-          gte: startOfWeek,
-          lte: endOfWeek,
+          gte: sevenDaysAgo,
+          lte: today,
+        },
+      },
+      include: {
+        entries: {
+          include: {
+            food: true,
+          },
         },
       },
       orderBy: {
@@ -38,16 +36,12 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    // Inicializar estructura para almacenar calorías por día de la semana
-    const daysOfWeek = [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ];
+    // Obtener el perfil del usuario para sus objetivos
+    const profile = await prisma.profile.findUnique({
+      where: { userId: session.user.id },
+    });
+
+    let weeklyCalories = 0;
     const weeklyCaloriesBreakdown: Record<string, number> = {
       Monday: 0,
       Tuesday: 0,
@@ -58,18 +52,27 @@ export async function GET(req: NextRequest) {
       Sunday: 0,
     };
 
-    // Calorías totales de la semana
-    let weeklyCalories = 0;
+    const todayMacros = { carbs: 0, protein: 0, fats: 0 };
 
-    // Calcular calorías por día de la semana
-    weekLogs.forEach((log) => {
-      const dayName = daysOfWeek[new Date(log.date).getDay() - 1] || "Sunday"; // Ajustar índice
-      weeklyCaloriesBreakdown[dayName] += log.calories;
+    mealLogs.forEach((log) => {
+      const dayOfWeek = new Date(log.date).toLocaleDateString("en-US", {
+        weekday: "long",
+      });
+
       weeklyCalories += log.calories;
+      weeklyCaloriesBreakdown[dayOfWeek] += log.calories;
+
+      // Si el registro es del día actual, guardar los macros
+      if (log.date.toDateString() === today.toDateString()) {
+        todayMacros.carbs += log.carbs;
+        todayMacros.protein += log.protein;
+        todayMacros.fats += log.fat;
+      }
     });
 
     return NextResponse.json({
       weeklyCalories,
+      todayMacros,
       weeklyCaloriesBreakdown,
     });
   } catch (error) {

@@ -317,7 +317,7 @@ export default function RecommendationsComponent() {
                 />
               </TabsContent>
             </Tabs>
-            <div className="flex justify-end mt-6">
+            {/* <div className="flex justify-end mt-6">
               <Button
                 onClick={handleSavePlan}
                 disabled={saving}
@@ -328,7 +328,7 @@ export default function RecommendationsComponent() {
                 ) : null}
                 {saving ? "Guardando" : "Guardar"}
               </Button>
-            </div>
+            </div> */}
           </motion.div>
         ) : null}
       </CardContent>

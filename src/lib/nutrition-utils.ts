@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-
+import { foodsToCreate } from "@/data/food";
 // Get or create foods in the database
 export async function getOrCreateFoods(dietaryPreference = "no-preference") {
   // Check if foods already exist
@@ -29,285 +29,61 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
     return foods;
   }
 
-  // If they don't exist, create basic foods
-  const foodsToCreate = [
-    // Proteins
-    {
-      name: "Pechuga de pollo",
-      calories: 165,
-      protein: 31,
-      carbs: 0,
-      fat: 3.6,
-      fiber: 0,
-      sugar: 0,
-      serving: 100,
-      category: "proteína",
-    },
-    {
-      name: "Huevos",
-      calories: 155,
-      protein: 13,
-      carbs: 1.1,
-      fat: 11,
-      fiber: 0,
-      sugar: 1.1,
-      serving: 100,
-      category: "proteína",
-    },
-    {
-      name: "Atún en agua",
-      calories: 116,
-      protein: 25.5,
-      carbs: 0,
-      fat: 1,
-      fiber: 0,
-      sugar: 0,
-      serving: 100,
-      category: "proteína",
-    },
-    {
-      name: "Yogur griego",
-      calories: 97,
-      protein: 10,
-      carbs: 3.6,
-      fat: 5,
-      fiber: 0,
-      sugar: 3.6,
-      serving: 100,
-      category: "proteína",
-    },
-    {
-      name: "Salmón",
-      calories: 208,
-      protein: 20,
-      carbs: 0,
-      fat: 13,
-      fiber: 0,
-      sugar: 0,
-      serving: 100,
-      category: "proteína",
-    },
+  // const createdFoods = await prisma.$transaction(
+  //   foodsToCreate.map((food) => prisma.food.create({ data: food }))
+  // );
 
-    // Carbs
-    {
-      name: "Arroz integral",
-      calories: 112,
-      protein: 2.6,
-      carbs: 23,
-      fat: 0.9,
-      fiber: 1.8,
-      sugar: 0.4,
-      serving: 100,
-      category: "carbohidrato",
-    },
-    {
-      name: "Avena",
-      calories: 389,
-      protein: 16.9,
-      carbs: 66.3,
-      fat: 6.9,
-      fiber: 10.6,
-      sugar: 0,
-      serving: 100,
-      category: "carbohidrato",
-    },
-    {
-      name: "Batata",
-      calories: 86,
-      protein: 1.6,
-      carbs: 20.1,
-      fat: 0.1,
-      fiber: 3,
-      sugar: 4.2,
-      serving: 100,
-      category: "carbohidrato",
-    },
-    {
-      name: "Pan integral",
-      calories: 247,
-      protein: 13,
-      carbs: 41,
-      fat: 3.5,
-      fiber: 7,
-      sugar: 5.7,
-      serving: 100,
-      category: "carbohidrato",
-    },
-    {
-      name: "Quinoa",
-      calories: 120,
-      protein: 4.4,
-      carbs: 21.3,
-      fat: 1.9,
-      fiber: 2.8,
-      sugar: 0.9,
-      serving: 100,
-      category: "carbohidrato",
-    },
+  // if (dietaryPreference === "vegetarian") {
+  //   return createdFoods.filter(
+  //     (food) =>
+  //       !food.name.toLowerCase().includes("pollo") &&
+  //       !food.name.toLowerCase().includes("carne") &&
+  //       !food.name.toLowerCase().includes("pescado") &&
+  //       !food.name.toLowerCase().includes("salmón")
+  //   );
+  // } else if (dietaryPreference === "keto") {
+  //   return createdFoods.filter(
+  //     (food) =>
+  //       food.carbs < 10 ||
+  //       food.category === "proteína" ||
+  //       food.category === "grasa"
+  //   );
+  // }
 
-    // Vegetables
-    {
-      name: "Brócoli",
-      calories: 34,
-      protein: 2.8,
-      carbs: 6.6,
-      fat: 0.4,
-      fiber: 2.6,
-      sugar: 1.7,
-      serving: 100,
-      category: "verdura",
-    },
-    {
-      name: "Espinaca",
-      calories: 23,
-      protein: 2.9,
-      carbs: 3.6,
-      fat: 0.4,
-      fiber: 2.2,
-      sugar: 0.4,
-      serving: 100,
-      category: "verdura",
-    },
-    {
-      name: "Zanahoria",
-      calories: 41,
-      protein: 0.9,
-      carbs: 9.6,
-      fat: 0.2,
-      fiber: 2.8,
-      sugar: 4.7,
-      serving: 100,
-      category: "verdura",
-    },
-    {
-      name: "Pimiento",
-      calories: 20,
-      protein: 0.9,
-      carbs: 4.6,
-      fat: 0.2,
-      fiber: 1.7,
-      sugar: 2.4,
-      serving: 100,
-      category: "verdura",
-    },
+  // return createdFoods;
+  // Verificar si la tabla food está vacía
+  const foodCount = await prisma.food.count();
 
-    // Fruits
-    {
-      name: "Plátano",
-      calories: 89,
-      protein: 1.1,
-      carbs: 22.8,
-      fat: 0.3,
-      fiber: 2.6,
-      sugar: 12.2,
-      serving: 100,
-      category: "fruta",
-    },
-    {
-      name: "Manzana",
-      calories: 52,
-      protein: 0.3,
-      carbs: 13.8,
-      fat: 0.2,
-      fiber: 2.4,
-      sugar: 10.4,
-      serving: 100,
-      category: "fruta",
-    },
-    {
-      name: "Fresas",
-      calories: 32,
-      protein: 0.7,
-      carbs: 7.7,
-      fat: 0.3,
-      fiber: 2,
-      sugar: 4.9,
-      serving: 100,
-      category: "fruta",
-    },
-    {
-      name: "Arándanos",
-      calories: 57,
-      protein: 0.7,
-      carbs: 14.5,
-      fat: 0.3,
-      fiber: 2.4,
-      sugar: 10,
-      serving: 100,
-      category: "fruta",
-    },
-
-    // Fats
-    {
-      name: "Aguacate",
-      calories: 160,
-      protein: 2,
-      carbs: 8.5,
-      fat: 14.7,
-      fiber: 6.7,
-      sugar: 0.7,
-      serving: 100,
-      category: "grasa",
-    },
-    {
-      name: "Aceite de oliva",
-      calories: 884,
-      protein: 0,
-      carbs: 0,
-      fat: 100,
-      fiber: 0,
-      sugar: 0,
-      serving: 100,
-      category: "grasa",
-    },
-    {
-      name: "Almendras",
-      calories: 579,
-      protein: 21.2,
-      carbs: 21.7,
-      fat: 49.9,
-      fiber: 12.5,
-      sugar: 4.4,
-      serving: 100,
-      category: "grasa",
-    },
-    {
-      name: "Semillas de chía",
-      calories: 486,
-      protein: 16.5,
-      carbs: 42.1,
-      fat: 30.7,
-      fiber: 34.4,
-      sugar: 0,
-      serving: 100,
-      category: "grasa",
-    },
-  ];
-
-  // Create all foods in the database
-  const createdFoods = await prisma.$transaction(
-    foodsToCreate.map((food) => prisma.food.create({ data: food }))
-  );
-
-  // Filter foods based on dietary preference
-  if (dietaryPreference === "vegetarian") {
-    return createdFoods.filter(
-      (food) =>
-        !food.name.toLowerCase().includes("pollo") &&
-        !food.name.toLowerCase().includes("carne") &&
-        !food.name.toLowerCase().includes("pescado") &&
-        !food.name.toLowerCase().includes("salmón")
+  if (foodCount === 0) {
+    const createdFoods = await prisma.$transaction(
+      foodsToCreate.map((food) => prisma.food.create({ data: food }))
     );
-  } else if (dietaryPreference === "keto") {
-    return createdFoods.filter(
-      (food) =>
-        food.carbs < 10 ||
-        food.category === "proteína" ||
-        food.category === "grasa"
+
+    // Filtrar alimentos según la preferencia dietética
+    if (dietaryPreference === "vegetarian") {
+      return createdFoods.filter(
+        (food) =>
+          !food.name.toLowerCase().includes("pollo") &&
+          !food.name.toLowerCase().includes("carne") &&
+          !food.name.toLowerCase().includes("pescado") &&
+          !food.name.toLowerCase().includes("salmón")
+      );
+    } else if (dietaryPreference === "keto") {
+      return createdFoods.filter(
+        (food) =>
+          food.carbs < 10 ||
+          food.category === "proteína" ||
+          food.category === "grasa"
+      );
+    }
+
+    return createdFoods;
+  } else {
+    console.log(
+      "La tabla food ya tiene registros. No se creó ningún nuevo alimento."
     );
+    return []; // O manejarlo según la lógica que necesites
   }
-
-  return createdFoods;
 }
 
 // Create a nutrition plan based on user profile
@@ -572,27 +348,41 @@ async function createMealLog(
   }
 
   // Create the meal log in the database
-  const mealLog = await prisma.mealLog.create({
-    data: {
-      userId,
-      date: new Date(),
-      mealType,
-      calories: Math.round(totalCalories),
-      protein: Math.round(totalProtein * 10) / 10,
-      carbs: Math.round(totalCarbs * 10) / 10,
-      fat: Math.round(totalFat * 10) / 10,
-      entries: {
-        create: mealEntries,
-      },
-    },
-    include: {
-      entries: {
-        include: {
-          food: true,
-        },
-      },
-    },
-  });
+  // const mealLog = await prisma.mealLog.create({
+  //   data: {
+  //     userId,
+  //     date: new Date(),
+  //     mealType,
+  //     calories: Math.round(totalCalories),
+  //     protein: Math.round(totalProtein * 10) / 10,
+  //     carbs: Math.round(totalCarbs * 10) / 10,
+  //     fat: Math.round(totalFat * 10) / 10,
+  //     entries: {
+  //       create: mealEntries,
+  //     },
+  //   },
+  //   include: {
+  //     entries: {
+  //       include: {
+  //         food: true,
+  //       },
+  //     },
+  //   },
+  // });
+
+  const mealLog = {
+    userId,
+    date: new Date(),
+    mealType,
+    calories: Math.round(totalCalories),
+    protein: Math.round(totalProtein * 10) / 10,
+    carbs: Math.round(totalCarbs * 10) / 10,
+    fat: Math.round(totalFat * 10) / 10,
+    entries: mealEntries.map((entry) => ({
+      ...entry,
+      food: entry.food, // Asegura que se incluya la información de los alimentos
+    })),
+  };
 
   return mealLog;
 }

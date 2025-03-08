@@ -241,12 +241,14 @@ export default function FoodSelector({
             No se encontraron alimentos. Intenta con otra búsqueda.
           </div>
         ) : (
-          <div className="space-y-1">
+          <div className="space-y-2">
             {foods.map((food) => (
               <div
                 key={food.id}
-                className={`flex items-center justify-between p-3 rounded-md cursor-pointer ${
-                  isFoodSelected(food.id) ? "bg-primary/10" : "hover:bg-accent"
+                className={`flex items-center justify-between p-3 border rounded-md cursor-pointer ${
+                  isFoodSelected(food.id)
+                    ? "bg-zinc-100 shadow-sm"
+                    : "border-none hover:border-zinc-300"
                 }`}
                 onClick={() => toggleFoodSelection(food)}
               >
@@ -284,11 +286,11 @@ export default function FoodSelector({
           <h4 className="font-medium text-sm">
             Alimentos seleccionados ({selectedFoods.length})
           </h4>
-          <div className="space-y-2 h-[100px] overflow-y-auto no-scrollbar">
+          <div className="space-y-2 h-[100px] overflow-y-auto no-scrollbar rounded-md border">
             {selectedFoods.map((entry) => (
               <div
                 key={entry.foodId}
-                className="flex items-center justify-between p-3 rounded-md bg-accent/30"
+                className="flex items-center justify-between p-3 rounded-md"
               >
                 <div className="flex-1">
                   <div className="font-medium text-sm">{entry.food.name}</div>
@@ -313,7 +315,7 @@ export default function FoodSelector({
                     >
                       -
                     </Button>
-                    <span className="w-10 text-sm text-center">
+                    <span className="w-10 text-xs text-center">
                       {entry.quantity}
                     </span>
                     <Button

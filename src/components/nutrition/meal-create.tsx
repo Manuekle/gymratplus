@@ -26,6 +26,7 @@ import {
   KitchenUtensilsIcon,
   ListViewIcon,
 } from "hugeicons-react";
+import TimePicker from "../ui/time-picker";
 
 type MealProps = {
   date?: Date;
@@ -209,33 +210,40 @@ export function MealCreate({ date = new Date() }: MealProps) {
           {step === 1 && (
             <div className="space-y-6">
               <div className="space-y-2">
-                <DialogTitle className="font-medium pb-4">
+                <DialogTitle className="font-medium pb-4 text-md">
                   ¿Qué tipo de comida vas a registrar?
                 </DialogTitle>
                 <Tabs defaultValue={mealType} onValueChange={setMealType}>
-                  <TabsList className="grid grid-cols-3">
+                  <TabsList className="grid grid-cols-4">
                     <TabsTrigger value="breakfast">Desayuno</TabsTrigger>
                     <TabsTrigger value="lunch">Almuerzo</TabsTrigger>
                     <TabsTrigger value="dinner">Cena</TabsTrigger>
+                    <TabsTrigger value="snack">Snack</TabsTrigger>
                   </TabsList>
                 </Tabs>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="meal-time">Hora de {mealType}</Label>
-                <Input
+                <Label htmlFor="meal-time">
+                  Hora de {translateMealType(mealType)}
+                </Label>
+                {/* <Input
                   id="meal-time"
                   type="time"
                   value={mealTime}
                   onChange={(e) => setMealTime(e.target.value)}
                   className="w-full"
+                /> */}
+                <TimePicker
+                  value={mealTime}
+                  onChange={(e) => setMealTime(e.target.value)}
                 />
               </div>
             </div>
           )}
           {step === 2 && (
             <div className="space-y-6">
-              <DialogTitle className="font-medium">
+              <DialogTitle className="font-medium text-md">
                 ¿Cómo quieres registrar tu {translateMealType(mealType)}?
               </DialogTitle>
 
@@ -304,7 +312,7 @@ export function MealCreate({ date = new Date() }: MealProps) {
           )}
           {step === 3 && (
             <div className="space-y-4">
-              <DialogTitle className="font-medium">
+              <DialogTitle className="font-medium text-md">
                 {selectedOption === "quick" &&
                   "Sugerencias para tu " + translateMealType(mealType)}
                 {selectedOption === "recipe" &&
@@ -323,7 +331,7 @@ export function MealCreate({ date = new Date() }: MealProps) {
 
               {selectedOption === "recipe" && (
                 <div className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto p-1">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[400px] overflow-y-auto p-1 no-scrollbar">
                     {recipes.map((recipe) => (
                       <RecipeCard
                         key={recipe.id}
@@ -342,17 +350,17 @@ export function MealCreate({ date = new Date() }: MealProps) {
           )}
           {step === 4 && (
             <div className="space-y-6">
-              <DialogTitle className="font-medium">
+              <DialogTitle className="font-medium text-md">
                 Confirma tu {translateMealType(mealType)}
               </DialogTitle>
 
               {selectedRecipe && (
-                <div className="bg-accent/30 p-4 rounded-md">
-                  <h4 className="font-medium">{selectedRecipe.name}</h4>
-                  <p className="text-sm text-muted-foreground">
+                <div className="border p-4 rounded-md">
+                  <h4 className="font-medium text-sm">{selectedRecipe.name}</h4>
+                  <p className="text-xs text-muted-foreground">
                     {selectedRecipe.description}
                   </p>
-                  <div className="mt-2 flex justify-between text-sm">
+                  <div className="mt-2 flex justify-between text-xs">
                     <div>Calorías: {selectedRecipe.calories} kcal</div>
                     <div>Tiempo: {selectedRecipe.preparationTime} min</div>
                   </div>
@@ -383,7 +391,7 @@ export function MealCreate({ date = new Date() }: MealProps) {
                             kcal)
                           </div>
                         </div>
-                        <div className="text-sm">
+                        <div className="text-xs">
                           P: {(entry.food.protein * entry.quantity).toFixed(1)}g
                           | C: {(entry.food.carbs * entry.quantity).toFixed(1)}g
                           | G: {(entry.food.fat * entry.quantity).toFixed(1)}g

@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Icons } from "@/components/icons";
 import { MealCreate } from "@/components/nutrition/meal-create";
 import { toast } from "sonner";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfile {
   id: string;
@@ -127,6 +128,19 @@ export default function NutritionPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Group meals by type
+  const translateMealType = (type: string) => {
+    const translations: { [key: string]: string } = {
+      breakfast: "Desayuno",
+      lunch: "Almuerzo",
+      dinner: "Cena",
+      snack: "Snack",
+      morning_snack: "Media Mañana",
+      afternoon_snack: "Merienda",
+    };
+    return translations[type] || type;
   };
 
   // Group meals by type
@@ -323,7 +337,7 @@ export default function NutritionPage() {
                     </div>
                     <div className="text-sm">
                       <span className="font-medium">
-                        {dailyTotals.protein}g
+                        {Math.round(dailyTotals.protein)}g
                       </span>
                       <span className="text-muted-foreground">
                         {" "}
@@ -356,7 +370,9 @@ export default function NutritionPage() {
                       <span className="text-sm">Carbohidratos</span>
                     </div>
                     <div className="text-sm">
-                      <span className="font-medium">{dailyTotals.carbs}g</span>
+                      <span className="font-medium">
+                        {Math.round(dailyTotals.carbs)}g
+                      </span>
                       <span className="text-muted-foreground">
                         {" "}
                         / {user?.nutrition.carbTarget}g
@@ -388,7 +404,9 @@ export default function NutritionPage() {
                       <span className="text-sm">Grasas</span>
                     </div>
                     <div className="text-sm">
-                      <span className="font-medium">{dailyTotals.fat}g</span>
+                      <span className="font-medium">
+                        {Math.round(dailyTotals.fat)}g
+                      </span>
                       <span className="text-muted-foreground">
                         {" "}
                         / {user?.nutrition.fatTarget}g
@@ -457,29 +475,11 @@ export default function NutritionPage() {
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="today">
-                  <MealHistory
-                    mealLogs={mealLogs}
-                    loading={loading}
-                    error={null}
-                  />
-                </TabsContent>
+                <TabsContent value="today">{MealHistory()}</TabsContent>
 
-                <TabsContent value="yesterday">
-                  <MealHistory
-                    mealLogs={mealLogs}
-                    loading={loading}
-                    error={null}
-                  />
-                </TabsContent>
+                <TabsContent value="yesterday">{MealHistory()}</TabsContent>
 
-                <TabsContent value="week">
-                  <MealHistory
-                    mealLogs={mealLogs}
-                    loading={loading}
-                    error={null}
-                  />
-                </TabsContent>
+                <TabsContent value="week">{MealHistory()}</TabsContent>
               </Tabs>
             </CardContent>
           </Card>
@@ -487,86 +487,68 @@ export default function NutritionPage() {
       </div>
     </>
   );
-}
 
-function MealHistory({
-  mealLogs,
-  loading,
-}: {
-  mealLogs: MealLog[];
-  loading: boolean;
-  error: string | null;
-}) {
-  const translateMealType = (mealType: string) => {
-    const translations: { [key: string]: string } = {
-      breakfast: "Desayuno",
-      lunch: "Almuerzo",
-      dinner: "Cena",
-      snack: "Merienda",
-    };
-
-    return translations[mealType] || mealType;
-  };
-
-  if (loading)
-    return (
-      <div className="flex flex-col items-center justify-center py-24">
-        <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
-        <p className="text-muted-foreground text-sm">Buscando comidas</p>
-      </div>
-    );
-
-  if (mealLogs.length === 0)
-    return (
-      <div className="flex flex-col items-center justify-center py-24">
-        <p className="text-muted-foreground text-sm">
-          No hay comidas registradas
-        </p>
-      </div>
-    );
-
-  return (
-    <div className="flex flex-col gap-4">
-      {mealLogs.map((meal) => (
-        <div key={meal.id} className="space-y-2 border rounded-lg p-4">
-          <div className="flex items-baseline justify-between">
-            <h3 className="font-medium"> {translateMealType(meal.mealType)}</h3>
-          </div>
-          {mealLogs.map((meal) => (
-            <div key={meal.id} className="space-y-2">
-              <div className="flex items-baseline justify-between text-sm">
-                <span className="text-muted-foreground text-xs">
-                  {format(new Date(meal.date), "HH:mm", { locale: es })}
-                </span>
-                <Badge variant="outline">
-                  {meal.calories}
-                  kcal
-                </Badge>
-              </div>
-
-              <div className="space-y-2">
-                {meal.entries.map((entry, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-12 text-sm items-center"
-                  >
-                    <div className="col-span-4">{entry.food.name}</div>
-                    <div className="col-span-2 text-right">
-                      {meal.calories} kcal
-                    </div>
-                    <div className="col-span-2 text-right">
-                      {meal.protein}g P
-                    </div>
-                    <div className="col-span-4 text-right">
-                      {meal.carbs}g C / {meal.fat}g G
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+  function MealHistory() {
+    if (loading)
+      return (
+        <div className="flex flex-col items-center justify-center py-24">
+          <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
+          <p className="text-muted-foreground text-sm">Buscando comidas</p>
         </div>
-      ))}
-    </div>
-  );
+      );
+
+    if (mealLogs.length === 0)
+      return (
+        <div className="flex flex-col items-center justify-center py-24">
+          <p className="text-muted-foreground text-sm">
+            No hay comidas registradas
+          </p>
+        </div>
+      );
+    return (
+      <div className="flex flex-col gap-4 border p-4 rounded-lg">
+        {Object.entries(mealsByType).map(([type, meals]) => (
+          <div key={type}>
+            <div className="flex items-baseline justify-between">
+              <h3 className="font-medium">{translateMealType(type)}</h3>
+            </div>
+            {meals.map((meal) => (
+              <div key={meal.id}>
+                <div className="flex items-baseline justify-between text-sm py-2">
+                  <span className="text-muted-foreground text-xs">
+                    {format(new Date(meal.date), "HH:mm", { locale: es })}
+                  </span>
+                  <Badge variant="outline">
+                    {meal.calories}
+                    kcal
+                  </Badge>
+                </div>
+
+                <div className="pl-4 border-l-2 border-accent">
+                  {meal.entries.map((entry, index) => (
+                    <div
+                      key={index}
+                      className="grid grid-cols-4 text-sm items-center"
+                    >
+                      <div className="col-span-1">{entry.food.name}</div>
+                      <div className="col-span-1 text-right">
+                        {Math.round(entry.food.calories * entry.quantity)} kcal
+                      </div>
+                      <div className="col-span-1 text-right">
+                        {(entry.food.protein * entry.quantity).toFixed(1)}g P
+                      </div>
+                      <div className="col-span-1 text-right">
+                        {(entry.food.carbs * entry.quantity).toFixed(1)}g C /{" "}
+                        {(entry.food.fat * entry.quantity).toFixed(1)}g G
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    );
+  }
 }
