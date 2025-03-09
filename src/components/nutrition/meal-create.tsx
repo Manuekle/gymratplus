@@ -11,7 +11,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 import { getRecipesByMealType, type Recipe } from "@/lib/recipes";
@@ -227,13 +226,6 @@ export function MealCreate({ date = new Date() }: MealProps) {
                 <Label htmlFor="meal-time">
                   Hora de {translateMealType(mealType)}
                 </Label>
-                {/* <Input
-                  id="meal-time"
-                  type="time"
-                  value={mealTime}
-                  onChange={(e) => setMealTime(e.target.value)}
-                  className="w-full"
-                /> */}
                 <TimePicker
                   value={mealTime}
                   onChange={(e) => setMealTime(e.target.value)}

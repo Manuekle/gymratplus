@@ -1,25 +1,28 @@
+import { v4 as uuidv4 } from "uuid";
+
 export type Recipe = {
-  id: string
-  name: string
-  description: string
-  mealType: "breakfast" | "lunch" | "dinner" | "snack"
-  ingredients: string[]
-  instructions: string[]
-  calories: number
-  protein: number
-  carbs: number
-  fat: number
-  preparationTime: number // in minutes
-  dietaryTags: string[] // vegetarian, keto, etc.
-  imageUrl?: string
-}
+  id: string;
+  name: string;
+  description: string;
+  mealType: "breakfast" | "lunch" | "dinner" | "snack";
+  ingredients: string[];
+  instructions: string[];
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  preparationTime: number; // in minutes
+  dietaryTags: string[]; // vegetarian, keto, etc.
+  imageUrl?: string;
+};
 
 export const recipes: Recipe[] = [
   // Breakfast Recipes
   {
-    id: "breakfast-1",
+    id: uuidv4(),
     name: "Avena con Frutas y Nueces",
-    description: "Un desayuno nutritivo y energético con avena, frutas frescas y nueces.",
+    description:
+      "Un desayuno nutritivo y energético con avena, frutas frescas y nueces.",
     mealType: "breakfast",
     ingredients: [
       "1 taza de avena",
@@ -44,9 +47,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "breakfast-2",
+    id: uuidv4(),
     name: "Huevos Revueltos con Aguacate",
-    description: "Desayuno rico en proteínas y grasas saludables, perfecto para dietas keto.",
+    description:
+      "Desayuno rico en proteínas y grasas saludables, perfecto para dietas keto.",
     mealType: "breakfast",
     ingredients: [
       "3 huevos",
@@ -73,7 +77,8 @@ export const recipes: Recipe[] = [
   {
     id: "breakfast-3",
     name: "Tostadas de Pan Integral con Yogur Griego y Fresas",
-    description: "Un desayuno equilibrado con carbohidratos complejos, proteínas y frutas.",
+    description:
+      "Un desayuno equilibrado con carbohidratos complejos, proteínas y frutas.",
     mealType: "breakfast",
     ingredients: [
       "2 rebanadas de pan integral",
@@ -100,7 +105,7 @@ export const recipes: Recipe[] = [
 
   // Lunch Recipes
   {
-    id: "lunch-1",
+    id: uuidv4(),
     name: "Ensalada de Atún con Verduras",
     description: "Una ensalada ligera y nutritiva con atún y verduras frescas.",
     mealType: "lunch",
@@ -128,9 +133,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "lunch-2",
+    id: uuidv4(),
     name: "Bowl de Quinoa con Pollo y Verduras",
-    description: "Un plato completo con proteínas magras, carbohidratos complejos y verduras.",
+    description:
+      "Un plato completo con proteínas magras, carbohidratos complejos y verduras.",
     mealType: "lunch",
     ingredients: [
       "1 taza de quinoa cocida",
@@ -188,7 +194,8 @@ export const recipes: Recipe[] = [
   {
     id: "dinner-1",
     name: "Pechuga de Pollo al Horno con Batata y Brócoli",
-    description: "Una cena equilibrada con proteína magra, carbohidratos complejos y verduras.",
+    description:
+      "Una cena equilibrada con proteína magra, carbohidratos complejos y verduras.",
     mealType: "dinner",
     ingredients: [
       "150g de pechuga de pollo",
@@ -213,9 +220,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "dinner-2",
+    id: uuidv4(),
     name: "Salmón a la Plancha con Espinacas y Quinoa",
-    description: "Una cena rica en ácidos grasos omega-3, proteínas y nutrientes esenciales.",
+    description:
+      "Una cena rica en ácidos grasos omega-3, proteínas y nutrientes esenciales.",
     mealType: "dinner",
     ingredients: [
       "150g de filete de salmón",
@@ -240,9 +248,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "dinner-3",
+    id: uuidv4(),
     name: "Bowl Vegetariano de Arroz Integral con Aguacate",
-    description: "Un plato vegetariano completo con proteínas vegetales, carbohidratos complejos y grasas saludables.",
+    description:
+      "Un plato vegetariano completo con proteínas vegetales, carbohidratos complejos y grasas saludables.",
     mealType: "dinner",
     ingredients: [
       "1 taza de arroz integral cocido",
@@ -271,9 +280,10 @@ export const recipes: Recipe[] = [
 
   // Snack Recipes
   {
-    id: "snack-1",
+    id: uuidv4(),
     name: "Yogur Griego con Fresas y Almendras",
-    description: "Un snack rápido y nutritivo con proteínas, frutas y grasas saludables.",
+    description:
+      "Un snack rápido y nutritivo con proteínas, frutas y grasas saludables.",
     mealType: "snack",
     ingredients: [
       "1 taza de yogur griego",
@@ -296,9 +306,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "snack-2",
+    id: uuidv4(),
     name: "Huevos Rellenos de Aguacate",
-    description: "Un snack rico en proteínas y grasas saludables, ideal para dietas keto.",
+    description:
+      "Un snack rico en proteínas y grasas saludables, ideal para dietas keto.",
     mealType: "snack",
     ingredients: [
       "2 huevos duros",
@@ -322,9 +333,10 @@ export const recipes: Recipe[] = [
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
   {
-    id: "snack-3",
+    id: uuidv4(),
     name: "Batido de Proteínas con Plátano y Almendras",
-    description: "Un batido energético perfecto para después del entrenamiento.",
+    description:
+      "Un batido energético perfecto para después del entrenamiento.",
     mealType: "snack",
     ingredients: [
       "1 scoop de proteína en polvo",
@@ -347,29 +359,30 @@ export const recipes: Recipe[] = [
     dietaryTags: ["vegetariano"],
     imageUrl: "/placeholder.svg?height=300&width=400",
   },
-]
+];
 
 export function getRecipesByMealType(mealType: string): Recipe[] {
-  return recipes.filter((recipe) => recipe.mealType === mealType)
+  return recipes.filter((recipe) => recipe.mealType === mealType);
 }
 
 export function getRecipesByIngredients(ingredients: string[]): Recipe[] {
   return recipes.filter((recipe) => {
     // Check if any of the recipe ingredients contain the search ingredients
     return ingredients.some((ingredient) =>
-      recipe.ingredients.some((recipeIngredient) => recipeIngredient.toLowerCase().includes(ingredient.toLowerCase())),
-    )
-  })
+      recipe.ingredients.some((recipeIngredient) =>
+        recipeIngredient.toLowerCase().includes(ingredient.toLowerCase())
+      )
+    );
+  });
 }
 
 export function getRecipesByDietaryTags(tags: string[]): Recipe[] {
   return recipes.filter((recipe) => {
     // Check if the recipe has all the required dietary tags
-    return tags.every((tag) => recipe.dietaryTags.includes(tag))
-  })
+    return tags.every((tag) => recipe.dietaryTags.includes(tag));
+  });
 }
 
 export function getRecipeById(id: string): Recipe | undefined {
-  return recipes.find((recipe) => recipe.id === id)
+  return recipes.find((recipe) => recipe.id === id);
 }
-

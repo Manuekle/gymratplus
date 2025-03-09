@@ -144,6 +144,8 @@ model Food {
   userId      String? // Para alimentos personalizados
   user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
   mealEntries MealEntry[]
+  recipeId    String?     // ID de la receta a la que pertenece este alimento
+  isRecipeItem Boolean    @default(false) // Indica si este alimento es parte de una receta
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 }
