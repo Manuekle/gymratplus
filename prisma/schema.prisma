@@ -38,23 +38,26 @@ model Session {
 }
 
 model User {
-  id              String           @id @default(cuid())
-  name            String?
-  email           String?          @unique
-  emailVerified   DateTime?
-  image           String?
-  password        String?
-  accounts        Account[]
-  sessions        Session[]
-  profile         Profile?
-  workouts        Workout[]
-  workoutSessions WorkoutSession[] // Relación con WorkoutSession
-  customFoods     Food[]
-  mealLogs        MealLog[]
-  weights         Weight[]
-  events          Event[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  id                String           @id @default(cuid())
+  name              String?
+  email             String?          @unique
+  emailVerified     DateTime?
+  image             String?
+  password          String?
+  accounts          Account[]
+  sessions          Session[]
+  profile           Profile?
+  workouts          Workout[]
+  workoutSessions   WorkoutSession[]
+  customFoods       Food[]
+  customRecipes     Recipe[] // Nuevo: relación con recetas personalizadas
+  customSupplements Supplement[] // Nuevo: relación con suplementos personalizados
+  nutritionPlans    NutritionPlan[] // Nuevo: relación con planes de alimentación
+  mealLogs          MealLog[]
+  weights           Weight[]
+  events            Event[]
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
 }
 
 model Profile {
@@ -128,43 +131,158 @@ model WorkoutExercise {
   updatedAt  DateTime @updatedAt
 }
 
+// Modificaciones al modelo Food existente
 model Food {
-  id          String      @id @default(cuid())
-  name        String
-  calories    Int
-  protein     Float // en gramos
-  carbs       Float // en gramos
-  fat         Float // en gramos
-  fiber       Float? // en gramos
-  sugar       Float? // en gramos
-  serving     Float // en gramos
-  category    String // proteína, carbohidrato, grasa, etc.
-  imageUrl    String?
-  isFavorite  Boolean     @default(false)
-  userId      String? // Para alimentos personalizados
-  user        User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
-  mealEntries MealEntry[]
-  recipeId    String?     // ID de la receta a la que pertenece este alimento
-  isRecipeItem Boolean    @default(false) // Indica si este alimento es parte de una receta
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                String             @id @default(cuid())
+  name              String
+  calories          Int
+  protein           Float // en gramos
+  carbs             Float // en gramos
+  fat               Float // en gramos
+  fiber             Float? // en gramos
+  sugar             Float? // en gramos
+  serving           Float // en gramos
+  category          String // proteína, carbohidrato, grasa, etc.
+  mealType          String[] // ["desayuno", "almuerzo", "cena", "snack"]
+  imageUrl          String?
+  isFavorite        Boolean            @default(false)
+  userId            String? // Para alimentos personalizados
+  user              User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  mealEntries       MealEntry[]
+  recipeIngredients RecipeIngredient[]
+  mealPlanItems     MealPlanItem[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
 }
 
-model MealLog {
-  id        String      @id @default(cuid())
-  userId    String
-  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date      DateTime
-  mealType  String // desayuno, almuerzo, cena, merienda
-  entries   MealEntry[]
-  calories  Int
-  protein   Float
-  carbs     Float
-  fat       Float
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+// Nuevo modelo Recipe
+model Recipe {
+  id              String             @id @default(cuid())
+  name            String
+  description     String?            @db.Text
+  instructions    String?            @db.Text
+  preparationTime Int? // en minutos
+  servings        Int                @default(1)
+  imageUrl        String?
+  mealType        String[] // ["desayuno", "almuerzo", "cena", "snack"]
+  calories        Int // calculado en base a ingredientes
+  protein         Float // calculado en base a ingredientes
+  carbs           Float // calculado en base a ingredientes
+  fat             Float // calculado en base a ingredientes
+  fiber           Float? // calculado en base a ingredientes
+  sugar           Float? // calculado en base a ingredientes
+  userId          String? // Para recetas personalizadas
+  user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  ingredients     RecipeIngredient[]
+  mealPlanItems   MealPlanItem[]
+  mealEntries     MealEntryRecipe[]
+  isFavorite      Boolean            @default(false)
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 }
 
+// Nuevo modelo para relacionar recetas e ingredientes
+model RecipeIngredient {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id], onDelete: Cascade)
+  foodId    String
+  food      Food     @relation(fields: [foodId], references: [id], onDelete: Cascade)
+  quantity  Float // cantidad del ingrediente
+  unit      String? // unidad de medida (g, ml, cucharada, etc.)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Nuevo modelo para planes de alimentación
+model NutritionPlan {
+  id             String           @id @default(cuid())
+  name           String
+  description    String?          @db.Text
+  userId         String
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startDate      DateTime?
+  endDate        DateTime?
+  isActive       Boolean          @default(false)
+  days           NutritionDay[]
+  targetCalories Int?
+  targetProtein  Float?
+  targetCarbs    Float?
+  targetFat      Float?
+  supplements    PlanSupplement[]
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+}
+
+// Nuevo modelo para los días del plan de alimentación
+model NutritionDay {
+  id              String         @id @default(cuid())
+  nutritionPlanId String
+  nutritionPlan   NutritionPlan  @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  dayNumber       Int // Día de la semana (1-7) o número del día en el plan
+  dayName         String? // Lunes, Martes, etc.
+  meals           MealPlanItem[]
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([nutritionPlanId, dayNumber])
+}
+
+// Nuevo modelo para las comidas en un plan de alimentación
+model MealPlanItem {
+  id             String       @id @default(cuid())
+  nutritionDayId String
+  nutritionDay   NutritionDay @relation(fields: [nutritionDayId], references: [id], onDelete: Cascade)
+  mealType       String // desayuno, almuerzo, cena, snack
+  time           String? // Hora de la comida (formato: HH:MM)
+  foodId         String? // Puede ser un alimento individual
+  food           Food?        @relation(fields: [foodId], references: [id])
+  recipeId       String? // O puede ser una receta
+  recipe         Recipe?      @relation(fields: [recipeId], references: [id])
+  quantity       Float // Cantidad (para alimentos) o número de porciones (para recetas)
+  notes          String?
+  calories       Int // Calorías calculadas según cantidad
+  protein        Float // Proteínas calculadas según cantidad
+  carbs          Float // Carbohidratos calculadas según cantidad
+  fat            Float // Grasas calculadas según cantidad
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  // La validación se hará a nivel de aplicación para asegurar que foodId o recipeId estén presentes
+}
+
+// Nuevo modelo para suplementos
+model Supplement {
+  id              String           @id @default(cuid())
+  name            String
+  description     String?          @db.Text
+  dosage          String? // Dosis recomendada
+  timing          String? // Momento de toma (mañana, antes de entrenar, etc.)
+  imageUrl        String?
+  userId          String? // Para suplementos personalizados
+  user            User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
+  planSupplements PlanSupplement[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// Relación entre planes de alimentación y suplementos
+model PlanSupplement {
+  id              String        @id @default(cuid())
+  nutritionPlanId String
+  nutritionPlan   NutritionPlan @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
+  supplementId    String
+  supplement      Supplement    @relation(fields: [supplementId], references: [id], onDelete: Cascade)
+  dosage          String? // Dosis personalizada para este plan
+  timing          String? // Momento personalizado para este plan
+  frequency       String? // Frecuencia (diaria, en días de entrenamiento, etc.)
+  notes           String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([nutritionPlanId, supplementId])
+}
+
+// Modificación al modelo MealEntry para soportar recetas
 model MealEntry {
   id        String   @id @default(cuid())
   mealLogId String
@@ -174,6 +292,35 @@ model MealEntry {
   quantity  Float // número de porciones
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Nuevo modelo para entrada de recetas en registros de comida
+model MealEntryRecipe {
+  id        String   @id @default(cuid())
+  mealLogId String
+  mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+  recipeId  String
+  recipe    Recipe   @relation(fields: [recipeId], references: [id])
+  servings  Float // número de porciones
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model MealLog {
+  id            String            @id @default(cuid())
+  userId        String
+  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime
+  mealType      String // desayuno, almuerzo, cena, merienda
+  entries       MealEntry[]
+  recipeEntries MealEntryRecipe[] // Nuevo: entradas de recetas
+  calories      Int
+  protein       Float
+  carbs         Float
+  fat           Float
+  notes         String? // Nuevo: notas adicionales
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
 model Weight {
@@ -251,27 +398,4 @@ model SetSession {
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
-}
-
-model MealPlan {
-  id                 String               @id @default(uuid())
-  name               String
-  days               Json // Guardará los días de la semana con sus respectivas comidas
-  createdAt          DateTime             @default(now())
-  MealPlanSupplement MealPlanSupplement[]
-}
-
-model Supplement {
-  id                 String               @id @default(uuid())
-  name               String
-  createdAt          DateTime             @default(now())
-  MealPlanSupplement MealPlanSupplement[]
-}
-
-model MealPlanSupplement {
-  id           String     @id @default(uuid())
-  mealPlanId   String
-  supplementId String
-  mealPlan     MealPlan   @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
-  supplement   Supplement @relation(fields: [supplementId], references: [id], onDelete: Cascade)
 }
