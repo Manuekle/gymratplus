@@ -1,18 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  isSameDay,
-  addMonths,
-  subMonths,
-} from "date-fns";
+import { format, startOfMonth, endOfMonth, isSameDay } from "date-fns";
 import { es } from "date-fns/locale";
-import { ChevronLeft, ChevronRight, CalendarIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -20,11 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { MealLogList } from "../../app/nutrition/components/meal-log-list";
@@ -101,10 +88,13 @@ export function MealLogCalendar() {
       setDatesWithMeals(dates);
     } catch (error) {
       console.error("Error fetching meal logs for month:", error);
-      toast({
-        title: "Error",
+      // toast({
+      //   title: "Error",
+      //   description: "No se pudieron cargar los registros de comidas",
+      //   variant: "destructive",
+      // });
+      toast.error("Error", {
         description: "No se pudieron cargar los registros de comidas",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -114,8 +104,8 @@ export function MealLogCalendar() {
   const fetchMealLogsForDate = async (date: Date) => {
     setLoading(true);
     try {
-      // Formatear la fecha para la API
-      const formattedDate = format(date, "yyyy-MM-dd");
+      // Asegurarnos de que la fecha esté en formato ISO pero solo la parte de la fecha
+      const formattedDate = date.toISOString().split("T")[0];
       console.log("Fetching logs for date:", formattedDate);
 
       const response = await fetch(`/api/meal-logs?date=${formattedDate}`);
@@ -137,23 +127,22 @@ export function MealLogCalendar() {
       setMealLogs(data);
     } catch (error) {
       console.error("Error fetching meal logs for date:", error);
-      toast({
-        title: "Error",
+
+      toast.error("Error", {
         description: "No se pudieron cargar los registros de comidas",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);
     }
   };
 
-  const nextMonth = () => {
-    setCurrentMonth(addMonths(currentMonth, 1));
-  };
+  // const nextMonth = () => {
+  //   setCurrentMonth(addMonths(currentMonth, 1));
+  // };
 
-  const prevMonth = () => {
-    setCurrentMonth(subMonths(currentMonth, 1));
-  };
+  // const prevMonth = () => {
+  //   setCurrentMonth(subMonths(currentMonth, 1));
+  // };
 
   const handleDateSelect = (date: Date | undefined) => {
     if (date) {

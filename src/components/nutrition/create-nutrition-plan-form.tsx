@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -37,6 +36,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { Calendar01Icon } from "hugeicons-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
@@ -85,18 +85,15 @@ export function CreateNutritionPlanForm() {
 
       const data = await response.json();
 
-      toast({
-        title: "Plan creado",
+      toast.success("Plan creado", {
         description: "El plan de nutrición ha sido creado correctamente",
       });
 
       router.push(`/nutrition/plans/${data.id}/edit`);
     } catch (error) {
       console.error("Error creating plan:", error);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "No se pudo crear el plan de nutrición",
-        variant: "destructive",
       });
     } finally {
       setIsSubmitting(false);
@@ -165,7 +162,7 @@ export function CreateNutritionPlanForm() {
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <Calendar01Icon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -203,7 +200,7 @@ export function CreateNutritionPlanForm() {
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <Calendar01Icon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>

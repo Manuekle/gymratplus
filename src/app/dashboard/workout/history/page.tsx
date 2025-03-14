@@ -8,6 +8,8 @@ import {
   ArrowLeft01Icon,
   Calendar01Icon,
   Calendar02Icon,
+  CheckmarkCircle02Icon,
+  Clock02Icon,
   Dumbbell01Icon,
 } from "hugeicons-react";
 import { format, parseISO } from "date-fns";
@@ -15,7 +17,6 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle2Icon, Clock1Icon } from "lucide-react";
 
 // Componente de spinner (ajusta según tus componentes)
 const Spinner = () => (
@@ -192,7 +193,7 @@ export default function WorkoutHistory() {
                 <p className="text-3xl font-bold">{stats.totalSets}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle2Icon className="h-6 w-6 text-green-600" />
+                <CheckmarkCircle02Icon className="h-6 w-6 text-green-600" />
               </div>
             </div>
           </CardContent>
@@ -210,7 +211,7 @@ export default function WorkoutHistory() {
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <Clock1Icon className="h-6 w-6 text-purple-600" />
+                <Clock02Icon className="h-6 w-6 text-purple-600" />
               </div>
             </div>
           </CardContent>
@@ -357,7 +358,7 @@ export default function WorkoutHistory() {
                               <div>
                                 {set.completed ? (
                                   <span className="text-green-600 flex items-center">
-                                    <CheckCircle2Icon className="h-4 w-4 mr-1" />{" "}
+                                    <CheckmarkCircle02Icon className="h-4 w-4 mr-1" />{" "}
                                     Completado
                                   </span>
                                 ) : (

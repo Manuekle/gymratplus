@@ -16,6 +16,7 @@ import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
 import NutritionsTable from "@/components/tables/nutritions-table";
 // import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
@@ -101,10 +102,13 @@ export default function NutritionPage() {
       setTodayData(data);
     } catch (error) {
       console.error(`Error fetching ${type} data:`, error);
-      toast({
-        title: "Error",
+      // toast({
+      //   title: "Error",
+      //   description: "No se pudieron cargar los datos de análisis",
+      //   variant: "destructive",
+      // });
+      toast.error("Error", {
         description: "No se pudieron cargar los datos de análisis",
-        variant: "destructive",
       });
     } finally {
       // setLoading(false);
@@ -122,10 +126,8 @@ export default function NutritionPage() {
       setWeekData(data);
     } catch (error) {
       console.error(`Error fetching ${type} data:`, error);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "No se pudieron cargar los datos de análisis",
-        variant: "destructive",
       });
     } finally {
       // setLoading(false);

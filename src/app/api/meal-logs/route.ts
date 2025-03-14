@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 const prisma = new PrismaClient();
 
@@ -32,24 +33,30 @@ export async function GET(req: NextRequest) {
 
     // Filter by specific date
     if (date) {
-      const selectedDate = new Date(date);
-      const nextDay = new Date(selectedDate);
-      nextDay.setDate(nextDay.getDate() + 1);
+      // Parsear la fecha y crear límites del día en la zona horaria local
+      const parsedDate = parseISO(date);
+      const start = startOfDay(parsedDate);
+      const end = endOfDay(parsedDate);
+
+      console.log("Filtering logs between:", {
+        start: start.toISOString(),
+        end: end.toISOString(),
+        originalDate: date,
+      });
 
       where.consumedAt = {
-        gte: selectedDate,
-        lt: nextDay,
+        gte: start,
+        lte: end,
       };
     }
     // Filter by date range
     else if (startDate && endDate) {
-      const start = new Date(startDate);
-      const end = new Date(endDate);
-      end.setDate(end.getDate() + 1); // Include the end date
+      const start = startOfDay(parseISO(startDate));
+      const end = endOfDay(parseISO(endDate));
 
       where.consumedAt = {
         gte: start,
-        lt: end,
+        lte: end,
       };
     }
 
@@ -60,7 +67,7 @@ export async function GET(req: NextRequest) {
         recipe: true,
       },
       orderBy: {
-        consumedAt: "desc",
+        consumedAt: "asc", // Cambiar a orden ascendente para mostrar las comidas en orden cronológico
       },
     });
 
@@ -173,7 +180,7 @@ export async function POST(req: NextRequest) {
       // Corregir el manejo de la fecha
       let consumedAt;
       if (data.consumedAt) {
-        // Parsear la fecha ISO directamente sin manipulaciones
+        // Parsear la fecha ISO y asegurarnos de que se maneje en la zona horaria local
         consumedAt = new Date(data.consumedAt);
 
         // Verificar si la fecha es válida

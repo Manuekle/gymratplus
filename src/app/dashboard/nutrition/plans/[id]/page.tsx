@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft, Edit } from "lucide-react";
 import { notFound } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -19,6 +18,7 @@ import { Badge } from "@/components/ui/badge";
 import { NutritionPlanMeals } from "@/components/nutrition/nutrition-plan-meals";
 import { NutritionPlanSupplements } from "@/components/nutrition/nutrition-plan-supplements";
 import { NutritionPlanSummary } from "@/components/nutrition/nutrition-plan-summary";
+import { ArrowLeft01Icon } from "hugeicons-react";
 
 export const metadata: Metadata = {
   title: "Detalles del Plan de Nutrición",
@@ -87,7 +87,7 @@ export default async function NutritionPlanPage({
         <div className="flex items-center">
           <Link href="/dashboard/nutrition">
             <Button variant="outline" size="sm" className="gap-1 text-xs">
-              <ChevronLeft className="h-4 w-4" />
+              <ArrowLeft01Icon className="h-4 w-4" />
               Volver a la lista
             </Button>
           </Link>

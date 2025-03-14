@@ -256,7 +256,7 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
   return (
     <div className="space-y-6 mt-6">
       <div className="flex justify-between items-center">
-        <h3 className="text-xl font-bold">Comidas del Plan</h3>
+        <h3 className="text-md font-bold">Comidas del Plan</h3>
         {/* <AddMealLogButton planId={plan.id} /> */}
       </div>
 

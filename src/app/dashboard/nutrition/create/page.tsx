@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { CreateNutritionPlanForm } from "../../../nutrition/components/create-nutrition-plan-form";
+import { CreateNutritionPlanForm } from "@/components/nutrition/create-nutrition-plan-form";
+import { ArrowLeft01Icon } from "hugeicons-react";
 
 export const metadata: Metadata = {
   title: "Crear Plan de Nutrición",
@@ -16,7 +16,7 @@ export default function CreateNutritionPlanPage() {
       <div className="flex items-center mb-6">
         <Link href="/nutrition">
           <Button variant="ghost" size="sm" className="gap-1">
-            <ChevronLeft className="h-4 w-4" />
+            <ArrowLeft01Icon className="h-4 w-4" />
             Volver
           </Button>
         </Link>

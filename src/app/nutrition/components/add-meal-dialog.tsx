@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { PlusCircle, Search } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -40,6 +39,7 @@ import {
 } from "@/components/ui/popover";
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
+import { Search01Icon } from "hugeicons-react";
 
 type Food = {
   id: string;
@@ -93,10 +93,9 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
       setFoods(data);
     } catch (error) {
       console.error("Error fetching foods:", error);
-      toast({
-        title: "Error",
+
+      toast.error("Error", {
         description: "No se pudieron cargar los alimentos",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -114,10 +113,13 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
       setRecipes(data);
     } catch (error) {
       console.error("Error fetching recipes:", error);
-      toast({
-        title: "Error",
+      // toast({
+      //   title: "Error",
+      //   description: "No se pudieron cargar las recetas",
+      //   variant: "destructive",
+      // });
+      toast.error("Error", {
         description: "No se pudieron cargar las recetas",
-        variant: "destructive",
       });
     } finally {
       setLoading(false);
@@ -155,19 +157,15 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
 
   const handleSubmit = async () => {
     if (!selectedItemId) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "Debes seleccionar un alimento o receta",
-        variant: "destructive",
       });
       return;
     }
 
     if (!quantity || Number.parseFloat(quantity) <= 0) {
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "La cantidad debe ser mayor que cero",
-        variant: "destructive",
       });
       return;
     }
@@ -222,8 +220,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
       setOpen(false);
       resetForm();
 
-      toast({
-        title: "Comida registrada",
+      toast.success("Comida registrada", {
         description: "La comida ha sido registrada correctamente",
       });
 
@@ -231,13 +228,8 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
       window.location.reload();
     } catch (error) {
       console.error("Error adding meal log:", error);
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "No se pudo registrar la comida",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "No se pudo registrar la comida",
       });
     } finally {
       setSubmitting(false);
@@ -326,7 +318,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps) {
           </TabsList>
 
           <div className="flex items-center border rounded-md px-3 py-2 mt-4">
-            <Search className="h-4 w-4 mr-2 text-muted-foreground" />
+            <Search01Icon className="h-4 w-4 mr-2 text-muted-foreground" />
             <Input
               placeholder="Buscar..."
               value={searchQuery}

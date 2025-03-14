@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -37,6 +36,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { toast } from "sonner";
+import { Calendar01Icon } from "hugeicons-react";
 
 const formSchema = z.object({
   name: z.string().min(1, "El nombre es obligatorio"),
@@ -98,8 +98,7 @@ export function EditNutritionPlanForm({ plan }: { plan: NutritionPlan }) {
         throw new Error("Error al actualizar el plan");
       }
 
-      toast({
-        title: "Plan actualizado",
+      toast.success("Plan actualizado", {
         description: "El plan de nutrición ha sido actualizado correctamente",
       });
 
@@ -107,10 +106,8 @@ export function EditNutritionPlanForm({ plan }: { plan: NutritionPlan }) {
       router.refresh();
     } catch (error) {
       console.error("Error updating plan:", error);
-      toast({
-        title: "Error",
-        description: "No se pudo actualizar el plan de nutrición",
-        variant: "destructive",
+      toast.error("Error", {
+        description: "o se pudo actualizar el plan de nutrición",
       });
     } finally {
       setIsSubmitting(false);
@@ -179,7 +176,7 @@ export function EditNutritionPlanForm({ plan }: { plan: NutritionPlan }) {
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <Calendar01Icon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>
@@ -217,7 +214,7 @@ export function EditNutritionPlanForm({ plan }: { plan: NutritionPlan }) {
                             ) : (
                               <span>Seleccionar fecha</span>
                             )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <Calendar01Icon className="ml-auto h-4 w-4 opacity-50" />
                           </Button>
                         </FormControl>
                       </PopoverTrigger>

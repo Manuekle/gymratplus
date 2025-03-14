@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ChevronLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
 import { Button } from "@/components/ui/button";
-import { EditNutritionPlanForm } from "../../../../../nutrition/components/edit-nutrition-plan-form";
+import { EditNutritionPlanForm } from "@/components/nutrition/edit-nutrition-plan-form";
 import { ArrowLeft01Icon } from "hugeicons-react";
 
 export const metadata: Metadata = {
