@@ -11,16 +11,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState } from "react";
+import { format, parseISO } from "date-fns";
+import { es } from "date-fns/locale";
 
 interface CalorieChartProps {
-  data: { day: string; calories: number }[];
+  chartData: { dayLabel: string; calories: number }[];
 }
 
-export function CalorieChart({ data }: CalorieChartProps) {
+export function CalorieChart({ chartData }: CalorieChartProps) {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  console.log(data);
+  console.log(chartData);
 
   useEffect(() => {
     setMounted(true);
@@ -37,7 +39,7 @@ export function CalorieChart({ data }: CalorieChartProps) {
     <div className="w-full h-[150px]">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
-          data={data}
+          data={chartData}
           margin={{
             top: 5,
             right: 0,
@@ -51,7 +53,7 @@ export function CalorieChart({ data }: CalorieChartProps) {
             stroke={isDark ? "#374151" : "#e5e7eb"}
           />
           <XAxis
-            dataKey="day"
+            dataKey="dayLabel"
             axisLine={false}
             tickLine={false}
             stroke={isDark ? "#9ca3af" : "#6b7280"}
@@ -70,13 +72,27 @@ export function CalorieChart({ data }: CalorieChartProps) {
               fontWeight: "bold",
               color: isDark ? "#e5e7eb" : "#1f2937",
             }}
-            itemStyle={{ fontSize: 12, color: isDark ? "#e5e7eb" : "#1f2937" }}
+            itemStyle={{
+              fontSize: 12,
+              color: isDark ? "#e5e7eb" : "#1f2937",
+            }}
+            formatter={(value: number) => [`${value} kcal`, "Calorías"]}
+            labelFormatter={(label) => {
+              const day = chartData.find((d) => d.dayLabel === label);
+              return day
+                ? format(parseISO(day.date), "EEEE, d 'de' MMMM", {
+                    locale: es,
+                  })
+                : label;
+            }}
           />
+          {/* <Legend /> */}
           <Bar
             dataKey="calories"
             fill={isDark ? "#eee" : "#000"}
             radius={[4, 4, 0, 0]}
-          />
+            name="Calorías"
+          ></Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>

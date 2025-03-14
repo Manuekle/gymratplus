@@ -64,18 +64,7 @@ export async function POST(request: Request) {
     });
 
     // Check if user has meal logs
-    const existingMealLogs = await prisma.mealLog.findMany({
-      where: { userId },
-      include: {
-        entries: {
-          include: {
-            food: true,
-          },
-        },
-      },
-      orderBy: { date: "desc" },
-      take: 7, // Last week of meals
-    });
+    // Code removed
 
     // If recent plans exist, return them with some adaptive modifications
     if (existingWorkout) {
@@ -113,10 +102,7 @@ export async function POST(request: Request) {
       };
 
       // Format nutrition plan if meal logs exist
-      const nutritionPlan =
-        existingMealLogs.length > 0
-          ? formatExistingNutritionPlan(existingMealLogs, profile)
-          : await createNutritionPlan(profile);
+      const nutritionPlan = await createNutritionPlan(profile);
 
       return NextResponse.json({
         workoutPlan,

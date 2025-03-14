@@ -149,6 +149,7 @@ model Food {
   userId            String? // Para alimentos personalizados
   user              User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   mealEntries       MealEntry[]
+  mealLogs          MealLog[]
   recipeIngredients RecipeIngredient[]
   mealPlanItems     MealPlanItem[]
   createdAt         DateTime           @default(now())
@@ -175,6 +176,7 @@ model Recipe {
   user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   ingredients     RecipeIngredient[]
   mealPlanItems   MealPlanItem[]
+  mealLogs        MealLog[]
   mealEntries     MealEntryRecipe[]
   isFavorite      Boolean            @default(false)
   createdAt       DateTime           @default(now())
@@ -210,6 +212,7 @@ model NutritionPlan {
   targetCarbs    Float?
   targetFat      Float?
   supplements    PlanSupplement[]
+  mealLogs       MealLog[]
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
 }
@@ -307,20 +310,35 @@ model MealEntryRecipe {
 }
 
 model MealLog {
-  id            String            @id @default(cuid())
-  userId        String
-  user          User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  date          DateTime
-  mealType      String // desayuno, almuerzo, cena, merienda
-  entries       MealEntry[]
-  recipeEntries MealEntryRecipe[] // Nuevo: entradas de recetas
-  calories      Int
-  protein       Float
-  carbs         Float
-  fat           Float
-  notes         String? // Nuevo: notas adicionales
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
+  id         String   @id @default(cuid())
+  userId     String
+  mealType   String
+  consumedAt DateTime
+  foodId     String?
+  recipeId   String?
+  quantity   Float
+  calories   Int
+  protein    Float
+  carbs      Float
+  fat        Float
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  planId     String? // Nuevo campo para asociar con el plan nutricional
+
+  // Relaciones
+  food            Food?             @relation(fields: [foodId], references: [id])
+  recipe          Recipe?           @relation(fields: [recipeId], references: [id])
+  plan            NutritionPlan?    @relation(fields: [planId], references: [id])
+  User            User              @relation(fields: [userId], references: [id])
+  MealEntry       MealEntry[]
+  MealEntryRecipe MealEntryRecipe[]
+
+  @@index([userId])
+  @@index([foodId])
+  @@index([recipeId])
+  @@index([consumedAt])
+  @@index([planId])
 }
 
 model Weight {
