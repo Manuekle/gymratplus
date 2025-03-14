@@ -3,21 +3,11 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Trash, Clock, Utensils } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
-import { AddMealLogButton } from "../../../components/nutrition/add-meal-log-button";
+import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
 import { Badge } from "@/components/ui/badge";
-import { Delete02Icon } from "hugeicons-react";
 
 type MealLog = {
   id: string;
@@ -89,16 +79,13 @@ export function MealLogList({
 
       onMealLogDeleted(id);
 
-      toast({
-        title: "Registro eliminado",
+      toast.success("Registro eliminado", {
         description: "El registro de comida ha sido eliminado correctamente",
       });
     } catch (error) {
       console.error("Error deleting meal log:", error);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "No se pudo eliminar el registro de comida",
-        variant: "destructive",
       });
     } finally {
       setDeletingId(null);

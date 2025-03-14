@@ -408,7 +408,7 @@ export function NutritionPlanSupplements({ plan }: { plan: NutritionPlan }) {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             {supplements.map((supp) => (
               <Card key={supp.id} className="overflow-hidden">
-                <CardHeader className="pb-2 bg-muted/10">
+                <CardHeader>
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-md">
@@ -431,7 +431,7 @@ export function NutritionPlanSupplements({ plan }: { plan: NutritionPlan }) {
                     </Button>
                   </div>
                 </CardHeader>
-                <CardContent className="p-4">
+                <CardContent className="py-1">
                   <div className="gap-3 text-sm">
                     <div className="flex items-start">
                       <span className="font-medium w-24 text-muted-foreground">

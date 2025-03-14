@@ -17,7 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { NutritionPlanMeals } from "@/components/nutrition/nutrition-plan-meals";
 import { NutritionPlanSupplements } from "@/components/nutrition/nutrition-plan-supplements";
-import { NutritionPlanSummary } from "@/components/nutrition/nutrition-plan-summary";
+// import { NutritionPlanSummary } from "@/components/nutrition/nutrition-plan-summary";
 import { ArrowLeft01Icon } from "hugeicons-react";
 
 export const metadata: Metadata = {
@@ -153,10 +153,10 @@ export default async function NutritionPlanPage({
       </Card>
 
       <Tabs defaultValue="meals" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="meals">Comidas</TabsTrigger>
           <TabsTrigger value="supplements">Suplementos</TabsTrigger>
-          <TabsTrigger value="summary">Resumen</TabsTrigger>
+          {/* <TabsTrigger value="summary">Resumen</TabsTrigger> */}
         </TabsList>
         <TabsContent value="meals">
           <NutritionPlanMeals plan={plan} />
@@ -164,9 +164,9 @@ export default async function NutritionPlanPage({
         <TabsContent value="supplements">
           <NutritionPlanSupplements plan={plan} />
         </TabsContent>
-        <TabsContent value="summary">
+        {/* <TabsContent value="summary">
           <NutritionPlanSummary plan={plan} />
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   );

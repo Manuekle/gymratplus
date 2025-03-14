@@ -14,7 +14,7 @@ import {
 
 import { Calendar } from "@/components/ui/calendar";
 import { toast } from "sonner";
-import { MealLogList } from "../../app/nutrition/components/meal-log-list";
+import { MealLogList } from "@/components/nutrition/meal-log-list";
 
 type MealLog = {
   id: string;
@@ -184,14 +184,14 @@ export function MealLogCalendar() {
               </Button>
             </div>
           </CardHeader> */}
-          <CardContent>
+          <CardContent className="flex justify-center items-center">
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={handleDateSelect}
               month={currentMonth}
               onMonthChange={setCurrentMonth}
-              className="rounded-md border"
+              className="rounded-md"
               locale={es}
               modifiers={{
                 hasMeal: datesWithMeals,

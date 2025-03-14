@@ -50,14 +50,14 @@ export default function ProfilePage() {
               <div>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
                   <h2 className="text-2xl font-bold">{session?.user?.name}</h2>
-                  <div className="flex gap-2 justify-center md:justify-start">
+                  {/* <div className="flex gap-2 justify-center md:justify-start">
                     <Badge
                       variant="outline"
                       className="bg-blue-50 text-blue-700 hover:bg-blue-50 text-xs"
                     >
                       Premium
                     </Badge>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 

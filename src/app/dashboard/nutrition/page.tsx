@@ -183,7 +183,7 @@ export default function NutritionPage() {
     <>
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
-          <Card>
+          <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
               <CardTitle>Calorías Diarias</CardTitle>
               <CardDescription>Consumo calórico del día actual</CardDescription>
@@ -260,7 +260,7 @@ export default function NutritionPage() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
               <CardTitle>Macronutrientes</CardTitle>
               <CardDescription>
@@ -370,7 +370,7 @@ export default function NutritionPage() {
               </div>
             </CardContent>
           </Card>
-          <Card className="">
+          <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
               <CardTitle>Mis Planes de nutricion</CardTitle>
               <CardDescription className="text-xs">
