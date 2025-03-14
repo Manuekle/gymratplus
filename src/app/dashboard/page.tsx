@@ -2,7 +2,7 @@ import DashboardStats from "@/components/dashboard/dashboard-stats";
 import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
-import UpcomingEvents from "@/components/dashboard/upcoming-events";
+// import UpcomingEvents from "@/components/dashboard/upcoming-events";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
 
 export default function DashboardPage() {
@@ -17,7 +17,7 @@ export default function DashboardPage() {
         <WorkoutSummary />
         <NutritionSummary />
       </div>
-      <UpcomingEvents />
+      {/* <UpcomingEvents /> */}
     </div>
   );
 }

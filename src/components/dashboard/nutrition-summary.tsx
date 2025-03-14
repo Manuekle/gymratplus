@@ -1,12 +1,136 @@
+"use client";
 import { Progress } from "@/components/ui/progress";
 import { ArrowRight01Icon } from "hugeicons-react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { toast } from "sonner";
+
+interface UserProfile {
+  id: string;
+  nutrition: {
+    calorieTarget: number;
+    proteinTarget: number;
+    carbTarget: number;
+    fatTarget: number;
+  };
+  waterIntake: number;
+  goal: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+type MealLog = {
+  id: string;
+  mealType: string;
+  consumedAt: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  food: { name: string } | null;
+  recipe: { name: string } | null;
+};
+
+type TodayData = {
+  todayLogs: MealLog[];
+  todayTotals: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+  mealTypeGroups: Record<
+    string,
+    {
+      calories: number;
+      protein: number;
+      carbs: number;
+      fat: number;
+    }
+  >;
+};
 
 export default function NutritionSummary() {
+  const { data: session } = useSession();
+
+  const [user, setUser] = useState<UserProfile | null>(null);
+  const [todayData, setTodayData] = useState<TodayData | null>(null);
+
+  const analyticsData = async (type: string) => {
+    // setLoading(true);
+    try {
+      const response = await fetch(`/api/nutrition-analytics?type=${type}`);
+      if (!response.ok) {
+        throw new Error("Error al cargar los datos de análisis");
+      }
+      const data = await response.json();
+
+      setTodayData(data);
+    } catch (error) {
+      console.error(`Error fetching ${type} data:`, error);
+      // toast({
+      //   title: "Error",
+      //   description: "No se pudieron cargar los datos de análisis",
+      //   variant: "destructive",
+      // });
+      toast.error("Error", {
+        description: "No se pudieron cargar los datos de análisis",
+      });
+    } finally {
+      // setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Si no hay usuario en la sesión, no hacemos nada
+    if (!session?.user) return;
+
+    const profile = (session.user as any)?.profile;
+    if (!profile) return;
+
+    analyticsData("today");
+    // Configurar el usuario solo si hay cambios en la sesión
+    setUser({
+      id: profile.id,
+      nutrition: {
+        calorieTarget: Number(profile.dailyCalorieTarget),
+        proteinTarget: Number(profile.dailyProteinTarget),
+        carbTarget: Number(profile.dailyCarbTarget),
+        fatTarget: Number(profile.dailyFatTarget),
+      },
+      waterIntake: Number(profile.waterIntake),
+      goal: profile.goal,
+      createdAt: profile.createdAt,
+      updatedAt: profile.updatedAt,
+    });
+  }, [session?.user]);
+
   const macros = [
-    { name: "Calorías", consumed: 1850, goal: 2200, unit: "kcal" },
-    { name: "Proteínas", consumed: 95, goal: 120, unit: "g" },
-    { name: "Carbohidratos", consumed: 180, goal: 220, unit: "g" },
-    { name: "Grasas", consumed: 55, goal: 70, unit: "g" },
+    {
+      name: "Calorías",
+      consumed: todayData?.todayTotals.calories ?? 0,
+      goal: user?.nutrition.calorieTarget ?? 0,
+      unit: "kcal",
+    },
+    {
+      name: "Proteínas",
+      consumed: todayData?.todayTotals.protein ?? 0,
+      goal: user?.nutrition.proteinTarget ?? 0,
+      unit: "g",
+    },
+    {
+      name: "Carbohidratos",
+      consumed: todayData?.todayTotals.carbs ?? 0,
+      goal: user?.nutrition.carbTarget ?? 0,
+      unit: "g",
+    },
+    {
+      name: "Grasas",
+      consumed: todayData?.todayTotals.fat ?? 0,
+      goal: user?.nutrition.fatTarget ?? 0,
+      unit: "g",
+    },
   ];
 
   const calculatePercentage = (consumed: number, goal: number) => {
@@ -19,9 +143,12 @@ export default function NutritionSummary() {
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-bold">Resumen Nutricional</h2>
         </div>
-        <button className="text-xs text-gray-500 flex items-center gap-1">
-          Ver detalles <ArrowRight01Icon className="h-4 w-4" />
-        </button>
+        <Link
+          href="/dashboard/nutrition"
+          className="text-xs text-gray-500 flex items-center gap-1"
+        >
+          Ver mas <ArrowRight01Icon className="h-4 w-4" />
+        </Link>
       </div>
 
       <div className="space-y-4">
@@ -55,7 +182,7 @@ export default function NutritionSummary() {
         })}
       </div>
 
-      <div className="mt-4 pt-4 border-t">
+      {/* <div className="mt-4 pt-4 border-t">
         <h3 className="text-sm font-medium mb-2">Comidas de hoy</h3>
         <div className="space-y-2">
           {["Desayuno", "Almuerzo", "Merienda", "Cena"].map((meal, index) => (
@@ -74,7 +201,7 @@ export default function NutritionSummary() {
             </div>
           ))}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
