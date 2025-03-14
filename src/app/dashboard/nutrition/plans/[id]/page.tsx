@@ -82,24 +82,25 @@ export default async function NutritionPlanPage({
   }
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div>
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Link href="/nutrition">
-            <Button variant="ghost" size="sm" className="gap-1">
+          <Link href="/dashboard/nutrition">
+            <Button variant="outline" size="sm" className="gap-1 text-xs">
               <ChevronLeft className="h-4 w-4" />
-              Volver
+              Volver a la lista
             </Button>
           </Link>
-          <h2 className="text-2xl font-bold ml-2">{plan.name}</h2>
-          {plan.isActive && <Badge className="ml-2">Activo</Badge>}
         </div>
-        <Link href={`/nutrition/plans/${plan.id}/edit`}>
-          <Button variant="outline" size="sm" className="gap-1">
-            <Edit className="h-4 w-4" />
+        <Link href={`/dashboard/nutrition/plans/${plan.id}/edit`}>
+          <Button size="sm" className="text-xs">
             Editar
           </Button>
         </Link>
+      </div>
+      <div className="flex flex-row gap-2 items-center mb-6">
+        <h2 className="text-2xl font-bold ml-2 capitalize">{plan.name}</h2>
+        {plan.isActive && <Badge className="ml-2">activo</Badge>}
       </div>
 
       <Card className="mb-6">

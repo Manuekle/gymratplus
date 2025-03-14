@@ -81,6 +81,7 @@ export function MealLogCalendar() {
       }
 
       const data = await response.json();
+      console.log(data);
 
       // Extraer fechas únicas con comidas y asegurar que estén en la zona horaria local
       const dates = [

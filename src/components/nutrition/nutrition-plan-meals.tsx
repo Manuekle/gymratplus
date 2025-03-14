@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Utensils, Clock, Trash } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,6 +16,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { AddMealLogButton } from "./add-meal-log-button";
+import {
+  Clock02Icon,
+  Delete02Icon,
+  KitchenUtensilsIcon,
+} from "hugeicons-react";
 
 type MealPlanItem = {
   id: string;
@@ -90,16 +94,13 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
 
       setMealItems(mealItems.filter((meal) => meal.id !== id));
 
-      toast({
-        title: "Comida eliminada",
+      toast.success("Comida eliminada", {
         description: "La comida ha sido eliminada correctamente",
       });
     } catch (error) {
       console.error("Error deleting meal:", error);
-      toast({
-        title: "Error",
+      toast.error("Error", {
         description: "No se pudo eliminar la comida",
-        variant: "destructive",
       });
     } finally {
       setDeletingId(null);
@@ -162,8 +163,8 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
   const renderMealList = (meals: MealPlanItem[], mealType: string) => {
     if (meals.length === 0) {
       return (
-        <div className="text-center py-6 border rounded-lg">
-          <p className="text-muted-foreground">
+        <div className="text-center border rounded-lg space-y-4 py-32">
+          <p className="text-muted-foreground text-sm">
             No hay comidas registradas para este tipo
           </p>
           <AddMealLogButton
@@ -189,7 +190,7 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
                     {meal.food?.name || meal.recipe?.name}
                   </CardTitle>
                   <CardDescription className="flex items-center mt-1">
-                    <Clock className="h-3 w-3 mr-1" />
+                    <Clock02Icon className="h-3 w-3 mr-1" />
                     {meal.time
                       ? format(new Date(meal.time), "d MMM yyyy, HH:mm", {
                           locale: es,
@@ -204,14 +205,14 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
                   onClick={() => deleteMealItem(meal.id)}
                   disabled={deletingId === meal.id}
                 >
-                  <Trash className="h-4 w-4" />
+                  <Delete02Icon className="h-4 w-4" />
                   <span className="sr-only">Eliminar</span>
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="py-2">
               <div className="flex items-center text-sm">
-                <Utensils className="h-4 w-4 mr-2 text-muted-foreground" />
+                <KitchenUtensilsIcon className="h-4 w-4 mr-2 text-muted-foreground" />
                 <span>
                   {meal.quantity} {meal.food ? `g` : `porción(es)`}
                 </span>
@@ -256,7 +257,7 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
     <div className="space-y-6 mt-6">
       <div className="flex justify-between items-center">
         <h3 className="text-xl font-bold">Comidas del Plan</h3>
-        <AddMealLogButton planId={plan.id} />
+        {/* <AddMealLogButton planId={plan.id} /> */}
       </div>
 
       <Card className="mb-6">
@@ -323,14 +324,14 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
         <TabsContent value="desayuno" className="mt-4">
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">Totales de Desayuno</h4>
+              <h4 className="font-medium text-sm">Totales de Desayuno</h4>
               <AddMealLogButton
                 selectedDate={undefined}
                 defaultMealType="desayuno"
                 planId={plan.id}
               />
             </div>
-            <div className="grid grid-cols-4 gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="grid grid-cols-4 gap-4 py-4 bg-muted/20 rounded-lg text-sm">
               <div>
                 <span className="text-muted-foreground">Calorías:</span>
                 <span className="ml-1 font-medium">
@@ -363,14 +364,14 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
         <TabsContent value="almuerzo" className="mt-4">
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">Totales de Almuerzo</h4>
+              <h4 className="font-medium text-sm">Totales de Almuerzo</h4>
               <AddMealLogButton
                 selectedDate={undefined}
                 defaultMealType="almuerzo"
                 planId={plan.id}
               />
             </div>
-            <div className="grid grid-cols-4 gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="grid grid-cols-4 gap-4 py-4 bg-muted/20 rounded-lg text-sm">
               <div>
                 <span className="text-muted-foreground">Calorías:</span>
                 <span className="ml-1 font-medium">
@@ -403,14 +404,14 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
         <TabsContent value="cena" className="mt-4">
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">Totales de Cena</h4>
+              <h4 className="font-medium text-sm">Totales de Cena</h4>
               <AddMealLogButton
                 selectedDate={undefined}
                 defaultMealType="cena"
                 planId={plan.id}
               />
             </div>
-            <div className="grid grid-cols-4 gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="grid grid-cols-4 gap-4 py-4 bg-muted/20 rounded-lg text-sm">
               <div>
                 <span className="text-muted-foreground">Calorías:</span>
                 <span className="ml-1 font-medium">
@@ -443,14 +444,14 @@ export function NutritionPlanMeals({ plan }: { plan: NutritionPlan }) {
         <TabsContent value="snack" className="mt-4">
           <div className="mb-4">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="font-medium">Totales de Snacks</h4>
+              <h4 className="font-medium text-sm">Totales de Snacks</h4>
               <AddMealLogButton
                 selectedDate={undefined}
                 defaultMealType="snack"
                 planId={plan.id}
               />
             </div>
-            <div className="grid grid-cols-4 gap-4 p-4 bg-muted/20 rounded-lg">
+            <div className="grid grid-cols-4 gap-4 py-4 bg-muted/20 rounded-lg text-sm">
               <div>
                 <span className="text-muted-foreground">Calorías:</span>
                 <span className="ml-1 font-medium">
