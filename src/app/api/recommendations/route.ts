@@ -139,7 +139,7 @@ export async function POST(request: Request) {
 // Adapt sets based on user progress and adherence
 function adaptSetsBasedOnProgress(
   currentSets: number,
-  adherence: any,
+  adherence: { level: string },
   goal: string
 ) {
   if (!adherence) return currentSets;
@@ -159,7 +159,7 @@ function adaptSetsBasedOnProgress(
 // Adapt reps based on user progress and adherence
 function adaptRepsBasedOnProgress(
   currentReps: number,
-  adherence: any,
+  adherence: { level: string },
   goal: string
 ) {
   if (!adherence) return currentReps;
@@ -340,56 +340,6 @@ function generateRecommendations(profile, adherence, weightHistory) {
   return recommendations;
 }
 
-// Format existing nutrition plan from meal logs
-function formatExistingNutritionPlan(mealLogs, profile) {
-  // Calculate average macros from meal logs
-  const totalCalories = mealLogs.reduce((sum, log) => sum + log.calories, 0);
-  const totalProtein = mealLogs.reduce((sum, log) => sum + log.protein, 0);
-  const totalCarbs = mealLogs.reduce((sum, log) => sum + log.carbs, 0);
-  const totalFat = mealLogs.reduce((sum, log) => sum + log.fat, 0);
-
-  const avgCalories = Math.round(totalCalories / mealLogs.length);
-  const avgProtein = Math.round(totalProtein / mealLogs.length);
-  const avgCarbs = Math.round(totalCarbs / mealLogs.length);
-  const avgFat = Math.round(totalFat / mealLogs.length);
-
-  // Group meal logs by type
-  const breakfast = mealLogs.find((log) => log.mealType === "breakfast");
-  const lunch = mealLogs.find((log) => log.mealType === "lunch");
-  const dinner = mealLogs.find((log) => log.mealType === "dinner");
-  const snacks = mealLogs.find((log) => log.mealType === "snack");
-
-  return {
-    macros: {
-      protein: `${avgProtein}g (${Math.round(
-        ((avgProtein * 4) / avgCalories) * 100
-      )}%)`,
-      carbs: `${avgCarbs}g (${Math.round(
-        ((avgCarbs * 4) / avgCalories) * 100
-      )}%)`,
-      fat: `${avgFat}g (${Math.round(((avgFat * 9) / avgCalories) * 100)}%)`,
-      description: `Based on your recent meal logs and ${getGoalText(
-        profile.goal
-      )} goal`,
-    },
-    meals: {
-      breakfast,
-      lunch,
-      dinner,
-      snacks,
-    },
-    calorieTarget: profile.dailyCalorieTarget,
-    adherence: {
-      calorieAdherence: Math.round(
-        (avgCalories / profile.dailyCalorieTarget) * 100
-      ),
-      proteinAdherence: Math.round(
-        (avgProtein / profile.dailyProteinTarget) * 100
-      ),
-    },
-  };
-}
-
 // Generate and save a new workout plan
 async function generateAndSaveWorkoutPlan(
   profile,
@@ -397,7 +347,7 @@ async function generateAndSaveWorkoutPlan(
   workoutHistory,
   methodology = "standard"
 ) {
-  const { id: profileId, userId, gender, goal, trainingFrequency } = profile;
+  const { userId, gender, goal, trainingFrequency } = profile;
 
   // Create a new workout in the database
   const workout = await prisma.workout.create({
