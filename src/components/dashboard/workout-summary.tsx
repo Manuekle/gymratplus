@@ -2,15 +2,29 @@
 
 import { useState, useEffect } from "react";
 import { ArrowRight01Icon, Clock01Icon } from "hugeicons-react";
-import { Button } from "../ui/button";
 import { es } from "date-fns/locale";
 import { Skeleton } from "../ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
 
+interface Exercise {
+  // Define the exercise properties as needed, for example:
+  name: string;
+  reps?: number;
+  sets?: number;
+}
+
+interface WorkoutSession {
+  id: string;
+  date: string;
+  duration?: number;
+  exercises: Exercise[];
+  notes?: string;
+}
+
 export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
-  const [workoutSessions, setWorkoutSessions] = useState<any[]>([]);
+  const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([]);
 
   useEffect(() => {
     const fetchWorkoutHistory = async () => {
