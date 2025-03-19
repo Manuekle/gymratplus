@@ -8,7 +8,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
 } from "recharts";
 import { useEffect, useState, useCallback } from "react";
@@ -30,11 +29,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Icons } from "./icons";
 import { ExerciseProgress } from "./progress/excercise-progress";
 import ChartSkeleton from "./skeleton/charts-skeleton";
 
-// Tipos para los períodos de tiempo
+// Removed unused ChartDataItem interface
+// Removed top-level state declarations; state is managed inside the ExerciseProgressChart component.
 type TimePeriod = "all" | "week" | "month" | "year";
 
 export function ExerciseProgressChart() {
@@ -50,7 +49,16 @@ export function ExerciseProgressChart() {
 
   // Función para filtrar datos según el período de tiempo seleccionado
   const filterDataByTimePeriod = useCallback(
-    (data: any[], period: TimePeriod) => {
+    (
+      data: {
+        date: string;
+        benchPress: number;
+        squat: number;
+        deadlift: number;
+        originalDate: Date;
+      }[],
+      period: TimePeriod
+    ) => {
       if (period === "all" || !data.length) {
         return data;
       }
@@ -93,14 +101,31 @@ export function ExerciseProgressChart() {
 
       if (data && data.length > 0) {
         // Transformar datos para el gráfico
-        const formattedData = data.map((record) => ({
-          date: format(new Date(record.date), "d MMM", { locale: es }),
-          benchPress: record.benchPress,
-          squat: record.squat,
-          deadlift: record.deadlift,
-          // Guardar la fecha original para ordenar y filtrar correctamente
-          originalDate: new Date(record.date),
-        }));
+        interface RawRecord {
+          date: string | number | Date;
+          benchPress: number;
+          squat: number;
+          deadlift: number;
+        }
+
+        interface FormattedRecord {
+          date: string;
+          benchPress: number;
+          squat: number;
+          deadlift: number;
+          originalDate: Date;
+        }
+
+        const formattedData: FormattedRecord[] = data.map(
+          (record: RawRecord) => ({
+            date: format(new Date(record.date), "d MMM", { locale: es }),
+            benchPress: record.benchPress,
+            squat: record.squat,
+            deadlift: record.deadlift,
+            // Guardar la fecha original para ordenar y filtrar correctamente
+            originalDate: new Date(record.date),
+          })
+        );
 
         // Ordenar por fecha
         const sortedData = formattedData.sort(
@@ -299,9 +324,12 @@ export function ExerciseProgressChart() {
                     squat: "Sentadilla",
                     deadlift: "Peso muerto",
                   };
+                  const key = props.dataKey;
                   return [
                     `${value} kg`,
-                    exerciseNames[props.dataKey] || props.dataKey,
+                    key && exerciseNames[key as keyof typeof exerciseNames]
+                      ? exerciseNames[key as keyof typeof exerciseNames]
+                      : key || "",
                   ];
                 }}
               />

@@ -5,9 +5,7 @@ import {
   Delete02Icon,
   DragDropHorizontalIcon,
   EyeIcon,
-  MoreVerticalCircle01Icon,
   MoreVerticalIcon,
-  WasteIcon,
 } from "hugeicons-react";
 
 import {
@@ -17,7 +15,6 @@ import {
   DropdownMenuContent,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 
 interface Exercise {
   id: string;
@@ -30,8 +27,6 @@ interface Exercise {
 export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: exercise.id });
-
-  const router = useRouter();
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -51,7 +46,7 @@ export default function ExerciseItem({ exercise }: { exercise: Exercise }) {
       {/* Info del ejercicio */}
       <div className="flex-grow bg-background p-4 rounded-lg shadow-md border justify-between items-center flex">
         <div className="flex-grow bg-background">
-          <h2 className="font-medium text-sm">{exercise.exercise.name}</h2>
+          <h2 className="font-medium text-sm">{exercise.name}</h2>
           <span className="text-xs text-muted-foreground">
             {exercise.weight || 0}kg - {exercise.sets || 0} x {exercise.reps}{" "}
             reps
