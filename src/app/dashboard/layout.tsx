@@ -39,14 +39,14 @@ export default function DashboardLayout({
               <TabsTrigger
                 value="dashboard"
                 asChild
-                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
+                className="min-w-[100px] md:min-w-1 whitespace-nowrap"
               >
-                <Link href="/dashboard/">Dashboard</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </TabsTrigger>
               <TabsTrigger
                 value="profile"
                 asChild
-                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
+                className="min-w-[100px] md:min-w-1 whitespace-nowrap"
               >
                 <Link href="/dashboard/profile">Perfil</Link>
               </TabsTrigger>
@@ -60,7 +60,7 @@ export default function DashboardLayout({
               <TabsTrigger
                 value="workout"
                 asChild
-                className="min-w-[100px] md:min-w-0 whitespace-nowrap"
+                className="md:min-w-1 whitespace-nowrap"
               >
                 <Link href="/dashboard/workout">Entrenamiento</Link>
               </TabsTrigger>

@@ -20,10 +20,8 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { useProgress } from "@/hooks/use-progress";
-import ProgressForm from "@/components/progress-form";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -33,6 +31,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "../icons";
+import { NewProgress } from "../progress/new-progress";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -51,7 +50,6 @@ export default function ProgressChart() {
     change: 0,
     percentChange: 0,
   });
-  const [showAddForm, setShowAddForm] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Usar una referencia para evitar que fetchProgressData y getProgressStats
@@ -258,13 +256,13 @@ export default function ProgressChart() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Seguimiento de Progreso</h2>
-        <Button
+        {/* <Button
           size="sm"
           onClick={() => setShowAddForm(true)}
           className="px-6 text-xs"
         >
           Añadir registro
-        </Button>
+        </Button> */}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mb-4 items-center">
@@ -307,7 +305,7 @@ export default function ProgressChart() {
           </Button>
         </div>
 
-        <div className="w-full sm:w-auto">
+        <div className="flex flex-row gap-2 w-full sm:w-auto">
           <Select
             value={timePeriod}
             onValueChange={(value) => setTimePeriod(value as TimePeriod)}
@@ -330,6 +328,11 @@ export default function ProgressChart() {
               </SelectItem>
             </SelectContent>
           </Select>
+          <NewProgress
+            onSuccess={() => {
+              loadData();
+            }}
+          />
         </div>
       </div>
 
@@ -431,7 +434,7 @@ export default function ProgressChart() {
         )}
       </div>
 
-      {showAddForm && (
+      {/* {showAddForm && (
         <ProgressForm
           onClose={() => setShowAddForm(false)}
           onSuccess={() => {
@@ -439,7 +442,7 @@ export default function ProgressChart() {
             loadData();
           }}
         />
-      )}
+      )} */}
     </div>
   );
 }

@@ -1,134 +1,175 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { format } from "date-fns"
-import { es } from "date-fns/locale"
-import { CalendarIcon, X } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { cn } from "@/lib/utils"
-import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals"
+import { useState } from "react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { CalendarIcon, X } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals";
 
 interface GoalFormProps {
-  onClose: () => void
-  onSuccess: () => void
-  initialData?: Partial<Goal>
+  onClose: () => void;
+  onSuccess: () => void;
+  initialData?: Partial<Goal>;
 }
 
-export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormProps) {
-  const isEditing = !!initialData?.id
-  const [type, setType] = useState<GoalType>((initialData?.type as GoalType) || "weight")
-  const [title, setTitle] = useState(initialData?.title || "")
-  const [description, setDescription] = useState(initialData?.description || "")
-  const [initialValue, setInitialValue] = useState<string>(initialData?.initialValue?.toString() || "")
-  const [targetValue, setTargetValue] = useState<string>(initialData?.targetValue?.toString() || "")
-  const [unit, setUnit] = useState(initialData?.unit || "kg")
-  const [exerciseType, setExerciseType] = useState(initialData?.exerciseType || "")
-  const [measurementType, setMeasurementType] = useState(initialData?.measurementType || "")
+export default function GoalForm({
+  onClose,
+  onSuccess,
+  initialData,
+}: GoalFormProps) {
+  const isEditing = !!initialData?.id;
+  const [type, setType] = useState<GoalType>(
+    (initialData?.type as GoalType) || "weight"
+  );
+  const [title, setTitle] = useState(initialData?.title || "");
+  const [description, setDescription] = useState(
+    initialData?.description || ""
+  );
+  const [initialValue, setInitialValue] = useState<string>(
+    initialData?.initialValue?.toString() || ""
+  );
+  const [targetValue, setTargetValue] = useState<string>(
+    initialData?.targetValue?.toString() || ""
+  );
+  const [unit, setUnit] = useState(initialData?.unit || "kg");
+  const [exerciseType, setExerciseType] = useState(
+    initialData?.exerciseType || ""
+  );
+  const [measurementType, setMeasurementType] = useState(
+    initialData?.measurementType || ""
+  );
   const [startDate, setStartDate] = useState<Date | undefined>(
-    initialData?.startDate ? new Date(initialData.startDate) : new Date(),
-  )
+    initialData?.startDate ? new Date(initialData.startDate) : new Date()
+  );
   const [targetDate, setTargetDate] = useState<Date | undefined>(
-    initialData?.targetDate ? new Date(initialData.targetDate) : undefined,
-  )
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+    initialData?.targetDate ? new Date(initialData.targetDate) : undefined
+  );
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const { createGoal, updateGoal } = useGoals()
+  const { createGoal, updateGoal } = useGoals();
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError(null)
+    e.preventDefault();
+    setError(null);
 
     // Validación básica
     if (!title) {
-      setError("El título es obligatorio")
-      return
+      setError("El título es obligatorio");
+      return;
     }
 
     if (!type) {
-      setError("El tipo de objetivo es obligatorio")
-      return
+      setError("El tipo de objetivo es obligatorio");
+      return;
     }
 
     if (!startDate) {
-      setError("La fecha de inicio es obligatoria")
-      return
+      setError("La fecha de inicio es obligatoria");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const data: Partial<Goal> = {
         type,
         title,
         description,
-        initialValue: initialValue ? Number.parseFloat(initialValue) : undefined,
+        initialValue: initialValue
+          ? Number.parseFloat(initialValue)
+          : undefined,
         targetValue: targetValue ? Number.parseFloat(targetValue) : undefined,
         unit,
         startDate: startDate.toISOString(),
         targetDate: targetDate ? targetDate.toISOString() : undefined,
-      }
+      };
 
       // Añadir campos específicos según el tipo
       if (type === "strength") {
-        data.exerciseType = exerciseType
+        data.exerciseType = exerciseType;
       } else if (type === "measurement") {
-        data.measurementType = measurementType
+        data.measurementType = measurementType;
       }
 
       if (isEditing && initialData.id) {
-        await updateGoal(initialData.id, data)
+        await updateGoal(initialData.id, data);
       } else {
-        await createGoal(data as Goal)
+        await createGoal(data as Goal);
       }
 
-      onSuccess()
+      onSuccess();
     } catch (error) {
-      console.error("Error al guardar:", error)
-      setError("Ocurrió un error al guardar los datos")
+      console.error("Error al guardar:", error);
+      setError("Ocurrió un error al guardar los datos");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const getTypeLabel = (type: GoalType) => {
     switch (type) {
       case "weight":
-        return "Peso"
+        return "Peso";
       case "strength":
-        return "Fuerza"
+        return "Fuerza";
       case "measurement":
-        return "Medidas corporales"
+        return "Medidas corporales";
       case "activity":
-        return "Actividad"
+        return "Actividad";
       default:
-        return type
+        return type;
     }
-  }
+  };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+        >
           <X size={20} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4">{isEditing ? "Editar objetivo" : "Nuevo objetivo"}</h2>
+        <h2 className="text-xl font-bold mb-4">
+          {isEditing ? "Editar objetivo" : "Nuevo objetivo"}
+        </h2>
 
-        {error && <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">{error}</div>}
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="type">Tipo de objetivo</Label>
-            <Select value={type} onValueChange={(value) => setType(value as GoalType)} disabled={isEditing}>
+            <Select
+              value={type}
+              onValueChange={(value) => setType(value as GoalType)}
+              disabled={isEditing}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Selecciona un tipo" />
               </SelectTrigger>
@@ -143,7 +184,12 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
 
           <div className="space-y-2">
             <Label htmlFor="title">Título</Label>
-            <Input id="title" placeholder="Ej: Perder 5kg" value={title} onChange={(e) => setTitle(e.target.value)} />
+            <Input
+              id="title"
+              placeholder="Ej: Perder 5kg"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
           </div>
 
           <div className="space-y-2">
@@ -214,7 +260,10 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
           {type === "measurement" && (
             <div className="space-y-2">
               <Label htmlFor="measurementType">Parte del cuerpo</Label>
-              <Select value={measurementType} onValueChange={setMeasurementType}>
+              <Select
+                value={measurementType}
+                onValueChange={setMeasurementType}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona una parte" />
                 </SelectTrigger>
@@ -236,14 +285,27 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={cn("w-full justify-start text-left font-normal", !startDate && "text-muted-foreground")}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP", { locale: es }) : <span>Selecciona una fecha</span>}
+                    {startDate ? (
+                      format(startDate, "PPP", { locale: es })
+                    ) : (
+                      <span>Selecciona una fecha</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
-                  <Calendar mode="single" selected={startDate} onSelect={setStartDate} initialFocus locale={es} />
+                  <Calendar
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                    locale={es}
+                  />
                 </PopoverContent>
               </Popover>
             </div>
@@ -254,10 +316,17 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className={cn("w-full justify-start text-left font-normal", !targetDate && "text-muted-foreground")}
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !targetDate && "text-muted-foreground"
+                    )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {targetDate ? format(targetDate, "PPP", { locale: es }) : <span>Selecciona una fecha</span>}
+                    {targetDate ? (
+                      format(targetDate, "PPP", { locale: es })
+                    ) : (
+                      <span>Selecciona una fecha</span>
+                    )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
@@ -267,7 +336,10 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
                     onSelect={setTargetDate}
                     initialFocus
                     locale={es}
-                    disabled={(date) => date < new Date() || (startDate ? date < startDate : false)}
+                    disabled={(date) =>
+                      date < new Date() ||
+                      (startDate ? date < startDate : false)
+                    }
                   />
                 </PopoverContent>
               </Popover>
@@ -279,12 +351,15 @@ export default function GoalForm({ onClose, onSuccess, initialData }: GoalFormPr
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Guardando..." : isEditing ? "Actualizar" : "Guardar"}
+              {isSubmitting
+                ? "Guardando..."
+                : isEditing
+                ? "Actualizar"
+                : "Guardar"}
             </Button>
           </div>
         </form>
       </div>
     </div>
-  )
+  );
 }
-

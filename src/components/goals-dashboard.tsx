@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
-import { useTheme } from "next-themes";
+// import { useTheme } from "next-themes";
 import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -17,22 +17,22 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import GoalForm from "@/components/goal-form";
 import GoalProgressForm from "@/components/goal-progress-form";
 import { Icons } from "./icons";
 import {
   Award01Icon,
   Calendar01Icon,
   SquareArrowUp01Icon,
-  Target01Icon,
   Target02Icon,
+  WeightScaleIcon,
 } from "hugeicons-react";
+import { NewGoal } from "./goals/new-goal";
+import { UpdateGoal } from "./goals/update-goal";
 
 export function GoalsDashboard() {
-  const { theme, systemTheme } = useTheme();
+  // const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<GoalType | "all">("all");
-  const [showAddForm, setShowAddForm] = useState(false);
+  const [activeTab, setActiveTab] = useState<GoalType | "weight">("weight");
   const [showProgressForm, setShowProgressForm] = useState(false);
   const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
@@ -57,23 +57,12 @@ export function GoalsDashboard() {
     }
   };
 
-  const handleAddGoal = () => {
-    setEditingGoal(null);
-    setShowAddForm(true);
-  };
-
-  const handleEditGoal = (goal: Goal) => {
-    setEditingGoal(goal);
-    setShowAddForm(true);
-  };
-
   const handleUpdateProgress = (goal: Goal) => {
     setSelectedGoal(goal);
     setShowProgressForm(true);
   };
 
   const handleFormSuccess = () => {
-    setShowAddForm(false);
     setShowProgressForm(false);
     setSelectedGoal(null);
     setEditingGoal(null);
@@ -84,13 +73,13 @@ export function GoalsDashboard() {
     return null;
   }
 
-  const currentTheme = theme === "system" ? systemTheme : theme;
-  const isDark = currentTheme === "dark";
+  // const currentTheme = theme === "system" ? systemTheme : theme;
+  // const isDark = currentTheme === "dark";
 
   const getGoalTypeIcon = (type: GoalType) => {
     switch (type) {
       case "weight":
-        return <Target01Icon size={18} className="text-blue-500" />;
+        return <WeightScaleIcon size={18} className="text-blue-500" />;
       case "strength":
         return <SquareArrowUp01Icon size={18} className="text-purple-500" />;
       case "measurement":
@@ -192,23 +181,8 @@ export function GoalsDashboard() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-between pt-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="text-xs px-6"
-            onClick={() => handleEditGoal(goal)}
-          >
-            Editar
-          </Button>
-          <Button
-            variant="default"
-            size="sm"
-            className="text-xs px-6"
-            onClick={() => handleUpdateProgress(goal)}
-          >
-            Actualizar
-          </Button>
+        <CardFooter className="flex justify-end pt-2">
+          <UpdateGoal goal={goal} onSuccess={handleFormSuccess} />
         </CardFooter>
       </Card>
     );
@@ -218,17 +192,19 @@ export function GoalsDashboard() {
     <div className="w-full space-y-6">
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as GoalType | "all")}
+        onValueChange={(value) => setActiveTab(value as GoalType | "weight")}
       >
-        <div className="flex flex-row justify-between">
+        <div className="flex md:flex-row flex-col justify-between">
           <TabsList className="mb-4 tracking-wider gap-3">
-            <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="weight">Peso</TabsTrigger>
             <TabsTrigger value="strength">Fuerza</TabsTrigger>
             <TabsTrigger value="measurement">Medidas</TabsTrigger>
             <TabsTrigger value="activity">Actividad</TabsTrigger>
           </TabsList>
-          <Button onClick={handleAddGoal}>Nuevo objetivo</Button>
+          <NewGoal
+            onSuccess={handleFormSuccess}
+            initialData={editingGoal || undefined}
+          />
         </div>
 
         <TabsContent value={activeTab} className="mt-0">
@@ -243,29 +219,16 @@ export function GoalsDashboard() {
               <p className="text-muted-foreground text-xs mb-4">
                 Establece objetivos para hacer seguimiento de tu progreso
               </p>
-              <Button onClick={handleAddGoal}>Nuevo objetivo</Button>
+              <NewGoal
+                onSuccess={handleFormSuccess}
+                initialData={editingGoal || undefined}
+              />
             </div>
           ) : (
             <div className="gap-4">{goals.map(renderGoalCard)}</div>
           )}
         </TabsContent>
       </Tabs>
-
-      {showAddForm && (
-        <GoalForm
-          onClose={() => setShowAddForm(false)}
-          onSuccess={handleFormSuccess}
-          initialData={editingGoal || undefined}
-        />
-      )}
-
-      {showProgressForm && selectedGoal && (
-        <GoalProgressForm
-          goal={selectedGoal}
-          onClose={() => setShowProgressForm(false)}
-          onSuccess={handleFormSuccess}
-        />
-      )}
     </div>
   );
 }
