@@ -93,11 +93,7 @@ const initialFormData: ProfileFormData = {
   dietaryPreference: "",
 };
 
-export default function StepOnboarding1({
-  onComplete,
-}: {
-  onComplete: () => void;
-}) {
+export default function StepOnboarding1() {
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState<ProfileFormData>(() => {
     const savedData =

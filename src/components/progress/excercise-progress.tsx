@@ -210,6 +210,7 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
               rows={3}
             />
           </div>
+          {error && <p className="text-red-500 text-xs md:text-sm">{error}</p>}
 
           <div className="flex justify-end space-x-2 pt-2">
             <Button

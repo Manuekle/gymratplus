@@ -146,7 +146,6 @@ export default function RecommendationsComponent() {
 
   const [error, setError] = useState<string | null>(null);
   // const [profile, setProfile] = useState<any>(null);
-  const [saving, setSaving] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -176,7 +175,17 @@ export default function RecommendationsComponent() {
       }
     };
 
-    const fetchRecommendations = async (profileData) => {
+    interface ProfileData {
+      [key: string]: unknown;
+    }
+
+    interface ErrorResponse {
+      error?: string;
+    }
+
+    const fetchRecommendations = async (
+      profileData: ProfileData
+    ): Promise<void> => {
       if (!profileData) return;
 
       setIsLoading(true);
@@ -190,14 +199,14 @@ export default function RecommendationsComponent() {
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
+          const errorData: ErrorResponse = await response.json();
           throw new Error(errorData.error || "Failed to fetch recommendations");
         }
 
-        const data = await response.json();
+        const data: Recommendations = await response.json();
         setRecommendations(data);
         setError(null);
-      } catch (error) {
+      } catch (error: unknown) {
         console.error("Error fetching recommendations:", error);
         setError(
           "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde."
@@ -219,45 +228,6 @@ export default function RecommendationsComponent() {
 
     init();
   }, []);
-
-  const handleSavePlan = async () => {
-    if (!recommendations) return;
-
-    setSaving(true);
-    try {
-      // Guardar el plan de entrenamiento
-      const response = await fetch("/api/save-plan", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          workoutPlanId: recommendations.workoutPlan.id,
-          nutritionPlanIds: {
-            breakfast: recommendations.nutritionPlan.meals.breakfast.id,
-            lunch: recommendations.nutritionPlan.meals.lunch.id,
-            dinner: recommendations.nutritionPlan.meals.dinner.id,
-            snacks: recommendations.nutritionPlan.meals.snacks.id,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save plan");
-      }
-
-      toast.success("Plan guardado correctamente", {
-        description: "Puedes acceder a él desde tu perfil",
-      });
-    } catch (error) {
-      console.error("Error saving plan:", error);
-      toast.error("Error al guardar el plan", {
-        description: "Por favor, inténtelo de nuevo más tarde",
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
