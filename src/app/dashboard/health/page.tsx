@@ -62,7 +62,7 @@ export default function HealthPage() {
   useEffect(() => {
     if (!session?.user) return;
 
-    const profile = (session.user as any)?.profile;
+    const profile = (session.user as { profile: UserProfile })?.profile;
 
     if (!profile) return;
 
@@ -71,19 +71,19 @@ export default function HealthPage() {
       gender: profile.gender,
       height: Number(profile.height),
       weight: {
-        current: Number(profile.currentWeight),
-        target: Number(profile.targetWeight),
+        current: Number(profile.weight.current),
+        target: Number(profile.weight.target),
       },
       activity: {
-        level: profile.activityLevel,
-        daily: profile.dailyActivity,
-        trainingFrequency: Number(profile.trainingFrequency),
+        level: profile.activity.level,
+        daily: profile.activity.daily,
+        trainingFrequency: Number(profile.activity.trainingFrequency),
       },
       nutrition: {
-        calorieTarget: Number(profile.dailyCalorieTarget),
-        proteinTarget: Number(profile.dailyProteinTarget),
-        carbTarget: Number(profile.dailyCarbTarget),
-        fatTarget: Number(profile.dailyFatTarget),
+        calorieTarget: Number(profile.nutrition.calorieTarget),
+        proteinTarget: Number(profile.nutrition.proteinTarget),
+        carbTarget: Number(profile.nutrition.carbTarget),
+        fatTarget: Number(profile.nutrition.fatTarget),
       },
       waterIntake: Number(profile.waterIntake),
       goal: profile.goal,
@@ -91,11 +91,6 @@ export default function HealthPage() {
       updatedAt: profile.updatedAt,
     });
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
-
-  const [goal, setGoal] = useState(user?.goal);
-  const [activityLevel, setActivityLevel] = useState(
-    user?.activity?.daily || ""
-  );
 
   console.log(user);
 
@@ -180,7 +175,7 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Objetivo</label>
-              <Select disabled value={user?.goal} onValueChange={setGoal}>
+              <Select disabled value={user?.goal}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu objetivo" />
                 </SelectTrigger>
@@ -211,11 +206,7 @@ export default function HealthPage() {
               <label className="text-sm font-medium">
                 Nivel de actividad física
               </label>
-              <Select
-                value={user?.activity?.daily}
-                disabled
-                onValueChange={setActivityLevel}
-              >
+              <Select value={user?.activity?.daily} disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu nivel de actividad" />
                 </SelectTrigger>
