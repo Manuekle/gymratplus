@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 // import { useTheme } from "next-themes";
@@ -31,8 +31,6 @@ export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<GoalType | "weight">("weight");
-  const [showProgressForm, setShowProgressForm] = useState(false);
-  const [selectedGoal, setSelectedGoal] = useState<Goal | null>(null);
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
   const { isLoading, goals, fetchGoals } = useGoals();
@@ -41,28 +39,17 @@ export function GoalsDashboard() {
     setMounted(true);
   }, []);
 
+  const loadGoals = useCallback(async () => {
+    await fetchGoals(activeTab);
+  }, [activeTab, fetchGoals]);
+
   useEffect(() => {
     if (mounted) {
       loadGoals();
     }
-  }, [mounted, activeTab]);
-
-  const loadGoals = async () => {
-    if (activeTab === "all") {
-      await fetchGoals();
-    } else {
-      await fetchGoals(activeTab);
-    }
-  };
-
-  const handleUpdateProgress = (goal: Goal) => {
-    setSelectedGoal(goal);
-    setShowProgressForm(true);
-  };
+  }, [mounted, loadGoals]);
 
   const handleFormSuccess = () => {
-    setShowProgressForm(false);
-    setSelectedGoal(null);
     setEditingGoal(null);
     loadGoals();
   };
