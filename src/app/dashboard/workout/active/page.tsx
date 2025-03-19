@@ -10,10 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft01Icon } from "hugeicons-react"; // Usando tus iconos
 import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout-timer-float";
 import { toast } from "sonner";
@@ -23,11 +21,41 @@ const Spinner = () => (
   <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
 );
 
+interface WorkoutSession {
+  id: string;
+  notes: string;
+  createdAt: string;
+  exercises: Exercise[];
+}
+
+interface Exercise {
+  id: string;
+  exercise: {
+    name: string;
+    muscleGroup: string;
+    equipment: string;
+    restTime?: number;
+  };
+  completed: boolean;
+  sets: Set[];
+}
+
+interface Set {
+  id: string;
+  setNumber: number;
+  weight: number | null;
+  reps: number | null;
+  completed: boolean;
+  isDropSet?: boolean;
+}
+
 export default function ActiveWorkout() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [workoutSession, setWorkoutSession] = useState<any>(null);
+  const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
+    null
+  );
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<{
@@ -40,7 +68,9 @@ export default function ActiveWorkout() {
     exerciseId: null,
   });
 
-  const [pendingUpdates, setPendingUpdates] = useState<Record<string, any>>({});
+  const [pendingUpdates, setPendingUpdates] = useState<
+    Record<string, Partial<Set>>
+  >({});
   const [debounceTimers, setDebounceTimers] = useState<
     Record<string, NodeJS.Timeout>
   >({});
@@ -51,7 +81,7 @@ export default function ActiveWorkout() {
       try {
         const response = await fetch("/api/workout-session/active");
         if (response.ok) {
-          const data = await response.json();
+          const data: WorkoutSession = await response.json();
           setWorkoutSession(data);
           setNotes(data.notes || "");
           setStartTime(new Date(data.createdAt));
@@ -97,13 +127,12 @@ export default function ActiveWorkout() {
     if (!workoutSession) return 0;
 
     const totalSets = workoutSession.exercises.reduce(
-      (acc: number, ex: any) => acc + ex.sets.length,
+      (acc, ex) => acc + ex.sets.length,
       0
     );
 
     const completedSets = workoutSession.exercises.reduce(
-      (acc: number, ex: any) =>
-        acc + ex.sets.filter((set: any) => set.completed).length,
+      (acc, ex) => acc + ex.sets.filter((set) => set.completed).length,
       0
     );
 
@@ -133,18 +162,23 @@ export default function ActiveWorkout() {
   };
 
   // Actualizar un set
-  const updateSet = async (setId: string, data: any, immediate = false) => {
+  const updateSet = async (
+    setId: string,
+    data: Partial<Set>,
+    immediate = false
+  ) => {
     // Cancelar cualquier temporizador existente para este setId
     if (debounceTimers[setId]) {
       clearTimeout(debounceTimers[setId]);
     }
 
     // Actualizar inmediatamente la UI para una experiencia más fluida
-    setWorkoutSession((prev: any) => {
+    setWorkoutSession((prev) => {
+      if (!prev) return prev;
       const updated = { ...prev };
-      updated.exercises = updated.exercises.map((ex: any) => {
+      updated.exercises = updated.exercises.map((ex) => {
         const updatedEx = { ...ex };
-        updatedEx.sets = updatedEx.sets.map((set: any) => {
+        updatedEx.sets = updatedEx.sets.map((set) => {
           if (set.id === setId) {
             return { ...set, ...data };
           }
@@ -179,13 +213,13 @@ export default function ActiveWorkout() {
 
         // Si se marca como completado, iniciar temporizador de descanso
         if (response.ok && data.completed) {
-          const exercise = workoutSession.exercises.find((ex: any) =>
-            ex.sets.some((set: any) => set.id === setId)
+          const exercise = workoutSession?.exercises.find((ex) =>
+            ex.sets.some((set) => set.id === setId)
           );
 
           if (exercise) {
-            const exerciseData = workoutSession.exercises.find(
-              (ex: any) => ex.id === exercise.id
+            const exerciseData = workoutSession!.exercises.find(
+              (ex) => ex.id === exercise.id
             );
             const restTime = exerciseData?.exercise?.restTime || 60;
             startRestTimer(exercise.id, restTime);
@@ -243,14 +277,15 @@ export default function ActiveWorkout() {
 
       if (response.ok) {
         // Actualizar el estado local
-        setWorkoutSession((prev: any) => {
+        setWorkoutSession((prev) => {
+          if (!prev) return prev;
           const updated = { ...prev };
-          updated.exercises = updated.exercises.map((ex: any) => {
+          updated.exercises = updated.exercises.map((ex) => {
             if (ex.id === exerciseSessionId) {
               return {
                 ...ex,
                 completed: true,
-                sets: ex.sets.map((set: any) => ({ ...set, completed: true })),
+                sets: ex.sets.map((set) => ({ ...set, completed: true })),
               };
             }
             return ex;
@@ -393,7 +428,7 @@ export default function ActiveWorkout() {
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {workoutSession.exercises.map((exercise: any) => (
+            {workoutSession.exercises.map((exercise) => (
               <div
                 key={exercise.id}
                 className={`
@@ -444,7 +479,7 @@ export default function ActiveWorkout() {
                       {/* <div className="col-span-3">Estado</div> */}
                     </div>
 
-                    {exercise.sets.map((set: any) => (
+                    {exercise.sets.map((set) => (
                       <div
                         key={set.id}
                         className="grid grid-cols-3 gap-2 items-center"

@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
@@ -18,9 +17,7 @@ import { useState } from "react";
 import {
   BirthdayCakeIcon,
   Calendar01Icon,
-  Calendar02Icon,
   Mail01Icon,
-  MapPinIcon,
   SmartPhone01Icon,
   UserCircleIcon,
 } from "hugeicons-react";
@@ -78,13 +75,19 @@ export default function ProfilePage() {
                   <Calendar01Icon className="h-4 w-4 mr-1" />
                   <span>
                     Se unió en{" "}
-                    {session?.user?.profile?.createdAt &&
-                      new Date(
-                        session.user?.profile?.createdAt
-                      ).toLocaleDateString("es-ES", {
-                        month: "long",
-                        year: "numeric",
-                      })}
+                    {(session?.user as { profile?: { createdAt?: string } })
+                      ?.profile?.createdAt
+                      ? new Date(
+                          (
+                            session?.user as {
+                              profile?: { createdAt?: string };
+                            }
+                          )?.profile?.createdAt
+                        ).toLocaleDateString("es-ES", {
+                          month: "long",
+                          year: "numeric",
+                        })
+                      : ""}
                   </span>
                 </div>
               </div>
@@ -194,7 +197,11 @@ export default function ProfilePage() {
                   <div className="text-sm font-medium">Horario preferido</div>
                   <div className="text-xs text-muted-foreground">
                     {(() => {
-                      const time = session?.user?.profile?.preferredWorkoutTime;
+                      const time = (
+                        session?.user as {
+                          profile?: { preferredWorkoutTime?: string };
+                        }
+                      )?.profile?.preferredWorkoutTime;
                       switch (time) {
                         case "early-morning":
                           return "Temprano en la mañana (5-8 AM)";
@@ -218,7 +225,11 @@ export default function ProfilePage() {
                   <div className="text-sm font-medium">Actividad diaria</div>
                   <div className="text-xs text-muted-foreground">
                     {(() => {
-                      const activity = session?.user?.profile?.dailyActivity;
+                      const activity = (
+                        session?.user as {
+                          profile?: { dailyActivity?: string };
+                        }
+                      )?.profile?.dailyActivity;
                       switch (activity) {
                         case "office-work":
                           return "Trabajo de oficina (sedentario)";
@@ -245,7 +256,11 @@ export default function ProfilePage() {
                 <div className="flex flex-wrap gap-2">
                   <Badge>
                     {(() => {
-                      const goal = session?.user?.profile?.goal;
+                      const goal = (
+                        session?.user as {
+                          profile?: { goal?: string };
+                        }
+                      )?.profile?.goal;
                       switch (goal) {
                         case "lose-weight":
                           return "Bajar de peso";
@@ -267,8 +282,11 @@ export default function ProfilePage() {
                 <div className="text-sm font-medium">Preferencia dietetica</div>
                 <div className="text-muted-foreground text-xs">
                   {(() => {
-                    const preference =
-                      session?.user?.profile?.dietaryPreference;
+                    const preference = (
+                      session?.user as {
+                        profile?: { dietaryPreference?: string };
+                      }
+                    )?.profile?.dietaryPreference;
                     switch (preference) {
                       case "no-preference":
                         return "Sin preferencia específica";
