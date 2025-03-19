@@ -1,8 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
 // GET /api/exercise-progress - Obtener registros de progreso de ejercicios
 export async function GET(req: NextRequest) {
@@ -29,8 +29,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Consulta base
-    const query: any = {
+    const query: Prisma.ExerciseProgressFindManyArgs = {
       where: {
         userId: user.id,
       },

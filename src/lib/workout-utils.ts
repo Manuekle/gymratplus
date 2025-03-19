@@ -314,9 +314,8 @@ export async function getOrCreateExercises() {
 }
 
 // Determine the best workout type based on user profile and history
-export function getRecommendedWorkoutType(profile, workoutHistory) {
-  const { trainingFrequency, goal, gender, activityLevel, experienceLevel } =
-    profile;
+export function getRecommendedWorkoutType(profile) {
+  const { trainingFrequency, goal, activityLevel, experienceLevel } = profile;
 
   // Para principiantes o personas con tiempo limitado
   if (
