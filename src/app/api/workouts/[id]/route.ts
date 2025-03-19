@@ -125,20 +125,30 @@ export async function PUT(
         description,
         exercises: {
           deleteMany: {}, // Eliminar ejercicios previos
-          create: exercises.map((exercise: any) => ({
-            exerciseId: exercise.id,
-            sets: exercise.sets,
-            reps: exercise.reps,
-            weight: exercise.weight,
-            restTime: exercise.restTime,
-            order: exercise.order,
-          })),
+          create: exercises.map(
+            (exercise: {
+              id: string;
+              sets: number;
+              reps: number;
+              weight: number;
+              restTime: number;
+              order: number;
+            }) => ({
+              exerciseId: exercise.id,
+              sets: exercise.sets,
+              reps: exercise.reps,
+              weight: exercise.weight,
+              restTime: exercise.restTime,
+              order: exercise.order,
+            })
+          ),
         },
       },
     });
 
     return NextResponse.json(workout);
   } catch (error) {
+    console.error("Error actualizando workout:", error);
     return NextResponse.json(
       { error: "Error actualizando workout" },
       { status: 500 }
@@ -160,6 +170,7 @@ export async function DELETE(
     });
     return NextResponse.json({ message: "Workout eliminado" });
   } catch (error) {
+    console.error("Error eliminando workout:", error);
     return NextResponse.json(
       { error: "Error eliminando workout" },
       { status: 500 }

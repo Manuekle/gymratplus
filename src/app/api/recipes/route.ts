@@ -23,7 +23,7 @@ export async function GET(req: NextRequest) {
     const onlyCustom = req.nextUrl.searchParams.get("custom") === "true";
 
     // Build the where clause
-    const where: any = {};
+    const where: Record<string, unknown> = {};
 
     // Include system recipes (userId is null) and user's custom recipes
     if (onlyCustom) {
@@ -160,7 +160,9 @@ export async function POST(req: NextRequest) {
     let totalSugar = 0;
 
     // Get all foods for the ingredients
-    const foodIds = data.ingredients.map((ing: any) => ing.foodId);
+    const foodIds = data.ingredients.map(
+      (ing: { foodId: string }) => ing.foodId
+    );
     const foods = await prisma.food.findMany({
       where: {
         id: {
@@ -202,11 +204,13 @@ export async function POST(req: NextRequest) {
         isFavorite: data.isFavorite || false,
         userId: userId,
         ingredients: {
-          create: data.ingredients.map((ing: any) => ({
-            foodId: ing.foodId,
-            quantity: ing.quantity,
-            unit: ing.unit || null,
-          })),
+          create: data.ingredients.map(
+            (ing: { foodId: string; quantity: number; unit?: string }) => ({
+              foodId: ing.foodId,
+              quantity: ing.quantity,
+              unit: ing.unit || null,
+            })
+          ),
         },
       },
       include: {
@@ -229,7 +233,7 @@ export async function POST(req: NextRequest) {
 }
 
 // PUT seed the database with initial recipes
-export async function PUT(req: NextRequest) {
+export async function PUT() {
   try {
     const session = await getServerSession(authOptions);
 
