@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+// import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
 import { Badge } from "@/components/ui/badge";
 
@@ -41,10 +41,10 @@ type MealLogListProps = {
 export function MealLogList({
   mealLogs,
   loading,
-  onMealLogDeleted,
+  // onMealLogDeleted,
   selectedDate,
 }: MealLogListProps) {
-  const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Removed unused deletingId state
 
   const getMealTypeLabel = (mealType: string) => {
     switch (mealType) {
@@ -61,36 +61,34 @@ export function MealLogList({
     }
   };
 
-  const deleteMealLog = async (id: string) => {
-    if (!confirm("¿Estás seguro de que quieres eliminar este registro?")) {
-      return;
-    }
+  // const deleteMealLog = async (id: string) => {
+  //   if (!confirm("¿Estás seguro de que quieres eliminar este registro?")) {
+  //     return;
+  //   }
 
-    setDeletingId(id);
+  //   try {
+  //     const response = await fetch(`/api/meal-logs/${id}`, {
+  //       method: "DELETE",
+  //     });
 
-    try {
-      const response = await fetch(`/api/meal-logs/${id}`, {
-        method: "DELETE",
-      });
+  //     if (!response.ok) {
+  //       throw new Error("Error al eliminar el registro");
+  //     }
 
-      if (!response.ok) {
-        throw new Error("Error al eliminar el registro");
-      }
+  //     onMealLogDeleted(id);
 
-      onMealLogDeleted(id);
-
-      toast.success("Registro eliminado", {
-        description: "El registro de comida ha sido eliminado correctamente",
-      });
-    } catch (error) {
-      console.error("Error deleting meal log:", error);
-      toast.error("Error", {
-        description: "No se pudo eliminar el registro de comida",
-      });
-    } finally {
-      setDeletingId(null);
-    }
-  };
+  //     toast.success("Registro eliminado", {
+  //       description: "El registro de comida ha sido eliminado correctamente",
+  //     });
+  //   } catch (error) {
+  //     console.error("Error deleting meal log:", error);
+  //     toast.error("Error", {
+  //       description: "No se pudo eliminar el registro de comida",
+  //     });
+  //   } finally {
+  //     setDeletingId(null);
+  //   }
+  // };
 
   if (loading) {
     return (

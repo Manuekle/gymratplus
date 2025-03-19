@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Door01Icon,
-  LogoutCircle01Icon,
   Notification03Icon,
   Settings01Icon,
 } from "hugeicons-react";

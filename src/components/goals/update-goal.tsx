@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -141,6 +140,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
               rows={3}
             />
           </div>
+          {error && <p className="text-red-500 text-xs">{error}</p>}
 
           <div className="flex justify-end space-x-2 pt-2">
             <Button

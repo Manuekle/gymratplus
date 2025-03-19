@@ -88,7 +88,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 
 // Create a nutrition plan based on user profile
 export async function createNutritionPlan(profile) {
-  const { userId, goal, dietaryPreference, dailyCalorieTarget } = profile;
+  const { userId, goal, dietaryPreference } = profile; // Removed dailyCalorieTarget
 
   // Get foods from database or create new ones if they don't exist
   const foods = await getOrCreateFoods(dietaryPreference);
@@ -99,8 +99,7 @@ export async function createNutritionPlan(profile) {
     "breakfast",
     foods,
     goal,
-    dietaryPreference,
-    dailyCalorieTarget
+    dietaryPreference
   );
 
   const lunch = await createMealLog(
@@ -108,8 +107,7 @@ export async function createNutritionPlan(profile) {
     "lunch",
     foods,
     goal,
-    dietaryPreference,
-    dailyCalorieTarget
+    dietaryPreference
   );
 
   const dinner = await createMealLog(
@@ -117,8 +115,7 @@ export async function createNutritionPlan(profile) {
     "dinner",
     foods,
     goal,
-    dietaryPreference,
-    dailyCalorieTarget
+    dietaryPreference
   );
 
   const snacks = await createMealLog(
@@ -126,8 +123,7 @@ export async function createNutritionPlan(profile) {
     "snack",
     foods,
     goal,
-    dietaryPreference,
-    dailyCalorieTarget
+    dietaryPreference
   );
 
   // Return the complete nutrition plan
@@ -170,8 +166,7 @@ async function createMealLog(
   mealType,
   foods,
   goal,
-  dietaryPreference = "no-preference",
-  dailyCalorieTarget = 2000
+  dietaryPreference = "no-preference"
 ) {
   // Select appropriate foods based on meal type and dietary preference
   let selectedFoods = [];
@@ -293,14 +288,6 @@ async function createMealLog(
       nutFoods[0],
     ].filter(Boolean);
   }
-
-  // Distribute calories according to meal type
-  const mealCaloriePercentage = {
-    breakfast: 0.25, // 25% of daily calories
-    lunch: 0.35, // 35% of daily calories
-    dinner: 0.3, // 30% of daily calories
-    snack: 0.1, // 10% of daily calories
-  };
 
   // Calculate macros and create meal entries
   let totalCalories = 0;

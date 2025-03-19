@@ -34,12 +34,19 @@ import ChartSkeleton from "./skeleton/charts-skeleton";
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
 
+// Define the type for the weight data
+interface WeightData {
+  date: string;
+  weight: number;
+  originalDate: Date;
+}
+
 export function WeightChart() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<WeightData[]>([]);
+  const [filteredData, setFilteredData] = useState<WeightData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,7 +54,7 @@ export function WeightChart() {
 
   // Función para filtrar datos según el período de tiempo seleccionado
   const filterDataByTimePeriod = useCallback(
-    (data: any[], period: TimePeriod) => {
+    (data: WeightData[], period: TimePeriod) => {
       if (period === "all" || !data.length) {
         return data;
       }
@@ -90,16 +97,19 @@ export function WeightChart() {
 
       if (data && data.length > 0) {
         // Transformar datos para el gráfico
-        const formattedData = data.map((record) => ({
-          date: format(new Date(record.date), "d MMM", { locale: es }),
-          weight: record.weight,
-          // Guardar la fecha original para ordenar y filtrar correctamente
-          originalDate: new Date(record.date),
-        }));
+        const formattedData = data.map(
+          (record: { date: string; weight: number }) => ({
+            date: format(new Date(record.date), "d MMM", { locale: es }),
+            weight: record.weight,
+            // Guardar la fecha original para ordenar y filtrar correctamente
+            originalDate: new Date(record.date),
+          })
+        );
 
         // Ordenar por fecha
-        const sortedData = formattedData.sort(
-          (a, b) => a.originalDate.getTime() - b.originalDate.getTime()
+        const sortedData: WeightData[] = formattedData.sort(
+          (a: WeightData, b: WeightData): number =>
+            a.originalDate.getTime() - b.originalDate.getTime()
         );
 
         setChartData(sortedData);
