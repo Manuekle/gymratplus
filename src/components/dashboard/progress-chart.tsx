@@ -30,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Icons } from "../icons";
 import { NewProgress } from "../progress/new-progress";
 import ChartSkeleton from "../skeleton/charts-skeleton";
 
