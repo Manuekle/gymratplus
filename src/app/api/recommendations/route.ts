@@ -68,12 +68,6 @@ export async function POST(request: Request) {
 
     // If recent plans exist, return them with some adaptive modifications
     if (existingWorkout) {
-      // Analyze workout adherence and progress
-      const workoutAdherence = await analyzeWorkoutAdherence(
-        userId,
-        existingWorkout.id
-      );
-
       // Format existing workout with potential modifications based on adherence
       const workoutPlan = {
         id: existingWorkout.id,
@@ -83,21 +77,12 @@ export async function POST(request: Request) {
           existingWorkout.exercises.map((we) => ({
             id: we.id,
             name: we.exercise.name,
-            sets: adaptSetsBasedOnProgress(
-              we.sets,
-              workoutAdherence,
-              profile.goal
-            ),
-            reps: adaptRepsBasedOnProgress(
-              we.reps,
-              workoutAdherence,
-              profile.goal
-            ),
+            sets: adaptSetsBasedOnProgress(we.sets, profile.goal),
+            reps: adaptRepsBasedOnProgress(we.reps, profile.goal),
             restTime: we.restTime,
             notes: we.notes || "General",
           }))
         ),
-        adherence: workoutAdherence,
         progressMetrics: calculateProgressMetrics(weightHistory, profile),
       };
 
@@ -107,11 +92,7 @@ export async function POST(request: Request) {
       return NextResponse.json({
         workoutPlan,
         nutritionPlan,
-        recommendations: generateRecommendations(
-          profile,
-          workoutAdherence,
-          weightHistory
-        ),
+        recommendations: generateRecommendations(profile, weightHistory),
       });
     }
 
@@ -154,34 +135,6 @@ export async function POST(request: Request) {
 }
 
 // Analyze how well the user has been following their workout plan
-async function analyzeWorkoutAdherence(userId: string, workoutId: string) {
-  // This would ideally connect to some tracking mechanism
-  // For now, we'll return a mock adherence score
-  const events = await prisma.event.findMany({
-    where: {
-      userId,
-      workoutId,
-      start: { gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) }, // Last 30 days
-    },
-  });
-
-  // Calculate adherence score (0-100)
-  const adherenceScore =
-    events.length >= 12 ? 100 : Math.round((events.length / 12) * 100);
-
-  return {
-    score: adherenceScore,
-    level:
-      adherenceScore >= 80 ? "high" : adherenceScore >= 50 ? "medium" : "low",
-    completedWorkouts: events.length,
-    recommendedAdjustment:
-      adherenceScore >= 80
-        ? "increase"
-        : adherenceScore <= 30
-        ? "decrease"
-        : "maintain",
-  };
-}
 
 // Adapt sets based on user progress and adherence
 function adaptSetsBasedOnProgress(

@@ -1,8 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useTheme } from "next-themes";
-
+import {
+  format,
+  subDays,
+  subMonths,
+  subYears,
+  startOfDay,
+  endOfDay,
+  isAfter,
+} from "date-fns";
+import { es } from "date-fns/locale";
 import {
   LineChart,
   Line,
@@ -11,54 +20,161 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
+import { useProgress } from "@/hooks/use-progress";
+import ProgressForm from "@/components/progress-form";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Icons } from "../icons";
+
+// Tipos para los períodos de tiempo
+type TimePeriod = "all" | "week" | "month" | "year";
 
 export default function ProgressChart() {
-  const [timeframe, setTimeframe] = useState("month");
   const { theme, systemTheme } = useTheme();
-
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
-  // Datos de ejemplo para el gráfico
-  const weightData = [
-    { date: "1 Feb", weight: 82 },
-    { date: "8 Feb", weight: 81.5 },
-    { date: "15 Feb", weight: 80.8 },
-    { date: "22 Feb", weight: 79.9 },
-    { date: "1 Mar", weight: 79.2 },
-  ];
-
-  const bodyFatData = [
-    { date: "1 Feb", percentage: 24 },
-    { date: "8 Feb", percentage: 23.5 },
-    { date: "15 Feb", percentage: 23.1 },
-    { date: "22 Feb", percentage: 22.6 },
-    { date: "1 Mar", percentage: 22 },
-  ];
-
-  const muscleData = [
-    { date: "1 Feb", percentage: 35 },
-    { date: "8 Feb", percentage: 35.2 },
-    { date: "15 Feb", percentage: 35.5 },
-    { date: "22 Feb", percentage: 35.8 },
-    { date: "1 Mar", percentage: 36.2 },
-  ];
-
   const [dataType, setDataType] = useState("weight");
+  const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [chartData, setChartData] = useState<any[]>([]);
+  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [progressStats, setProgressStats] = useState({
+    change: 0,
+    percentChange: 0,
+  });
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const getChartData = () => {
-    switch (dataType) {
-      case "weight":
-        return weightData;
-      case "bodyFat":
-        return bodyFatData;
-      case "muscle":
-        return muscleData;
-      default:
-        return weightData;
+  // Usar una referencia para evitar que fetchProgressData y getProgressStats
+  // se recreen en cada renderizado
+  const { fetchProgressData, getProgressStats } = useProgress();
+
+  // Función para filtrar datos según el período de tiempo seleccionado
+  const filterDataByTimePeriod = useCallback(
+    (data: any[], period: TimePeriod) => {
+      if (period === "all" || !data.length) {
+        return data;
+      }
+
+      const today = new Date();
+      let startDate: Date;
+
+      switch (period) {
+        case "week":
+          startDate = subDays(today, 7);
+          break;
+        case "month":
+          startDate = subMonths(today, 1);
+          break;
+        case "year":
+          startDate = subYears(today, 1);
+          break;
+        default:
+          return data;
+      }
+
+      return data.filter((item) => {
+        const itemDate = new Date(item.originalDate);
+        return (
+          isAfter(itemDate, startOfDay(startDate)) &&
+          isAfter(endOfDay(today), itemDate)
+        );
+      });
+    },
+    []
+  );
+
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Obtener todos los registros sin filtrar por fecha
+      const data = await fetchProgressData("all");
+
+      if (data && data.length > 0) {
+        // Transformar datos para el gráfico
+        const formattedData = data.map((record) => ({
+          date: format(new Date(record.date), "d MMM", { locale: es }),
+          weight: record.weight,
+          bodyFatPercentage: record.bodyFatPercentage,
+          muscleMassPercentage: record.muscleMassPercentage,
+          // Guardar la fecha original para ordenar y filtrar correctamente
+          originalDate: new Date(record.date),
+        }));
+
+        // Ordenar por fecha
+        const sortedData = formattedData.sort(
+          (a, b) => a.originalDate.getTime() - b.originalDate.getTime()
+        );
+
+        setChartData(sortedData);
+
+        // Aplicar filtro de tiempo
+        const filtered = filterDataByTimePeriod(sortedData, timePeriod);
+        setFilteredData(filtered);
+
+        // Calcular estadísticas según el tipo seleccionado y los datos filtrados
+        if (filtered.length > 0) {
+          // Convertir los datos filtrados de nuevo al formato original para getProgressStats
+          const statsData = filtered.map((item) => ({
+            date: item.originalDate,
+            weight: item.weight,
+            bodyFatPercentage: item.bodyFatPercentage,
+            muscleMassPercentage: item.muscleMassPercentage,
+          }));
+
+          const stats = getProgressStats(
+            statsData,
+            dataType === "weight"
+              ? "weight"
+              : dataType === "bodyFat"
+              ? "bodyFat"
+              : "muscle"
+          );
+
+          setProgressStats(stats);
+        } else {
+          setProgressStats({
+            change: 0,
+            percentChange: 0,
+          });
+        }
+      } else {
+        setChartData([]);
+        setFilteredData([]);
+      }
+    } catch (error) {
+      console.error("Error al cargar datos:", error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Error desconocido al cargar datos"
+      );
+    } finally {
+      setIsLoading(false);
     }
-  };
+  }, [
+    dataType,
+    timePeriod,
+    fetchProgressData,
+    getProgressStats,
+    filterDataByTimePeriod,
+  ]);
+
+  // Usar useEffect con la función loadData como dependencia
+  useEffect(() => {
+    loadData();
+  }, [dataType, timePeriod, loadData]);
 
   const getChartConfig = () => {
     switch (dataType) {
@@ -71,14 +187,14 @@ export default function ProgressChart() {
         };
       case "bodyFat":
         return {
-          dataKey: "percentage",
+          dataKey: "bodyFatPercentage",
           color: "#FBA518",
           unit: "%",
           title: "Grasa Corporal",
         };
       case "muscle":
         return {
-          dataKey: "percentage",
+          dataKey: "muscleMassPercentage",
           color: "#DE3163",
           unit: "%",
           title: "Masa Muscular",
@@ -95,144 +211,235 @@ export default function ProgressChart() {
 
   const chartConfig = getChartConfig();
 
+  const getProgressMessage = () => {
+    const change = progressStats.change;
+    let message = "";
+
+    if (dataType === "weight") {
+      message =
+        change < 0
+          ? `Has perdido ${Math.abs(change).toFixed(1)}kg en este período`
+          : change > 0
+          ? `Has ganado ${change.toFixed(1)}kg en este período`
+          : "Tu peso se ha mantenido estable";
+    } else if (dataType === "bodyFat") {
+      message =
+        change < 0
+          ? `Has reducido un ${Math.abs(change).toFixed(1)}% de grasa corporal`
+          : change > 0
+          ? `Ha aumentado un ${change.toFixed(1)}% tu grasa corporal`
+          : "Tu porcentaje de grasa corporal se ha mantenido estable";
+    } else {
+      message =
+        change > 0
+          ? `Has ganado ${change.toFixed(1)}% de masa muscular`
+          : change < 0
+          ? `Has perdido ${Math.abs(change).toFixed(1)}% de masa muscular`
+          : "Tu masa muscular se ha mantenido estable";
+    }
+
+    return message;
+  };
+
+  const getTimePeriodLabel = () => {
+    switch (timePeriod) {
+      case "week":
+        return "Última semana";
+      case "month":
+        return "Último mes";
+      case "year":
+        return "Último año";
+      default:
+        return "Todo el tiempo";
+    }
+  };
+
   return (
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-bold">Seguimiento de Progreso</h2>
+        <Button
+          size="sm"
+          onClick={() => setShowAddForm(true)}
+          className="px-6 text-xs"
+        >
+          Añadir registro
+        </Button>
+      </div>
 
-        <div className="flex space-x-1">
-          <button
-            onClick={() => setTimeframe("week")}
-            className={`px-3 py-1 text-sm rounded-md ${
-              timeframe === "week"
-                ? "bg-white border text-black"
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mb-4 items-center">
+        <div className="flex space-x-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDataType("weight")}
+            className={`px-3 py-1 text-xs rounded-md ${
+              dataType === "weight"
+                ? "bg-[#578FCA] text-white"
                 : "text-gray-500 border"
             }`}
           >
-            Semana
-          </button>
-          <button
-            onClick={() => setTimeframe("month")}
-            className={`px-3 py-1 text-sm rounded-md ${
-              timeframe === "month"
-                ? "bg-white border text-black"
+            Peso
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDataType("bodyFat")}
+            className={`px-3 py-1 text-xs rounded-md ${
+              dataType === "bodyFat"
+                ? "bg-[#FBA518] text-white"
                 : "text-gray-500 border"
             }`}
           >
-            Mes
-          </button>
-          <button
-            onClick={() => setTimeframe("year")}
-            className={`px-3 py-1 text-sm rounded-md ${
-              timeframe === "year"
-                ? "bg-white border text-black"
+            Grasa Corporal
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setDataType("muscle")}
+            className={`px-3 py-1 text-xs rounded-md ${
+              dataType === "muscle"
+                ? "bg-[#DE3163] text-white"
                 : "text-gray-500 border"
             }`}
           >
-            Año
-          </button>
+            Masa Muscular
+          </Button>
+        </div>
+
+        <div className="w-full sm:w-auto">
+          <Select
+            value={timePeriod}
+            onValueChange={(value) => setTimePeriod(value as TimePeriod)}
+          >
+            <SelectTrigger className="w-full sm:w-[180px] text-xs">
+              <SelectValue placeholder="Seleccionar período" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem className="text-xs" value="all">
+                Todo el tiempo
+              </SelectItem>
+              <SelectItem className="text-xs" value="week">
+                Última semana
+              </SelectItem>
+              <SelectItem className="text-xs" value="month">
+                Último mes
+              </SelectItem>
+              <SelectItem className="text-xs" value="year">
+                Último año
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
 
-      <div className="flex space-x-2 mb-4">
-        <button
-          onClick={() => setDataType("weight")}
-          className={`px-3 py-1 text-sm rounded-md ${
-            dataType === "weight"
-              ? "bg-[#578FCA] text-white"
-              : "text-gray-500 border"
-          }`}
-        >
-          Peso
-        </button>
-        <button
-          onClick={() => setDataType("bodyFat")}
-          className={`px-3 py-1 text-sm rounded-md ${
-            dataType === "bodyFat"
-              ? "bg-[#FBA518] text-white"
-              : "text-gray-500 border"
-          }`}
-        >
-          Grasa Corporal
-        </button>
-        <button
-          onClick={() => setDataType("muscle")}
-          className={`px-3 py-1 text-sm rounded-md ${
-            dataType === "muscle"
-              ? "bg-[#DE3163] text-white"
-              : "text-gray-500 border"
-          }`}
-        >
-          Masa Muscular
-        </button>
-      </div>
-
-      <div className="w-full h-[200px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={getChartData()}
-            margin={{
-              top: 5,
-              right: 10,
-              left: 0,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke={isDark ? "#374151" : "#e5e7eb"}
-            />
-            <XAxis
-              dataKey="date"
-              stroke={isDark ? "#9ca3af" : "#6b7280"}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis
-              domain={["dataMin - 2", "dataMax + 2"]}
-              stroke={isDark ? "#9ca3af" : "#6b7280"}
-              tick={{ fontSize: 12 }}
-            />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                border: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
-                borderRadius: "0.375rem",
+      <div className="w-full h-[250px]">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-full">
+            <Icons.spinner className="text-muted-foreground h-12 w-12 animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-red-500 mb-2">Error: {error}</p>
+            <button
+              onClick={() => loadData()}
+              className="px-3 py-1 bg-primary text-white rounded-md text-sm"
+            >
+              Reintentar
+            </button>
+          </div>
+        ) : chartData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-gray-500 mb-4">No hay datos disponibles</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full">
+            <p className="text-gray-500 mb-4">
+              No hay datos para el período seleccionado
+            </p>
+          </div>
+        ) : (
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={filteredData}
+              margin={{
+                top: 5,
+                right: 10,
+                left: 0,
+                bottom: 5,
               }}
-              labelStyle={{
-                fontSize: 12,
-                fontWeight: "bold",
-                color: isDark ? "#e5e7eb" : "#1f2937",
-              }}
-              itemStyle={{
-                fontSize: 12,
-                color: isDark ? "#e5e7eb" : "#1f2937",
-              }}
-              formatter={(value) => [
-                `${value} ${chartConfig.unit}`,
-                chartConfig.title,
-              ]}
-            />
-            <Line
-              type="monotone"
-              dataKey={chartConfig.dataKey}
-              stroke={chartConfig.color}
-              strokeWidth={2}
-              dot={{ r: 4 }}
-              activeDot={{ r: 6 }}
-            />
-          </LineChart>
-        </ResponsiveContainer>
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke={isDark ? "#374151" : "#e5e7eb"}
+              />
+              <XAxis
+                dataKey="date"
+                stroke={isDark ? "#9ca3af" : "#6b7280"}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                domain={["dataMin - 2", "dataMax + 2"]}
+                stroke={isDark ? "#9ca3af" : "#6b7280"}
+                tick={{ fontSize: 12 }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
+                  border: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
+                  borderRadius: "0.375rem",
+                }}
+                labelStyle={{
+                  fontSize: 12,
+                  fontWeight: "bold",
+                  color: isDark ? "#e5e7eb" : "#1f2937",
+                }}
+                itemStyle={{
+                  fontSize: 12,
+                  color: isDark ? "#e5e7eb" : "#1f2937",
+                }}
+                formatter={(value) => [
+                  `${value}${chartConfig.unit}`,
+                  chartConfig.title,
+                ]}
+              />
+              <Line
+                type="monotone"
+                dataKey={chartConfig.dataKey}
+                stroke={chartConfig.color}
+                strokeWidth={2}
+                dot={{ fill: isDark ? "#000" : "#eee", r: 4 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
       </div>
 
       <div className="mt-4 text-center">
-        <p className="text-sm text-gray-500">
-          {dataType === "weight"
-            ? "Has perdido 2.8kg desde el inicio de tu plan"
-            : dataType === "bodyFat"
-            ? "Has reducido un 2% de grasa corporal este mes"
-            : "Has ganado 1.2% de masa muscular en el último mes"}
-        </p>
+        {filteredData.length > 0 ? (
+          <div>
+            <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
+            <p className="text-xs text-gray-500 mt-1">{getProgressMessage()}</p>
+          </div>
+        ) : (
+          <p className="text-xs text-gray-500">
+            {chartData.length > 0
+              ? "Selecciona otro período para ver tu progreso"
+              : "Añade datos para ver tu progreso"}
+          </p>
+        )}
       </div>
+
+      {showAddForm && (
+        <ProgressForm
+          onClose={() => setShowAddForm(false)}
+          onSuccess={() => {
+            setShowAddForm(false);
+            loadData();
+          }}
+        />
+      )}
     </div>
   );
 }

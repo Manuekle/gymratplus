@@ -17,6 +17,7 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
+import { Icons } from "@/components/icons";
 
 // Componente de spinner (ajusta según tus componentes)
 const Spinner = () => (
@@ -114,18 +115,20 @@ export default function WorkoutHistory() {
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
-        <Spinner />
+        <Icons.spinner className="h-12 w-12 text-muted-foreground animate-spin" />
       </div>
     );
   }
 
   if (workoutSessions.length === 0) {
     return (
-      <div className="text-center p-8">
-        <h2 className="text-xl font-bold mb-4">
-          No hay entrenamientos completados
-        </h2>
-        <Button onClick={() => router.push("/dashboard/workout")}>
+      <div className="text-center py-56">
+        <h2 className="text-xl mb-4">No hay entrenamientos completados</h2>
+        <Button
+          size="sm"
+          className="text-xs px-6"
+          onClick={() => router.push("/dashboard/workout")}
+        >
           Iniciar un entrenamiento
         </Button>
       </div>

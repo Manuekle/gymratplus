@@ -294,9 +294,9 @@ export default function StepOnboarding1({
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Profile Information</CardTitle>
+        <CardTitle>Información de Perfil</CardTitle>
         <CardDescription>
-          Let us know about yourself so we can personalize your experience
+          Háganos saber sobre usted para que podamos personalizar su experiencia
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -330,7 +330,7 @@ export default function StepOnboarding1({
               {currentStep === 0 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="gender">Gender</Label>
+                    <Label htmlFor="gender">Genero</Label>
                     <Select
                       value={formData.gender}
                       onValueChange={(value) =>
@@ -378,15 +378,15 @@ export default function StepOnboarding1({
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="male">Masculino</SelectItem>
+                        <SelectItem value="female">Femenino</SelectItem>
+                        <SelectItem value="other">Otro</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="birthdate">Date of Birth</Label>
+                    <Label htmlFor="birthdate">Fecha de nacimiento</Label>
                     <Popover>
                       <PopoverTrigger asChild>
                         <Button
@@ -400,7 +400,7 @@ export default function StepOnboarding1({
                           {formData.birthdate ? (
                             format(formData.birthdate, "PPP")
                           ) : (
-                            <span>Pick a date</span>
+                            <span>Seleccione una fecha</span>
                           )}
                         </Button>
                       </PopoverTrigger>
@@ -422,7 +422,7 @@ export default function StepOnboarding1({
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="height">Height (cm)</Label>
+                    <Label htmlFor="height">Altura (cm)</Label>
                     <Select
                       value={formData.height}
                       onValueChange={(value) =>
@@ -446,7 +446,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currentWeight">Current Weight (kg)</Label>
+                    <Label htmlFor="currentWeight">Peso Actual (kg)</Label>
                     <Select
                       value={formData.currentWeight}
                       onValueChange={(value) =>
@@ -473,7 +473,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="targetWeight">Target Weight (kg)</Label>
+                    <Label htmlFor="targetWeight">Peso Objetivo (kg)</Label>
                     <Select
                       value={formData.targetWeight}
                       onValueChange={(value) =>
@@ -504,7 +504,7 @@ export default function StepOnboarding1({
               {currentStep === 2 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="activityLevel">Activity Level</Label>
+                    <Label htmlFor="activityLevel">Nivel de actividad</Label>
                     <Select
                       value={formData.activityLevel}
                       onValueChange={(value) =>
@@ -522,19 +522,20 @@ export default function StepOnboarding1({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="sedentary">
-                          Sedentary (little or no exercise)
+                          Sedentario (poco o ningún ejercicio)
                         </SelectItem>
                         <SelectItem value="light">
-                          Lightly active (light exercise 1-3 days/week)
+                          Ligeramente activo (ejercicio ligero 1-3 días/semana)
                         </SelectItem>
                         <SelectItem value="moderate">
-                          Moderately active (moderate exercise 3-5 days/week)
+                          Moderadamente activo (ejercicio moderado 3-5
+                          días/semana)
                         </SelectItem>
                         <SelectItem value="active">
-                          Active (hard exercise 6-7 days/week)
+                          Activo (ejercicio intenso 6-7 días/semana)
                         </SelectItem>
                         <SelectItem value="very-active">
-                          Very active (very hard exercise & physical job)
+                          Muy activo (ejercicio muy intenso y trabajo físico)
                         </SelectItem>
                       </SelectContent>
                     </Select>
@@ -542,7 +543,7 @@ export default function StepOnboarding1({
 
                   <div className="space-y-2">
                     <Label htmlFor="bodyFatPercentage">
-                      Body Fat Percentage
+                      Procentaje de grasa corporal
                     </Label>
                     <Select
                       value={formData.bodyFatPercentage}
@@ -563,37 +564,37 @@ export default function StepOnboarding1({
                         {formData.gender === "male" ? (
                           <>
                             <SelectItem value="essential">
-                              Essential Fat (5%)
+                              Grasa esencial (5%)
                             </SelectItem>
                             <SelectItem value="athletes">
-                              Athletes (6-13%)
+                              Atletas (6-13%)
                             </SelectItem>
                             <SelectItem value="fitness">
-                              Fitness (14-17%)
+                              Forma física (14-17%)
                             </SelectItem>
                             <SelectItem value="average">
-                              Average (18-24%)
+                              Promedio (18-24%)
                             </SelectItem>
                             <SelectItem value="above-average">
-                              Above Average (25%+)
+                              Por encima del promedio (25%+)
                             </SelectItem>
                           </>
                         ) : (
                           <>
                             <SelectItem value="essential">
-                              Essential Fat (8%)
+                              Grasa esencial (8%)
                             </SelectItem>
                             <SelectItem value="athletes">
-                              Athletes (14-20%)
+                              Atletas (14-20%)
                             </SelectItem>
                             <SelectItem value="fitness">
-                              Fitness (21-24%)
+                              Forma física (21-24%)
                             </SelectItem>
                             <SelectItem value="average">
-                              Average (25-31%)
+                              Promedio (25-31%)
                             </SelectItem>
                             <SelectItem value="above-average">
-                              Above Average (32%+)
+                              Por encima del promedio (32%+)
                             </SelectItem>
                           </>
                         )}
@@ -602,7 +603,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="muscleMass">Muscle Mass</Label>
+                    <Label htmlFor="muscleMass">Masa muscular</Label>
                     <Select
                       value={formData.muscleMass}
                       onValueChange={(value) =>
@@ -621,28 +622,32 @@ export default function StepOnboarding1({
                       <SelectContent>
                         {formData.gender === "male" ? (
                           <>
-                            <SelectItem value="low">Low (Below 40%)</SelectItem>
+                            <SelectItem value="low">
+                              Bajo (menos del 40%)
+                            </SelectItem>
                             <SelectItem value="healthy">
-                              Healthy (40-45%)
+                              Saludable (40-45%)
                             </SelectItem>
                             <SelectItem value="athletic">
-                              Athletic (45-50%)
+                              Atlético (45-50%)
                             </SelectItem>
                             <SelectItem value="high">
-                              High (Above 50%)
+                              Alto (más del 50%)
                             </SelectItem>
                           </>
                         ) : (
                           <>
-                            <SelectItem value="low">Low (Below 30%)</SelectItem>
+                            <SelectItem value="low">
+                              Bajo (menos del 30%)
+                            </SelectItem>
                             <SelectItem value="healthy">
-                              Healthy (30-35%)
+                              Saludable (30-35%)
                             </SelectItem>
                             <SelectItem value="athletic">
-                              Athletic (35-40%)
+                              Atlético (35-40%)
                             </SelectItem>
                             <SelectItem value="high">
-                              High (Above 40%)
+                              Alto (más del 40%)
                             </SelectItem>
                           </>
                         )}
@@ -651,7 +656,7 @@ export default function StepOnboarding1({
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="goal">Goal</Label>
+                    <Label htmlFor="goal">Objetivo</Label>
                     <Select
                       value={formData.goal}
                       onValueChange={(value) => updateFormData({ goal: value })}
@@ -663,11 +668,11 @@ export default function StepOnboarding1({
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="lose-weight">Lose weight</SelectItem>
-                        <SelectItem value="maintain">
-                          Maintain weight
+                        <SelectItem value="lose-weight">Perder peso</SelectItem>
+                        <SelectItem value="maintain">Mantener peso</SelectItem>
+                        <SelectItem value="gain-muscle">
+                          Ganar músculo
                         </SelectItem>
-                        <SelectItem value="gain-muscle">Gain muscle</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -677,7 +682,7 @@ export default function StepOnboarding1({
               {currentStep === 3 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="dailyActivity">Daily Activity</Label>
+                    <Label htmlFor="dailyActivity">Actividad diaria</Label>
                     <Select
                       value={formData.dailyActivity}
                       onValueChange={(value) =>
@@ -696,26 +701,26 @@ export default function StepOnboarding1({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="office-work">
-                          Office work (sedentary)
+                          Trabajo de oficina (sedentario)
                         </SelectItem>
                         <SelectItem value="light-physical">
-                          Light physical work
+                          Trabajo físico ligero
                         </SelectItem>
                         <SelectItem value="moderate-physical">
-                          Moderate physical work
+                          Trabajo físico moderado
                         </SelectItem>
                         <SelectItem value="heavy-physical">
-                          Heavy physical work
+                          Trabajo físico pesado
                         </SelectItem>
                         <SelectItem value="very-heavy-physical">
-                          Very heavy physical work
+                          Trabajo físico muy pesado
                         </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Training Frequency (days per week)</Label>
+                    <Label>Frecuencia de entrenamiento (dias por semana)</Label>
                     <ToggleGroup
                       type="multiple"
                       variant="outline"
@@ -741,7 +746,7 @@ export default function StepOnboarding1({
 
                   <div className="space-y-2">
                     <Label htmlFor="preferredWorkoutTime">
-                      Preferred Workout Time
+                      Tiempo de entrenamiento
                     </Label>
                     <Select
                       value={formData.preferredWorkoutTime}
@@ -757,26 +762,28 @@ export default function StepOnboarding1({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="early-morning">
-                          Early morning (5-8 AM)
+                          Temprano en la mañana (5-8 AM)
                         </SelectItem>
                         <SelectItem value="morning">
-                          Morning (8-11 AM)
+                          Mañana (8-11 AM)
                         </SelectItem>
-                        <SelectItem value="noon">Noon (11 AM-2 PM)</SelectItem>
+                        <SelectItem value="noon">
+                          Mediodía (11 AM-2 PM)
+                        </SelectItem>
                         <SelectItem value="afternoon">
-                          Afternoon (2-5 PM)
+                          Tarde (2-5 PM)
                         </SelectItem>
                         <SelectItem value="evening">
-                          Evening (5-8 PM)
+                          Atardecer (5-8 PM)
                         </SelectItem>
-                        <SelectItem value="night">Night (8-11 PM)</SelectItem>
+                        <SelectItem value="night">Noche (8-11 PM)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="dietaryPreference">
-                      Dietary Preference
+                      Preferencia dietetica
                     </Label>
                     <Select
                       value={formData.dietaryPreference}
@@ -792,15 +799,17 @@ export default function StepOnboarding1({
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="no-preference">
-                          No specific preference
+                          Sin preferencia específica
                         </SelectItem>
-                        <SelectItem value="vegetarian">Vegetarian</SelectItem>
-                        <SelectItem value="vegan">Vegan</SelectItem>
-                        <SelectItem value="pescatarian">Pescatarian</SelectItem>
+                        <SelectItem value="vegetarian">Vegetariano</SelectItem>
+                        <SelectItem value="vegan">Vegano</SelectItem>
+                        <SelectItem value="pescatarian">
+                          Pescetariano
+                        </SelectItem>
                         <SelectItem value="keto">Keto</SelectItem>
                         <SelectItem value="paleo">Paleo</SelectItem>
                         <SelectItem value="mediterranean">
-                          Mediterranean
+                          Mediterránea
                         </SelectItem>
                       </SelectContent>
                     </Select>

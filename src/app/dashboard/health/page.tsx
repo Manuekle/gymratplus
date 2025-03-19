@@ -94,8 +94,10 @@ export default function HealthPage() {
 
   const [goal, setGoal] = useState(user?.goal);
   const [activityLevel, setActivityLevel] = useState(
-    user?.activity?.level || ""
+    user?.activity?.daily || ""
   );
+
+  console.log(user);
 
   // Calculate BMI
   const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
@@ -210,7 +212,7 @@ export default function HealthPage() {
                 Nivel de actividad física
               </label>
               <Select
-                value={user?.activity?.level}
+                value={user?.activity?.daily}
                 disabled
                 onValueChange={setActivityLevel}
               >
@@ -218,20 +220,20 @@ export default function HealthPage() {
                   <SelectValue placeholder="Selecciona tu nivel de actividad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="sedentary">
-                    Sedentario (poco o nada de ejercicio)
+                  <SelectItem value="office-work">
+                    Trabajo de oficina (sedentario)
                   </SelectItem>
-                  <SelectItem value="light">
-                    Ligero (ejercicio 1-3 días/semana)
+                  <SelectItem value="light-physical">
+                    Trabajo físico ligero
                   </SelectItem>
-                  <SelectItem value="moderate">
-                    Moderado (ejercicio 3-5 días/semana)
+                  <SelectItem value="moderate-physical">
+                    Trabajo físico moderado
                   </SelectItem>
-                  <SelectItem value="active">
-                    Activo (ejercicio 6-7 días/semana)
+                  <SelectItem value="heavy-physical">
+                    Trabajo físico pesado
                   </SelectItem>
-                  <SelectItem value="very-active">
-                    Muy activo (ejercicio intenso diario)
+                  <SelectItem value="very-heavy-physical">
+                    Trabajo físico muy pesado
                   </SelectItem>
                 </SelectContent>
               </Select>

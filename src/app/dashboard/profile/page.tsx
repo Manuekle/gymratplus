@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import {
+  Calendar01Icon,
   Calendar02Icon,
   Mail01Icon,
   MapPinIcon,
@@ -41,7 +42,13 @@ export default function ProfilePage() {
                     src={session?.user.image}
                     alt="Profile picture"
                   />
-                  <AvatarFallback className="text-2xl">JP</AvatarFallback>
+                  <AvatarFallback className="text-2xl">
+                    {session?.user?.name
+                      ?.split(" ")
+                      .map((word) => word[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
                 </Avatar>
               )}
             </div>
@@ -62,13 +69,22 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                <div className="flex items-center text-muted-foreground text-xs">
+                {/* <div className="flex items-center text-muted-foreground text-xs">
                   <MapPinIcon className="h-4 w-4 mr-1" />
                   <span>Bogota, Colombia</span>
-                </div>
+                </div> */}
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <Calendar02Icon className="h-4 w-4 mr-1" />
-                  <span>Se unió en Enero 2023</span>
+                  <Calendar01Icon className="h-4 w-4 mr-1" />
+                  <span>
+                    Se unió en{" "}
+                    {session?.user?.profile?.createdAt &&
+                      new Date(
+                        session.user?.profile?.createdAt
+                      ).toLocaleDateString("es-ES", {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                  </span>
                 </div>
               </div>
             </div>
@@ -100,18 +116,19 @@ export default function ProfilePage() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" defaultValue={session?.user?.email || ""} />
+                  <Input
+                    className="text-sm"
+                    id="email"
+                    defaultValue={session?.user?.email || ""}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Teléfono</Label>
-                  <Input id="phone" defaultValue="+34 612 345 678" />
+                  <Input className="text-sm" id="phone" defaultValue="" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="emergency">Contacto de emergencia</Label>
-                  <Input
-                    id="emergency"
-                    defaultValue="María Pérez - +34 698 765 432"
-                  />
+                  <Input className="text-sm" id="emergency" defaultValue="" />
                 </div>
               </>
             ) : (
@@ -132,9 +149,7 @@ export default function ProfilePage() {
                   <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Teléfono</div>
-                    <div className="text-muted-foreground text-xs">
-                      +34 612 345 678
-                    </div>
+                    <div className="text-muted-foreground text-xs"></div>
                   </div>
                 </div>
 
@@ -146,9 +161,7 @@ export default function ProfilePage() {
                     <div className="font-medium text-sm">
                       Contacto de emergencia
                     </div>
-                    <div className="text-muted-foreground text-xs">
-                      María Pérez - +34 698 765 432
-                    </div>
+                    <div className="text-muted-foreground text-xs"></div>
                   </div>
                 </div>
               </>
@@ -169,15 +182,47 @@ export default function ProfilePage() {
                 <div>
                   <div className="text-sm font-medium">Horario preferido</div>
                   <div className="text-xs text-muted-foreground">
-                    Mañanas (6:00 - 9:00)
+                    {(() => {
+                      const time = session?.user?.profile?.preferredWorkoutTime;
+                      switch (time) {
+                        case "early-morning":
+                          return "Temprano en la mañana (5-8 AM)";
+                        case "morning":
+                          return "Mañana (8-11 AM)";
+                        case "noon":
+                          return "Mediodía (11 AM-2 PM)";
+                        case "afternoon":
+                          return "Tarde (2-5 PM)";
+                        case "evening":
+                          return "Atardecer (5-8 PM)";
+                        case "night":
+                          return "Noche (8-11 PM)";
+                        default:
+                          return "No especificado";
+                      }
+                    })()}
                   </div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium">
-                    Tipo de entrenamiento
-                  </div>
+                  <div className="text-sm font-medium">Actividad diaria</div>
                   <div className="text-xs text-muted-foreground">
-                    Hipertrofia
+                    {(() => {
+                      const activity = session?.user?.profile?.dailyActivity;
+                      switch (activity) {
+                        case "office-work":
+                          return "Trabajo de oficina (sedentario)";
+                        case "light-physical":
+                          return "Trabajo físico ligero";
+                        case "moderate-physical":
+                          return "Trabajo físico moderado";
+                        case "heavy-physical":
+                          return "Trabajo físico pesado";
+                        case "very-heavy-physical":
+                          return "Trabajo físico muy pesado";
+                        default:
+                          return "No especificado";
+                      }
+                    })()}
                   </div>
                 </div>
               </div>
@@ -185,25 +230,53 @@ export default function ProfilePage() {
               <Separator />
 
               <div>
-                <div className="text-sm font-medium mb-2">
-                  Objetivos actuales
-                </div>
+                <div className="text-sm font-medium mb-2">Objetivo actual</div>
                 <div className="flex flex-wrap gap-2">
-                  <Badge>Aumentar fuerza</Badge>
-                  <Badge>Definición muscular</Badge>
-                  <Badge>Mejorar resistencia</Badge>
-                  <Badge>Preparar maratón</Badge>
+                  <Badge>
+                    {(() => {
+                      const goal = session?.user?.profile?.goal;
+                      switch (goal) {
+                        case "lose-weight":
+                          return "Bajar de peso";
+                        case "maintain":
+                          return "Mantener peso";
+                        case "gain-muscle":
+                          return "Aumentar peso";
+                        default:
+                          return "No especificado";
+                      }
+                    })()}
+                  </Badge>
                 </div>
               </div>
 
               <Separator />
 
               <div>
-                <div className="text-sm font-medium">
-                  Lesiones o condiciones
-                </div>
+                <div className="text-sm font-medium">Preferencia dietetica</div>
                 <div className="text-muted-foreground text-xs">
-                  Lesión de rodilla (2022) - Recuperado
+                  {(() => {
+                    const preference =
+                      session?.user?.profile?.dietaryPreference;
+                    switch (preference) {
+                      case "no-preference":
+                        return "Sin preferencia específica";
+                      case "vegetarian":
+                        return "Vegetariano";
+                      case "vegan":
+                        return "Vegano";
+                      case "pescatarian":
+                        return "Pescetariano";
+                      case "keto":
+                        return "Keto";
+                      case "paleo":
+                        return "Paleo";
+                      case "mediterranean":
+                        return "Mediterránea";
+                      default:
+                        return "No especificado";
+                    }
+                  })()}
                 </div>
               </div>
             </div>

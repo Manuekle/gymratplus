@@ -16,7 +16,7 @@ interface CustomSession extends Session {
 }
 import { useRouter } from "next/navigation";
 
-export default function Home() {
+export default function OnboardingPage() {
   const router = useRouter();
   const { data: session } = useSession() as { data: CustomSession | null };
 

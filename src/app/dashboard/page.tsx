@@ -1,14 +1,19 @@
-import DashboardStats from "@/components/dashboard/dashboard-stats";
+import type { Metadata } from "next";
+
 import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
-// import UpcomingEvents from "@/components/dashboard/upcoming-events";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
+
+export const metadata: Metadata = {
+  title: "Dashboard",
+  description:
+    "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
+};
 
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <DashboardStats />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <ProgressChart />
         <GoalProgress />
@@ -17,7 +22,6 @@ export default function DashboardPage() {
         <WorkoutSummary />
         <NutritionSummary />
       </div>
-      {/* <UpcomingEvents /> */}
     </div>
   );
 }

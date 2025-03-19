@@ -158,9 +158,20 @@ export default function NutritionSummary() {
             <div key={index}>
               <div className="flex justify-between mb-1">
                 <span className="text-sm font-medium">{macro.name}</span>
-                <span className="text-sm">
+                {/* <span className="text-sm">
                   {macro.consumed} / {macro.goal} {macro.unit}
-                </span>
+                </span> */}
+                <div className="text-sm">
+                  <span className="font-medium">
+                    {Math.round(macro.consumed ?? 0)}
+                    {macro.unit}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {" "}
+                    / {macro.goal}
+                    {macro.unit}
+                  </span>
+                </div>
               </div>
               <div className="py-1">
                 <Progress value={percentage} className="h-2" />

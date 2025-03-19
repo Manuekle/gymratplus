@@ -38,26 +38,25 @@ model Session {
 }
 
 model User {
-  id                String           @id @default(cuid())
-  name              String?
-  email             String?          @unique
-  emailVerified     DateTime?
-  image             String?
-  password          String?
-  accounts          Account[]
-  sessions          Session[]
-  profile           Profile?
-  workouts          Workout[]
-  workoutSessions   WorkoutSession[]
-  customFoods       Food[]
-  customRecipes     Recipe[] // Nuevo: relación con recetas personalizadas
-  customSupplements Supplement[] // Nuevo: relación con suplementos personalizados
-  nutritionPlans    NutritionPlan[] // Nuevo: relación con planes de alimentación
-  mealLogs          MealLog[]
-  weights           Weight[]
-  events            Event[]
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id               String             @id @default(cuid())
+  name             String?
+  email            String?            @unique
+  emailVerified    DateTime?
+  image            String?
+  password         String?
+  accounts         Account[]
+  sessions         Session[]
+  profile          Profile?
+  workouts         Workout[]
+  workoutSessions  WorkoutSession[]
+  customFoods      Food[]
+  customRecipes    Recipe[] // Nuevo: relación con recetas personalizadas
+  mealLogs         MealLog[]
+  weights          Weight[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ExerciseProgress ExerciseProgress[]
+  Goal             Goal[]
 }
 
 model Profile {
@@ -110,7 +109,6 @@ model Workout {
   user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   exercises       WorkoutExercise[]
   workoutSessions WorkoutSession[] // Relación con WorkoutSession
-  events          Event[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
@@ -151,7 +149,6 @@ model Food {
   mealEntries       MealEntry[]
   mealLogs          MealLog[]
   recipeIngredients RecipeIngredient[]
-  mealPlanItems     MealPlanItem[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -175,7 +172,6 @@ model Recipe {
   userId          String? // Para recetas personalizadas
   user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   ingredients     RecipeIngredient[]
-  mealPlanItems   MealPlanItem[]
   mealLogs        MealLog[]
   mealEntries     MealEntryRecipe[]
   isFavorite      Boolean            @default(false)
@@ -194,95 +190,6 @@ model RecipeIngredient {
   unit      String? // unidad de medida (g, ml, cucharada, etc.)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-}
-
-// Nuevo modelo para planes de alimentación
-model NutritionPlan {
-  id             String           @id @default(cuid())
-  name           String
-  description    String?          @db.Text
-  userId         String
-  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  startDate      DateTime?
-  endDate        DateTime?
-  isActive       Boolean          @default(false)
-  days           NutritionDay[]
-  targetCalories Int?
-  targetProtein  Float?
-  targetCarbs    Float?
-  targetFat      Float?
-  supplements    PlanSupplement[]
-  mealLogs       MealLog[]
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-}
-
-// Nuevo modelo para los días del plan de alimentación
-model NutritionDay {
-  id              String         @id @default(cuid())
-  nutritionPlanId String
-  nutritionPlan   NutritionPlan  @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
-  dayNumber       Int // Día de la semana (1-7) o número del día en el plan
-  dayName         String? // Lunes, Martes, etc.
-  meals           MealPlanItem[]
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-
-  @@unique([nutritionPlanId, dayNumber])
-}
-
-// Nuevo modelo para las comidas en un plan de alimentación
-model MealPlanItem {
-  id             String       @id @default(cuid())
-  nutritionDayId String
-  nutritionDay   NutritionDay @relation(fields: [nutritionDayId], references: [id], onDelete: Cascade)
-  mealType       String // desayuno, almuerzo, cena, snack
-  time           String? // Hora de la comida (formato: HH:MM)
-  foodId         String? // Puede ser un alimento individual
-  food           Food?        @relation(fields: [foodId], references: [id])
-  recipeId       String? // O puede ser una receta
-  recipe         Recipe?      @relation(fields: [recipeId], references: [id])
-  quantity       Float // Cantidad (para alimentos) o número de porciones (para recetas)
-  notes          String?
-  calories       Int // Calorías calculadas según cantidad
-  protein        Float // Proteínas calculadas según cantidad
-  carbs          Float // Carbohidratos calculadas según cantidad
-  fat            Float // Grasas calculadas según cantidad
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  // La validación se hará a nivel de aplicación para asegurar que foodId o recipeId estén presentes
-}
-
-// Nuevo modelo para suplementos
-model Supplement {
-  id              String           @id @default(cuid())
-  name            String
-  description     String?          @db.Text
-  dosage          String? // Dosis recomendada
-  timing          String? // Momento de toma (mañana, antes de entrenar, etc.)
-  imageUrl        String?
-  userId          String? // Para suplementos personalizados
-  user            User?            @relation(fields: [userId], references: [id], onDelete: SetNull)
-  planSupplements PlanSupplement[]
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-}
-
-// Relación entre planes de alimentación y suplementos
-model PlanSupplement {
-  id              String        @id @default(cuid())
-  nutritionPlanId String
-  nutritionPlan   NutritionPlan @relation(fields: [nutritionPlanId], references: [id], onDelete: Cascade)
-  supplementId    String
-  supplement      Supplement    @relation(fields: [supplementId], references: [id], onDelete: Cascade)
-  dosage          String? // Dosis personalizada para este plan
-  timing          String? // Momento personalizado para este plan
-  frequency       String? // Frecuencia (diaria, en días de entrenamiento, etc.)
-  notes           String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-
-  @@unique([nutritionPlanId, supplementId])
 }
 
 // Modificación al modelo MealEntry para soportar recetas
@@ -310,26 +217,23 @@ model MealEntryRecipe {
 }
 
 model MealLog {
-  id         String   @id @default(cuid())
-  userId     String
-  mealType   String
-  consumedAt DateTime
-  foodId     String?
-  recipeId   String?
-  quantity   Float
-  calories   Int
-  protein    Float
-  carbs      Float
-  fat        Float
-  notes      String?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  planId     String? // Nuevo campo para asociar con el plan nutricional
-
+  id              String            @id @default(cuid())
+  userId          String
+  mealType        String
+  consumedAt      DateTime
+  foodId          String?
+  recipeId        String?
+  quantity        Float
+  calories        Int
+  protein         Float
+  carbs           Float
+  fat             Float
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
   // Relaciones
   food            Food?             @relation(fields: [foodId], references: [id])
   recipe          Recipe?           @relation(fields: [recipeId], references: [id])
-  plan            NutritionPlan?    @relation(fields: [planId], references: [id])
   User            User              @relation(fields: [userId], references: [id])
   MealEntry       MealEntry[]
   MealEntryRecipe MealEntryRecipe[]
@@ -338,34 +242,100 @@ model MealLog {
   @@index([foodId])
   @@index([recipeId])
   @@index([consumedAt])
-  @@index([planId])
 }
 
 model Weight {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  weight    Float // en kg
-  date      DateTime
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  userId               String
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weight               Float // en kg
+  bodyFatPercentage    Float? // nuevo campo para % de grasa corporal
+  muscleMassPercentage Float? // nuevo campo para % de masa muscular
+  date                 DateTime
+  notes                String?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
 }
 
-model Event {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title     String
-  start     DateTime
-  end       DateTime
-  workoutId String?
-  workout   Workout? @relation(fields: [workoutId], references: [id])
-  color     String?
-  allDay    Boolean  @default(false)
+model ExerciseProgress {
+  id     String   @id @default(cuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id])
+  date   DateTime
+
+  // Ejercicios básicos
+  benchPress Float?
+  squat      Float?
+  deadlift   Float?
+
+  // Metadatos
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
+}
+
+model Goal {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  // Tipo de objetivo
+  type String // "weight", "strength", "measurement", "activity"
+
+  // Detalles del objetivo
+  title        String
+  description  String?
+  targetValue  Float? // Valor objetivo (ej: 70kg para peso, 100kg para press banca)
+  currentValue Float? // Valor actual
+  initialValue Float? // Valor inicial cuando se creó el objetivo
+  unit         String? // "kg", "cm", "veces/semana", etc.
+
+  // Para objetivos de fuerza
+  exerciseType String? // "benchPress", "squat", "deadlift", etc.
+
+  // Para objetivos de medidas
+  measurementType String? // "waist", "chest", "arms", etc.
+
+  // Fechas
+  startDate     DateTime
+  targetDate    DateTime?
+  completedDate DateTime?
+
+  // Estado
+  status   String @default("active") // "active", "completed", "abandoned"
+  progress Float? // Porcentaje de progreso (0-100)
+
+  // Historial de progreso
+  progressUpdates GoalProgress[]
+
+  // Metadatos
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+}
+
+model GoalProgress {
+  id     String @id @default(cuid())
+  goalId String
+  goal   Goal   @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  value Float
+  date  DateTime
+  notes String?
+
+  createdAt DateTime @default(now())
+
+  @@index([goalId])
+  @@index([date])
 }
 
 model Notification {

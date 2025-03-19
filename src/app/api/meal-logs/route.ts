@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 const prisma = new PrismaClient();
@@ -117,20 +117,6 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Buscar el plan activo del usuario si no se proporciona un planId
-    let planId = data.planId;
-    if (!planId) {
-      const activePlan = await prisma.nutritionPlan.findFirst({
-        where: {
-          userId: userId,
-          isActive: true,
-        },
-      });
-      if (activePlan) {
-        planId = activePlan.id;
-      }
-    }
-
     // Calculate nutrition values based on food or recipe
     let calories = 0;
     let protein = 0;
@@ -232,15 +218,6 @@ export async function POST(req: NextRequest) {
         };
       }
 
-      // Conectar con plan si existe
-      if (planId) {
-        mealLogData.plan = {
-          connect: {
-            id: planId,
-          },
-        };
-      }
-
       // Crear el registro en MealLog
       const mealLog = await prisma.mealLog.create({
         data: mealLogData,
@@ -250,86 +227,7 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      // Si hay un plan especificado, crear también el registro en MealPlanItem
-      let mealPlanItem = null;
-      if (planId) {
-        try {
-          // Buscar el plan
-          const plan = await prisma.nutritionPlan.findUnique({
-            where: {
-              id: planId,
-            },
-            include: {
-              days: true,
-            },
-          });
-
-          if (!plan) {
-            console.error("Plan not found:", planId);
-          } else {
-            // Determinar el número de día (usaremos 1 por defecto)
-            const dayNumber = 1;
-
-            // Buscar si ya existe el día en el plan
-            let day = plan.days.find((d) => d.dayNumber === dayNumber);
-
-            // Si no existe, crearlo
-            if (!day) {
-              day = await prisma.nutritionDay.create({
-                data: {
-                  nutritionPlanId: planId,
-                  dayNumber: dayNumber,
-                  dayName: null,
-                },
-              });
-            }
-
-            // Preparar datos para MealPlanItem
-            const mealPlanItemData: any = {
-              nutritionDayId: day.id,
-              mealType: data.mealType,
-              time: consumedAt.toISOString(),
-              quantity: data.quantity,
-              notes: data.notes || null,
-              calories: calories,
-              protein: protein,
-              carbs: carbs,
-              fat: fat,
-            };
-
-            // Conectar con food o recipe según corresponda
-            if (data.foodId) {
-              mealPlanItemData.food = {
-                connect: {
-                  id: data.foodId,
-                },
-              };
-            }
-
-            if (data.recipeId) {
-              mealPlanItemData.recipe = {
-                connect: {
-                  id: data.recipeId,
-                },
-              };
-            }
-
-            // Crear el MealPlanItem asociado al día
-            mealPlanItem = await prisma.mealPlanItem.create({
-              data: mealPlanItemData,
-              include: {
-                food: true,
-                recipe: true,
-              },
-            });
-          }
-        } catch (mealPlanError) {
-          console.error("Error creating MealPlanItem:", mealPlanError);
-          // No fallamos la operación principal si falla la creación del MealPlanItem
-        }
-      }
-
-      return NextResponse.json({ mealLog, mealPlanItem });
+      return NextResponse.json({ mealLog });
     } catch (dbError) {
       console.error("Database error:", dbError);
       return NextResponse.json(

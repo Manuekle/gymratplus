@@ -93,7 +93,7 @@ export default function WorkoutPage() {
                 </span>
               </div>
               <Progress value={5 * 14.28} className="h-2" />
-              <div className="grid grid-cols-7 gap-2 text-xs text-center pt-2">
+              {/* <div className="grid grid-cols-7 gap-2 text-xs text-center pt-2">
                 <div className="bg-primary/20 rounded-sm py-1">L</div>
                 <div className="bg-primary/20 rounded-sm py-1">M</div>
                 <div className="py-1">X</div>
@@ -101,36 +101,7 @@ export default function WorkoutPage() {
                 <div className="bg-primary/20 rounded-sm py-1">V</div>
                 <div className="bg-primary/20 rounded-sm py-1">S</div>
                 <div className="py-1">D</div>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center text-sm">
-                {/* <Dumbbell01Icon className="mr-2 h-4 w-4 text-muted-foreground" /> */}
-                <span className="text-sm font-medium">
-                  Ejercicios principales
-                </span>
-              </div>
-              <div className="grid gap-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs">Sentadilla</span>
-                  <span className="font-medium text-xs text-muted-foreground">
-                    100 kg
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs">Press de banca</span>
-                  <span className="font-medium text-xs text-muted-foreground">
-                    80 kg
-                  </span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-xs">Peso muerto</span>
-                  <span className="font-medium text-xs text-muted-foreground">
-                    120 kg
-                  </span>
-                </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </CardContent>

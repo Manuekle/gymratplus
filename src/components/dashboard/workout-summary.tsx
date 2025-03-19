@@ -40,7 +40,8 @@ export default function WorkoutSummary() {
           href="workout/history"
           className="text-xs text-gray-500 flex items-center gap-1"
         >
-          Ver todos <ArrowRight01Icon className="h-4 w-4 text-foreground" />
+          Ver todos
+          <ArrowRight01Icon className="h-4 w-4 text-muted-foreground" />
         </Link>
       </div>
 

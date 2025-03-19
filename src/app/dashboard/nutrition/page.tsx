@@ -1,5 +1,14 @@
 "use client";
 
+// icons
+import { Bread04Icon, FishFoodIcon, SteakIcon } from "hugeicons-react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+
+// sonner
+import { toast } from "sonner";
+
+// ui
 import {
   Card,
   CardContent,
@@ -7,16 +16,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+
+// components
 import { Progress } from "@/components/ui/progress";
 import { CalorieChart } from "@/components/calorie-chart";
-import { Bread04Icon, FishFoodIcon, SteakIcon } from "hugeicons-react";
-import { useState, useEffect } from "react";
-import { useSession } from "next-auth/react";
 import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
-import NutritionsTable from "@/components/tables/nutritions-table";
-// import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 interface UserProfile {
   id: string;
@@ -114,6 +119,7 @@ export default function NutritionPage() {
       // setLoading(false);
     }
   };
+
   const weeklyData = async (type: string) => {
     // setLoading(true);
     try {
@@ -367,21 +373,6 @@ export default function NutritionPage() {
                     }`}
                   />
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="col-span-2 md:col-span-1">
-            <CardHeader className="pb-2">
-              <CardTitle>Mis Planes de nutricion</CardTitle>
-              <CardDescription className="text-xs">
-                Aquí puedes ver tus planes de nutricion
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {/* <WorkoutGeneratorForm /> */}
-                {/* <WorkoutModal /> */}
-                <NutritionsTable />
               </div>
             </CardContent>
           </Card>
