@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Session } from "next-auth";
 
 interface UserProfile {
   id: string;
@@ -86,7 +87,8 @@ export default function NutritionSummary() {
     // Si no hay usuario en la sesión, no hacemos nada
     if (!session?.user) return;
 
-    const profile = (session.user as any)?.profile;
+    const profile = (session.user as Session["user"] & { profile: UserProfile })
+      .profile;
     if (!profile) return;
 
     analyticsData("today");
@@ -94,10 +96,10 @@ export default function NutritionSummary() {
     setUser({
       id: profile.id,
       nutrition: {
-        calorieTarget: Number(profile.dailyCalorieTarget),
-        proteinTarget: Number(profile.dailyProteinTarget),
-        carbTarget: Number(profile.dailyCarbTarget),
-        fatTarget: Number(profile.dailyFatTarget),
+        calorieTarget: profile.nutrition.calorieTarget,
+        proteinTarget: profile.nutrition.proteinTarget,
+        carbTarget: profile.nutrition.carbTarget,
+        fatTarget: profile.nutrition.fatTarget,
       },
       waterIntake: Number(profile.waterIntake),
       goal: profile.goal,
