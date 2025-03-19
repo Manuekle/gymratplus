@@ -83,8 +83,12 @@ export default function SignUpPage() {
         router.push("/onboarding");
         router.refresh();
       }
-    } catch (error: any) {
-      setError(error.message || "Ocurrió un error durante el registro");
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setError(error.message || "Ocurrió un error durante el registro");
+      } else {
+        setError("Ocurrió un error durante el registro");
+      }
     } finally {
       setLoading(false);
     }

@@ -37,7 +37,6 @@ export async function GET(req: NextRequest) {
     if (type === "week") {
       // Get start and end of current week (starting on Monday)
       const weekStart = startOfWeek(today, { weekStartsOn: 1 });
-      const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
 
       // Create an array of dates for the week
       const weekDates = [];

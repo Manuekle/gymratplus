@@ -99,7 +99,16 @@ export async function PUT(
     }
 
     // Preparar datos para actualizar
-    const updateData: any = {};
+    const updateData: {
+      title?: string;
+      description?: string;
+      targetValue?: number;
+      unit?: string;
+      targetDate?: Date;
+      status?: string;
+      completedDate?: Date;
+      progress?: number;
+    } = {};
 
     if (title !== undefined) updateData.title = title;
     if (description !== undefined) updateData.description = description;

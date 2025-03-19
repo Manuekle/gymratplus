@@ -23,7 +23,14 @@ export async function GET(req: NextRequest) {
     }
 
     // Build the where clause
-    const where: any = {
+    const where: {
+      userId: string;
+      date: {
+        gte: Date;
+        lte?: Date;
+      };
+      mealType?: string | null;
+    } = {
       userId: session.user.id,
       date: {
         gte: new Date(startDate),

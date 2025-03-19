@@ -22,7 +22,14 @@ export async function GET(req: NextRequest) {
     const planId = req.nextUrl.searchParams.get("planId");
 
     // Build the where clause
-    const where: any = {
+    const where: {
+      userId: string;
+      planId?: string;
+      consumedAt?: {
+        gte: Date;
+        lte: Date;
+      };
+    } = {
       userId: userId,
     };
 
@@ -185,7 +192,31 @@ export async function POST(req: NextRequest) {
       }
 
       // Preparar los datos para crear el MealLog
-      const mealLogData: any = {
+      const mealLogData: {
+        mealType: string;
+        consumedAt: Date;
+        quantity: number;
+        notes?: string | null;
+        calories: number;
+        protein: number;
+        carbs: number;
+        fat: number;
+        User: {
+          connect: {
+            id: string;
+          };
+        };
+        food?: {
+          connect: {
+            id: string;
+          };
+        };
+        recipe?: {
+          connect: {
+            id: string;
+          };
+        };
+      } = {
         mealType: data.mealType,
         consumedAt: consumedAt,
         quantity: data.quantity,

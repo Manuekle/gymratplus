@@ -21,7 +21,7 @@ export async function GET() {
       include: { exercises: true },
     });
     return NextResponse.json(workouts);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Error obteniendo workouts" },
       { status: 500 }
@@ -77,7 +77,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json(workout, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Error creando workout" },
       { status: 500 }

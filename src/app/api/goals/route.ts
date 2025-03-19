@@ -28,7 +28,23 @@ export async function GET(req: NextRequest) {
     }
 
     // Consulta base
-    const query: any = {
+    const query: {
+      where: {
+        userId: string;
+        type?: string | null;
+        status?: string | null;
+      };
+      orderBy: {
+        createdAt: "desc";
+      };
+      include: {
+        progressUpdates: {
+          orderBy: {
+            date: "asc";
+          };
+        };
+      };
+    } = {
       where: {
         userId: user.id,
       },

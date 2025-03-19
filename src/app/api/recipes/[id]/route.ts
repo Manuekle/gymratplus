@@ -68,6 +68,13 @@ export async function PUT(
     const recipeId = params.id;
     const data = await req.json();
 
+    // Define the type for ingredients
+    type Ingredient = {
+      foodId: string;
+      quantity: number;
+      unit?: string;
+    };
+
     // Get the recipe
     const recipe = await prisma.recipe.findUnique({
       where: {
@@ -106,8 +113,9 @@ export async function PUT(
     let nutritionData = {};
 
     if (data.ingredients) {
+      const ingredients: Ingredient[] = data.ingredients;
       // Get all foods for the ingredients
-      const foodIds = data.ingredients.map((ing: any) => ing.foodId);
+      const foodIds = ingredients.map((ing) => ing.foodId);
       const foods = await prisma.food.findMany({
         where: {
           id: {
@@ -124,7 +132,7 @@ export async function PUT(
       let totalFiber = 0;
       let totalSugar = 0;
 
-      for (const ingredient of data.ingredients) {
+      for (const ingredient of ingredients) {
         const food = foods.find((f) => f.id === ingredient.foodId);
         if (food) {
           const ratio = ingredient.quantity / food.serving;
@@ -154,7 +162,7 @@ export async function PUT(
       });
 
       // Create new ingredients
-      for (const ingredient of data.ingredients) {
+      for (const ingredient of ingredients) {
         await prisma.recipeIngredient.create({
           data: {
             recipeId: recipeId,

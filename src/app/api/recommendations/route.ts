@@ -9,7 +9,7 @@ import {
 } from "@/lib/workout-utils";
 import { createNutritionPlan } from "@/lib/nutrition-utils";
 
-export async function POST(request: Request) {
+export async function POST() {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
