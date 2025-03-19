@@ -102,7 +102,14 @@ export async function POST(req: Request) {
 }
 
 // Funciones auxiliares para cálculos
-function calculateDailyCalories(data: any): number {
+function calculateDailyCalories(data: {
+  gender: string;
+  height: string;
+  currentWeight: string;
+  birthdate: string | null;
+  activityLevel: string;
+  goal: string;
+}): number {
   // Implementación real de la fórmula de Harris-Benedict para BMR
   const { gender, height, currentWeight, birthdate, activityLevel, goal } =
     data;
@@ -173,13 +180,13 @@ function calculateDailyCalories(data: any): number {
 
 function calculateMacros(
   calories: number,
-  data: any
+  data: { goal: string }
 ): {
   dailyProteinTarget: number;
   dailyCarbTarget: number;
   dailyFatTarget: number;
 } {
-  const { goal, gender } = data;
+  const { goal } = data;
 
   let proteinPercentage = 0.3; // 30% por defecto
   let fatPercentage = 0.3; // 30% por defecto
@@ -213,7 +220,12 @@ function calculateWaterIntake(weight: string): number {
   return Math.round(weightKg * 0.033 * 10) / 10; // Litros, redondeado a 1 decimal
 }
 
-function calculateMetabolicRate(data: any): number {
+function calculateMetabolicRate(data: {
+  gender: string;
+  height: string;
+  currentWeight: string;
+  birthdate: string | null;
+}): number {
   // Simplemente devolvemos el BMR calculado
   const { gender, height, currentWeight, birthdate } = data;
 
