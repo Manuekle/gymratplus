@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import type { Food } from "@prisma/client";
 import { foodsToCreate } from "@/data/food";
 // Get or create foods in the database
 export async function getOrCreateFoods(dietaryPreference = "no-preference") {
@@ -87,14 +88,55 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 }
 
 // Create a nutrition plan based on user profile
-export async function createNutritionPlan(profile) {
+interface NutritionProfile {
+  userId: string;
+  goal: "lose-weight" | "maintain" | "gain-muscle" | string;
+  dietaryPreference: "vegetarian" | "keto" | "no-preference" | string;
+  dailyCalorieTarget?: number;
+  dailyProteinTarget?: number;
+  dailyCarbTarget?: number;
+  dailyFatTarget?: number;
+}
+
+interface Macros {
+  protein: string;
+  carbs: string;
+  fat: string;
+  description: string;
+}
+
+interface MealLog {
+  userId: string;
+  date: Date;
+  mealType: string;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  entries: { foodId: number | string; quantity: number; food?: Food }[];
+}
+
+interface NutritionPlan {
+  macros: Macros;
+  meals: {
+    breakfast: MealLog;
+    lunch: MealLog;
+    dinner: MealLog;
+    snacks: MealLog;
+  };
+  calorieTarget?: number;
+}
+
+export async function createNutritionPlan(
+  profile: NutritionProfile
+): Promise<NutritionPlan> {
   const { userId, goal, dietaryPreference } = profile; // Removed dailyCalorieTarget
 
   // Get foods from database or create new ones if they don't exist
   const foods = await getOrCreateFoods(dietaryPreference);
 
   // Generate meal plans for each meal type
-  const breakfast = await createMealLog(
+  const breakfast: MealLog = await createMealLog(
     userId,
     "breakfast",
     foods,
@@ -102,7 +144,7 @@ export async function createNutritionPlan(profile) {
     dietaryPreference
   );
 
-  const lunch = await createMealLog(
+  const lunch: MealLog = await createMealLog(
     userId,
     "lunch",
     foods,
@@ -110,7 +152,7 @@ export async function createNutritionPlan(profile) {
     dietaryPreference
   );
 
-  const dinner = await createMealLog(
+  const dinner: MealLog = await createMealLog(
     userId,
     "dinner",
     foods,
@@ -118,7 +160,7 @@ export async function createNutritionPlan(profile) {
     dietaryPreference
   );
 
-  const snacks = await createMealLog(
+  const snacks: MealLog = await createMealLog(
     userId,
     "snack",
     foods,
@@ -160,16 +202,15 @@ export async function createNutritionPlan(profile) {
   };
 }
 
-// Create a meal log for a specific meal type
 async function createMealLog(
-  userId,
-  mealType,
-  foods,
-  goal,
-  dietaryPreference = "no-preference"
+  userId: string,
+  mealType: string,
+  foods: Food[],
+  goal: string,
+  dietaryPreference: string = "no-preference"
 ) {
   // Select appropriate foods based on meal type and dietary preference
-  let selectedFoods = [];
+  let selectedFoods: Food[] = [];
 
   // Meal-specific food selection logic
   if (mealType === "breakfast") {
@@ -360,17 +401,14 @@ async function createMealLog(
     protein: Math.round(totalProtein * 10) / 10,
     carbs: Math.round(totalCarbs * 10) / 10,
     fat: Math.round(totalFat * 10) / 10,
-    entries: mealEntries.map((entry) => ({
-      ...entry,
-      food: entry.food, // Asegura que se incluya la información de los alimentos
-    })),
+    entries: mealEntries,
   };
 
   return mealLog;
 }
 
 // Helper function to get text representation of goal
-function getGoalText(goal) {
+function getGoalText(goal: string) {
   switch (goal) {
     case "lose-weight":
       return "weight loss";
