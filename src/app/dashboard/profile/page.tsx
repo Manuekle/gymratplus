@@ -16,6 +16,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import {
+  BirthdayCakeIcon,
   Calendar01Icon,
   Calendar02Icon,
   Mail01Icon,
@@ -89,16 +90,15 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="flex justify-center md:justify-end md:self-start pt-4 md:pt-0">
+            {/* <div className="flex justify-center md:justify-end md:self-start pt-4 md:pt-0">
               <Button
                 onClick={() => setIsEditing(!isEditing)}
                 className="text-xs"
                 size="sm"
               >
-                {/* <Edit01Icon className="h-2 w-2 mr-2" /> */}
                 {isEditing ? "Guardar" : "Editar perfil"}
               </Button>
-            </div>
+            </div> */}
           </div>
         </CardContent>
       </Card>
@@ -145,6 +145,17 @@ export default function ProfilePage() {
 
                 <Separator />
 
+                <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                  <BirthdayCakeIcon className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <div className="font-medium text-sm">
+                      Fecha de cumpleaños
+                    </div>
+                    <div className="text-muted-foreground text-xs"></div>
+                  </div>
+                </div>
+
+                <Separator />
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
                   <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>

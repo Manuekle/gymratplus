@@ -68,7 +68,7 @@ export function StepResults({ workout }: StepResultsProps) {
         </div>
         <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
-            <TabsList className="w-full mb-4 flex flex-wrap h-auto tracking-wider">
+            <TabsList className="w-full mb-4 flex flex-wrap h-auto ">
               {workout.days.map((day, index) => (
                 <TabsTrigger key={index} value={day.day} className="flex-1">
                   {day.day}

@@ -142,7 +142,12 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           </div>
 
           <div className="flex justify-end space-x-2 pt-2">
-            <Button type="submit" disabled={isSubmitting}>
+            <Button
+              size="sm"
+              className="text-xs px-4"
+              type="submit"
+              disabled={isSubmitting}
+            >
               {isSubmitting ? "Guardando..." : "Guardar"}
             </Button>
           </div>

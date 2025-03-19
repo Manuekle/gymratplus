@@ -161,7 +161,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
       </Card>
 
       {/* <Tabs defaultValue="breakfast" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full tracking-wider">
+        <TabsList className="grid grid-cols-4 w-full ">
           <TabsTrigger value="breakfast">
             {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
           </TabsTrigger>

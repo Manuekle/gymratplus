@@ -372,7 +372,7 @@ export default function ActiveWorkout() {
 
           {restTimer.active && (
             <div className="bg-foreground p-4 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in">
-              <h3 className="text-md tracking-wider mb-2 text-white dark:text-black">
+              <h3 className="text-md  mb-2 text-white dark:text-black">
                 Tiempo de descanso
               </h3>
               <div className="text-3xl font-bold text-white dark:text-black">

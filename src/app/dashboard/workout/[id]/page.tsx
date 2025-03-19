@@ -95,7 +95,7 @@ export default function WorkoutDetail() {
         </div>
         <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
-            <TabsList className="mb-4 flex flex-wrap h-auto gap-4 tracking-wider">
+            <TabsList className="mb-4 flex flex-wrap h-auto gap-4 ">
               {workout.days.map((day, index) => (
                 <TabsTrigger key={index} value={day.day} className="flex-1">
                   {day.day}

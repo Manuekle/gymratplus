@@ -195,7 +195,7 @@ export function GoalsDashboard() {
         onValueChange={(value) => setActiveTab(value as GoalType | "weight")}
       >
         <div className="flex md:flex-row flex-col justify-between">
-          <TabsList className="mb-4 tracking-wider gap-3">
+          <TabsList className="mb-4 gap-3">
             <TabsTrigger value="weight">Peso</TabsTrigger>
             <TabsTrigger value="strength">Fuerza</TabsTrigger>
             <TabsTrigger value="measurement">Medidas</TabsTrigger>
