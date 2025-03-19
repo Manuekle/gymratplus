@@ -14,6 +14,7 @@ export function createSortableColumn<T>(
       return (
         <Button
           variant="ghost"
+          className="text-xs md:text-sm"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}
@@ -154,6 +155,7 @@ export function createDateColumn<T>(
       return (
         <Button
           variant="ghost"
+          className="text-xs md:text-sm"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}

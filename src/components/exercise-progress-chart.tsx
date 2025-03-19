@@ -23,8 +23,6 @@ import {
 } from "date-fns";
 import { es } from "date-fns/locale";
 import { useExerciseProgress } from "@/hooks/use-exercise-progress";
-import ExerciseProgressForm from "@/components/exercise-progress-form";
-import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -33,6 +31,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Icons } from "./icons";
+import { ExerciseProgress } from "./progress/excercise-progress";
+import ChartSkeleton from "./skeleton/charts-skeleton";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -45,7 +45,6 @@ export function ExerciseProgressChart() {
   const [filteredData, setFilteredData] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showAddForm, setShowAddForm] = useState(false);
 
   const { fetchExerciseProgressData } = useExerciseProgress();
 
@@ -189,7 +188,7 @@ export function ExerciseProgressChart() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-start md:justify-end">
         {/* <h3 className="text-lg font-medium">Progreso en Ejercicios Básicos</h3> */}
         <div className="flex items-center gap-2">
           <Select
@@ -214,20 +213,18 @@ export function ExerciseProgressChart() {
               </SelectItem>
             </SelectContent>
           </Select>
-          <Button
-            size="sm"
-            onClick={() => setShowAddForm(true)}
-            className="px-6 text-xs"
-          >
-            Añadir
-          </Button>
+          <ExerciseProgress
+            onSuccess={() => {
+              loadData();
+            }}
+          />
         </div>
       </div>
 
       <div className="w-full h-[250px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground" />
+            <ChartSkeleton />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full">
@@ -244,13 +241,11 @@ export function ExerciseProgressChart() {
             <p className="text-muted-foreground mb-4 text-sm">
               No hay datos de ejercicios disponibles
             </p>
-            <Button
-              size="sm"
-              onClick={() => setShowAddForm(true)}
-              className="px-4 text-xs"
-            >
-              Añadir primer registro
-            </Button>
+            <ExerciseProgress
+              onSuccess={() => {
+                loadData();
+              }}
+            />
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
@@ -369,17 +364,6 @@ export function ExerciseProgressChart() {
             </div>
           </div>
         </div>
-      )}
-
-      {showAddForm && (
-        <ExerciseProgressForm
-          onClose={() => setShowAddForm(false)}
-          onSuccess={() => {
-            setShowAddForm(false);
-            // Recargar datos después de añadir un nuevo registro
-            loadData();
-          }}
-        />
       )}
     </div>
   );

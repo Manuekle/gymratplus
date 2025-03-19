@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useExerciseProgress } from "@/hooks/use-exercise-progress";
+import { Icons } from "./icons";
 
 interface ExerciseProgressFormProps {
   onClose: () => void;
@@ -202,11 +203,16 @@ export default function ExerciseProgressForm({
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Guardando..."
-                : isEditing
-                ? "Actualizar"
-                : "Guardar"}
+              {isSubmitting ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando
+                </>
+              ) : isEditing ? (
+                "Actualizar"
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </div>
         </form>

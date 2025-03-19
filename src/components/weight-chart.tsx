@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Icons } from "./icons";
 import { CardTitle } from "./ui/card";
+import ChartSkeleton from "./skeleton/charts-skeleton";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -200,8 +201,8 @@ export function WeightChart() {
 
       <div className="w-full h-[200px]">
         {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <Icons.spinner className="text-muted-foreground h-12 w-12 animate-spin" />
+          <div className="flex items-center justify-center h-full py-8">
+            <ChartSkeleton />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full">

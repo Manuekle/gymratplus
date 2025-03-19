@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar01Icon } from "hugeicons-react";
+import { Icons } from "../icons";
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -148,7 +149,14 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Guardando..." : "Guardar"}
+              {isSubmitting ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando
+                </>
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </div>
         </form>

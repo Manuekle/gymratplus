@@ -826,7 +826,14 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onClick={handleSubmit}
                 disabled={submitting || selectedItems.length === 0}
               >
-                {submitting ? "Guardando..." : "Guardar"}
+                {submitting ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Guardando
+                  </>
+                ) : (
+                  "Guardar"
+                )}
               </Button>
             </div>
           </>

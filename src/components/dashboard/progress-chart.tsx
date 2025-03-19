@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { Icons } from "../icons";
 import { NewProgress } from "../progress/new-progress";
+import ChartSkeleton from "../skeleton/charts-skeleton";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -339,7 +340,7 @@ export default function ProgressChart() {
       <div className="w-full h-[250px]">
         {isLoading ? (
           <div className="flex items-center justify-center h-full">
-            <Icons.spinner className="text-muted-foreground h-12 w-12 animate-spin" />
+            <ChartSkeleton />
           </div>
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full">

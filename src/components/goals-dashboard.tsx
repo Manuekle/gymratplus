@@ -28,6 +28,7 @@ import {
 } from "hugeicons-react";
 import { NewGoal } from "./goals/new-goal";
 import { UpdateGoal } from "./goals/update-goal";
+import ProgressSkeleton from "./skeleton/progress-skeleton";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
@@ -209,8 +210,9 @@ export function GoalsDashboard() {
 
         <TabsContent value={activeTab} className="mt-0">
           {isLoading ? (
-            <div className="flex justify-center py-28">
-              <Icons.spinner className="h-12 w-12 text-muted-foreground animate-spin" />
+            <div className="flex justify-center ">
+              {/* <Icons.spinner className="h-12 w-12 text-muted-foreground animate-spin" /> */}
+              <ProgressSkeleton />
             </div>
           ) : goals.length === 0 ? (
             <div className="text-center py-28">

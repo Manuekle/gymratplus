@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 export type ExerciseProgressRecord = {
   id?: string;
@@ -18,7 +17,6 @@ export const useExerciseProgress = () => {
   const [progressData, setProgressData] = useState<ExerciseProgressRecord[]>(
     []
   );
-  const router = useRouter();
 
   // Usar useRef para el caché para evitar recreaciones
   const dataCacheRef = useRef<Record<string, ExerciseProgressRecord[]>>({});
@@ -135,7 +133,7 @@ export const useExerciseProgress = () => {
         dataCacheRef.current = {};
 
         toast.success("Registro guardado correctamente");
-        router.refresh();
+        window.location.reload();
         return newRecord;
       } catch (error) {
         console.error(
@@ -148,7 +146,7 @@ export const useExerciseProgress = () => {
         setIsLoading(false);
       }
     },
-    [router]
+    []
   );
 
   // Actualizar registro de progreso
@@ -189,6 +187,7 @@ export const useExerciseProgress = () => {
         dataCacheRef.current = {};
 
         toast.success("Registro actualizado correctamente");
+        window.location.reload();
         return updatedRecord;
       } catch (error) {
         console.error(
@@ -232,6 +231,7 @@ export const useExerciseProgress = () => {
       dataCacheRef.current = {};
 
       toast.success("Registro eliminado correctamente");
+      window.location.reload();
       return true;
     } catch (error) {
       console.error(

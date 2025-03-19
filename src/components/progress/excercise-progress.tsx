@@ -1,62 +1,62 @@
 "use client";
 
 import type React from "react";
-
 import { useState } from "react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import { CalendarIcon, X } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
+import { useExerciseProgress } from "@/hooks/use-exercise-progress";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { useProgress } from "@/hooks/use-progress";
-import { Calendar01Icon, Calendar02Icon } from "hugeicons-react";
-import { Icons } from "./icons";
-
-interface ProgressFormProps {
-  onClose: () => void;
+import { Calendar02Icon } from "hugeicons-react";
+import { Icons } from "../icons";
+interface ProgressProps {
   onSuccess: () => void;
   initialData?: {
     id?: string;
-    weight?: number;
-    bodyFatPercentage?: number;
-    muscleMassPercentage?: number;
+    benchPress?: number;
+    squat?: number;
+    deadlift?: number;
     date?: Date;
     notes?: string;
   };
 }
 
-export default function ProgressForm({
-  onClose,
-  onSuccess,
-  initialData,
-}: ProgressFormProps) {
+export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
   const isEditing = !!initialData?.id;
   const [date, setDate] = useState<Date | undefined>(
     initialData?.date || new Date()
   );
-  const [weight, setWeight] = useState<string>(
-    initialData?.weight?.toString() || ""
+  const [benchPress, setBenchPress] = useState<string>(
+    initialData?.benchPress?.toString() || ""
   );
-  const [bodyFat, setBodyFat] = useState<string>(
-    initialData?.bodyFatPercentage?.toString() || ""
+  const [squat, setSquat] = useState<string>(
+    initialData?.squat?.toString() || ""
   );
-  const [muscleMass, setMuscleMass] = useState<string>(
-    initialData?.muscleMassPercentage?.toString() || ""
+  const [deadlift, setDeadlift] = useState<string>(
+    initialData?.deadlift?.toString() || ""
   );
   const [notes, setNotes] = useState<string>(initialData?.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { createProgressRecord, updateProgressRecord } = useProgress();
+  const { createExerciseProgressRecord, updateExerciseProgressRecord } =
+    useExerciseProgress();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,8 +68,8 @@ export default function ProgressForm({
       return;
     }
 
-    if (!weight && !bodyFat && !muscleMass) {
-      setError("Debes proporcionar al menos un valor");
+    if (!benchPress && !squat && !deadlift) {
+      setError("Debes proporcionar al menos un valor de ejercicio");
       return;
     }
 
@@ -78,18 +78,16 @@ export default function ProgressForm({
     try {
       const data = {
         date: date.toISOString(),
-        weight: weight ? Number.parseFloat(weight) : undefined,
-        bodyFatPercentage: bodyFat ? Number.parseFloat(bodyFat) : undefined,
-        muscleMassPercentage: muscleMass
-          ? Number.parseFloat(muscleMass)
-          : undefined,
+        benchPress: benchPress ? Number.parseFloat(benchPress) : undefined,
+        squat: squat ? Number.parseFloat(squat) : undefined,
+        deadlift: deadlift ? Number.parseFloat(deadlift) : undefined,
         notes,
       };
 
       if (isEditing && initialData.id) {
-        await updateProgressRecord(initialData.id, data);
+        await updateExerciseProgressRecord(initialData.id, data);
       } else {
-        await createProgressRecord(data);
+        await createExerciseProgressRecord(data);
       }
 
       onSuccess();
@@ -102,19 +100,18 @@ export default function ProgressForm({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
-        >
-          <X size={20} />
-        </button>
-
-        <h2 className="text-xl font-bold mb-4">
-          {isEditing ? "Editar registro" : "Nuevo registro de progreso"}
-        </h2>
-
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size="sm" className="text-xs px-4">
+          Añadir
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="font-medium">
+            {isEditing ? "Editar registro" : "Nuevo registro de ejercicios"}
+          </DialogTitle>
+        </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="date">Fecha</Label>
@@ -127,7 +124,7 @@ export default function ProgressForm({
                     !date && "text-muted-foreground"
                   )}
                 >
-                  <Calendar01Icon className="mr-2 h-4 w-4" />
+                  <Calendar02Icon className="mr-2 h-4 w-4" />
                   {date ? (
                     format(date, "PPP", { locale: es })
                   ) : (
@@ -148,38 +145,38 @@ export default function ProgressForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="weight">Peso (kg)</Label>
+            <Label htmlFor="benchPress">Press banca (kg)</Label>
             <Input
-              id="weight"
+              id="benchPress"
               type="number"
-              step="0.1"
-              placeholder="Ej: 75.5"
-              value={weight}
-              onChange={(e) => setWeight(e.target.value)}
+              step="0.5"
+              placeholder="Ej: 80"
+              value={benchPress}
+              onChange={(e) => setBenchPress(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bodyFat">Grasa corporal (%)</Label>
+            <Label htmlFor="squat">Sentadilla (kg)</Label>
             <Input
-              id="bodyFat"
+              id="squat"
               type="number"
-              step="0.1"
-              placeholder="Ej: 18.5"
-              value={bodyFat}
-              onChange={(e) => setBodyFat(e.target.value)}
+              step="0.5"
+              placeholder="Ej: 100"
+              value={squat}
+              onChange={(e) => setSquat(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="muscleMass">Masa muscular (%)</Label>
+            <Label htmlFor="deadlift">Peso muerto (kg)</Label>
             <Input
-              id="muscleMass"
+              id="deadlift"
               type="number"
-              step="0.1"
-              placeholder="Ej: 42.3"
-              value={muscleMass}
-              onChange={(e) => setMuscleMass(e.target.value)}
+              step="0.5"
+              placeholder="Ej: 120"
+              value={deadlift}
+              onChange={(e) => setDeadlift(e.target.value)}
             />
           </div>
 
@@ -194,23 +191,10 @@ export default function ProgressForm({
             />
           </div>
 
-          {error && (
-            <div className=" text-red-500 text-xs text-center">{error}</div>
-          )}
-
           <div className="flex justify-end space-x-2 pt-2">
             <Button
               size="sm"
-              className="text-xs px-6"
-              type="button"
-              variant="outline"
-              onClick={onClose}
-            >
-              Cancelar
-            </Button>
-            <Button
-              size="sm"
-              className="text-xs px-6"
+              className="text-xs px-4"
               type="submit"
               disabled={isSubmitting}
             >
@@ -227,7 +211,7 @@ export default function ProgressForm({
             </Button>
           </div>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

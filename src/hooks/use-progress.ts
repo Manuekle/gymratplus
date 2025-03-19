@@ -2,7 +2,6 @@
 
 import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 export type ProgressRecord = {
   id?: string;
@@ -16,7 +15,6 @@ export type ProgressRecord = {
 export const useProgress = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progressData, setProgressData] = useState<ProgressRecord[]>([]);
-  const router = useRouter();
 
   // Usar useRef para el caché para evitar recreaciones
   const dataCacheRef = useRef<Record<string, ProgressRecord[]>>({});
@@ -127,7 +125,7 @@ export const useProgress = () => {
 
         toast.success("Registro guardado correctamente");
         setProgressData((prevProgressData) => [...prevProgressData, newRecord]);
-        router.refresh();
+        window.location.reload();
         return newRecord;
       } catch (error) {
         console.error("Error al crear registro de progreso:", error);
@@ -177,6 +175,7 @@ export const useProgress = () => {
         dataCacheRef.current = {};
 
         toast.success("Registro actualizado correctamente");
+        window.location.reload();
         return updatedRecord;
       } catch (error) {
         console.error("Error al actualizar registro de progreso:", error);
@@ -216,6 +215,7 @@ export const useProgress = () => {
       dataCacheRef.current = {};
 
       toast.success("Registro eliminado correctamente");
+      window.location.reload();
       return true;
     } catch (error) {
       console.error("Error al eliminar registro de progreso:", error);

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useGoals, type Goal } from "@/hooks/use-goals";
+import { Icons } from "./icons";
 
 interface GoalProgressFormProps {
   goal: Goal;
@@ -152,7 +153,14 @@ export default function GoalProgressForm({
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Guardando..." : "Guardar"}
+              {isSubmitting ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando
+                </>
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </div>
         </form>

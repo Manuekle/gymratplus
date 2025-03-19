@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals";
+import { Icons } from "./icons";
 
 interface GoalFormProps {
   onClose: () => void;
@@ -351,11 +352,16 @@ export default function GoalForm({
               Cancelar
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting
-                ? "Guardando..."
-                : isEditing
-                ? "Actualizar"
-                : "Guardar"}
+              {isSubmitting ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando
+                </>
+              ) : isEditing ? (
+                "Actualizar"
+              ) : (
+                "Guardar"
+              )}
             </Button>
           </div>
         </form>
