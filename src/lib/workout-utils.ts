@@ -1163,7 +1163,6 @@ export async function createChestTricepsWorkout(
     ) || exercises.filter((e) => e.muscleGroup === "brazos").slice(0, 2);
 
   // Get sets and reps based on goal
-  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
   const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
   const muscleGroupName = "Pecho y Tríceps";
@@ -1171,16 +1170,16 @@ export async function createChestTricepsWorkout(
     // Chest Exercises - Compound movements first
     {
       exercise: chestExercises[0] || null,
-      sets: compoundSettings.sets,
-      reps: compoundSettings.reps,
-      restTime: compoundSettings.restTime,
+      sets: isolationSettings.sets,
+      reps: isolationSettings.reps,
+      restTime: isolationSettings.restTime,
       notes: `${muscleGroupName} - Pecho principal`,
     },
     {
       exercise: chestExercises[1] || chestExercises[0] || null,
-      sets: compoundSettings.sets - 1,
-      reps: compoundSettings.reps + 2,
-      restTime: compoundSettings.restTime - 30,
+      sets: isolationSettings.sets - 1,
+      reps: isolationSettings.reps + 2,
+      restTime: isolationSettings.restTime - 30,
       notes: `${muscleGroupName} - Pecho inclinado`,
     },
     {

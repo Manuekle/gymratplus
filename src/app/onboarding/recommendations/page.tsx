@@ -16,7 +16,7 @@ export default function RecommendationsPage() {
     if (!profileFormData) {
       router.push("/onboarding"); // Si no hay datos, redirigir a onboarding
     }
-  }, []);
+  }, [router]);
 
   return (
     <main className="min-h-screen p-4 md:p-8">

@@ -131,20 +131,20 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
     }
   };
 
-  const getTypeLabel = (type: GoalType) => {
-    switch (type) {
-      case "weight":
-        return "Peso";
-      case "strength":
-        return "Fuerza";
-      case "measurement":
-        return "Medidas corporales";
-      case "activity":
-        return "Actividad";
-      default:
-        return type;
-    }
-  };
+  // const getTypeLabel = (type: GoalType) => {
+  //   switch (type) {
+  //     case "weight":
+  //       return "Peso";
+  //     case "strength":
+  //       return "Fuerza";
+  //     case "measurement":
+  //       return "Medidas corporales";
+  //     case "activity":
+  //       return "Actividad";
+  //     default:
+  //       return type;
+  //   }
+  // };
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -395,6 +395,8 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
               </Popover>
             </div>
           </div>
+
+          {error && <p className="text-red-500 text-xs">{error}</p>}
 
           <DialogFooter className="pt-2">
             <Button
