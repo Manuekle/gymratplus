@@ -263,7 +263,7 @@ export default function RecommendationsComponent() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold flex items-center">
+        <CardTitle className="text-2xl font-medium flex items-center">
           <span className="mr-2">Tu Plan de Fitness Personalizado</span>
         </CardTitle>
         <CardDescription className="text-muted-foreground">
@@ -286,6 +286,7 @@ export default function RecommendationsComponent() {
               variant="outline"
               onClick={() => router.push("/dashboard/profile")}
               className="text-xs"
+              size="sm"
             >
               Volver al Perfil
             </Button>

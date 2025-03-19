@@ -55,16 +55,21 @@ export default function WorkoutDetail() {
 
   return (
     <div>
-      <div className="mb-4 flex justify-between w-full items-center">
+      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
           className="text-xs"
+          size="sm"
           onClick={() => router.push("/dashboard/workout")}
         >
           <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
         </Button>
-        <span className="flex flex-row gap-4">
-          <Button className="text-xs" onClick={() => setIsModalOpen(true)}>
+        <span className="flex flex-row gap-2">
+          <Button
+            size="sm"
+            className="text-xs"
+            onClick={() => setIsModalOpen(true)}
+          >
             Agregar ejercicio
           </Button>
           <StartWorkout workout={workout} />
@@ -84,9 +89,9 @@ export default function WorkoutDetail() {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            <Badge variant="outline" className="flex items-center gap-1">
+            {/* <Badge variant="outline" className="flex items-center gap-1">
               {workout.id}
-            </Badge>
+            </Badge> */}
             <Badge variant="outline" className="flex items-center gap-1">
               <Calendar01Icon className="h-3 w-3" />
               {workout.days.length} días

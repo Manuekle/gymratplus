@@ -90,7 +90,7 @@ export default function WorkoutExercise({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
+          <DialogTitle className="text-md font-medium">
             Añadir Nuevo Ejercicio
           </DialogTitle>
           <DialogDescription className="text-xs text-zinc-500">
@@ -100,7 +100,10 @@ export default function WorkoutExercise({
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="selectedExercise" className="text-right">
+              <Label
+                htmlFor="selectedExercise"
+                className="text-right text-xs md:text-sm"
+              >
                 Ejercicio:
               </Label>
               <div className="col-span-3 relative">
@@ -109,13 +112,17 @@ export default function WorkoutExercise({
                   defaultValue={selectedExercise || ""}
                 >
                   <SelectTrigger id="endTime" className={commonInputClasses}>
-                    <div className="flex flex-row items-center gap-4">
+                    <div className="flex flex-row items-center gap-4 text-xs md:text-sm">
                       <SelectValue placeholder="Seleccionar ejercicio" />
                     </div>
                   </SelectTrigger>
                   <SelectContent>
                     {exercises.map((exercise) => (
-                      <SelectItem key={exercise.id} value={exercise.id}>
+                      <SelectItem
+                        className="text-xs md:text-sm"
+                        key={exercise.id}
+                        value={exercise.id}
+                      >
                         {exercise.name}
                       </SelectItem>
                     ))}
@@ -124,11 +131,12 @@ export default function WorkoutExercise({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="sets" className="text-right">
+              <Label htmlFor="sets" className="text-right text-xs md:text-sm">
                 Sets:
               </Label>
               <div className="col-span-3 relative">
                 <Input
+                  className="text-xs md:text-sm"
                   id="sets"
                   type="number"
                   min="0"
@@ -143,11 +151,12 @@ export default function WorkoutExercise({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="reps" className="text-right">
+              <Label htmlFor="reps" className="text-right text-xs md:text-sm">
                 Reps:
               </Label>
               <div className="col-span-3 relative">
                 <Input
+                  className="text-xs md:text-sm"
                   id="reps"
                   type="number"
                   min="0"
@@ -162,11 +171,15 @@ export default function WorkoutExercise({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="restTime" className="text-right">
+              <Label
+                htmlFor="restTime"
+                className="text-right text-xs md:text-sm"
+              >
                 Descanso:
               </Label>
               <div className="col-span-3 relative">
                 <Input
+                  className="text-xs md:text-sm"
                   id="restTime"
                   type="number"
                   min="0"
@@ -183,11 +196,12 @@ export default function WorkoutExercise({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="weight" className="text-right">
+              <Label htmlFor="weight" className="text-right text-xs md:text-sm">
                 Peso:
               </Label>
               <div className="col-span-3 relative">
                 <Input
+                  className="text-xs md:text-sm"
                   id="weight"
                   type="number"
                   name="weight"
@@ -204,11 +218,12 @@ export default function WorkoutExercise({
               </div>
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="notes" className="text-right">
+              <Label htmlFor="notes" className="text-right text-xs md:text-sm">
                 Nota:
               </Label>
               <div className="col-span-3 relative">
                 <Input
+                  className="text-xs md:text-sm"
                   id="notes"
                   type="text"
                   name="notes"

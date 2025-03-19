@@ -174,7 +174,7 @@ export function WeightChart() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-end">
+      <div className="flex justify-start md:justify-end">
         <Select
           value={timePeriod}
           onValueChange={(value) => setTimePeriod(value as TimePeriod)}

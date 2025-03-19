@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -547,7 +548,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
     if (selectedItems.length === 0) {
       return (
         <div className="text-center py-6 border rounded-lg">
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             No has seleccionado ningún alimento
           </p>
         </div>
@@ -633,13 +634,15 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         </div>
 
         <div>
-          <Label htmlFor="notes">Notas (opcional)</Label>
+          <Label className="text-xs md:text-sm" htmlFor="notes">
+            Notas (opcional)
+          </Label>
           <Input
             id="notes"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Añade notas sobre esta comida"
-            className="mt-1"
+            className="mt-1 text-xs md:text-sm"
           />
         </div>
       </div>
@@ -749,28 +752,48 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Registrar Comida</DialogTitle>
+          <DialogTitle className="text-md font-medium">
+            Registrar Comida
+          </DialogTitle>
+          <DialogDescription className="text-xs">
+            Selecciona los alimentos y recetas que has consumido
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="mealType">Tipo de Comida</Label>
+              <Label className="text-xs md:text-sm" htmlFor="mealType">
+                Tipo de Comida
+              </Label>
               <Select value={mealType} onValueChange={setMealType}>
-                <SelectTrigger id="mealType" className="mt-1">
+                <SelectTrigger
+                  id="mealType"
+                  className="mt-1 text-xs md:text-sm"
+                >
                   <SelectValue placeholder="Selecciona el tipo de comida" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="desayuno">Desayuno</SelectItem>
-                  <SelectItem value="almuerzo">Almuerzo</SelectItem>
-                  <SelectItem value="cena">Cena</SelectItem>
-                  <SelectItem value="snack">Snack</SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="desayuno">
+                    Desayuno
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="almuerzo">
+                    Almuerzo
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="cena">
+                    Cena
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="snack">
+                    Snack
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label htmlFor="mealTime">Hora</Label>
+              <Label className="text-xs md:text-sm" htmlFor="mealTime">
+                Hora
+              </Label>
               <div className="mt-1">
                 <TimePicker
                   value={mealTime}
@@ -781,12 +804,14 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
           </div>
 
           <div>
-            <Label htmlFor="mealDate">Fecha</Label>
+            <Label className="text-xs md:text-sm" htmlFor="mealDate">
+              Fecha
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal mt-1"
+                  className="w-full justify-start text-left font-normal mt-1 text-xs md:text-sm"
                   id="mealDate"
                 >
                   <Calendar02Icon className="mr-2 h-4 w-4" />
@@ -862,7 +887,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 placeholder="Buscar alimento o receta..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9"
+                className="pl-9 text-xs md:text-sm"
               />
               {searchQuery && (
                 <Button
@@ -881,7 +906,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               onValueChange={setActiveTab}
               className="mt-2"
             >
-              <TabsList className="grid w-full grid-cols-2">
+              <TabsList className="grid w-full grid-cols-2 text-xs md:text-sm">
                 <TabsTrigger value="foods" className="flex items-center gap-2">
                   <FishFoodIcon className="h-4 w-4" />
                   Alimentos

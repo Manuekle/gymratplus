@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -108,19 +109,26 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-medium">
+          <DialogTitle className="font-medium text-md">
             {isEditing ? "Editar registro" : "Nuevo registro de ejercicios"}
           </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            {isEditing
+              ? "Actualiza los datos del registro de ejercicios"
+              : "Añade un nuevo registro de ejercicios"}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="date">Fecha</Label>
+            <Label className="text-xs md:text-sm" htmlFor="date">
+              Fecha
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-xs md:text-sm",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -145,8 +153,11 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="benchPress">Press banca (kg)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="benchPress">
+              Press banca (kg)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="benchPress"
               type="number"
               step="0.5"
@@ -157,8 +168,11 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="squat">Sentadilla (kg)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="squat">
+              Sentadilla (kg)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="squat"
               type="number"
               step="0.5"
@@ -169,8 +183,11 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="deadlift">Peso muerto (kg)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="deadlift">
+              Peso muerto (kg)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="deadlift"
               type="number"
               step="0.5"
@@ -181,8 +198,11 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas</Label>
+            <Label className="text-xs md:text-sm" htmlFor="notes">
+              Notas
+            </Label>
             <Textarea
+              className="text-xs md:text-sm"
               id="notes"
               placeholder="Observaciones adicionales..."
               value={notes}

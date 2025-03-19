@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "react-i18next";
 import {
   Apple01Icon,
   FrenchFries02Icon,
@@ -77,6 +78,8 @@ interface MealPlanProps {
 }
 
 export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
+  const { t } = useTranslation("common");
+
   if (isLoading) {
     return <MealPlanSkeleton />;
   }
@@ -100,16 +103,18 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
     },
   };
 
+  const translatedText = t(nutritionPlan.macros.description);
+
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
           <CardTitle>Plan Nutricional</CardTitle>
-          <CardDescription>{nutritionPlan.macros.description}</CardDescription>
+          <CardDescription>{translatedText}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            <Card className="bg-gradient-to-br from-pink-50 to-white">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
@@ -118,13 +123,13 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                       {nutritionPlan.macros.protein}
                     </p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center">
-                    <SteakIcon className="h-6 w-6 text-pink-600" />
+                  <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
+                    <SteakIcon className="h-6 w-6 text-pink-600 dark:text-pink-300" />
                   </div>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-sky-50 to-white">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
@@ -135,13 +140,13 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                       {nutritionPlan.macros.carbs}
                     </p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-sky-100 flex items-center justify-center">
-                    <SteakIcon className="h-6 w-6 text-sky-600" />
+                  <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
+                    <RiceBowl01Icon className="h-6 w-6 text-sky-600 dark:text-sky-300" />
                   </div>
                 </div>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-amber-100 to-white">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
               <CardContent>
                 <div className="flex items-center justify-between">
                   <div>
@@ -150,8 +155,8 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                       {nutritionPlan.macros.fat}
                     </p>
                   </div>
-                  <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
-                    <SteakIcon className="h-6 w-6 text-amber-600" />
+                  <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
+                    <FrenchFries02Icon className="h-6 w-6 text-amber-600 dark:text-amber-300" />
                   </div>
                 </div>
               </CardContent>

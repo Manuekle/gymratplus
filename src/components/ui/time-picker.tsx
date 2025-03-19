@@ -50,19 +50,27 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Input value={`${selectedHour}:${selectedMinute}`} readOnly />
+        <Input
+          className="text-xs md:text-sm"
+          value={`${selectedHour}:${selectedMinute}`}
+          readOnly
+        />
       </PopoverTrigger>
       <PopoverContent className="w-auto p-4">
         <div className="flex space-x-2">
           <Select value={selectedHour} onValueChange={handleHourChange}>
             <SelectTrigger className="w-[80px]">
-              <SelectValue placeholder="Hora" />
+              <SelectValue className="text-xs md:text-sm" placeholder="Hora" />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 24 }, (_, i) =>
                 i.toString().padStart(2, "0")
               ).map((hour) => (
-                <SelectItem key={hour} value={hour}>
+                <SelectItem
+                  className="text-xs md:text-sm"
+                  key={hour}
+                  value={hour}
+                >
                   {hour}
                 </SelectItem>
               ))}
@@ -71,13 +79,20 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
 
           <Select value={selectedMinute} onValueChange={handleMinuteChange}>
             <SelectTrigger className="w-[80px]">
-              <SelectValue placeholder="Minuto" />
+              <SelectValue
+                className="text-xs md:text-sm"
+                placeholder="Minuto"
+              />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 60 }, (_, i) =>
                 i.toString().padStart(2, "0")
               ).map((minute) => (
-                <SelectItem key={minute} value={minute}>
+                <SelectItem
+                  className="text-xs md:text-sm"
+                  key={minute}
+                  value={minute}
+                >
                   {minute}
                 </SelectItem>
               ))}

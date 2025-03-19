@@ -79,7 +79,7 @@ export function AddExerciseModal({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold">
+          <DialogTitle className="text-md font-medium">
             Añadir Nuevo Ejercicio
           </DialogTitle>
         </DialogHeader>
@@ -95,7 +95,7 @@ export function AddExerciseModal({
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 text-xs md:text-sm"
                   placeholder="Nombre del ejercicio"
                   required
                 />

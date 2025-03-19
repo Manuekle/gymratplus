@@ -192,7 +192,7 @@ export function WorkoutGeneratorForm() {
                   variant="outline"
                   onClick={prevStep}
                   disabled={step === 1}
-                  className="text-xs"
+                  className="text-xs px-4"
                   size="sm"
                 >
                   Anterior
@@ -202,7 +202,7 @@ export function WorkoutGeneratorForm() {
                   <Button
                     onClick={nextStep}
                     disabled={!isStepValid()}
-                    className="text-xs"
+                    className="text-xs px-4"
                     size="sm"
                   >
                     Siguiente
@@ -211,7 +211,7 @@ export function WorkoutGeneratorForm() {
                   <Button
                     onClick={handleSubmit}
                     disabled={!isStepValid() || isSubmitting}
-                    className="text-xs"
+                    className="text-xs px-4"
                     size="sm"
                   >
                     {isSubmitting ? (

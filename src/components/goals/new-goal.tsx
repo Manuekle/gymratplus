@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -54,7 +55,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
   const [targetValue, setTargetValue] = useState<string>(
     initialData?.targetValue?.toString() || ""
   );
-  const [unit, setUnit] = useState(initialData?.unit || "kg");
+  const [unit, setUnit] = useState(initialData?.unit || "");
   const [exerciseType, setExerciseType] = useState(
     initialData?.exerciseType || ""
   );
@@ -153,33 +154,51 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-medium">
+          <DialogTitle className="font-medium text-md">
             {isEditing ? "Editar objetivo" : "Nuevo objetivo"}
           </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            {isEditing
+              ? "Actualiza los datos de tu objetivo"
+              : "Ingresa los datos de tu nuevo objetivo"}
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
-            <Label htmlFor="type">Tipo de objetivo</Label>
+            <Label className="text-xs md:text-sm" htmlFor="type">
+              Tipo de objetivo
+            </Label>
             <Select
               value={type}
               onValueChange={(value) => setType(value as GoalType)}
               disabled={isEditing}
             >
-              <SelectTrigger>
+              <SelectTrigger className="text-xs md:text-sm">
                 <SelectValue placeholder="Selecciona un tipo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="weight">Peso</SelectItem>
-                <SelectItem value="strength">Fuerza</SelectItem>
-                <SelectItem value="measurement">Medidas corporales</SelectItem>
-                <SelectItem value="activity">Actividad</SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="weight">
+                  Peso
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="strength">
+                  Fuerza
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="measurement">
+                  Medidas corporales
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="activity">
+                  Actividad
+                </SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="title">Título</Label>
+            <Label className="text-xs md:text-sm" htmlFor="title">
+              Título
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="title"
               placeholder="Ej: Perder 5kg"
               value={title}
@@ -188,8 +207,11 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="description">Descripción (opcional)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="description">
+              Descripción (opcional)
+            </Label>
             <Textarea
+              className="text-xs md:text-sm"
               id="description"
               placeholder="Describe tu objetivo..."
               value={description}
@@ -200,8 +222,11 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="initialValue">Valor inicial</Label>
+              <Label className="text-xs md:text-sm" htmlFor="initialValue">
+                Valor inicial
+              </Label>
               <Input
+                className="text-xs md:text-sm"
                 id="initialValue"
                 type="number"
                 step="0.1"
@@ -213,8 +238,11 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="targetValue">Valor objetivo</Label>
+              <Label className="text-xs md:text-sm" htmlFor="targetValue">
+                Valor objetivo
+              </Label>
               <Input
+                className="text-xs md:text-sm"
                 id="targetValue"
                 type="number"
                 step="0.1"
@@ -226,8 +254,11 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="unit">Unidad</Label>
+            <Label className="text-xs md:text-sm" htmlFor="unit">
+              Unidad
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="unit"
               placeholder="Ej: kg, cm, veces/semana"
               value={unit}
@@ -239,14 +270,22 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
             <div className="space-y-2">
               <Label htmlFor="exerciseType">Ejercicio</Label>
               <Select value={exerciseType} onValueChange={setExerciseType}>
-                <SelectTrigger>
+                <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="Selecciona un ejercicio" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="benchPress">Press banca</SelectItem>
-                  <SelectItem value="squat">Sentadilla</SelectItem>
-                  <SelectItem value="deadlift">Peso muerto</SelectItem>
-                  <SelectItem value="other">Otro</SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="benchPress">
+                    Press banca
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="squat">
+                    Sentadilla
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="deadlift">
+                    Peso muerto
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="other">
+                    Otro
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -254,34 +293,48 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
 
           {type === "measurement" && (
             <div className="space-y-2">
-              <Label htmlFor="measurementType">Parte del cuerpo</Label>
+              <Label className="text-xs md:text-sm" htmlFor="measurementType">
+                Parte del cuerpo
+              </Label>
               <Select
                 value={measurementType}
                 onValueChange={setMeasurementType}
               >
-                <SelectTrigger>
+                <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="Selecciona una parte" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="waist">Cintura</SelectItem>
-                  <SelectItem value="chest">Pecho</SelectItem>
-                  <SelectItem value="arms">Brazos</SelectItem>
-                  <SelectItem value="legs">Piernas</SelectItem>
-                  <SelectItem value="other">Otro</SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="waist">
+                    Cintura
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="chest">
+                    Pecho
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="arms">
+                    Brazos
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="legs">
+                    Piernas
+                  </SelectItem>
+                  <SelectItem className="text-xs md:text-sm" value="other">
+                    Otro
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="startDate">Fecha de inicio</Label>
+              <Label className="text-xs md:text-sm" htmlFor="startDate">
+                Fecha de inicio
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal text-xs md:text-sm",
                       !startDate && "text-muted-foreground"
                     )}
                   >
@@ -306,13 +359,15 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="targetDate">Fecha objetivo (opcional)</Label>
+              <Label className="text-xs md:text-sm" htmlFor="targetDate">
+                Fecha objetivo (opcional)
+              </Label>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full justify-start text-left font-normal text-xs md:text-sm",
                       !targetDate && "text-muted-foreground"
                     )}
                   >
@@ -341,7 +396,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
             </div>
           </div>
 
-          <DialogFooter>
+          <DialogFooter className="pt-2">
             <Button
               size="sm"
               className="text-xs px-6"

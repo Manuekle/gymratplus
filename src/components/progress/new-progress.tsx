@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -110,19 +111,24 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-medium">
+          <DialogTitle className="font-medium text-md">
             Nuevo registro de progreso
           </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Ingresa los datos de tu progreso
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label htmlFor="date">Fecha</Label>
+            <Label className="text-xs md:text-sm" htmlFor="date">
+              Fecha
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-xs md:text-sm",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -147,8 +153,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="weight">Peso (kg)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="weight">
+              Peso (kg)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="weight"
               type="number"
               step="0.1"
@@ -159,8 +168,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="bodyFat">Grasa corporal (%)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="bodyFat">
+              Grasa corporal (%)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="bodyFat"
               type="number"
               step="0.1"
@@ -171,8 +183,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="muscleMass">Masa muscular (%)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="muscleMass">
+              Masa muscular (%)
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="muscleMass"
               type="number"
               step="0.1"
@@ -183,8 +198,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas</Label>
+            <Label className="text-xs md:text-sm" htmlFor="notes">
+              Notas
+            </Label>
             <Textarea
+              className="text-xs md:text-sm"
               id="notes"
               placeholder="Observaciones adicionales..."
               value={notes}

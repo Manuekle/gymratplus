@@ -38,13 +38,15 @@ export function StepName({ value, onChange }: StepNameProps) {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="workout-name">Nombre del entrenamiento</Label>
+          <Label className="text-xs md:text-sm" htmlFor="workout-name">
+            Nombre del entrenamiento
+          </Label>
           <Input
+            className="text-xs md:text-sm"
             id="workout-name"
             placeholder="Ej: Mi rutina de hipertrofia"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="text-lg"
           />
         </div>
 

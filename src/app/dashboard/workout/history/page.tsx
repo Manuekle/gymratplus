@@ -141,6 +141,7 @@ export default function WorkoutHistory() {
         <div>
           <Button
             variant="outline"
+            size="sm"
             onClick={() => router.push("/dashboard/workout")}
             className="mb-2 text-xs"
           >
@@ -154,67 +155,67 @@ export default function WorkoutHistory() {
 
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-pink-50 to-white">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+          <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
                 <p className="text-3xl font-bold">{stats.totalSessions}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center">
-                <Calendar01Icon className="h-6 w-6 text-pink-600" />
+              <div className="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center">
+                <Calendar01Icon className="h-6 w-6 text-pink-600 dark:text-pink-300" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-gray-800">
+          <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
                 <p className="text-3xl font-bold">{stats.totalExercises}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <Dumbbell01Icon className="h-6 w-6 text-blue-600" />
+              <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
+                <Dumbbell01Icon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-white">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-gray-800">
+          <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
                 <p className="text-3xl font-bold">{stats.totalSets}</p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckmarkCircle02Icon className="h-6 w-6 text-green-600" />
+              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
+                <CheckmarkCircle02Icon className="h-6 w-6 text-green-600 dark:text-green-300" />
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-white">
-          <CardContent className="pt-6">
+        <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-gray-800">
+          <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
                 <p className="text-3xl font-bold">
                   {stats.averageDuration} min
                 </p>
               </div>
-              <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center">
-                <Clock02Icon className="h-6 w-6 text-purple-600" />
+              <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-800 flex items-center justify-center">
+                <Clock02Icon className="h-6 w-6 text-purple-600 dark:text-purple-300" />
               </div>
             </div>
           </CardContent>
@@ -325,18 +326,18 @@ export default function WorkoutHistory() {
                       {session.exercises.map((exercise: any) => (
                         <div
                           key={exercise.id}
-                          className="border rounded-md p-3 bg-gray-50"
+                          className="border rounded-md p-3"
                         >
                           <div className="flex justify-between items-center mb-2">
-                            <h4 className="font-medium">
+                            <h4 className="font-medium text-muted-foreground">
                               {exercise.exercise.name}
                             </h4>
                             <Badge
                               variant="outline"
                               className={
                                 exercise.completed
-                                  ? "bg-green-50"
-                                  : "bg-yellow-50"
+                                  ? "bg-green-50 dark:bg-green-800"
+                                  : "bg-yellow-50 dark:bg-yellow-800"
                               }
                             >
                               {exercise.completed ? "Completado" : "Incompleto"}
@@ -353,19 +354,19 @@ export default function WorkoutHistory() {
                           {exercise.sets.map((set: any) => (
                             <div
                               key={set.id}
-                              className="grid grid-cols-4 gap-2 text-sm py-1 border-t"
+                              className="grid grid-cols-4 gap-2 text-sm py-1 border-t dark:border-gray-700"
                             >
                               <div>{set.setNumber}</div>
                               <div>{set.weight || "-"}</div>
                               <div>{set.reps || "-"}</div>
                               <div>
                                 {set.completed ? (
-                                  <span className="text-green-600 flex items-center">
+                                  <span className="text-green-600 dark:text-green-400 flex items-center">
                                     <CheckmarkCircle02Icon className="h-4 w-4 mr-1" />{" "}
                                     Completado
                                   </span>
                                 ) : (
-                                  <span className="text-red-600">
+                                  <span className="text-red-600 dark:text-red-400">
                                     No completado
                                   </span>
                                 )}

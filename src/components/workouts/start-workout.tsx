@@ -205,13 +205,18 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90">
+        <Button
+          size="sm"
+          className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90"
+        >
           Comenzar rutina
         </Button>
       </DialogTrigger>
       <DialogContent className="space-y-4 w-full">
         <DialogHeader>
-          <DialogTitle>Selecciona el día de entrenamiento</DialogTitle>
+          <DialogTitle className="text-md font-medium">
+            Selecciona el día de entrenamiento
+          </DialogTitle>
           <DialogDescription className="text-xs text-zinc-500">
             {workout.name}
           </DialogDescription>
@@ -254,12 +259,16 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           <>
             <div className="flex flex-col space-y-2">
               <Select value={selectedDay} onValueChange={setSelectedDay}>
-                <SelectTrigger>
+                <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="Selecciona tu entrenamiento" />
                 </SelectTrigger>
                 <SelectContent>
                   {days.map((day: any) => (
-                    <SelectItem key={day.day} value={day.day}>
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      key={day.day}
+                      value={day.day}
+                    >
                       <div className="flex items-center">{day.day}</div>
                     </SelectItem>
                   ))}
@@ -324,6 +333,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 onClick={handleStartWorkout}
                 disabled={loading || !selectedDay}
                 className="text-xs"
+                size="sm"
               >
                 {loading ? (
                   <Icons.spinner className="h-4 w-4 animate-spin" />

@@ -340,6 +340,7 @@ export default function ActiveWorkout() {
           <Button
             variant="outline"
             className="text-xs"
+            size="sm"
             onClick={() => router.push("/dashboard/workout")}
           >
             <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
