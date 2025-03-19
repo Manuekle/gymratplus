@@ -15,7 +15,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icons } from "@/components/icons";
 
 import { useRouter } from "next/navigation";
-import { Download05Icon, FloppyDiskIcon } from "hugeicons-react";
 import { WorkoutPlan } from "./workouts/workout-plan";
 import { MealPlan } from "./nutrition/meal-plan";
 

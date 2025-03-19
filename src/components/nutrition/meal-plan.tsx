@@ -7,7 +7,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Table,
   TableBody,
@@ -18,13 +17,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
-import {
-  Apple01Icon,
-  FrenchFries02Icon,
-  NoodlesIcon,
-  RiceBowl01Icon,
-  SteakIcon,
-} from "hugeicons-react";
+import { FrenchFries02Icon, RiceBowl01Icon, SteakIcon } from "hugeicons-react";
 
 // Tipos para el plan de comidas
 export type Food = {
@@ -84,24 +77,24 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
     return <MealPlanSkeleton />;
   }
 
-  const mealTypes = {
-    breakfast: {
-      label: "Desayuno",
-      icon: <Apple01Icon size={12} className="text-muted-foreground" />,
-    },
-    lunch: {
-      label: "Almuerzo",
-      icon: <NoodlesIcon size={12} className="text-muted-foreground" />,
-    },
-    dinner: {
-      label: "Cena",
-      icon: <RiceBowl01Icon size={12} className="text-muted-foreground" />,
-    },
-    snack: {
-      label: "Snacks",
-      icon: <FrenchFries02Icon size={12} className="text-muted-foreground" />,
-    },
-  };
+  // const mealTypes = {
+  //   breakfast: {
+  //     label: "Desayuno",
+  //     icon: <Apple01Icon size={12} className="text-muted-foreground" />,
+  //   },
+  //   lunch: {
+  //     label: "Almuerzo",
+  //     icon: <NoodlesIcon size={12} className="text-muted-foreground" />,
+  //   },
+  //   dinner: {
+  //     label: "Cena",
+  //     icon: <RiceBowl01Icon size={12} className="text-muted-foreground" />,
+  //   },
+  //   snack: {
+  //     label: "Snacks",
+  //     icon: <FrenchFries02Icon size={12} className="text-muted-foreground" />,
+  //   },
+  // };
 
   const translatedText = t(nutritionPlan.macros.description);
 

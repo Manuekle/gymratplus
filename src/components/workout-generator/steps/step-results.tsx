@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -8,16 +8,30 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Calendar01Icon,
-  Clock01Icon,
-  Dumbbell01Icon,
-  KettlebellIcon,
-} from "hugeicons-react";
-import { Button } from "@/components/ui/button";
+import { Calendar01Icon } from "hugeicons-react";
+
+interface Exercise {
+  name: string;
+  notes?: string;
+  sets: number;
+  reps?: number;
+  restTime: number;
+}
+
+interface Day {
+  day: string;
+  exercises: Exercise[];
+}
+
+interface Workout {
+  name: string;
+  description: string;
+  type: string;
+  days: Day[];
+}
 
 interface StepResultsProps {
-  workout: any;
+  workout: Workout;
 }
 
 export function StepResults({ workout }: StepResultsProps) {

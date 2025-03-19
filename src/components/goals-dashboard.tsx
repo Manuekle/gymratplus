@@ -5,7 +5,6 @@ import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 // import { useTheme } from "next-themes";
 import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals";
-import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -17,8 +16,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import GoalProgressForm from "@/components/goal-progress-form";
-import { Icons } from "./icons";
 import {
   Award01Icon,
   Calendar01Icon,

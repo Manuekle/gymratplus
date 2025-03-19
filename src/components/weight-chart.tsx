@@ -9,7 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from "recharts";
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -30,8 +29,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Icons } from "./icons";
-import { CardTitle } from "./ui/card";
 import ChartSkeleton from "./skeleton/charts-skeleton";
 
 // Tipos para los períodos de tiempo

@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, X } from "lucide-react";
+import { X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { useProgress } from "@/hooks/use-progress";
-import { Calendar01Icon, Calendar02Icon } from "hugeicons-react";
+import { Calendar01Icon } from "hugeicons-react";
 import { Icons } from "./icons";
 
 interface ProgressFormProps {
