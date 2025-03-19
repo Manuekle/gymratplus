@@ -88,8 +88,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 
 // Create a nutrition plan based on user profile
 export async function createNutritionPlan(profile) {
-  const { userId, goal, dietaryPreference, gender, dailyCalorieTarget } =
-    profile;
+  const { userId, goal, dietaryPreference, dailyCalorieTarget } = profile;
 
   // Get foods from database or create new ones if they don't exist
   const foods = await getOrCreateFoods(dietaryPreference);
@@ -302,10 +301,6 @@ async function createMealLog(
     dinner: 0.3, // 30% of daily calories
     snack: 0.1, // 10% of daily calories
   };
-
-  // Target calories for this meal
-  const targetMealCalories =
-    dailyCalorieTarget * mealCaloriePercentage[mealType];
 
   // Calculate macros and create meal entries
   let totalCalories = 0;

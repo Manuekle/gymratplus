@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -16,9 +15,21 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 
 export default function WorkoutSummary() {
-  const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [workoutSessions, setWorkoutSessions] = useState<any[]>([]);
+  interface Exercise {
+    // Define exercise properties as needed (example property below)
+    name: string;
+  }
+
+  interface WorkoutSession {
+    id: string;
+    notes?: string;
+    date: string;
+    duration?: number;
+    exercises: Exercise[];
+  }
+
+  const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([]);
 
   useEffect(() => {
     const fetchWorkoutHistory = async () => {

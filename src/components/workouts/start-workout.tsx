@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   Dialog,
@@ -24,11 +24,25 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { AlertCircleIcon } from "hugeicons-react";
 
+type Exercise = {
+  id: string;
+  name: string;
+  notes?: string;
+  sets: number;
+  reps: number | string;
+  restTime: number;
+};
+
+type Day = {
+  day: string;
+  exercises: Exercise[];
+};
+
 type WorkoutProps = {
   id: string;
   name: string;
   description: string;
-  days: { day: string; exercises: any[] }[];
+  days: Day[];
 };
 
 export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
@@ -36,13 +50,13 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string>("");
-  const [exercises, setExercises] = useState<any[]>([]);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeWorkoutExists, setActiveWorkoutExists] = useState(false);
   const [activeWorkoutId, setActiveWorkoutId] = useState<string | null>(null);
 
   const workoutData = workout;
-  const days = workoutData.days || [];
+  const days = useMemo(() => workoutData.days || [], [workoutData.days]);
 
   // Verificar si existe una sesión activa cuando se abre el diálogo
   const checkActiveWorkout = async () => {
@@ -263,7 +277,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                   <SelectValue placeholder="Selecciona tu entrenamiento" />
                 </SelectTrigger>
                 <SelectContent>
-                  {days.map((day: any) => (
+                  {days.map((day: Day) => (
                     <SelectItem
                       className="text-xs md:text-sm"
                       key={day.day}
@@ -279,8 +293,8 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
               <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-hide no-scrollbar">
                 <div className="grid md:grid-cols-2 gap-6">
                   {days
-                    .find((day: any) => day.day === selectedDay)
-                    ?.exercises.map((exercise: any) => (
+                    .find((day: Day) => day.day === selectedDay)
+                    ?.exercises.map((exercise: Exercise) => (
                       <div
                         key={exercise.id}
                         className="border rounded-lg shadow-sm"
