@@ -128,20 +128,20 @@ export default function GoalForm({
     }
   };
 
-  const getTypeLabel = (type: GoalType) => {
-    switch (type) {
-      case "weight":
-        return "Peso";
-      case "strength":
-        return "Fuerza";
-      case "measurement":
-        return "Medidas corporales";
-      case "activity":
-        return "Actividad";
-      default:
-        return type;
-    }
-  };
+  // const getTypeLabel = (type: GoalType) => {
+  //   switch (type) {
+  //     case "weight":
+  //       return "Peso";
+  //     case "strength":
+  //       return "Fuerza";
+  //     case "measurement":
+  //       return "Medidas corporales";
+  //     case "activity":
+  //       return "Actividad";
+  //     default:
+  //       return type;
+  //   }
+  // };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">

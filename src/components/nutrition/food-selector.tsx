@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -66,9 +66,9 @@ export default function FoodSelector({
     if (mealType) {
       fetchSuggestions();
     }
-  }, [category, mealType]);
+  }, [fetchFoods, fetchSuggestions, mealType]);
 
-  const fetchFoods = async () => {
+  const fetchFoods = useCallback(async () => {
     setLoading(true);
     try {
       let url = `/api/food?query=${encodeURIComponent(searchQuery)}`;
@@ -90,9 +90,9 @@ export default function FoodSelector({
     } finally {
       setLoading(false);
     }
-  };
+  }, [searchQuery, category]);
 
-  const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
     try {
       const response = await fetch(
         `/api/food/suggestions?mealType=${mealType}`
@@ -104,7 +104,7 @@ export default function FoodSelector({
     } catch (error) {
       console.error("Error fetching suggestions:", error);
     }
-  };
+  }, [mealType]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
