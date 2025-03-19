@@ -11,7 +11,7 @@ import {
   createActionsColumn,
 } from "@/components/ui/data-table";
 
-import { Delete01Icon, EyeIcon, WasteIcon } from "hugeicons-react";
+import { Delete01Icon, EyeIcon } from "hugeicons-react";
 
 interface Workout {
   id: string;

@@ -137,7 +137,6 @@ import {
   Calendar01Icon,
   EyeIcon,
   MoreHorizontalIcon,
-  MoreVerticalIcon,
 } from "hugeicons-react";
 
 // Añadir después de las funciones existentes:
@@ -169,9 +168,13 @@ export function createDateColumn<T>(
       // Si no hay valor, mostrar un guión
       if (!value) return <div>-</div>;
 
-      // Convertir a fecha si es string
+      // Convertir a fecha: si es string se analiza, si es una instancia de Date se usa, de lo contrario se crea una nueva fecha
       const date =
-        typeof value === "string" ? parseISO(value) : new Date(value as any);
+        typeof value === "string"
+          ? parseISO(value)
+          : value instanceof Date
+          ? value
+          : new Date(value as string | number | Date);
 
       // Formatear la fecha
       const formatted = format(date, formatString, { locale });

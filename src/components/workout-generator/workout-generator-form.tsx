@@ -36,11 +36,14 @@ export function WorkoutGeneratorForm() {
     name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [workoutResult, setWorkoutResult] = useState<any>(null);
+  const [workoutResult, setWorkoutResult] = useState<Record<
+    string,
+    unknown
+  > | null>(null);
 
   const totalSteps = 5;
 
-  const updateFormData = (field: keyof FormData, value: any) => {
+  const updateFormData = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
