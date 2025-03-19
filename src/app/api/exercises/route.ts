@@ -6,6 +6,7 @@ export async function GET() {
     const exercises = await prisma.exercise.findMany();
     return NextResponse.json(exercises);
   } catch (error) {
+    console.error(error);
     return NextResponse.json(
       { error: "Error obteniendo ejercicios" },
       { status: 500 }

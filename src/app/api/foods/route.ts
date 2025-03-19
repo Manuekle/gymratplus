@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -15,7 +17,12 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const { id: userId } = session.user as {
+      id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+    };
     const searchQuery = req.nextUrl.searchParams.get("search");
     const category = req.nextUrl.searchParams.get("category");
     const mealType = req.nextUrl.searchParams.get("mealType");
