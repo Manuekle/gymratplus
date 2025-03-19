@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 
 // GET /api/progress - Obtener registros de progreso (peso, grasa corporal, masa muscular)
 export async function GET(req: NextRequest) {
@@ -28,8 +29,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // Consulta base
-    const query: any = {
+    const query: Prisma.WeightFindManyArgs = {
       where: {
         userId: user.id,
       },

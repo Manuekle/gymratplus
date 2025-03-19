@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
@@ -78,10 +79,14 @@ export async function POST(request: Request) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error en registro:", error);
+    let message = "Unknown error";
+    if (error instanceof Error) {
+      message = error.message;
+    }
     return NextResponse.json(
-      { error: "Error al registrar usuario: " + error.message },
+      { error: "Error al registrar usuario: " + message },
       { status: 500 }
     );
   }
