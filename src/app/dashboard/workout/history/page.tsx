@@ -19,18 +19,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { Icons } from "@/components/icons";
 
-// Componente de spinner (ajusta según tus componentes)
-const Spinner = () => (
-  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-);
-
 export default function WorkoutHistory() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [workoutSessions, setWorkoutSessions] = useState<any[]>([]);
+  const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([]);
   const [activeTab, setActiveTab] = useState<string>("all");
   const [expandedSession, setExpandedSession] = useState<string | null>(null);
-  const [stats, setStats] = useState({
+  const [stats, setStats] = useState<Stats>({
     totalSessions: 0,
     totalExercises: 0,
     totalSets: 0,
@@ -42,26 +37,31 @@ export default function WorkoutHistory() {
       try {
         const response = await fetch("/api/workout-session/history");
         if (response.ok) {
-          const data = await response.json();
+          const data: WorkoutSession[] = await response.json();
           setWorkoutSessions(data);
 
           // Calcular estadísticas
           if (data.length > 0) {
             const totalExercises = data.reduce(
-              (acc: number, session: any) => acc + session.exercises.length,
+              (acc: number, session: WorkoutSession) =>
+                acc + session.exercises.length,
               0
             );
-            const totalSets = data.reduce((acc: number, session: any) => {
-              return (
-                acc +
-                session.exercises.reduce(
-                  (exAcc: number, ex: any) => exAcc + ex.sets.length,
-                  0
-                )
-              );
-            }, 0);
+            const totalSets = data.reduce(
+              (acc: number, session: WorkoutSession) => {
+                return (
+                  acc +
+                  session.exercises.reduce(
+                    (exAcc: number, ex: Exercise) => exAcc + ex.sets.length,
+                    0
+                  )
+                );
+              },
+              0
+            );
             const totalDuration = data.reduce(
-              (acc: number, session: any) => acc + (session.duration || 0),
+              (acc: number, session: WorkoutSession) =>
+                acc + (session.duration || 0),
               0
             );
 
@@ -94,14 +94,14 @@ export default function WorkoutHistory() {
   };
 
   // Calcular el progreso de una sesión
-  const calculateSessionProgress = (session: any) => {
+  const calculateSessionProgress = (session: WorkoutSession) => {
     const totalSets = session.exercises.reduce(
-      (acc: number, ex: any) => acc + ex.sets.length,
+      (acc: number, ex: Exercise) => acc + ex.sets.length,
       0
     );
     const completedSets = session.exercises.reduce(
-      (acc: number, ex: any) =>
-        acc + ex.sets.filter((set: any) => set.completed).length,
+      (acc: number, ex: Exercise) =>
+        acc + ex.sets.filter((set: Set) => set.completed).length,
       0
     );
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
@@ -287,9 +287,9 @@ export default function WorkoutHistory() {
                       </p>
                       <p className="font-medium">
                         {session.exercises.reduce(
-                          (acc: number, ex: any) =>
+                          (acc: number, ex: Exercise) =>
                             acc +
-                            ex.sets.filter((set: any) => set.completed).length,
+                            ex.sets.filter((set: Set) => set.completed).length,
                           0
                         )}
                       </p>
@@ -323,7 +323,7 @@ export default function WorkoutHistory() {
 
                   {isExpanded && (
                     <div className="space-y-4 pt-4">
-                      {session.exercises.map((exercise: any) => (
+                      {session.exercises.map((exercise: Exercise) => (
                         <div
                           key={exercise.id}
                           className="border rounded-md p-3"
@@ -351,7 +351,7 @@ export default function WorkoutHistory() {
                             <div>Estado</div>
                           </div>
 
-                          {exercise.sets.map((set: any) => (
+                          {exercise.sets.map((set: Set) => (
                             <div
                               key={set.id}
                               className="grid grid-cols-4 gap-2 text-sm py-1 border-t dark:border-gray-700"
@@ -385,4 +385,38 @@ export default function WorkoutHistory() {
       </Tabs>
     </div>
   );
+}
+
+// Define types
+interface WorkoutSession {
+  id: string;
+  date: string;
+  notes?: string;
+  duration?: number;
+  completed: boolean;
+  exercises: Exercise[];
+}
+
+interface Exercise {
+  id: string;
+  exercise: {
+    name: string;
+  };
+  completed: boolean;
+  sets: Set[];
+}
+
+interface Set {
+  id: string;
+  setNumber: number;
+  weight?: number;
+  reps?: number;
+  completed: boolean;
+}
+
+interface Stats {
+  totalSessions: number;
+  totalExercises: number;
+  totalSets: number;
+  averageDuration: number;
 }
