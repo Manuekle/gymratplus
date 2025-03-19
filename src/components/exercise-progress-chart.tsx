@@ -36,12 +36,20 @@ import ChartSkeleton from "./skeleton/charts-skeleton";
 // Removed top-level state declarations; state is managed inside the ExerciseProgressChart component.
 type TimePeriod = "all" | "week" | "month" | "year";
 
+interface FormattedRecord {
+  date: string;
+  benchPress: number;
+  squat: number;
+  deadlift: number;
+  originalDate: Date;
+}
+
 export function ExerciseProgressChart() {
   const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<FormattedRecord[]>([]);
+  const [filteredData, setFilteredData] = useState<FormattedRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
