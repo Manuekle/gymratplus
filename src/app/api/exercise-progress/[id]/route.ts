@@ -6,7 +6,10 @@ import { authOptions } from "@/lib/auth";
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  {
+    params,
+    searchParams,
+  }: { params: { id: string }; searchParams: URLSearchParams }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -56,7 +59,10 @@ export async function GET(
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  {
+    params,
+    searchParams,
+  }: { params: { id: string }; searchParams: URLSearchParams }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -126,7 +132,10 @@ export async function PUT(
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  {
+    params,
+    searchParams,
+  }: { params: { id: string }; searchParams: URLSearchParams }
 ) {
   try {
     const session = await getServerSession(authOptions);
