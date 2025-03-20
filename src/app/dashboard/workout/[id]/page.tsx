@@ -17,7 +17,17 @@ interface Workout {
   name: string;
   description: string;
   type: string;
-  days: { day: string }[];
+  days: {
+    day: string;
+    exercises: {
+      id: string;
+      name: string;
+      sets: number;
+      reps: number;
+      restTime: number;
+      notes?: string;
+    }[];
+  }[];
   exercises: {
     id: string;
     name: string;
