@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { NextAuthOptions, User, Session } from "next-auth";
@@ -116,12 +117,14 @@ export const authOptions: NextAuthOptions = {
         });
 
         // Obtener datos básicos desde Redis
-        const userData = await redis.hgetall(`user:${token.id}:data`);
+        const userData = (await redis.hgetall(
+          `user:${token.id}:data`
+        )) as Record<string, string | undefined>;
 
         if (userData) {
-          session.user.name = userData.name;
-          session.user.email = userData.email;
-          session.user.image = userData.image;
+          session.user.name = userData.name ?? null;
+          session.user.email = userData.email ?? null;
+          session.user.image = userData.image ?? null;
         }
 
         // Obtener el perfil del usuario desde Redis o la BD
@@ -139,7 +142,7 @@ export const authOptions: NextAuthOptions = {
           }
         }
 
-        session.user.profile = profile || null;
+        (session.user as any).profile = profile || null;
       }
       return session;
     },
