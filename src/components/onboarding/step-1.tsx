@@ -63,7 +63,7 @@ const daysOfWeek = [
 
 type ProfileFormData = {
   gender: string;
-  birthdate: Date | undefined;
+  birthdate: string | Date | undefined;
   height: string;
   currentWeight: string;
   targetWeight: string;
@@ -220,46 +220,41 @@ export default function StepOnboarding1() {
 
     setIsSubmitting(true);
     try {
-      // Crear una copia del formData para enviar
       const dataToSend = { ...formData };
-
-      // Eliminar completamente la propiedad birthdate si no es válida
-      if (dataToSend.birthdate) {
+      // Create a formatted payload to convert birthdate to ISO string if needed
+      const payload: Partial<ProfileFormData> = { ...dataToSend };
+      if (payload.birthdate) {
         if (
-          dataToSend.birthdate instanceof Date &&
-          !isNaN(dataToSend.birthdate.getTime())
+          payload.birthdate instanceof Date &&
+          !isNaN(payload.birthdate.getTime())
         ) {
-          // Si es un objeto Date válido, convertirlo a string ISO
-          dataToSend.birthdate = dataToSend.birthdate.toISOString();
+          payload.birthdate = payload.birthdate.toISOString();
         } else {
-          // Si no es un objeto Date válido, intentar convertirlo
           try {
-            const dateObj = new Date(dataToSend.birthdate);
+            const dateObj = new Date(payload.birthdate);
             if (!isNaN(dateObj.getTime())) {
-              dataToSend.birthdate = dateObj.toISOString();
+              payload.birthdate = dateObj.toISOString();
             } else {
-              // Si la conversión falla, enviar como string o eliminar
               console.warn(
                 "Invalid date detected, sending as is:",
-                dataToSend.birthdate
+                payload.birthdate
               );
             }
           } catch (e) {
             console.error("Error converting birthdate:", e);
-            // Si hay un error en la conversión, eliminar la propiedad
-            delete dataToSend.birthdate;
+            delete payload.birthdate;
           }
         }
       }
 
-      console.log("Sending data:", dataToSend);
+      console.log("Sending data:", payload);
 
       const response = await fetch("/api/profile", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(dataToSend),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -403,7 +398,11 @@ export default function StepOnboarding1() {
                       <PopoverContent className="w-auto p-0">
                         <Calendar
                           mode="single"
-                          selected={formData.birthdate}
+                          selected={
+                            typeof formData.birthdate === "string"
+                              ? new Date(formData.birthdate)
+                              : formData.birthdate
+                          }
                           onSelect={(date) =>
                             updateFormData({ birthdate: date })
                           }
