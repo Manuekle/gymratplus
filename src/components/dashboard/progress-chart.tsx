@@ -102,7 +102,7 @@ export default function ProgressChart() {
 
       if (data && data.length > 0) {
         // Transformar datos para el gráfico
-        const formattedData = data.map((record) => ({
+        const formattedData = data.map((record: ProgressRecord) => ({
           date: format(new Date(record.date), "d MMM", { locale: es }),
           weight: record.weight,
           bodyFatPercentage: record.bodyFatPercentage,
@@ -112,8 +112,9 @@ export default function ProgressChart() {
         }));
 
         // Ordenar por fecha
-        const sortedData = formattedData.sort(
-          (a, b) => a.originalDate.getTime() - b.originalDate.getTime()
+        const sortedData: ProgressRecord[] = formattedData.sort(
+          (a: ProgressRecord, b: ProgressRecord) =>
+            a.originalDate.getTime() - b.originalDate.getTime()
         );
 
         setChartData(sortedData);
