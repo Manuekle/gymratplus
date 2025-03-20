@@ -639,7 +639,7 @@ export async function createFullBodyWorkout(
 
     // Apply methodology if specified
     if (methodology !== "standard") {
-      dayExercises = applyMethodology(dayExercises, methodology, goal);
+      const dayExercises = applyMethodology(dayExercises, methodology, goal);
     }
 
     // Add exercises for this day to the workout

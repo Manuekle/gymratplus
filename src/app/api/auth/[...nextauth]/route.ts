@@ -225,7 +225,6 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 export default handler;
-export { handler as GET, handler as POST };
 
 // Función mejorada para obtener el ID de usuario de la sesión
 async function getUserIdFromSession() {
