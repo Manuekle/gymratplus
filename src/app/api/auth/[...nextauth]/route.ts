@@ -15,7 +15,7 @@ const redis = new Redis({
 // Cache de perfiles de usuario, para evitar consultas repetidas
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
-const authOptions = {
+export const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -94,7 +94,7 @@ const authOptions = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     // Aumentar maxAge para sesiones más largas
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
