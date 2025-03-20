@@ -417,8 +417,8 @@ export async function createWorkoutPlan(
         exercises,
         goal,
         gender,
-        trainingFrequency,
-        methodology
+        trainingFrequency
+        // methodology
       );
     case "Upper/Lower Split":
       return createUpperLowerSplit(
@@ -455,8 +455,8 @@ export async function createWorkoutPlan(
           exercises,
           goal,
           gender,
-          trainingFrequency,
-          methodology
+          trainingFrequency
+          // methodology
         );
       } else if (trainingFrequency <= 5) {
         return createUpperLowerSplit(
@@ -592,8 +592,7 @@ export async function createFullBodyWorkout(
   exercises: any[],
   goal: any,
   _gender: any,
-  trainingFrequency: number,
-  methodology = "standard"
+  trainingFrequency: number
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -699,9 +698,9 @@ export async function createFullBodyWorkout(
     ];
 
     // Apply methodology if specified
-    if (methodology !== "standard") {
-      const dayExercises = applyMethodology(dayExercises, methodology, goal);
-    }
+    // if (methodology !== "standard") {
+    //   const dayExerc = applyMethodology(dayExercises, methodology, goal);
+    // }
 
     // Add exercises for this day to the workout
     for (const ex of dayExercises) {
