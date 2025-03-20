@@ -161,15 +161,17 @@ export async function PUT(request: NextRequest) {
       });
 
       // Create new ingredients
-      for (const ingredient of ingredients) {
-        await prisma.recipeIngredient.create({
-          data: {
-            recipeId: recipeId,
-            foodId: ingredient.foodId,
-            quantity: ingredient.quantity,
-            unit: ingredient.unit || null,
-          },
-        });
+      if (recipeId) {
+        for (const ingredient of ingredients) {
+          await prisma.recipeIngredient.create({
+            data: {
+              recipeId: recipeId,
+              foodId: ingredient.foodId,
+              quantity: ingredient.quantity,
+              unit: ingredient.unit || null,
+            },
+          });
+        }
       }
     }
 

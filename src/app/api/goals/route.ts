@@ -32,8 +32,8 @@ export async function GET(req: NextRequest) {
     const query: {
       where: {
         userId: string;
-        type?: string | null;
-        status?: string | null;
+        type?: string | undefined;
+        status?: string | undefined;
       };
       orderBy: {
         createdAt: "desc";
@@ -63,11 +63,11 @@ export async function GET(req: NextRequest) {
 
     // Añadir filtros si están presentes
     if (type) {
-      query.where.type = type;
+      query.where.type = type || undefined;
     }
 
     if (status) {
-      query.where.status = status;
+      query.where.status = status || undefined;
     }
 
     const goals = await prisma.goal.findMany(query);

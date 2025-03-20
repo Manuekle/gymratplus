@@ -45,37 +45,44 @@ export async function POST(req: NextRequest) {
         notes: `Día: ${day}`,
         exercises: {
           create: await Promise.all(
-            exercises.map(async (exercise) => {
-              // Buscar el ejercicio en la base de datos por nombre
-              const exerciseRecord = await prisma.exercise.findFirst({
-                where: { name: exercise.name },
-              });
+            exercises.map(
+              async (exercise: {
+                name: string;
+                sets: number;
+                reps?: number;
+                notes?: string;
+              }) => {
+                // Buscar el ejercicio en la base de datos por nombre
+                const exerciseRecord = await prisma.exercise.findFirst({
+                  where: { name: exercise.name },
+                });
 
-              if (!exerciseRecord) {
-                console.error(`Ejercicio no encontrado: ${exercise.name}`);
-                // Puedes manejar esto de diferentes maneras, aquí simplemente usamos un ID predeterminado
-                // o podrías crear el ejercicio si no existe
-                throw new Error(`Ejercicio no encontrado: ${exercise.name}`);
+                if (!exerciseRecord) {
+                  console.error(`Ejercicio no encontrado: ${exercise.name}`);
+                  // Puedes manejar esto de diferentes maneras, aquí simplemente usamos un ID predeterminado
+                  // o podrías crear el ejercicio si no existe
+                  throw new Error(`Ejercicio no encontrado: ${exercise.name}`);
+                }
+
+                return {
+                  exerciseId: exerciseRecord.id,
+                  completed: false,
+                  sets: {
+                    create: Array.from({ length: exercise.sets }).map(
+                      (_, index) => ({
+                        setNumber: index + 1,
+                        reps: exercise.reps || null,
+                        weight: null, // Será completado por el usuario durante el entrenamiento
+                        isDropSet:
+                          exercise.notes?.toLowerCase().includes("drop set") ||
+                          false,
+                        completed: false,
+                      })
+                    ),
+                  },
+                };
               }
-
-              return {
-                exerciseId: exerciseRecord.id,
-                completed: false,
-                sets: {
-                  create: Array.from({ length: exercise.sets }).map(
-                    (_, index) => ({
-                      setNumber: index + 1,
-                      reps: exercise.reps || null,
-                      weight: null, // Será completado por el usuario durante el entrenamiento
-                      isDropSet:
-                        exercise.notes?.toLowerCase().includes("drop set") ||
-                        false,
-                      completed: false,
-                    })
-                  ),
-                },
-              };
-            })
+            )
           ),
         },
       },

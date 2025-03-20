@@ -133,8 +133,8 @@ export async function POST(request: NextRequest) {
     let progress = goal.progress || 0;
 
     if (
-      goal.initialValue !== undefined &&
-      goal.targetValue !== undefined &&
+      goal.initialValue != null &&
+      goal.targetValue != null &&
       goal.initialValue !== goal.targetValue
     ) {
       const diff = Math.abs(value - goal.initialValue);
@@ -162,8 +162,14 @@ export async function POST(request: NextRequest) {
     let completedDate = goal.completedDate;
 
     if (
-      (goal.targetValue < goal.initialValue && value <= goal.targetValue) ||
-      (goal.targetValue > goal.initialValue && value >= goal.targetValue)
+      (goal.initialValue !== null &&
+        goal.targetValue !== null &&
+        goal.targetValue < goal.initialValue &&
+        value <= goal.targetValue) ||
+      (goal.initialValue !== null &&
+        goal.targetValue !== null &&
+        goal.targetValue > goal.initialValue &&
+        value >= goal.targetValue)
     ) {
       status = "completed";
       completedDate = new Date();
