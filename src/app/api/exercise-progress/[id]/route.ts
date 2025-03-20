@@ -1,11 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 
 import { prisma } from "@/lib/prisma";
 
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -55,7 +55,7 @@ export async function GET(
 
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
 export async function PUT(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -125,7 +125,7 @@ export async function PUT(
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
-  request: NextRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
