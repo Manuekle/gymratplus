@@ -548,7 +548,7 @@ export async function createFullBodyWorkout(
   let order = 1;
 
   // Get sets and reps based on goal
-  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
+  // const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
 
   // Filter exercises by muscle group
   const legExercises = exercises.filter((e) => e.muscleGroup === "piernas");
