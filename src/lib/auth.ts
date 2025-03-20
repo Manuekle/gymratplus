@@ -110,7 +110,7 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = typeof token.id === "string" ? token.id : "";
         // Registrar actividad para tracking de usuarios activos
         await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
           ex: 60 * 60 * 24 * 7, // Expira en 7 días
@@ -118,7 +118,7 @@ export const authOptions: NextAuthOptions = {
 
         // Obtener datos básicos desde Redis
         const userData = (await redis.hgetall(
-          `user:${token.id}:data`
+          `user:${session.user.id}:data`
         )) as Record<string, string | undefined>;
 
         if (userData) {
@@ -128,11 +128,11 @@ export const authOptions: NextAuthOptions = {
         }
 
         // Obtener el perfil del usuario desde Redis o la BD
-        let profile = await redis.get(`profile:${token.id}`);
+        let profile: any = await redis.get(`profile:${session.user.id}`);
 
         if (!profile) {
           profile = await prisma.profile.findUnique({
-            where: { userId: token.id },
+            where: { userId: session.user.id },
           });
 
           if (profile) {
