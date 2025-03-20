@@ -2,13 +2,13 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 
 import { prisma } from "@/lib/prisma";
-import { authRoute } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth";
 import type { Prisma } from "@prisma/client";
 
 // GET /api/progress - Obtener registros de progreso (peso, grasa corporal, masa muscular)
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authRoute);
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
 // POST /api/progress - Crear un nuevo registro de progreso
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authRoute);
+    const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
