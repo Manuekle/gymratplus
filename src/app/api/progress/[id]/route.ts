@@ -118,7 +118,7 @@ export async function PUT(request: NextRequest) {
         where: {
           userId: user.id,
           weight: {
-            not: null,
+            not: undefined, // Changed from 'not: null'
           },
         },
         orderBy: {
