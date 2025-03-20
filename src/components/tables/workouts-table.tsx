@@ -36,6 +36,7 @@ export default function WorkoutsTable() {
       if (res.ok) {
         const data = await res.json();
         // setWorkouts(data);
+        console.log(data);
         const timer = setTimeout(() => {
           setWorkouts(data);
           setIsLoading(false);
@@ -66,7 +67,7 @@ export default function WorkoutsTable() {
   };
 
   const columns = [
-    createDateColumn<Workout>("createdAt", "Fecha", "dd MMM yyyy HH:mm"),
+    // createDateColumn<Workout>("createdAt", "Fecha", "dd MMM yyyy HH:mm"),
     createSortableColumn<Workout>("name", "Nombre"),
     // createSortableColumn<Workout>("description", "Descripción"),
     createActionsColumn<Workout>("", [
