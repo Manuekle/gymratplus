@@ -12,6 +12,35 @@ import {
   type NutritionProfile,
 } from "@/lib/nutrition-utils";
 
+// Definir tipos para los objetos que se usan en el código
+type WeightHistory = {
+  id: string;
+  weight: number;
+  date: Date;
+}[];
+
+type Profile = {
+  userId: string;
+  gender?: string | null;
+  goal?: string | null;
+  trainingFrequency?: number | null;
+  dailyProteinTarget?: number | null;
+  currentWeight?: string | null;
+  dietaryPreference?: string | null;
+  dailyCalorieTarget?: number | null;
+  dailyCarbTarget?: number | null;
+  dailyFatTarget?: number | null;
+};
+
+type WorkoutExercise = {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime?: number | null;
+  notes?: string | null;
+};
+
 export async function POST() {
   try {
     const session = await getServerSession(authOptions);
@@ -66,9 +95,6 @@ export async function POST() {
       },
     });
 
-    // Check if user has meal logs
-    // Code removed
-
     // If recent plans exist, return them with some adaptive modifications
     if (existingWorkout) {
       // Define adherence based on some logic or fetch it from the database
@@ -82,7 +108,7 @@ export async function POST() {
         days: formatWorkoutPlan(
           existingWorkout.exercises.map((we) => ({
             id: we.id,
-            name: we.exercise.name,
+            name: we.exercise?.name || "Unknown Exercise",
             sets: adaptSetsBasedOnProgress(
               we.sets,
               adherence,
@@ -107,19 +133,29 @@ export async function POST() {
           { status: 400 }
         );
       }
-      const nutritionPlan = await createNutritionPlan(
-        profile as NutritionProfile
-      );
+
+      // Asegurarse de que profile tenga todos los campos necesarios para NutritionProfile
+      const nutritionProfile: NutritionProfile = {
+        userId: profile.userId,
+        goal: profile.goal || "maintain",
+        dietaryPreference: profile.dietaryPreference || "no-preference",
+        dailyCalorieTarget: profile.dailyCalorieTarget ?? undefined,
+        dailyProteinTarget: profile.dailyProteinTarget ?? undefined,
+        dailyCarbTarget: profile.dailyCarbTarget ?? undefined,
+        dailyFatTarget: profile.dailyFatTarget ?? undefined,
+      };
+
+      const nutritionPlan = await createNutritionPlan(nutritionProfile);
 
       return NextResponse.json({
         workoutPlan,
         nutritionPlan,
-        recommendations: generateRecommendations(profile, weightHistory),
+        recommendations: generateRecommendations(profile, null, weightHistory),
       });
     }
 
     // Generate new workout plan based on profile and history
-    const workoutType = getRecommendedWorkoutType(profile, workoutHistory);
+    const workoutType = getRecommendedWorkoutType(profile);
 
     // Determinar la metodología basada en el objetivo
     let methodology = "standard";
@@ -134,13 +170,37 @@ export async function POST() {
       methodology = "pyramid";
     }
 
+    const workoutExercises: WorkoutExercise[] = workoutHistory.flatMap(
+      (workout) =>
+        workout.exercises.map((we) => ({
+          id: we.exercise.id,
+          name: we.exercise.name,
+          sets: we.sets,
+          reps: we.reps,
+          restTime: we.restTime,
+          notes: we.notes,
+        }))
+    );
+
     const workoutPlan = await generateAndSaveWorkoutPlan(
       profile,
       workoutType,
-      workoutHistory,
+      workoutExercises,
       methodology
     );
-    const nutritionPlan = await createNutritionPlan(profile);
+
+    // Asegurarse de que profile tenga todos los campos necesarios para NutritionProfile
+    const nutritionProfile: NutritionProfile = {
+      userId: profile.userId,
+      goal: profile.goal || "maintain",
+      dietaryPreference: profile.dietaryPreference || "no-preference",
+      dailyCalorieTarget: profile.dailyCalorieTarget ?? undefined,
+      dailyProteinTarget: profile.dailyProteinTarget ?? undefined,
+      dailyCarbTarget: profile.dailyCarbTarget ?? undefined,
+      dailyFatTarget: profile.dailyFatTarget ?? undefined,
+    };
+
+    const nutritionPlan = await createNutritionPlan(nutritionProfile);
 
     return NextResponse.json({
       workoutPlan,
@@ -206,7 +266,10 @@ function adaptRepsBasedOnProgress(
 }
 
 // Calculate progress metrics based on weight history and profile goals
-function calculateProgressMetrics(weightHistory, profile) {
+function calculateProgressMetrics(
+  weightHistory: WeightHistory | null,
+  profile: Profile
+) {
   if (!weightHistory || weightHistory.length < 2) {
     return {
       weightChange: 0,
@@ -241,12 +304,16 @@ function calculateProgressMetrics(weightHistory, profile) {
 }
 
 // Generate personalized recommendations based on profile and progress
-function generateRecommendations(profile, adherence, weightHistory) {
+function generateRecommendations(
+  profile: Profile,
+  adherence: { level: string; score: number } | null = null,
+  weightHistory: WeightHistory | null = null
+) {
   const recommendations = [];
 
   // Basic recommendations based on profile
   if (
-    profile.trainingFrequency < 3 &&
+    (profile.trainingFrequency || 0) < 3 &&
     (profile.goal === "gain-muscle" || profile.goal === "hypertrophy")
   ) {
     recommendations.push(
@@ -254,7 +321,7 @@ function generateRecommendations(profile, adherence, weightHistory) {
     );
   }
 
-  if (profile.goal === "strength" && profile.trainingFrequency < 4) {
+  if (profile.goal === "strength" && (profile.trainingFrequency || 0) < 4) {
     recommendations.push(
       "For optimal strength gains, consider training at least 4 days per week with focus on compound movements"
     );
@@ -364,9 +431,9 @@ function generateRecommendations(profile, adherence, weightHistory) {
 
 // Generate and save a new workout plan
 async function generateAndSaveWorkoutPlan(
-  profile,
-  workoutType,
-  workoutHistory,
+  profile: Profile,
+  workoutType: string,
+  workoutHistory: WorkoutExercise[],
   methodology = "standard"
 ) {
   const { userId, gender, goal, trainingFrequency } = profile;
@@ -374,12 +441,12 @@ async function generateAndSaveWorkoutPlan(
   // Create a new workout in the database
   const workout = await prisma.workout.create({
     data: {
-      name: `${workoutType} Plan (${getGoalText(goal)})`,
+      name: `${workoutType} Plan (${getGoalText(goal || "maintain")})`,
       description: `Personalized ${workoutType} workout plan with ${methodology} methodology for ${
         gender === "male" ? "male" : "female"
-      } with ${getGoalText(
-        goal
-      )} goal and ${trainingFrequency} days per week frequency.`,
+      } with ${getGoalText(goal || "maintain")} goal and ${
+        trainingFrequency || 3
+      } days per week frequency.`,
       userId: userId,
     },
   });
@@ -391,9 +458,9 @@ async function generateAndSaveWorkoutPlan(
   const workoutExercises = await createWorkoutPlan(
     workout.id,
     exercises,
-    goal,
-    gender,
-    trainingFrequency,
+    goal || "maintain",
+    gender || "male",
+    trainingFrequency || 3,
     workoutType,
     workoutHistory,
     methodology
@@ -423,7 +490,7 @@ async function generateAndSaveWorkoutPlan(
 }
 
 // Format workout plan for response
-function formatWorkoutPlan(workoutExercises) {
+function formatWorkoutPlan(workoutExercises: WorkoutExercise[]) {
   // Agrupar ejercicios por día/grupo muscular
   const exercisesByDay = workoutExercises.reduce((acc, ex) => {
     // Extraer el grupo muscular del campo notes
@@ -435,7 +502,7 @@ function formatWorkoutPlan(workoutExercises) {
     if (!acc[muscleGroup]) acc[muscleGroup] = [];
     acc[muscleGroup].push(ex);
     return acc;
-  }, {});
+  }, {} as Record<string, WorkoutExercise[]>);
 
   // Formatear cada grupo muscular
   return Object.entries(exercisesByDay).map(([muscleGroup, exercises]) => {
@@ -453,7 +520,7 @@ function formatWorkoutPlan(workoutExercises) {
   });
 }
 
-function getGoalText(goal) {
+function getGoalText(goal: string) {
   switch (goal) {
     case "lose-weight":
     case "fat-loss":
