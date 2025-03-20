@@ -49,9 +49,6 @@ export async function GET(request: NextRequest) {
       name: workout.name,
       description: workout.description,
       days: formatWorkoutPlan(workout.exercises),
-      type: workout.type,
-      methodology: workout.methodology,
-      goal: workout.goal,
     };
 
     return NextResponse.json(formattedWorkout);
@@ -64,27 +61,28 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// Format workout plan for response
-interface WorkoutExercise {
+// Interfaces para tipar correctamente
+// Esta interfaz representa exactamente lo que viene de la base de datos
+type WorkoutExerciseFromDB = {
   id: string;
   sets: number;
   reps: number;
   weight: number | null;
   restTime: number | null;
   order: number;
-  notes?: string;
+  notes: string | null;
   exercise: {
     id: string;
     name: string;
   };
-}
+};
 
 interface FormattedExercise {
   id: string;
   name: string;
   sets: number;
   reps: number;
-  restTime: number;
+  restTime: number | null;
   notes: string;
 }
 
@@ -93,14 +91,16 @@ interface FormattedWorkoutDay {
   exercises: FormattedExercise[];
 }
 
+// Función mejorada para formatear el plan de entrenamiento
 function formatWorkoutPlan(
-  workoutExercises: WorkoutExercise[]
+  workoutExercises: WorkoutExerciseFromDB[]
 ): FormattedWorkoutDay[] {
   // Agrupar ejercicios por grupo muscular
   const exercisesByDay = workoutExercises.reduce<
-    Record<string, WorkoutExercise[]>
+    Record<string, WorkoutExerciseFromDB[]>
   >((acc, ex) => {
     // Extraer el grupo muscular del campo notes
+    // Manejar el caso donde notes puede ser null
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
     const muscleGroup = muscleGroupMatch
       ? muscleGroupMatch[1].trim()
@@ -121,10 +121,22 @@ function formatWorkoutPlan(
         sets: ex.sets,
         reps: ex.reps,
         restTime: ex.restTime,
+        // Convertir null a string vacía
         notes: ex.notes?.replace(/^[^-]+ - /, "") || "",
       })),
     };
   });
+}
+
+// Interfaz para los ejercicios en el cuerpo de la solicitud PUT
+interface ExerciseInput {
+  id: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  restTime: number;
+  order: number;
+  notes?: string;
 }
 
 export async function PUT(request: NextRequest) {
@@ -139,7 +151,7 @@ export async function PUT(request: NextRequest) {
     const body = await request.json();
     const { name, description, exercises } = body;
 
-    if (!name || exercises?.length === 0) {
+    if (!name || !exercises || exercises.length === 0) {
       return NextResponse.json(
         { error: "Nombre y ejercicios requeridos" },
         { status: 400 }
@@ -153,23 +165,15 @@ export async function PUT(request: NextRequest) {
         description,
         exercises: {
           deleteMany: {}, // Eliminar ejercicios previos
-          create: exercises.map(
-            (exercise: {
-              id: string;
-              sets: number;
-              reps: number;
-              weight: number;
-              restTime: number;
-              order: number;
-            }) => ({
-              exerciseId: exercise.id,
-              sets: exercise.sets,
-              reps: exercise.reps,
-              weight: exercise.weight,
-              restTime: exercise.restTime,
-              order: exercise.order,
-            })
-          ),
+          create: exercises.map((exercise: ExerciseInput) => ({
+            exerciseId: exercise.id,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            weight: exercise.weight,
+            restTime: exercise.restTime,
+            order: exercise.order,
+            notes: exercise.notes,
+          })),
         },
       },
     });
@@ -188,15 +192,33 @@ export async function DELETE(request: NextRequest) {
   const url = new URL(request.url);
   const id = url.pathname.split("/").pop();
 
+  if (!id) {
+    return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   try {
-    await prisma.workout.delete({
-      where: { id: id, userId: session.user.id },
+    // Verificar que el workout existe y pertenece al usuario
+    const workout = await prisma.workout.findUnique({
+      where: { id, userId: session.user.id },
     });
-    return NextResponse.json({ message: "Workout eliminado" });
+
+    if (!workout) {
+      return NextResponse.json(
+        { error: "Workout no encontrado o no autorizado" },
+        { status: 404 }
+      );
+    }
+
+    // Eliminar el workout
+    await prisma.workout.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ message: "Workout eliminado correctamente" });
   } catch (error) {
     console.error("Error eliminando workout:", error);
     return NextResponse.json(
