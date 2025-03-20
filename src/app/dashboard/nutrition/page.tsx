@@ -171,7 +171,7 @@ export default function NutritionPage() {
         updatedAt: string;
       };
     }
-    const profile = (session.user as ExtendedSessionUser)?.profile;
+    const profile = (session.user as unknown as ExtendedSessionUser)?.profile;
     if (!profile) return;
 
     analyticsData("today");
