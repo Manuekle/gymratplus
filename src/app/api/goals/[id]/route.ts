@@ -1,14 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/goals/[id] - Obtener un objetivo específico
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -28,7 +28,7 @@ export async function GET(
 
     const goal = await prisma.goal.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
       include: {
@@ -58,18 +58,18 @@ export async function GET(
 }
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { title, description, targetValue, unit, targetDate, status } = body;
 
     const user = await prisma.user.findUnique({
@@ -86,7 +86,7 @@ export async function PUT(
     // Verificar que el objetivo pertenece al usuario
     const existingGoal = await prisma.goal.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -130,7 +130,7 @@ export async function PUT(
     // Actualizar el objetivo
     const updatedGoal = await prisma.goal.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: updateData,
     });
@@ -146,11 +146,11 @@ export async function PUT(
 }
 
 // DELETE /api/goals/[id] - Eliminar un objetivo específico
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -171,7 +171,7 @@ export async function DELETE(
     // Verificar que el objetivo pertenece al usuario
     const existingGoal = await prisma.goal.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -186,7 +186,7 @@ export async function DELETE(
     // Eliminar el objetivo (las actualizaciones de progreso se eliminarán en cascada)
     await prisma.goal.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 

@@ -1,15 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 const prisma = new PrismaClient();
 
 // GET a specific recipe
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const userId = session.user.id;
-    const recipeId = params.id;
+    const recipeId = id;
 
     const recipe = await prisma.recipe.findUnique({
       where: {
@@ -52,11 +52,11 @@ export async function GET(
 }
 
 // PUT update a recipe
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -64,8 +64,8 @@ export async function PUT(
     }
 
     const userId = session.user.id;
-    const recipeId = params.id;
-    const data = await req.json();
+    const recipeId = id;
+    const data = await request.json();
 
     // Define the type for ingredients
     type Ingredient = {
@@ -219,11 +219,11 @@ export async function PUT(
 }
 
 // DELETE a recipe
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -231,7 +231,7 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
-    const recipeId = params.id;
+    const recipeId = id;
 
     // Get the recipe
     const recipe = await prisma.recipe.findUnique({

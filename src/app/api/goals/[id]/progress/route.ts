@@ -1,14 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // GET /api/goals/[id]/progress - Obtener actualizaciones de progreso de un objetivo
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const segments = url.pathname.split("/");
+    const id = segments[segments.indexOf("goals") + 1];
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -29,7 +30,7 @@ export async function GET(
     // Verificar que el objetivo pertenece al usuario
     const goal = await prisma.goal.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -44,7 +45,7 @@ export async function GET(
     // Obtener actualizaciones de progreso
     const progressUpdates = await prisma.goalProgress.findMany({
       where: {
-        goalId: params.id,
+        goalId: id,
       },
       orderBy: {
         date: "asc",
@@ -62,18 +63,19 @@ export async function GET(
 }
 
 // POST /api/goals/[id]/progress - Añadir una actualización de progreso
-export async function POST(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const segments = url.pathname.split("/");
+    const id = segments[segments.indexOf("goals") + 1];
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { value, date, notes } = body;
 
     const user = await prisma.user.findUnique({
@@ -90,7 +92,7 @@ export async function POST(
     // Verificar que el objetivo pertenece al usuario
     const goal = await prisma.goal.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -120,7 +122,7 @@ export async function POST(
     // Crear nueva actualización de progreso
     const newProgressUpdate = await prisma.goalProgress.create({
       data: {
-        goalId: params.id,
+        goalId: id,
         value: Number.parseFloat(value),
         date: new Date(date),
         notes,
@@ -171,7 +173,7 @@ export async function POST(
     // Actualizar el objetivo
     await prisma.goal.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
         currentValue: value,

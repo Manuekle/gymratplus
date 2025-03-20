@@ -1,15 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 const prisma = new PrismaClient();
 
 // GET a specific food
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -17,7 +17,7 @@ export async function GET(
     }
 
     const userId = session.user.id;
-    const foodId = params.id;
+    const foodId = id;
 
     const food = await prisma.food.findUnique({
       where: {
@@ -45,11 +45,11 @@ export async function GET(
 }
 
 // PUT update a food
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -57,8 +57,8 @@ export async function PUT(
     }
 
     const userId = session.user.id;
-    const foodId = params.id;
-    const data = await req.json();
+    const foodId = id;
+    const data = await request.json();
 
     // Get the food
     const food = await prisma.food.findUnique({
@@ -124,11 +124,11 @@ export async function PUT(
 }
 
 // DELETE a food
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -136,7 +136,7 @@ export async function DELETE(
     }
 
     const userId = session.user.id;
-    const foodId = params.id;
+    const foodId = id;
 
     // Get the food
     const food = await prisma.food.findUnique({

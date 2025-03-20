@@ -1,15 +1,14 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
 // GET /api/progress/[id] - Obtener un registro específico
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -29,7 +28,7 @@ export async function GET(
 
     const progressEntry = await prisma.weight.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -52,18 +51,18 @@ export async function GET(
 }
 
 // PUT /api/progress/[id] - Actualizar un registro específico
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { weight, bodyFatPercentage, muscleMassPercentage, date, notes } =
       body;
 
@@ -81,7 +80,7 @@ export async function PUT(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.weight.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -96,7 +95,7 @@ export async function PUT(
     // Actualizar el registro
     const updatedEntry = await prisma.weight.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
         weight: weight !== undefined ? Number.parseFloat(weight) : undefined,
@@ -128,13 +127,13 @@ export async function PUT(
       });
 
       // Si este registro es el más reciente con peso, actualizar el perfil
-      if (latestRecord && latestRecord.id === params.id) {
+      if (latestRecord && latestRecord.id === id) {
         await prisma.profile.upsert({
           where: { userId: user.id },
-          update: { currentWeight: weight.toString() }, // Usar currentWeight y convertir a string
+          update: { currentWeight: weight.toString() },
           create: {
             userId: user.id,
-            currentWeight: weight.toString(), // Usar currentWeight y convertir a string
+            currentWeight: weight.toString(),
           },
         });
       }
@@ -151,11 +150,11 @@ export async function PUT(
 }
 
 // DELETE /api/progress/[id] - Eliminar un registro específico
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -176,7 +175,7 @@ export async function DELETE(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.weight.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -194,7 +193,7 @@ export async function DELETE(
     // Eliminar el registro
     await prisma.weight.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
@@ -215,10 +214,10 @@ export async function DELETE(
       if (latestRecord && latestRecord.weight) {
         await prisma.profile.upsert({
           where: { userId: user.id },
-          update: { currentWeight: latestRecord.weight.toString() }, // Usar currentWeight y convertir a string
+          update: { currentWeight: latestRecord.weight.toString() },
           create: {
             userId: user.id,
-            currentWeight: latestRecord.weight.toString(), // Usar currentWeight y convertir a string
+            currentWeight: latestRecord.weight.toString(),
           },
         });
       }
