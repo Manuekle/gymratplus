@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const workout = await prisma.workout.findUnique({
+    const workout = (await prisma.workout.findUnique({
       where: { id: id, userId: session.user.id },
       include: {
         exercises: {
@@ -34,7 +34,25 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    });
+    })) as {
+      id: string;
+      userId: string;
+      name: string;
+      createdAt: Date;
+      updatedAt: Date;
+      description: string | null;
+      exercises: {
+        id: string;
+        sets: number;
+        reps: number;
+        weight: number;
+        restTime: number;
+        order: number;
+        notes: string;
+        exercise: { id: string; name: string };
+      }[];
+      goal: string;
+    };
 
     if (!workout) {
       return NextResponse.json(
@@ -49,8 +67,8 @@ export async function GET(request: NextRequest) {
       name: workout.name,
       description: workout.description,
       days: formatWorkoutPlan(workout.exercises),
-      type: workout.type,
-      methodology: workout.methodology,
+      // type: workout.type,
+      // methodology: workout.methodology,
       goal: workout.goal,
     };
 
@@ -65,9 +83,41 @@ export async function GET(request: NextRequest) {
 }
 
 // Format workout plan for response
-function formatWorkoutPlan(workoutExercises) {
+interface WorkoutExercise {
+  id: string;
+  sets: number;
+  reps: number;
+  weight: number;
+  restTime: number;
+  order: number;
+  notes: string;
+  exercise: {
+    id: string;
+    name: string;
+  };
+}
+
+interface FormattedExercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime: number;
+  notes: string;
+}
+
+interface FormattedWorkoutDay {
+  day: string;
+  exercises: FormattedExercise[];
+}
+
+function formatWorkoutPlan(
+  workoutExercises: WorkoutExercise[]
+): FormattedWorkoutDay[] {
   // Agrupar ejercicios por grupo muscular
-  const exercisesByDay = workoutExercises.reduce((acc, ex) => {
+  const exercisesByDay = workoutExercises.reduce<
+    Record<string, WorkoutExercise[]>
+  >((acc, ex) => {
     // Extraer el grupo muscular del campo notes
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
     const muscleGroup = muscleGroupMatch
