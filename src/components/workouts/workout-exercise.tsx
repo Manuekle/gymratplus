@@ -144,7 +144,7 @@ export default function WorkoutExercise({
                   placeholder="Sets"
                   value={exerciseData.sets}
                   onChange={(e) =>
-                    setExerciseData({ ...exerciseData, sets: +e.target.value })
+                    setExerciseData({ ...exerciseData, sets: e.target.value })
                   }
                   required
                 />
@@ -164,7 +164,7 @@ export default function WorkoutExercise({
                   placeholder="Reps"
                   value={exerciseData.reps}
                   onChange={(e) =>
-                    setExerciseData({ ...exerciseData, reps: +e.target.value })
+                    setExerciseData({ ...exerciseData, reps: e.target.value })
                   }
                   required
                 />
@@ -189,7 +189,7 @@ export default function WorkoutExercise({
                   onChange={(e) =>
                     setExerciseData({
                       ...exerciseData,
-                      restTime: +e.target.value,
+                      restTime: e.target.value,
                     })
                   }
                 />
@@ -211,7 +211,7 @@ export default function WorkoutExercise({
                   onChange={(e) =>
                     setExerciseData({
                       ...exerciseData,
-                      weight: +e.target.value,
+                      weight: e.target.value,
                     })
                   }
                 />
