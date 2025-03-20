@@ -316,6 +316,7 @@ export async function getOrCreateExercises() {
 
 // Determine the best workout type based on user profile and history
 export function getRecommendedWorkoutType(profile: {
+  experienceLevel: string;
   goal: string | null;
   id: string;
   userId: string;
@@ -341,7 +342,14 @@ export function getRecommendedWorkoutType(profile: {
   waterIntake: number | null;
   notificationsActive: boolean;
 }) {
-  const { trainingFrequency, goal, activityLevel, experienceLevel } = profile;
+  const trainingFrequency = profile?.trainingFrequency ?? 0;
+  const goal = profile?.goal ?? "";
+  const activityLevel = profile?.activityLevel ?? "";
+  const experienceLevel = profile?.experienceLevel ?? "";
+
+  if (!experienceLevel) {
+    console.warn("experienceLevel no está definido en profile");
+  }
 
   // Para principiantes o personas con tiempo limitado
   if (
