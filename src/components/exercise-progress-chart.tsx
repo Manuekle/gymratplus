@@ -325,7 +325,7 @@ export function ExerciseProgressChart() {
                   fontSize: 12,
                   color: isDark ? "#e5e7eb" : "#1f2937",
                 }}
-                formatter={(value, name, props) => {
+                formatter={(value, _name, props) => {
                   // Mapear el dataKey al nombre correcto en español
                   const exerciseNames = {
                     benchPress: "Press banca",
