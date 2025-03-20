@@ -61,13 +61,6 @@ export default function FoodSelector({
     { value: "grasa", label: "Grasas" },
   ];
 
-  useEffect(() => {
-    fetchFoods();
-    if (mealType) {
-      fetchSuggestions();
-    }
-  }, [fetchFoods, fetchSuggestions, mealType]);
-
   const fetchFoods = useCallback(async () => {
     setLoading(true);
     try {
@@ -105,6 +98,13 @@ export default function FoodSelector({
       console.error("Error fetching suggestions:", error);
     }
   }, [mealType]);
+
+  useEffect(() => {
+    fetchFoods();
+    if (mealType) {
+      fetchSuggestions();
+    }
+  }, [fetchFoods, fetchSuggestions, mealType]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
