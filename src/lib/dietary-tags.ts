@@ -6,29 +6,34 @@ export type DietaryTag =
   | "keto"
   | "low-carb"
   | "high-protein"
-  | "paleo"
+  | "paleo";
 
 // Function to determine dietary tags based on food properties
 export function getDietaryTags(food: {
-  category: string
-  carbs: number
-  protein: number
-  fat: number
+  category: string;
+  name: string;
+  carbs: number;
+  protein: number;
+  fat: number;
 }): DietaryTag[] {
-  const tags: DietaryTag[] = []
+  const tags: DietaryTag[] = [];
 
   // Vegetarian tags (all plant-based foods)
   if (["carbohidrato", "verdura", "fruta", "grasa"].includes(food.category)) {
-    tags.push("vegetarian")
+    tags.push("vegetarian");
   }
 
   // Vegan tags (exclude animal products)
   if (
     ["carbohidrato", "verdura", "fruta"].includes(food.category) ||
     (food.category === "grasa" &&
-      !["Mantequilla", "Ghee (mantequilla clarificada)", "Yema de huevo"].includes(food.name))
+      ![
+        "Mantequilla",
+        "Ghee (mantequilla clarificada)",
+        "Yema de huevo",
+      ].includes(food.name))
   ) {
-    tags.push("vegan")
+    tags.push("vegan");
   }
 
   // Gluten-free (exclude wheat-based products)
@@ -42,7 +47,7 @@ export function getDietaryTags(food: {
       "Pan de pita integral",
     ].includes(food.name)
   ) {
-    tags.push("gluten-free")
+    tags.push("gluten-free");
   }
 
   // Dairy-free (exclude dairy products)
@@ -56,22 +61,22 @@ export function getDietaryTags(food: {
       "Ghee (mantequilla clarificada)",
     ].includes(food.name)
   ) {
-    tags.push("dairy-free")
+    tags.push("dairy-free");
   }
 
   // Keto (high fat, low carb)
   if (food.carbs <= 5 && food.fat >= 10) {
-    tags.push("keto")
+    tags.push("keto");
   }
 
   // Low-carb
   if (food.carbs <= 10) {
-    tags.push("low-carb")
+    tags.push("low-carb");
   }
 
   // High-protein
   if (food.protein >= 15) {
-    tags.push("high-protein")
+    tags.push("high-protein");
   }
 
   // Paleo (exclude processed foods, grains, legumes, dairy)
@@ -88,11 +93,13 @@ export function getDietaryTags(food: {
         "Tempeh",
         "Seitán",
       ].includes(food.name)) ||
-    (food.category === "grasa" && ["Aceite de oliva", "Nueces", "Almendras", "Aguacate"].includes(food.name))
+    (food.category === "grasa" &&
+      ["Aceite de oliva", "Nueces", "Almendras", "Aguacate"].includes(
+        food.name
+      ))
   ) {
-    tags.push("paleo")
+    tags.push("paleo");
   }
 
-  return tags
+  return tags;
 }
-
