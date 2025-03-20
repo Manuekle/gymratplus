@@ -75,19 +75,18 @@ export default function ProfilePage() {
                   <Calendar01Icon className="h-4 w-4 mr-1" />
                   <span>
                     Se unió en{" "}
-                    {(session?.user as { profile?: { createdAt?: string } })
-                      ?.profile?.createdAt
-                      ? new Date(
-                          (
-                            session?.user as {
-                              profile?: { createdAt?: string };
-                            }
-                          )?.profile?.createdAt
-                        ).toLocaleDateString("es-ES", {
-                          month: "long",
-                          year: "numeric",
-                        })
-                      : ""}
+                    {(() => {
+                      // Obtain the createdAt value
+                      const createdAt = (
+                        session?.user as { profile?: { createdAt?: string } }
+                      )?.profile?.createdAt;
+                      return createdAt
+                        ? new Date(createdAt).toLocaleDateString("es-ES", {
+                            month: "long",
+                            year: "numeric",
+                          })
+                        : "";
+                    })()}
                   </span>
                 </div>
               </div>
