@@ -11,7 +11,7 @@ interface CustomSession extends Session {
     email?: string | null;
     id?: string | null;
     image?: string | null;
-    profile?: any; // Define the type of profile if known
+    profile?: unknown; // Define the type of profile if known
   };
 }
 import { useRouter } from "next/navigation";
@@ -28,7 +28,7 @@ export default function OnboardingPage() {
   return (
     <main className="flex justify-center items-center min-h-screen p-4 md:p-8">
       <CustomSonner position="top-center" />
-      <StepOnboarding1 onComplete={() => console.log("Form completed")} />
+      <StepOnboarding1 />
     </main>
   );
 }

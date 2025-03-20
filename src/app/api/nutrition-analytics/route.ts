@@ -2,14 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import {
-  startOfWeek,
-  endOfWeek,
-  startOfDay,
-  endOfDay,
-  addDays,
-  format,
-} from "date-fns";
+import { startOfWeek, startOfDay, endOfDay, addDays, format } from "date-fns";
 
 const prisma = new PrismaClient();
 

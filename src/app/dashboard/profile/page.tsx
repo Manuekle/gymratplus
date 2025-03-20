@@ -23,7 +23,7 @@ import {
 } from "hugeicons-react";
 
 export default function ProfilePage() {
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing] = useState(false);
 
   const { data: session } = useSession();
   console.log(session);
