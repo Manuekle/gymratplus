@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
@@ -139,7 +138,7 @@ export async function POST(req: NextRequest) {
 }
 
 // PUT seed the database with initial foods
-export async function PUT(req: NextRequest) {
+export async function PUT() {
   try {
     const session = await getServerSession(authOptions);
 
