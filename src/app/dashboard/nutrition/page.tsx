@@ -158,7 +158,20 @@ export default function NutritionPage() {
     // Si no hay usuario en la sesión, no hacemos nada
     if (!session?.user) return;
 
-    const profile = (session.user as any)?.profile;
+    interface ExtendedSessionUser {
+      profile: {
+        id: string;
+        dailyCalorieTarget: number | string;
+        dailyProteinTarget: number | string;
+        dailyCarbTarget: number | string;
+        dailyFatTarget: number | string;
+        waterIntake: number | string;
+        goal: string;
+        createdAt: string;
+        updatedAt: string;
+      };
+    }
+    const profile = (session.user as ExtendedSessionUser)?.profile;
     if (!profile) return;
 
     analyticsData("today");

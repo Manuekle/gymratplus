@@ -39,7 +39,16 @@ export default function WorkoutPage() {
   useEffect(() => {
     if (!session?.user) return;
 
-    const profile = (session.user as any)?.profile;
+    const profile = (
+      session.user as {
+        profile?: {
+          id: string;
+          activityLevel: string;
+          dailyActivity: string;
+          trainingFrequency: number;
+        };
+      }
+    )?.profile;
 
     if (!profile) return;
 
