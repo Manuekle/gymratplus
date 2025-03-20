@@ -16,7 +16,12 @@ export async function GET(req: NextRequest) {
     const url = new URL(req.url);
     const startDate = url.searchParams.get("startDate");
     const endDate = url.searchParams.get("endDate");
-    const exercise = url.searchParams.get("exercise"); // 'benchPress', 'squat', 'deadlift', 'all'
+    const exercise = url.searchParams.get("exercise") as
+      | "benchPress"
+      | "squat"
+      | "deadlift"
+      | "all"
+      | null; // 'benchPress', 'squat', 'deadlift', 'all'
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -40,15 +45,15 @@ export async function GET(req: NextRequest) {
 
     // Añadir filtros de fecha si están presentes
     if (startDate) {
-      query.where.date = {
-        ...(query.where.date || {}),
+      query.where!.date = {
+        ...(typeof query.where!.date === "object" ? query.where!.date : {}),
         gte: new Date(startDate),
       };
     }
 
     if (endDate) {
-      query.where.date = {
-        ...(query.where.date || {}),
+      query.where!.date = {
+        ...(typeof query.where!.date === "object" ? query.where!.date : {}),
         lte: new Date(endDate),
       };
     }
@@ -62,7 +67,9 @@ export async function GET(req: NextRequest) {
       };
 
       // Añadir solo el ejercicio solicitado
-      query.select[exercise] = true;
+      if (exercise in query.select) {
+        query.select[exercise as "benchPress" | "squat" | "deadlift"] = true;
+      }
     }
 
     const progressData = await prisma.exerciseProgress.findMany(query);
