@@ -15,7 +15,7 @@ import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 
 interface CalorieChartProps {
-  chartData: { dayLabel: string; calories: number }[];
+  chartData: { dayLabel: string; date: string; calories: number }[];
 }
 
 export function CalorieChart({ chartData }: CalorieChartProps) {
