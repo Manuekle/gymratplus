@@ -2,7 +2,6 @@
 // app/api/auth/register/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
 import bcrypt from "bcryptjs";
 import { Redis } from "@upstash/redis";
 
