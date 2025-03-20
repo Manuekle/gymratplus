@@ -88,7 +88,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 }
 
 // Create a nutrition plan based on user profile
-interface NutritionProfile {
+export interface NutritionProfile {
   userId: string;
   goal: "lose-weight" | "maintain" | "gain-muscle" | string;
   dietaryPreference: "vegetarian" | "keto" | "no-preference" | string;
@@ -116,7 +116,7 @@ interface MealLog {
   entries: { foodId: number | string; quantity: number; food?: Food }[];
 }
 
-export interface NutritionPlan {
+interface NutritionPlan {
   macros: Macros;
   meals: {
     breakfast: MealLog;

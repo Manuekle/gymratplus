@@ -7,7 +7,10 @@ import {
   createWorkoutPlan,
   getRecommendedWorkoutType,
 } from "@/lib/workout-utils";
-import { createNutritionPlan } from "@/lib/nutrition-utils";
+import {
+  createNutritionPlan,
+  type NutritionProfile,
+} from "@/lib/nutrition-utils";
 
 export async function POST() {
   try {
