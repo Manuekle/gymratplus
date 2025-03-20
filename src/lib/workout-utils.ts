@@ -759,7 +759,7 @@ export async function createUpperLowerSplit(
     (e: { muscleGroup: string }) => e.muscleGroup === "core"
   );
 
-  // Determine workout structure based on training frequency
+  // Determine workout structure based on training frequencya
   const workoutDays = Math.min(trainingFrequency, 4); // Cap at 4 days for upper/lower
 
   // Create workout days
