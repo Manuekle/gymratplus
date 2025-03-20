@@ -89,7 +89,7 @@ export default function NutritionSummary() {
 
     const profile = (session.user as Session["user"] & { profile: UserProfile })
       .profile;
-    if (!profile) return;
+    if (!profile || !profile.nutrition) return;
 
     analyticsData("today");
     // Configurar el usuario solo si hay cambios en la sesión
