@@ -96,7 +96,8 @@ export default function HealthPage() {
 
   // Calculate BMI
   const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
-  const weight = user?.weight.current;
+  // Modified: use optional chaining to access user.weight.current safely.
+  const weight = user?.weight?.current;
   const bmi = weight && heightInMeters ? weight / heightInMeters ** 2 : 0;
   console.log(bmi);
   const bodyFat = 18;
@@ -123,7 +124,8 @@ export default function HealthPage() {
                   Peso Actual
                 </div>
                 <div className="text-2xl font-bold">
-                  {user?.weight.current} kg
+                  {/* Modified: access weight.current safely */}
+                  {user?.weight?.current} kg
                 </div>
               </div>
 
