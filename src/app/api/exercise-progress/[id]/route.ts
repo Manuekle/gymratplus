@@ -1,12 +1,12 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,8 +14,6 @@ export async function GET(
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-
-    const { id } = context.params;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -30,7 +28,7 @@ export async function GET(
 
     const progressEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: id,
+        id: params.id,
         userId: user.id,
       },
     });
@@ -57,8 +55,8 @@ export async function GET(
 
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
 export async function PUT(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -66,8 +64,6 @@ export async function PUT(
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-
-    const { id } = context.params;
 
     const body = await request.json();
     const { benchPress, squat, deadlift, date, notes } = body;
@@ -86,7 +82,7 @@ export async function PUT(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: id,
+        id: params.id,
         userId: user.id,
       },
     });
@@ -101,7 +97,7 @@ export async function PUT(
     // Actualizar el registro
     const updatedEntry = await prisma.exerciseProgress.update({
       where: {
-        id: id,
+        id: params.id,
       },
       data: {
         benchPress:
@@ -129,8 +125,8 @@ export async function PUT(
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
-  request: NextRequest,
-  context: { params: { id: string } }
+  request: Request,
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -138,8 +134,6 @@ export async function DELETE(
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
-
-    const { id } = context.params;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
@@ -155,7 +149,7 @@ export async function DELETE(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: id,
+        id: params.id,
         userId: user.id,
       },
     });
@@ -170,7 +164,7 @@ export async function DELETE(
     // Eliminar el registro
     await prisma.exerciseProgress.delete({
       where: {
-        id: id,
+        id: params.id,
       },
     });
 
