@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 
 // Get or create exercises in the database
 export async function getOrCreateExercises() {

@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import type { Food } from "@prisma/client";
 import { foodsToCreate } from "@/data/food";
 // Get or create foods in the database
