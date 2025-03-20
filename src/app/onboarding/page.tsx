@@ -3,17 +3,18 @@
 import { CustomSonner } from "@/components/custom-sonner";
 import StepOnboarding1 from "@/components/onboarding/step-1";
 import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
+import { DefaultSession } from "next-auth";
 
-interface CustomSession extends Session {
+interface CustomSession {
   user: {
+    id: string; // ✅ Ahora es obligatorio
     name?: string | null;
     email?: string | null;
-    id?: string | null;
     image?: string | null;
-    profile?: unknown; // Define the type of profile if known
-  };
+    profile?: unknown; // Define mejor este tipo si lo conoces
+  } & DefaultSession["user"];
 }
+
 import { useRouter } from "next/navigation";
 
 export default function OnboardingPage() {

@@ -13,6 +13,14 @@ const redis = new Redis({
   token: process.env.KV_REST_API_TOKEN || "",
 });
 
+const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
+
+async function getUserIdFromSession() {
+  // Esta función es un placeholder. Implementa la lógica adecuada
+  // para obtener el userId de la sesión actual en el contexto de servidor.
+  return null;
+}
+
 // Definir un tipo de usuario extendido para incluir la contraseña
 interface CustomUser extends User {
   id: string;
@@ -95,14 +103,73 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           image: user.image,
         });
+        await redis.expire(`user:${user.id}:data`, 30 * 24 * 60 * 60); // 30 días
       }
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id as string;
+        // Registrar actividad para tracking de usuarios activos
+        await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
+          ex: 60 * 60 * 24 * 7, // Expira en 7 días
+        });
+
+        // Obtener datos básicos desde Redis
+        const userData = await redis.hgetall(`user:${token.id}:data`);
+
+        if (userData) {
+          session.user.name = userData.name;
+          session.user.email = userData.email;
+          session.user.image = userData.image;
+        }
+
+        // Obtener el perfil del usuario desde Redis o la BD
+        let profile = await redis.get(`profile:${token.id}`);
+
+        if (!profile) {
+          profile = await prisma.profile.findUnique({
+            where: { userId: token.id },
+          });
+
+          if (profile) {
+            await redis.set(`profile:${token.id}`, profile, {
+              ex: 60 * 60 * 24, // 24 horas
+            });
+          }
+        }
+
+        session.user.profile = profile || null;
       }
       return session;
+    },
+    async redirect({ url, baseUrl }) {
+      // Redireccionar a onboarding si el usuario no tiene un perfil completo
+      if (url.startsWith(baseUrl)) {
+        // Verificar si necesita completar onboarding
+        const userId = await getUserIdFromSession();
+        if (userId) {
+          // Intentar obtener el perfil desde caché primero
+          const profileCacheKey = `profile:${userId}`;
+          let profile = await redis.get(profileCacheKey);
+
+          if (!profile) {
+            // Si no está en caché, consultar base de datos
+            profile = await prisma.profile.findUnique({
+              where: { userId },
+            });
+
+            // Almacenar en caché para futuras consultas
+            if (profile) {
+              await redis.set(profileCacheKey, profile, {
+                ex: PROFILE_CACHE_TTL,
+              });
+            }
+          }
+        }
+        return url;
+      }
+      return baseUrl;
     },
   },
   pages: {
