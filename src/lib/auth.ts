@@ -49,12 +49,12 @@ export const authOptions = {
 
         // Intentar obtener el usuario desde la caché
         const cacheKey = `user:email:${credentials.email}`;
-        const cachedUser = await redis.get(cacheKey);
+        const cachedUser = await redis.get<string>(cacheKey);
 
         let user;
 
         if (cachedUser) {
-          user = cachedUser;
+          user = JSON.parse(cachedUser);
         } else {
           // Si no está en caché, buscar en la base de datos
           user = await prisma.user.findUnique({
@@ -63,7 +63,7 @@ export const authOptions = {
 
           // Guardar en caché si se encuentra
           if (user) {
-            await redis.set(cacheKey, user, {
+            await redis.set(cacheKey, JSON.stringify(user), {
               ex: 60 * 10, // 10 minutos
             });
           }
@@ -106,7 +106,13 @@ export const authOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({
+      token,
+      user,
+    }: {
+      token: Record<string, unknown>;
+      user?: { id: string; email: string; name: string; image: string };
+    }) {
       if (user) {
         token.id = user.id;
 
@@ -124,9 +130,23 @@ export const authOptions = {
       }
       return token;
     },
-    async session({ session, token }) {
+    async session({
+      session,
+      token,
+    }: {
+      session: {
+        user?: {
+          id: string;
+          name: string;
+          email: string;
+          image: string;
+          profile?: { height?: number; currentWeight?: number };
+        };
+      };
+      token: Record<string, unknown>;
+    }) {
       if (session.user) {
-        session.user.id = token.id;
+        session.user.id = token.id as string;
 
         // Registrar actividad para tracking de usuarios activos
         await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
@@ -137,31 +157,40 @@ export const authOptions = {
         const userData = await redis.hgetall(`user:${token.id}:data`);
 
         if (userData) {
-          session.user.name = userData.name;
-          session.user.email = userData.email;
-          session.user.image = userData.image;
+          session.user.name = userData.name as string;
+          session.user.email = userData.email as string;
+          session.user.image = userData.image as string;
         }
 
         // Obtener el perfil del usuario desde Redis o la BD
-        let profile = await redis.get(`profile:${token.id}`);
+        let profile: { height?: number; currentWeight?: number } | null =
+          await redis.get(`profile:${token.id}`);
 
         if (!profile) {
-          profile = await prisma.profile.findUnique({
-            where: { userId: token.id },
+          const dbProfile = await prisma.profile.findUnique({
+            where: { userId: token.id as string },
           });
 
-          if (profile) {
-            await redis.set(`profile:${token.id}`, profile, {
+          if (dbProfile) {
+            profile = {
+              height: dbProfile.height
+                ? parseFloat(dbProfile.height)
+                : undefined,
+              currentWeight: dbProfile.currentWeight
+                ? parseFloat(dbProfile.currentWeight)
+                : undefined,
+            };
+            await redis.set(`profile:${token.id}`, JSON.stringify(profile), {
               ex: 60 * 60 * 24, // 24 horas
             });
           }
         }
 
-        session.user.profile = profile || null;
+        session.user.profile = profile || undefined;
       }
       return session;
     },
-    async redirect({ url, baseUrl }) {
+    async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
       // Redireccionar a onboarding si el usuario no tiene un perfil completo
       if (url.startsWith(baseUrl)) {
         // Verificar si necesita completar onboarding
@@ -185,7 +214,12 @@ export const authOptions = {
             }
           }
 
-          if (!profile || !profile.height || !profile.currentWeight) {
+          const parsedProfile = profile ? JSON.parse(profile as string) : null;
+          if (
+            !parsedProfile ||
+            !parsedProfile.height ||
+            !parsedProfile.currentWeight
+          ) {
             return `${baseUrl}/`;
           }
         }
@@ -203,11 +237,11 @@ export const authOptions = {
 
   // Eventos para mantener caché sincronizada
   events: {
-    createUser: async ({ user }) => {
+    createUser: async ({ user }: { user: { email: string } }) => {
       // Invalidar caché después de crear usuario
       await redis.del(`user:email:${user.email}`);
     },
-    updateUser: async ({ user }) => {
+    updateUser: async ({ user }: { user: { id: string } }) => {
       // Obtener el perfil actualizado
       const updatedProfile = await prisma.profile.findUnique({
         where: { userId: user.id },
@@ -219,7 +253,7 @@ export const authOptions = {
         });
       }
     },
-    signOut: async ({ token }) => {
+    signOut: async ({ token }: { token: Record<string, unknown> }) => {
       // Opcional: Limpiar datos de sesión específicos al cerrar sesión
       if (token?.id) {
         await redis.del(`user:${token.id}:lastActive`);
