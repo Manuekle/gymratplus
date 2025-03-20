@@ -1351,7 +1351,6 @@ export async function createLegWorkout(
   const legExercises = exercises.filter((e) => e.muscleGroup === "piernas");
 
   // Get sets and reps based on goal
-  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
   const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
   // Asegurarse de que hay al menos un ejercicio
@@ -1371,16 +1370,16 @@ export async function createLegWorkout(
     // Movimientos compuestos primero
     {
       exercise: exercise1,
-      sets: compoundSettings.sets,
-      reps: compoundSettings.reps,
-      restTime: compoundSettings.restTime,
+      sets: isolationSettings.sets,
+      reps: isolationSettings.reps,
+      restTime: isolationSettings.restTime,
       notes: `${muscleGroupName} - Cuádriceps principal`,
     },
     {
       exercise: exercise2,
-      sets: compoundSettings.sets - 1,
-      reps: compoundSettings.reps + 2,
-      restTime: compoundSettings.restTime - 30,
+      sets: isolationSettings.sets - 1,
+      reps: isolationSettings.reps + 2,
+      restTime: isolationSettings.restTime - 30,
       notes: `${muscleGroupName} - Isquiotibiales`,
     },
     {
@@ -1529,7 +1528,6 @@ export async function createCoreWorkout(
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
 
   // Get sets and reps based on goal
-  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
   const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
   // Asegurarse de que hay al menos un ejercicio
