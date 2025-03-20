@@ -722,7 +722,14 @@ export async function createFullBodyWorkout(
 
   // Save all exercises to the database
   return prisma.$transaction(
-    workoutExercises.map((ex) => prisma.workoutExercise.create({ data: ex }))
+    workoutExercises.map((ex) =>
+      prisma.workoutExercise.create({
+        data: {
+          ...ex,
+          exerciseId: ex.exerciseId.toString(), // Conversión a string
+        },
+      })
+    )
   );
 }
 
