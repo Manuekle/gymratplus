@@ -159,7 +159,7 @@ export async function POST() {
     // const workoutType = getRecommendedWorkoutType(profile);
     const updatedProfile = {
       ...profile,
-      experienceLevel: profile.userId ?? "", // Valor por defecto
+      experienceLevel: "beginner", // Assume user is a beginner for now
     };
 
     const workoutType = getRecommendedWorkoutType(updatedProfile);
