@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
@@ -7,10 +6,7 @@ import { authOptions } from "@/lib/auth";
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
   request: Request,
-  {
-    params,
-    searchParams,
-  }: { params: { id: string }; searchParams: URLSearchParams }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -60,10 +56,7 @@ export async function GET(
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
 export async function PUT(
   request: Request,
-  {
-    params,
-    searchParams,
-  }: { params: { id: string }; searchParams: URLSearchParams }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -133,10 +126,7 @@ export async function PUT(
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
   request: Request,
-  {
-    params,
-    searchParams,
-  }: { params: { id: string }; searchParams: URLSearchParams }
+  { params }: { params: { id: string } }
 ) {
   try {
     const session = await getServerSession(authOptions);
