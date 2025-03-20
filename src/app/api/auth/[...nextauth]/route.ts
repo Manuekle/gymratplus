@@ -15,7 +15,7 @@ const redis = new Redis({
 // Cache de perfiles de usuario, para evitar consultas repetidas
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
-export const authOptions = {
+const authOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
