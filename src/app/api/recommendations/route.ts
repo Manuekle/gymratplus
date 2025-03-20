@@ -155,7 +155,13 @@ export async function POST() {
     }
 
     // Generate new workout plan based on profile and history
-    const workoutType = getRecommendedWorkoutType(profile);
+    // const workoutType = getRecommendedWorkoutType(profile);
+    const updatedProfile = {
+      ...profile,
+      experienceLevel: profile.experienceLevel ?? "", // Valor por defecto
+    };
+
+    const workoutType = getRecommendedWorkoutType(updatedProfile);
 
     // Determinar la metodología basada en el objetivo
     let methodology = "standard";
