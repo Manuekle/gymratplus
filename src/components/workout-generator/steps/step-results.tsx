@@ -1,7 +1,7 @@
 "use client";
 
 import { CardDescription, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
   DialogDescription,
@@ -10,25 +10,27 @@ import {
 } from "@/components/ui/dialog";
 import { Calendar01Icon } from "hugeicons-react";
 
-interface Exercise {
-  name: string;
-  notes?: string;
-  sets: number;
-  reps?: number;
-  restTime: number;
-}
+// type Exercise = {
+//   name: string;
+//   notes?: string;
+//   sets: number;
+//   reps: number;
+//   restTime: number;
+// };
 
-interface Day {
+type Day = {
   day: string;
-  exercises: Exercise[];
-}
+  exercises: string[];
+};
 
-interface Workout {
+type Workout = {
+  id: string;
   name: string;
+  exercises: string[];
   description: string;
   type: string;
   days: Day[];
-}
+};
 
 interface StepResultsProps {
   workout: Workout;
@@ -80,7 +82,7 @@ export function StepResults({ workout }: StepResultsProps) {
             </div>
           </div>
         </div>
-        <div className="pt-4">
+        {/* <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
             <TabsList className="w-full mb-4 flex flex-wrap h-auto ">
               {workout.days.map((day, index) => (
@@ -144,7 +146,7 @@ export function StepResults({ workout }: StepResultsProps) {
               ))}
             </div>
           </Tabs>
-        </div>
+        </div> */}
         {/* <div className="flex justify-end pt-4">
           <Button>
             <a href="/workout-generator">Crear otro</a>

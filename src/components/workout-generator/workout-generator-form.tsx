@@ -36,10 +36,21 @@ export function WorkoutGeneratorForm() {
     name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [workoutResult, setWorkoutResult] = useState<Record<
-    string,
-    unknown
-  > | null>(null);
+  type Day = {
+    day: string;
+    exercises: string[];
+  };
+
+  type Workout = {
+    id: string;
+    name: string;
+    exercises: string[];
+    description: string;
+    type: string;
+    days: Day[];
+  };
+
+  const [workoutResult, setWorkoutResult] = useState<Workout | null>(null);
 
   const totalSteps = 5;
 
@@ -144,7 +155,7 @@ export function WorkoutGeneratorForm() {
           />
         );
       case 6:
-        return <StepResults workout={workoutResult} />;
+        return <StepResults workout={workoutResult!} />;
       default:
         return null;
     }
