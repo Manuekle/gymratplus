@@ -139,9 +139,36 @@ export async function POST(request: Request) {
 }
 
 // Format workout plan for response
-function formatWorkoutPlan(workoutExercises) {
+interface WorkoutExercise {
+  id: string;
+  name?: string;
+  sets: number;
+  reps: number;
+  restTime: number | null;
+  notes?: string | null;
+}
+
+interface FormattedExercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime: number;
+  notes: string;
+}
+
+interface FormattedWorkoutDay {
+  day: string;
+  exercises: FormattedExercise[];
+}
+
+function formatWorkoutPlan(
+  workoutExercises: WorkoutExercise[]
+): FormattedWorkoutDay[] {
   // Agrupar ejercicios por grupo muscular
-  const exercisesByDay = workoutExercises.reduce((acc, ex) => {
+  const exercisesByDay = workoutExercises.reduce<
+    Record<string, WorkoutExercise[]>
+  >((acc, ex) => {
     // Extraer el grupo muscular del campo notes
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
     const muscleGroup = muscleGroupMatch
@@ -162,7 +189,7 @@ function formatWorkoutPlan(workoutExercises) {
         name: ex.name || "Ejercicio",
         sets: ex.sets,
         reps: ex.reps,
-        restTime: ex.restTime,
+        restTime: ex.restTime ?? 0,
         notes: ex.notes?.replace(/^[^-]+ - /, "") || "",
       })),
     };
