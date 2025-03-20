@@ -67,7 +67,7 @@ export function MealLogCalendar() {
         throw new Error("Error al cargar los registros de comidas");
       }
 
-      const data = await response.json();
+      const data = (await response.json()) as MealLog[]; // Added type assertion
       console.log(data);
 
       // Extraer fechas únicas con comidas y asegurar que estén en la zona horaria local
