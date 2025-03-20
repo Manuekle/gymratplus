@@ -1,13 +1,16 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 
 import { prisma } from "@/lib/prisma";
 
+interface RouteParams {
+  params: {
+    id: string;
+  };
+}
+
 // GET /api/exercise-progress/[id] - Obtener un registro específico
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession();
 
@@ -54,10 +57,7 @@ export async function GET(
 }
 
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
-export async function PUT(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession();
 
@@ -65,7 +65,7 @@ export async function PUT(
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const body = await req.json();
+    const body = await request.json();
     const { benchPress, squat, deadlift, date, notes } = body;
 
     const user = await prisma.user.findUnique({
@@ -124,10 +124,7 @@ export async function PUT(
 }
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await getServerSession();
 
