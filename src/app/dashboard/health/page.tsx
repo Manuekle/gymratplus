@@ -33,10 +33,7 @@ interface UserProfile {
   id: string;
   gender: string;
   height: number;
-  weight: {
-    current: number;
-    target: number;
-  };
+  currentWeight: number;
   activity: {
     level: string;
     daily: string;
@@ -56,6 +53,7 @@ interface UserProfile {
 
 export default function HealthPage() {
   const { data: session } = useSession();
+  console.log(session);
 
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -63,27 +61,23 @@ export default function HealthPage() {
     if (!session?.user) return;
 
     const profile = (session.user as { profile: UserProfile })?.profile;
-
     if (!profile) return;
 
     setUser({
       id: profile.id,
       gender: profile.gender,
       height: Number(profile.height),
-      weight: {
-        current: Number(profile.weight.current),
-        target: Number(profile.weight.target),
-      },
+      currentWeight: Number(profile.currentWeight),
       activity: {
-        level: profile.activity.level,
-        daily: profile.activity.daily,
-        trainingFrequency: Number(profile.activity.trainingFrequency),
+        level: profile.activity?.level || "",
+        daily: profile.activity?.daily || "",
+        trainingFrequency: Number(profile.activity?.trainingFrequency || 0),
       },
       nutrition: {
-        calorieTarget: Number(profile.nutrition.calorieTarget),
-        proteinTarget: Number(profile.nutrition.proteinTarget),
-        carbTarget: Number(profile.nutrition.carbTarget),
-        fatTarget: Number(profile.nutrition.fatTarget),
+        calorieTarget: Number(profile.nutrition?.calorieTarget || 0),
+        proteinTarget: Number(profile.nutrition?.proteinTarget || 0),
+        carbTarget: Number(profile.nutrition?.carbTarget || 0),
+        fatTarget: Number(profile.nutrition?.fatTarget || 0),
       },
       waterIntake: Number(profile.waterIntake),
       goal: profile.goal,
@@ -97,7 +91,7 @@ export default function HealthPage() {
   // Calculate BMI
   const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
   // Modified: use optional chaining to access user.weight.current safely.
-  const weight = user?.weight?.current;
+  const weight = user?.currentWeight;
   const bmi = weight && heightInMeters ? weight / heightInMeters ** 2 : 0;
   console.log(bmi);
   const bodyFat = 18;
@@ -125,7 +119,7 @@ export default function HealthPage() {
                 </div>
                 <div className="text-2xl font-bold">
                   {/* Modified: access weight.current safely */}
-                  {user?.weight?.current} kg
+                  {user?.currentWeight} kg
                 </div>
               </div>
 
