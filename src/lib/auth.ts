@@ -1,10 +1,12 @@
-// src/lib/auth.ts (o cualquier otra ubicación)
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
+import { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { Redis } from "@upstash/redis";
+import { Session, User } from "next-auth";
+import { JWT } from "next-auth/jwt";
 
 // Inicializar cliente de Redis con Upstash
 const redis = new Redis({
@@ -12,17 +14,7 @@ const redis = new Redis({
   token: process.env.KV_REST_API_TOKEN || "",
 });
 
-// Cache de perfiles de usuario, para evitar consultas repetidas
-const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
-
-// Función mejorada para obtener el ID de usuario de la sesión
-async function getUserIdFromSession() {
-  // Esta función es un placeholder. Implementa la lógica adecuada
-  // para obtener el userId de la sesión actual en el contexto de servidor.
-  return null;
-}
-
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -51,7 +43,7 @@ export const authOptions = {
         const cacheKey = `user:email:${credentials.email}`;
         const cachedUser = await redis.get<string>(cacheKey);
 
-        let user;
+        let user: User | null;
 
         if (cachedUser) {
           user = JSON.parse(cachedUser);
@@ -78,18 +70,9 @@ export const authOptions = {
           user.password
         );
 
-        const failedLoginKey = `failed:login:${credentials.email}`;
-
         if (!isPasswordValid) {
-          // Registrar intentos fallidos para posible rate limiting
-          await redis.incr(failedLoginKey);
-          await redis.expire(failedLoginKey, 60 * 30); // Expira en 30 minutos
-
           throw new Error("Contraseña inválida");
         }
-
-        // Limpiar contador de intentos fallidos después de un inicio de sesión exitoso
-        await redis.del(failedLoginKey);
 
         return {
           id: user.id,
@@ -101,22 +84,13 @@ export const authOptions = {
     }),
   ],
   session: {
-    strategy: "jwt" as const,
-    // Aumentar maxAge para sesiones más largas
+    strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({
-      token,
-      user,
-    }: {
-      token: Record<string, unknown>;
-      user?: { id: string; email: string; name: string; image: string };
-    }) {
+    async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.id = user.id;
-
-        // Almacenar datos básicos en Redis para acceso rápido
         await redis.hset(`user:${user.id}:data`, {
           id: user.id,
           email: user.email,
@@ -124,45 +98,23 @@ export const authOptions = {
           image: user.image,
           lastLogin: new Date().toISOString(),
         });
-
-        // Establecer expiración
         await redis.expire(`user:${user.id}:data`, 30 * 24 * 60 * 60); // 30 días
       }
       return token;
     },
-    async session({
-      session,
-      token,
-    }: {
-      session: {
-        user?: {
-          id: string;
-          name: string;
-          email: string;
-          image: string;
-          profile?: { height?: number; currentWeight?: number };
-        };
-      };
-      token: Record<string, unknown>;
-    }) {
+    async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = token.id as string;
 
-        // Registrar actividad para tracking de usuarios activos
-        await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
-          ex: 60 * 60 * 24 * 7, // Expira en 7 días
-        });
-
         // Obtener datos básicos desde Redis
         const userData = await redis.hgetall(`user:${token.id}:data`);
-
         if (userData) {
           session.user.name = userData.name as string;
           session.user.email = userData.email as string;
           session.user.image = userData.image as string;
         }
 
-        // Obtener el perfil del usuario desde Redis o la BD
+        // Obtener perfil del usuario
         let profile: { height?: number; currentWeight?: number } | null =
           await redis.get(`profile:${token.id}`);
 
@@ -191,41 +143,7 @@ export const authOptions = {
       return session;
     },
     async redirect({ url, baseUrl }: { url: string; baseUrl: string }) {
-      // Redireccionar a onboarding si el usuario no tiene un perfil completo
-      if (url.startsWith(baseUrl)) {
-        // Verificar si necesita completar onboarding
-        const userId = await getUserIdFromSession();
-        if (userId) {
-          // Intentar obtener el perfil desde caché primero
-          const profileCacheKey = `profile:${userId}`;
-          let profile = await redis.get(profileCacheKey);
-
-          if (!profile) {
-            // Si no está en caché, consultar base de datos
-            profile = await prisma.profile.findUnique({
-              where: { userId },
-            });
-
-            // Almacenar en caché para futuras consultas
-            if (profile) {
-              await redis.set(profileCacheKey, profile, {
-                ex: PROFILE_CACHE_TTL,
-              });
-            }
-          }
-
-          const parsedProfile = profile ? JSON.parse(profile as string) : null;
-          if (
-            !parsedProfile ||
-            !parsedProfile.height ||
-            !parsedProfile.currentWeight
-          ) {
-            return `${baseUrl}/`;
-          }
-        }
-        return url;
-      }
-      return baseUrl;
+      return url.startsWith(baseUrl) ? url : baseUrl;
     },
   },
   pages: {
@@ -234,32 +152,4 @@ export const authOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",
-
-  // Eventos para mantener caché sincronizada
-  events: {
-    createUser: async ({ user }: { user: { email: string } }) => {
-      // Invalidar caché después de crear usuario
-      await redis.del(`user:email:${user.email}`);
-    },
-    updateUser: async ({ user }: { user: { id: string } }) => {
-      // Obtener el perfil actualizado
-      const updatedProfile = await prisma.profile.findUnique({
-        where: { userId: user.id },
-      });
-
-      if (updatedProfile) {
-        await redis.set(`profile:${user.id}`, updatedProfile, {
-          ex: 60 * 60 * 24, // 24 horas
-        });
-      }
-    },
-    signOut: async ({ token }: { token: Record<string, unknown> }) => {
-      // Opcional: Limpiar datos de sesión específicos al cerrar sesión
-      if (token?.id) {
-        await redis.del(`user:${token.id}:lastActive`);
-        await redis.del(`user:${token.id}:data`);
-        await redis.del(`profile:${token.id}`);
-      }
-    },
-  },
 };
