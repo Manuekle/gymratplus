@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 
 import {
@@ -11,7 +12,7 @@ import {
 } from "@/lib/workout-utils";
 
 export async function GET() {
-  const session = await getServerSession();
+  const session = await getServerSession(authRoute);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
@@ -30,7 +31,7 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession();
+  const session = await getServerSession(authRoute);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 

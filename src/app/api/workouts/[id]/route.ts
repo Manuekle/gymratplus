@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 
 export async function GET(
@@ -10,7 +11,7 @@ export async function GET(
   //   return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
   // }
 
-  const session = await getServerSession();
+  const session = await getServerSession(authRoute);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
@@ -102,7 +103,7 @@ export async function PUT(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession();
+  const session = await getServerSession(authRoute);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
@@ -159,7 +160,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession();
+  const session = await getServerSession(authRoute);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 

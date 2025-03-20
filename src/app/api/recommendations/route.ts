@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
-
+import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import {
   getOrCreateExercises,
   createWorkoutPlan,
@@ -11,7 +12,7 @@ import { createNutritionPlan } from "@/lib/nutrition-utils";
 
 export async function POST() {
   try {
-    const session = await getServerSession();
+    const session = await getServerSession(authRoute);
     if (!session || !session.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
