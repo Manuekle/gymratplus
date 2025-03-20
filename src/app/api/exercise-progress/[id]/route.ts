@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
-  context: { params: { id: string } } // changed: removed inline destructuring from parameter
+  req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     const session = await getServerSession();
 
@@ -56,9 +56,8 @@ export async function GET(
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
 export async function PUT(
   req: NextRequest,
-  context: { params: { id: string } } // changed: removed inline destructuring from parameter
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     const session = await getServerSession();
 
@@ -126,9 +125,9 @@ export async function PUT(
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
-  context: { params: { id: string } } // changed: removed inline destructuring from parameter
+  req: NextRequest,
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   try {
     const session = await getServerSession();
 
