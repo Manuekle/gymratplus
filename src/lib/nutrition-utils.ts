@@ -116,7 +116,7 @@ interface MealLog {
   entries: { foodId: number | string; quantity: number; food?: Food }[];
 }
 
-interface NutritionPlan {
+export interface NutritionPlan {
   macros: Macros;
   meals: {
     breakfast: MealLog;

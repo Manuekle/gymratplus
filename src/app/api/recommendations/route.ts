@@ -7,7 +7,7 @@ import {
   createWorkoutPlan,
   getRecommendedWorkoutType,
 } from "@/lib/workout-utils";
-import { createNutritionPlan } from "@/lib/nutrition-utils";
+import { createNutritionPlan, NutritionProfile } from "@/lib/nutrition-utils";
 
 export async function POST() {
   try {
@@ -68,6 +68,9 @@ export async function POST() {
 
     // If recent plans exist, return them with some adaptive modifications
     if (existingWorkout) {
+      // Define adherence based on some logic or fetch it from the database
+      const adherence = { level: "medium", score: 75 }; // Example adherence data
+
       // Format existing workout with potential modifications based on adherence
       const workoutPlan = {
         id: existingWorkout.id,
@@ -77,8 +80,16 @@ export async function POST() {
           existingWorkout.exercises.map((we) => ({
             id: we.id,
             name: we.exercise.name,
-            sets: adaptSetsBasedOnProgress(we.sets, profile.goal),
-            reps: adaptRepsBasedOnProgress(we.reps, profile.goal),
+            sets: adaptSetsBasedOnProgress(
+              we.sets,
+              adherence,
+              profile.goal || "default-goal"
+            ),
+            reps: adaptRepsBasedOnProgress(
+              we.reps,
+              adherence,
+              profile.goal || "default-goal"
+            ),
             restTime: we.restTime,
             notes: we.notes || "General",
           }))
@@ -87,7 +98,15 @@ export async function POST() {
       };
 
       // Format nutrition plan if meal logs exist
-      const nutritionPlan = await createNutritionPlan(profile);
+      if (!profile.goal) {
+        return NextResponse.json(
+          { error: "Profile goal not set" },
+          { status: 400 }
+        );
+      }
+      const nutritionPlan = await createNutritionPlan(
+        profile as NutritionProfile
+      );
 
       return NextResponse.json({
         workoutPlan,

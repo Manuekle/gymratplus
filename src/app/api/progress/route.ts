@@ -41,15 +41,17 @@ export async function GET(req: NextRequest) {
 
     // Añadir filtros de fecha si están presentes
     if (startDate) {
+      query.where = query.where || {};
       query.where.date = {
-        ...(query.where.date || {}),
+        ...(typeof query.where.date === "object" ? query.where.date : {}),
         gte: new Date(startDate),
       };
     }
 
     if (endDate) {
+      query.where = query.where || {};
       query.where.date = {
-        ...(query.where.date || {}),
+        ...(typeof query.where.date === "object" ? query.where.date : {}),
         lte: new Date(endDate),
       };
     }
@@ -136,7 +138,7 @@ export async function POST(req: NextRequest) {
     const newProgressEntry = await prisma.weight.create({
       data: {
         userId: user.id,
-        weight: weight ? Number.parseFloat(weight) : undefined,
+        weight: weight ? Number.parseFloat(weight) : 0,
         bodyFatPercentage: bodyFatPercentage
           ? Number.parseFloat(bodyFatPercentage)
           : undefined,
