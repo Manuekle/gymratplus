@@ -4,11 +4,11 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 
 // GET /api/exercise-progress/[id] - Obtener un registro específico
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: Request) {
   try {
+    // Extraer el ID de la URL
+    const id = request.url.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -28,7 +28,7 @@ export async function GET(
 
     const progressEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -54,11 +54,11 @@ export async function GET(
 }
 
 // PUT /api/exercise-progress/[id] - Actualizar un registro específico
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: Request) {
   try {
+    // Extraer el ID de la URL
+    const id = request.url.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -82,7 +82,7 @@ export async function PUT(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -97,7 +97,7 @@ export async function PUT(
     // Actualizar el registro
     const updatedEntry = await prisma.exerciseProgress.update({
       where: {
-        id: params.id,
+        id: id,
       },
       data: {
         benchPress:
@@ -124,11 +124,11 @@ export async function PUT(
 }
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request) {
   try {
+    // Extraer el ID de la URL
+    const id = request.url.split("/").pop();
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -149,7 +149,7 @@ export async function DELETE(
     // Verificar que el registro pertenece al usuario
     const existingEntry = await prisma.exerciseProgress.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
       },
     });
@@ -164,7 +164,7 @@ export async function DELETE(
     // Eliminar el registro
     await prisma.exerciseProgress.delete({
       where: {
-        id: params.id,
+        id: id,
       },
     });
 
