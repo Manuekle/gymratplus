@@ -23,6 +23,7 @@ type Profile = {
   userId: string;
   gender?: string | null;
   goal?: string | null;
+  experienceLevel?: string | null;
   trainingFrequency?: number | null;
   dailyProteinTarget?: number | null;
   currentWeight?: string | null;
@@ -158,7 +159,7 @@ export async function POST() {
     // const workoutType = getRecommendedWorkoutType(profile);
     const updatedProfile = {
       ...profile,
-      experienceLevel: profile.experienceLevel ?? "", // Valor por defecto
+      experienceLevel: profile.userId ?? "", // Valor por defecto
     };
 
     const workoutType = getRecommendedWorkoutType(updatedProfile);
