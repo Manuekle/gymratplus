@@ -60,7 +60,8 @@ export default function HealthPage() {
   useEffect(() => {
     if (!session?.user) return;
 
-    const profile = (session.user as { profile: UserProfile })?.profile;
+    const profile = (session.user as unknown as { profile: UserProfile })
+      ?.profile;
     if (!profile) return;
 
     setUser({
