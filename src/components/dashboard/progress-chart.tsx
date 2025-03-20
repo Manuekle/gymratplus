@@ -32,6 +32,7 @@ import {
 } from "@/components/ui/select";
 import { NewProgress } from "../progress/new-progress";
 import ChartSkeleton from "../skeleton/charts-skeleton";
+import { ProgressRecord } from "@/types/progress"; // Import the type definition for progress records
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -44,8 +45,8 @@ export default function ProgressChart() {
   const [dataType, setDataType] = useState("weight");
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
   const [isLoading, setIsLoading] = useState(true);
-  const [chartData, setChartData] = useState<any[]>([]);
-  const [filteredData, setFilteredData] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<ProgressRecord[]>([]);
+  const [filteredData, setFilteredData] = useState<ProgressRecord[]>([]);
   const [progressStats, setProgressStats] = useState({
     change: 0,
     percentChange: 0,
@@ -58,7 +59,7 @@ export default function ProgressChart() {
 
   // Función para filtrar datos según el período de tiempo seleccionado
   const filterDataByTimePeriod = useCallback(
-    (data: any[], period: TimePeriod) => {
+    (data: ProgressRecord[], period: TimePeriod) => {
       if (period === "all" || !data.length) {
         return data;
       }

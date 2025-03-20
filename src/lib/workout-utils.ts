@@ -547,6 +547,12 @@ export async function createFullBodyWorkout(
   const workoutExercises = [];
   let order = 1;
 
+  // Get sets and reps based on goal
+  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
+
+  // Get sets and reps based on goal
+  const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
+
   // Filter exercises by muscle group
   const legExercises = exercises.filter((e) => e.muscleGroup === "piernas");
   const chestExercises = exercises.filter((e) => e.muscleGroup === "pecho");
@@ -570,7 +576,23 @@ export async function createFullBodyWorkout(
     const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
     // Adjust exercise selection for variety across days
-    let dayExercises = [
+    interface Exercise {
+      id: number;
+      name: string;
+      muscleGroup: string;
+      equipment: string;
+      description: string;
+    }
+
+    interface DayExercise {
+      exercise: Exercise;
+      sets: number;
+      reps: number;
+      restTime: number;
+      notes: string;
+    }
+
+    const dayExercises: DayExercise[] = [
       {
         exercise: legExercises[day % legExercises.length],
         sets: compoundSettings.sets,
@@ -678,7 +700,6 @@ export async function createUpperLowerSplit(
     const muscleGroupName = isUpperDay ? "Tren Superior" : "Tren Inferior";
 
     // Get sets and reps based on goal
-    const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
     const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
     let dayExercises = [];
