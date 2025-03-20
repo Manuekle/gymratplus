@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth/next";
-import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import {
   getOrCreateExercises,
   createWorkoutPlan,

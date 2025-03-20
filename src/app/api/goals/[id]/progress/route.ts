@@ -2,7 +2,6 @@ import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 import { prisma } from "@/lib/prisma";
-import { authRoute } from "@/app/api/auth/[...nextauth]/route";
 
 // GET /api/goals/[id]/progress - Obtener actualizaciones de progreso de un objetivo
 export async function GET(
