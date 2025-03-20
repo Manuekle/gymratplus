@@ -8,7 +8,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
-import { WorkoutTable, type Exercise } from "./workout-table";
+import { WorkoutTable, type Exercise } from "@/components/tables/workout-table";
 
 // Tipo para los días de entrenamiento
 export type WorkoutDay = {
