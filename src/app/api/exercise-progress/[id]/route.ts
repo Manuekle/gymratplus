@@ -5,7 +5,6 @@ import { prisma } from "@/lib/prisma";
 
 // GET /api/exercise-progress/[id] - Obtener un registro específico
 export async function GET(
-  req: NextRequest,
   context: { params: { id: string } } // changed: removed inline destructuring from parameter
 ) {
   const { params } = context;
@@ -127,7 +126,6 @@ export async function PUT(
 
 // DELETE /api/exercise-progress/[id] - Eliminar un registro específico
 export async function DELETE(
-  req: NextRequest,
   context: { params: { id: string } } // changed: removed inline destructuring from parameter
 ) {
   const { params } = context;
