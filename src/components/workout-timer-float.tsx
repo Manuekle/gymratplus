@@ -20,6 +20,7 @@ import {
   Cancel01Icon,
   ArrowExpandIcon,
 } from "hugeicons-react";
+import { Icons } from "./icons";
 
 interface WorkoutTimerFloatProps {
   workoutSessionId: string;
@@ -258,7 +259,9 @@ export default function WorkoutTimerFloat({
               disabled={loading}
               className="sm:flex-1"
             >
-              {loading ? <span className="animate-spin mr-2">⏳</span> : null}
+              {loading ? (
+                <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
+              ) : null}
               Completar entrenamiento
             </Button>
             <Button

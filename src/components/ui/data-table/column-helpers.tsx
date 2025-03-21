@@ -145,7 +145,7 @@ import {
 export function createDateColumn<T>(
   accessorKey: keyof T,
   header: string,
-  formatString = "d 'de' MMMM 'del' yyyy", // Cambié el formato aquí
+  formatString = "dd/MM/yyyy", // Cambio de formato a "28/03/2025"
   locale = es
 ): ColumnDef<T> {
   return {

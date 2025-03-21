@@ -68,7 +68,7 @@ export default function WorkoutsTable() {
   };
 
   const columns = [
-    createDateColumn<Workout>("createdAt", "Fecha", "d 'de' MMMM 'del' yyyy"),
+    createDateColumn<Workout>("createdAt", "Fecha", "dd/MM/yyyy"),
     createSortableColumn<Workout>("name", "Nombre"),
     // createSortableColumn<Workout>("description", "Descripción"),
     createActionsColumn<Workout>("", [
