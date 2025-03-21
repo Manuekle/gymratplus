@@ -3,8 +3,8 @@
 import type React from "react";
 
 import { signIn } from "next-auth/react";
-import { useState, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -18,21 +18,13 @@ import { Label } from "@/components/ui/label";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { Icons } from "@/components/icons";
+import { ErrorMessage } from "@/app/auth/signin/error-message";
 
 export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Handle search params with useEffect
-  useEffect(() => {
-    const error = searchParams?.get("error");
-    if (error) {
-      setErrorMessage("Error al iniciar sesión. Intenta de nuevo.");
-    }
-  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -86,6 +78,11 @@ export default function SignInPage() {
                 "Iniciar Sesión"
               )}
             </Button>
+            {/* Suspense boundary for useSearchParams */}
+            <Suspense fallback={null}>
+              <ErrorMessage />
+            </Suspense>
+
             {errorMessage && (
               <p className="text-[#E52020] text-xs text-center">
                 {errorMessage}
