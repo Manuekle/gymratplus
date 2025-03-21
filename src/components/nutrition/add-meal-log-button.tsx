@@ -920,7 +920,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 </TabsTrigger>
               </TabsList>
 
-              <ScrollArea className="h-[400px] mt-4 pr-4">
+              <ScrollArea className="h-[150px] md:h-[400px] mt-4 pr-4">
                 {renderFoodsList()}
               </ScrollArea>
             </Tabs>

@@ -15,6 +15,7 @@ import {
   StarCircleIcon,
 } from "hugeicons-react";
 import { toast } from "sonner";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Food = {
   id: string;
@@ -227,7 +228,7 @@ export default function FoodSelector({
         </TabsList>
       </Tabs>
 
-      <div className="h-[300px] overflow-y-auto rounded-md border bg-background p-1 no-scrollbar">
+      <ScrollArea className="h-[300px] mt-4 pr-4 rounded-md border bg-background">
         {loading ? (
           <div className="space-y-2 p-2">
             {Array(5)
@@ -279,7 +280,7 @@ export default function FoodSelector({
             ))}
           </div>
         )}
-      </div>
+      </ScrollArea>
 
       {selectedFoods.length > 0 && (
         <div className="space-y-4">

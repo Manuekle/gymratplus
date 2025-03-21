@@ -1,7 +1,7 @@
 "use client";
 
 import { CardDescription, CardTitle } from "@/components/ui/card";
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
   DialogDescription,
@@ -9,18 +9,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Calendar01Icon } from "hugeicons-react";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-// type Exercise = {
-//   name: string;
-//   notes?: string;
-//   sets: number;
-//   reps: number;
-//   restTime: number;
-// };
+type Exercise = {
+  name: string;
+  notes?: string;
+  sets: number;
+  reps?: number;
+  restTime: number;
+};
 
 type Day = {
   day: string;
-  exercises: string[];
+  exercises: Exercise[];
 };
 
 type Workout = {
@@ -82,7 +84,7 @@ export function StepResults({ workout }: StepResultsProps) {
             </div>
           </div>
         </div>
-        {/* <div className="pt-4">
+        <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
             <TabsList className="w-full mb-4 flex flex-wrap h-auto ">
               {workout.days.map((day, index) => (
@@ -92,7 +94,7 @@ export function StepResults({ workout }: StepResultsProps) {
               ))}
             </TabsList>
 
-            <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-hide no-scrollbar">
+            <ScrollArea className="h-[400px] mt-0 pr-4">
               {workout.days.map((day, dayIndex) => (
                 <TabsContent key={dayIndex} value={day.day}>
                   <div className="grid md:grid-cols-2 gap-6">
@@ -144,14 +146,19 @@ export function StepResults({ workout }: StepResultsProps) {
                   </div>
                 </TabsContent>
               ))}
-            </div>
+            </ScrollArea>
           </Tabs>
-        </div> */}
-        {/* <div className="flex justify-end pt-4">
-          <Button>
-            <a href="/workout-generator">Crear otro</a>
+        </div>
+        <div className="flex justify-end pt-5">
+          <Button
+            size="sm"
+            variant="outline"
+            className="text-xs"
+            onClick={() => window.location.reload()}
+          >
+            Cerrar
           </Button>
-        </div> */}
+        </div>
       </div>
     </div>
   );

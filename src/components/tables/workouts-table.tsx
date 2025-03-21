@@ -9,6 +9,7 @@ import {
   createSortableColumn,
   // createDateColumn,
   createActionsColumn,
+  createDateColumn,
 } from "@/components/ui/data-table";
 
 import { Delete01Icon, EyeIcon } from "hugeicons-react";
@@ -67,7 +68,7 @@ export default function WorkoutsTable() {
   };
 
   const columns = [
-    // createDateColumn<Workout>("createdAt", "Fecha", "dd MMM yyyy HH:mm"),
+    createDateColumn<Workout>("createdAt", "Fecha", "d 'de' MMMM 'del' yyyy"),
     createSortableColumn<Workout>("name", "Nombre"),
     // createSortableColumn<Workout>("description", "Descripción"),
     createActionsColumn<Workout>("", [

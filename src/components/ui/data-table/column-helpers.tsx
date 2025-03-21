@@ -145,7 +145,7 @@ import {
 export function createDateColumn<T>(
   accessorKey: keyof T,
   header: string,
-  formatString = "dd/MM/yyyy",
+  formatString = "d 'de' MMMM 'del' yyyy", // Cambié el formato aquí
   locale = es
 ): ColumnDef<T> {
   return {
@@ -165,10 +165,8 @@ export function createDateColumn<T>(
     cell: ({ row }) => {
       const value = row.getValue(accessorKey as string);
 
-      // Si no hay valor, mostrar un guión
       if (!value) return <div>-</div>;
 
-      // Convertir a fecha: si es string se analiza, si es una instancia de Date se usa, de lo contrario se crea una nueva fecha
       const date =
         typeof value === "string"
           ? parseISO(value)
@@ -176,7 +174,6 @@ export function createDateColumn<T>(
           ? value
           : new Date(value as string | number | Date);
 
-      // Formatear la fecha
       const formatted = format(date, formatString, { locale });
 
       return (
