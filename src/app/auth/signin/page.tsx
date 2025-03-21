@@ -53,7 +53,9 @@ export default function SignInPage() {
     <div className="flex h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl">Iniciar Sesión</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold tracking-tight">
+            Iniciar Sesión
+          </CardTitle>
           <CardDescription className="text-center text-xs">
             Ingresa a tu cuenta para acceder a tu perfil de fitness
           </CardDescription>
@@ -61,12 +63,28 @@ export default function SignInPage() {
         <CardContent className="space-y-4">
           <form onSubmit={handleLogin} className="space-y-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input id="email" name="email" type="email" required />
+              <Label className="text-xs md:text-sm" htmlFor="email">
+                Correo electrónico
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
+                id="email"
+                name="email"
+                type="email"
+                required
+              />
             </div>
             <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" name="password" type="password" required />
+              <Label className="text-xs md:text-sm" htmlFor="password">
+                Contraseña
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
+                id="password"
+                name="password"
+                type="password"
+                required
+              />
             </div>
             <Button
               size="sm"

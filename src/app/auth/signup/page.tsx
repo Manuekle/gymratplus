@@ -101,7 +101,9 @@ export default function SignUpPage() {
     <div className="flex h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl">Crear Cuenta</CardTitle>
+          <CardTitle className="text-center text-2xl font-bold tracking-tight">
+            Crear Cuenta
+          </CardTitle>
           <CardDescription className="text-center text-xs">
             Regístrate para acceder a todos los beneficios de la plataforma.
           </CardDescription>
@@ -109,20 +111,47 @@ export default function SignUpPage() {
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="name">Nombre</Label>
-              <Input id="name" name="name" type="text" required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="email">Correo electrónico</Label>
-              <Input id="email" name="email" type="email" required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Contraseña</Label>
-              <Input id="password" name="password" type="password" required />
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="repeatPassword">Repetir Contraseña</Label>
+              <Label className="text-xs md:text-sm" htmlFor="name">
+                Nombre
+              </Label>
               <Input
+                className="text-xs md:text-sm"
+                id="name"
+                name="name"
+                type="text"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs md:text-sm" htmlFor="email">
+                Correo electrónico
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
+                id="email"
+                name="email"
+                type="email"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs md:text-sm" htmlFor="password">
+                Contraseña
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
+                id="password"
+                name="password"
+                type="password"
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs md:text-sm" htmlFor="repeatPassword">
+                Repetir Contraseña
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
                 id="repeatPassword"
                 name="repeatPassword"
                 type="password"
