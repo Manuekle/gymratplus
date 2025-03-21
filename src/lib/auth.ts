@@ -157,8 +157,8 @@ export const authOptions: NextAuthOptions = {
         )) as Record<string, string | undefined>;
 
         if (userData) {
-          session.user.name = userData.name ?? null;
-          session.user.email = userData.email ?? null;
+          session.user.name = userData.name ?? "";
+          session.user.email = userData.email ?? "";
           session.user.image = userData.image ?? null;
         }
 
