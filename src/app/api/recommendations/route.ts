@@ -80,6 +80,17 @@ export async function POST() {
       take: 10,
     });
 
+    // if no exist insert currentWeight in weight
+    if (!weightHistory.length) {
+      await prisma.weight.create({
+        data: {
+          userId,
+          weight: Number(profile.currentWeight) || 0, // Asegura que sea un número
+          date: new Date(),
+        },
+      });
+    }
+
     // Check if user already has a recent workout plan (less than 2 weeks old)
     const existingWorkout = await prisma.workout.findFirst({
       where: {
