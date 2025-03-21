@@ -56,8 +56,10 @@ export default function WorkoutModal() {
       </DialogTrigger>
       <DialogContent className="space-y-0 w-full">
         <DialogHeader>
-          <DialogTitle>Crear nueva rutina</DialogTitle>
-          <DialogDescription className="text-xs text-zinc-500">
+          <DialogTitle className="text-md font-medium">
+            Crear nueva rutina
+          </DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
             Dale un nombre de acuerdo a tu rutina
           </DialogDescription>
         </DialogHeader>

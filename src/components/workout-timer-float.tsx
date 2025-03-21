@@ -229,8 +229,10 @@ export default function WorkoutTimerFloat({
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>¿Qué deseas hacer con este entrenamiento?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-md font-medium">
+              ¿Qué deseas hacer con este entrenamiento?
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
               Puedes completar el entrenamiento para guardarlo en tu historial o
               descartarlo completamente.
             </DialogDescription>
@@ -247,17 +249,20 @@ export default function WorkoutTimerFloat({
 
           <DialogFooter className="flex flex-col sm:flex-row gap-2">
             <Button
+              size="sm"
               variant="outline"
               onClick={() => setShowConfirmDialog(false)}
+              className="text-xs"
               disabled={loading}
             >
               Cancelar
             </Button>
             <Button
+              size="sm"
               variant="default"
               onClick={completeWorkout}
               disabled={loading}
-              className="sm:flex-1"
+              className="sm:flex-1 text-xs"
             >
               {loading ? (
                 <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
@@ -265,7 +270,8 @@ export default function WorkoutTimerFloat({
               Completar entrenamiento
             </Button>
             <Button
-              className="bg-[#DE3163] text-white hover:bg-[#DE3163]/80"
+              size="sm"
+              className="bg-[#DE3163] text-white hover:bg-[#DE3163]/80 text-xs"
               onClick={discardWorkout}
               disabled={loading}
             >

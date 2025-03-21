@@ -93,7 +93,7 @@ export default function WorkoutExercise({
           <DialogTitle className="text-md font-medium">
             Añadir Nuevo Ejercicio
           </DialogTitle>
-          <DialogDescription className="text-xs text-zinc-500">
+          <DialogDescription className="text-xs text-muted-foreground">
             Ingresa los datos del ejercicio que deseas agregar
           </DialogDescription>
         </DialogHeader>

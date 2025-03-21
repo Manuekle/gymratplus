@@ -18,7 +18,7 @@ export function StepName({ value, onChange }: StepNameProps) {
   return (
     <div className="space-y-6 py-4">
       <DialogHeader>
-        <DialogTitle className="font-medium">
+        <DialogTitle className="font-medium text-md">
           Dale un nombre a tu entrenamiento
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

@@ -36,7 +36,7 @@ export function StepResults({ workout }: StepResultsProps) {
         </p>
       </div> */}
       <DialogHeader>
-        <DialogTitle className="font-medium">
+        <DialogTitle className="font-medium text-md">
           ¡Tu entrenamiento está listo!
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

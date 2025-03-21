@@ -231,7 +231,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           <DialogTitle className="text-md font-medium">
             Selecciona el día de entrenamiento
           </DialogTitle>
-          <DialogDescription className="text-xs text-zinc-500">
+          <DialogDescription className="text-xs text-muted-foreground">
             {workout.name}
           </DialogDescription>
         </DialogHeader>
@@ -350,7 +350,10 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 size="sm"
               >
                 {loading ? (
-                  <Icons.spinner className="h-4 w-4 animate-spin" />
+                  <span className="flex flex-row items-center gap-2">
+                    <Icons.spinner className="h-4 w-4 animate-spin" />
+                    <h1>Iniciando</h1>
+                  </span>
                 ) : (
                   "Iniciar rutina"
                 )}
