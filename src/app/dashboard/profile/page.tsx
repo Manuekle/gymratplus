@@ -94,7 +94,7 @@ export default function ProfilePage() {
     }
   };
 
-  const [email, setEmail] = useState(session?.user?.email || "");
+  // const [email, setEmail] = useState(session?.user?.email || "");
   const [phone, setPhone] = useState(
     (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
@@ -122,7 +122,7 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
+          // email,
           phone,
           experienceLevel,
         }),
@@ -290,7 +290,7 @@ export default function ProfilePage() {
                     disabled
                     className="text-sm"
                     id="email"
-                    onChange={(e) => setEmail(e.target.value)}
+                    // onChange={(e) => setEmail(e.target.value)}
                     defaultValue={session?.user?.email || ""}
                   />
                 </div>

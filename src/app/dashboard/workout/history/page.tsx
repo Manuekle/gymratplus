@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   ArrowLeft01Icon,
   Calendar01Icon,
@@ -17,7 +18,7 @@ import { es } from "date-fns/locale";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
-import { Icons } from "@/components/icons";
+// import { Icons } from "@/components/icons";
 
 export default function WorkoutHistory() {
   const router = useRouter();
@@ -114,9 +115,55 @@ export default function WorkoutHistory() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Icons.spinner className="h-12 w-12 text-muted-foreground animate-spin" />
-      </div>
+      <>
+        <div className="mb-4 flex justify-between w-full items-center pb-2">
+          <Button variant="outline" className="w-32">
+            <Skeleton className="h-4 w-full" />
+          </Button>
+        </div>
+        {/* Skeleton de estadísticas */}
+        <Skeleton className="h-4 w-56 mb-2" />
+        <div className="grid grid-cols-4 gap-4 pb-6 pt-6">
+          {Array(4)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i} className="px-4 py-8 flex flex-row justify-between">
+                <div>
+                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-8 w-16" />
+                </div>
+                <Skeleton className="h-8 w-8 rounded-full" />
+              </Card>
+            ))}
+        </div>
+
+        {/* Skeleton de Tabs */}
+        <div className="flex gap-4 pb-6">
+          <Skeleton className="h-8 w-20 rounded-md" />
+          <Skeleton className="h-8 w-24 rounded-md" />
+          <Skeleton className="h-8 w-28 rounded-md" />
+        </div>
+
+        {/* Skeleton de tarjetas de entrenamiento */}
+        <div className="grid grid-cols-3 gap-4">
+          {Array(6)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i} className="p-4 space-y-4">
+                <Skeleton className="h-6 w-32" />
+                <Skeleton className="h-4 w-40" />
+
+                <div className="grid grid-cols-3 gap-2">
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                  <Skeleton className="h-8 w-full" />
+                </div>
+
+                <Skeleton className="h-10 w-full rounded-md" />
+              </Card>
+            ))}
+        </div>
+      </>
     );
   }
 

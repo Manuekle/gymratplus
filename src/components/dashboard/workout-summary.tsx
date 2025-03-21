@@ -51,7 +51,7 @@ export default function WorkoutSummary() {
           <h2 className="text-lg font-bold">Resumen de Entrenamientos</h2>
         </div>
         <Link
-          href="workout/history"
+          href="/dashboard/workout/history"
           className="text-xs text-gray-500 flex items-center gap-1"
         >
           Ver todos
