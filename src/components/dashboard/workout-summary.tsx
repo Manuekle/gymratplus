@@ -54,7 +54,7 @@ export default function WorkoutSummary() {
         </div>
         <Link
           href="/dashboard/workout/history"
-          className="text-xs text-muted-foreground flex items-center gap-1  w-1/6 justify-end"
+          className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
         >
           Ver todos
           <ArrowRight01Icon className="h-4 w-4 text-muted-foreground" />
