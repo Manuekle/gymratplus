@@ -85,7 +85,7 @@ export function Navbar() {
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                 >
                   <Door01Icon className="mr-2 h-4 w-4" />
-                  <span>Cerrar sesión</span>
+                  <span className="text-xs">Cerrar sesión</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

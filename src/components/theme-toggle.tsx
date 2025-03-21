@@ -15,12 +15,12 @@ export function ThemeToggle() {
       {theme === "dark" ? (
         <>
           <Sun02Icon className="mr-2 h-4 w-4" />
-          <span>Modo Claro</span>
+          <span className="text-xs">Modo Claro</span>
         </>
       ) : (
         <>
           <Moon02Icon className="mr-2 h-4 w-4" />
-          <span>Modo Oscuro</span>
+          <span className="text-xs">Modo Oscuro</span>
         </>
       )}
     </DropdownMenuItem>
