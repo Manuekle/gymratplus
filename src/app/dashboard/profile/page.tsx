@@ -157,7 +157,7 @@ export default function ProfilePage() {
         <CardContent className="pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="flex flex-col items-center md:items-start relative">
-              {session?.user?.image && (
+              {(session?.user?.image && (
                 <div className="relative group">
                   <Avatar className="h-24 w-24 border-4 border-background">
                     <AvatarImage
@@ -179,7 +179,36 @@ export default function ProfilePage() {
                         document.getElementById("profile-image-upload")?.click()
                       }
                     >
-                      <span className="text-white text-xs">Cambiar</span>
+                      <span className="text-white text-xs">cambiar</span>
+                      <input
+                        id="profile-image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </div>
+                  )}
+                </div>
+              )) || (
+                <div className="relative group">
+                  <Avatar className="h-24 w-24 border-4 border-background">
+                    <AvatarFallback className="text-2xl">
+                      {session?.user?.name
+                        ?.split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <div
+                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      onClick={() =>
+                        document.getElementById("profile-image-upload")?.click()
+                      }
+                    >
+                      <span className="text-white text-xs">cambiar</span>
                       <input
                         id="profile-image-upload"
                         type="file"

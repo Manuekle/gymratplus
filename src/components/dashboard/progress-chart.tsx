@@ -354,8 +354,15 @@ export default function ProgressChart() {
             </button>
           </div>
         ) : chartData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-gray-500 mb-4">No hay datos disponibles</p>
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <p className="text-sm text-muted-foreground">
+              No hay datos disponibles
+            </p>
+            <NewProgress
+              onSuccess={() => {
+                loadData();
+              }}
+            />
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
@@ -431,7 +438,7 @@ export default function ProgressChart() {
           <p className="text-xs text-gray-500">
             {chartData.length > 0
               ? "Selecciona otro período para ver tu progreso"
-              : "Añade datos para ver tu progreso"}
+              : ""}
           </p>
         )}
       </div>
