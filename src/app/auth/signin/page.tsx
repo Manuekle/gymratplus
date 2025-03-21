@@ -109,7 +109,7 @@ export default function SignInPage() {
               {loadingGoogle ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Iniciando sesión con Google...
+                  Iniciando sesión con Google
                 </>
               ) : (
                 <>

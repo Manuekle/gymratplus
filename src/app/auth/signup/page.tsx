@@ -138,7 +138,7 @@ export default function SignUpPage() {
               {loading ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Registrando...
+                  Registrando
                 </>
               ) : (
                 "Registrarse"
