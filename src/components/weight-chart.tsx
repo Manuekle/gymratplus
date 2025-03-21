@@ -294,7 +294,7 @@ export function WeightChart() {
       {filteredData.length > 0 && weightChange && (
         <div className="text-center">
           <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             {weightChange.change < 0
               ? `Has perdido ${Math.abs(weightChange.change).toFixed(
                   1

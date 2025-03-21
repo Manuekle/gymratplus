@@ -65,13 +65,15 @@ export default function UpcomingEvents() {
           {/* <Calendar className="h-5 w-5 text-blue-500" /> */}
           <h2 className="text-lg font-bold">Eventos Próximos</h2>
         </div>
-        <Button className="text-xs text-gray-500 flex items-center gap-1">
+        <Button className="text-xs text-muted-foreground flex items-center gap-1">
           Ver calendario <ArrowRight01Icon className="h-4 w-4" />
         </Button>
       </div>
 
       <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-500">{todayFormatted}</h3>
+        <h3 className="text-sm font-medium text-muted-foreground">
+          {todayFormatted}
+        </h3>
       </div>
 
       <div className="space-y-3">
@@ -91,12 +93,12 @@ export default function UpcomingEvents() {
               <div>
                 <p
                   className={`font-medium ${
-                    event.completed ? "text-gray-500 line-through" : ""
+                    event.completed ? "text-muted-foreground line-through" : ""
                   }`}
                 >
                   {event.title}
                 </p>
-                <p className="text-xs text-gray-500">{event.time}</p>
+                <p className="text-xs text-muted-foreground">{event.time}</p>
               </div>
             </div>
             {event.completed ? (
@@ -121,7 +123,7 @@ export default function UpcomingEvents() {
                 key={day}
                 className="flex-1 text-center p-2 rounded-lg border"
               >
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted-foreground">
                   {dayNames[futureDate.getDay()].slice(0, 3)}
                 </p>
                 <p className="text-lg font-bold">{futureDate.getDate()}</p>

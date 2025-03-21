@@ -148,7 +148,7 @@ export default function GoalForm({
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6 relative">
         <Button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
+          className="absolute top-4 right-4 text-muted-foreground hover:text-gray-700"
         >
           <X size={20} />
         </Button>

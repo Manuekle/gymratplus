@@ -142,9 +142,14 @@ export function MealLogList({
   return (
     <div className="space-y-6">
       {sortedMealTypes.map((mealType) => (
-        <div key={mealType} className="p-4 border rounded-lg">
+        <div
+          key={mealType}
+          className="md:p-4 p-0 md:border border-0 rounded-lg"
+        >
           <div className="flex items-baseline justify-between">
-            <h3 className="font-medium">{getMealTypeLabel(mealType)}</h3>
+            <h3 className="font-bold tracking-tight text-lg">
+              {getMealTypeLabel(mealType)}
+            </h3>
           </div>
 
           {mealsByType[mealType].map((meal) => (
@@ -155,7 +160,7 @@ export function MealLogList({
                 </span>
                 <span className="flex flex-row gap-1 items-center">
                   {" "}
-                  <Badge variant="outline">
+                  <Badge variant="outline" className="text-xs">
                     {meal.calories}
                     kcal
                   </Badge>
@@ -175,7 +180,7 @@ export function MealLogList({
                 </span>
               </div>
               <div>
-                <div className="grid grid-cols-4 text-sm items-center">
+                <div className="grid grid-cols-4 text-xs md:text-sm items-center">
                   <div className="col-span-1">
                     {meal.food?.name || meal.recipe?.name}
                   </div>

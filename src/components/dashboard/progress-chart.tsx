@@ -278,7 +278,7 @@ export default function ProgressChart() {
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "weight"
                 ? "bg-[#578FCA] text-white"
-                : "text-gray-500 border"
+                : "text-muted-foreground border"
             }`}
           >
             Peso
@@ -290,7 +290,7 @@ export default function ProgressChart() {
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "bodyFat"
                 ? "bg-[#FBA518] text-white"
-                : "text-gray-500 border"
+                : "text-muted-foreground border"
             }`}
           >
             Grasa Corporal
@@ -302,7 +302,7 @@ export default function ProgressChart() {
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "muscle"
                 ? "bg-[#DE3163] text-white"
-                : "text-gray-500 border"
+                : "text-muted-foreground border"
             }`}
           >
             Masa Muscular
@@ -366,7 +366,7 @@ export default function ProgressChart() {
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-gray-500 mb-4">
+            <p className="text-muted-foreground mb-4">
               No hay datos para el período seleccionado
             </p>
           </div>
@@ -432,10 +432,12 @@ export default function ProgressChart() {
         {filteredData.length > 0 ? (
           <div>
             <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
-            <p className="text-xs text-gray-500 mt-1">{getProgressMessage()}</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              {getProgressMessage()}
+            </p>
           </div>
         ) : (
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-muted-foreground">
             {chartData.length > 0
               ? "Selecciona otro período para ver tu progreso"
               : ""}

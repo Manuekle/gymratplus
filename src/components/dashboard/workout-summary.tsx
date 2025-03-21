@@ -46,15 +46,15 @@ export default function WorkoutSummary() {
 
   return (
     <div className="p-6 rounded-lg shadow-sm border">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex items-center gap-2">
+      <div className="flex justify-between items-center w-full mb-4">
+        <div className="flex items-center gap-2 w-full">
           <h2 className="text-2xl font-bold tracking-tight">
             Resumen de Entrenamientos
           </h2>
         </div>
         <Link
           href="/dashboard/workout/history"
-          className="text-xs text-gray-500 flex items-center gap-1"
+          className="text-xs text-muted-foreground flex items-center gap-1  w-1/6 justify-end"
         >
           Ver todos
           <ArrowRight01Icon className="h-4 w-4 text-muted-foreground" />
@@ -68,7 +68,7 @@ export default function WorkoutSummary() {
             <span className="text-xl text-gray-400 font-bold">
               {currentWeek.completed}
             </span>
-            <span className="text-sm text-gray-500 ml-1">
+            <span className="text-sm text-muted-foreground ml-1">
               / {currentWeek.total} completados
             </span>
           </div>
@@ -76,7 +76,7 @@ export default function WorkoutSummary() {
 
         <div className="border p-4 rounded-lg">
           <p className="text-sm font-bold">Siguiente entrenamiento</p>
-          <p className="mt-1 text-sm font-medium text-gray-500">
+          <p className="mt-1 text-sm font-medium text-muted-foreground">
             {currentWeek.nextWorkout}
           </p>
         </div>
@@ -84,7 +84,7 @@ export default function WorkoutSummary() {
         <div className="border p-4 rounded-lg">
           <p className="text-sm font-bold">Progreso mensual</p>
           <div className="flex items-center mt-1">
-            <span className="text-xl font-bold text-gray-500">85%</span>
+            <span className="text-xl font-bold text-muted-foreground">85%</span>
           </div>
         </div>
       </div> */}
@@ -101,7 +101,7 @@ export default function WorkoutSummary() {
                   <Skeleton className="h-4 w-56" />
                   <Skeleton className="h-4 w-10" />
                 </div>
-                <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
+                <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                   <div className="flex items-center">
                     <Skeleton className="h-4 w-10" />
                   </div>
@@ -125,18 +125,18 @@ export default function WorkoutSummary() {
           workoutSessions.map((session) => (
             <div key={session.id} className="p-3 border rounded-lg">
               <div className="flex justify-between">
-                <h4 className="font-medium">
+                <h4 className="font-bold tracking-tight text-lg">
                   {" "}
                   {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                 </h4>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-muted-foreground">
                   {formatDistanceToNow(new Date(session.date), {
                     addSuffix: true,
                     locale: es,
                   })}
                 </span>
               </div>
-              <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
+              <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                 <div className="flex items-center">
                   <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
                   <span>

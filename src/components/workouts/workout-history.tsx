@@ -98,7 +98,7 @@ export default function WorkoutSummary() {
                     <Skeleton className="h-4 w-56" />
                     <Skeleton className="h-4 w-10" />
                   </div>
-                  <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
+                  <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                     <div className="flex items-center">
                       <Skeleton className="h-4 w-10" />
                     </div>
@@ -122,18 +122,18 @@ export default function WorkoutSummary() {
             workoutSessions.map((session) => (
               <div key={session.id} className="p-3 border rounded-lg">
                 <div className="flex justify-between">
-                  <h4 className="font-medium">
+                  <h4 className="font-bold tracking-tight text-lg">
                     {" "}
                     {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                   </h4>
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-muted-foreground">
                     {formatDistanceToNow(new Date(session.date), {
                       addSuffix: true,
                       locale: es,
                     })}
                   </span>
                 </div>
-                <div className="mt-2 flex items-center text-xs text-gray-500 space-x-4">
+                <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                   <div className="flex items-center">
                     <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
                     <span>

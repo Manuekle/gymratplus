@@ -149,7 +149,7 @@ export default function NutritionSummary() {
         </div>
         <Link
           href="/dashboard/nutrition"
-          className="text-xs text-gray-500 flex items-center gap-1"
+          className="text-xs text-muted-foreground flex items-center gap-1"
         >
           Ver mas <ArrowRight01Icon className="h-4 w-4" />
         </Link>
@@ -211,7 +211,7 @@ export default function NutritionSummary() {
                   Completado
                 </span>
               ) : (
-                <span className="text-xs text-gray-500">Pendiente</span>
+                <span className="text-xs text-muted-foreground">Pendiente</span>
               )}
             </div>
           ))}

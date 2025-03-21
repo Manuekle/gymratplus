@@ -300,7 +300,7 @@ export default function StepOnboarding1() {
                   className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     step <= currentStep
                       ? "bg-zinc-900 text-white dark:bg-white dark:text-black border"
-                      : "bg-background dark:bg-background border text-gray-500 dark:text-gray-300"
+                      : "bg-background dark:bg-background border text-muted-foreground dark:text-gray-300"
                   }`}
                 >
                   {step + 1}

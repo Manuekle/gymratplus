@@ -199,7 +199,7 @@ export default function WorkoutHistory() {
           >
             <ArrowLeft01Icon className="h-4 w-4 mr-2" /> Volver a la lista
           </Button>
-          <CardTitle className="text-md pt-4">
+          <CardTitle className="text-2xl font-bold tracking-tight pt-4">
             Historial de entrenamientos
           </CardTitle>
         </div>
