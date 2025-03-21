@@ -446,6 +446,32 @@ function generateRecommendations(
 
   return recommendations;
 }
+const translationDictionary: Record<string, string> = {
+  workoutType: "Tipo de entrenamiento",
+  workoutPlan: "Plan de entrenamiento",
+  standard: "Estándar",
+  goal: "Objetivo",
+  maintain: "Mantener",
+  "lose-weight": "Perder peso",
+  "gain-muscle": "Ganar músculo",
+  methodology: "Metodología",
+  gender: "Género",
+  male: "Masculino",
+  female: "Femenino",
+  trainingFrequency: "Frecuencia de entrenamiento",
+  daysPerWeek: "días por semana",
+  userId: "ID de usuario",
+  name: "Nombre",
+  description: "Descripción",
+  days: "Días",
+  type: "Tipo",
+  exercises: "Ejercicios",
+  unknownExercise: "Ejercicio desconocido",
+};
+
+const translate = (key: string): string => {
+  return translationDictionary[key] ?? key;
+};
 
 // Generate and save a new workout plan
 async function generateAndSaveWorkoutPlan(
@@ -459,12 +485,16 @@ async function generateAndSaveWorkoutPlan(
   // Create a new workout in the database
   const workout = await prisma.workout.create({
     data: {
-      name: `${workoutType} Plan (${getGoalText(goal || "maintain")})`,
-      description: `Personalized ${workoutType} workout plan with ${methodology} methodology for ${
+      name: `${translate(workoutType)} Plan (${translate(
+        getGoalText(goal || "maintain")
+      )})`,
+      description: `Plan de entrenamiento personalizado de ${translate(
+        workoutType
+      )} con metodología ${translate(methodology)} para ${translate(
         gender === "male" ? "male" : "female"
-      } with ${getGoalText(goal || "maintain")} goal and ${
-        trainingFrequency || 3
-      } days per week frequency.`,
+      )}, con objetivo de ${translate(
+        getGoalText(goal || "maintain")
+      )} y una frecuencia de ${trainingFrequency || 3} días por semana.`,
       userId: userId,
     },
   });
@@ -492,7 +522,9 @@ async function generateAndSaveWorkoutPlan(
       });
       return {
         ...exercise,
-        name: exerciseDetails ? exerciseDetails.name : "Unknown Exercise",
+        name: exerciseDetails
+          ? exerciseDetails.name
+          : translate("unknownExercise"),
       };
     })
   );
@@ -502,8 +534,8 @@ async function generateAndSaveWorkoutPlan(
     name: workout.name,
     description: workout.description,
     days: formatWorkoutPlan(workoutExercisesWithNames),
-    type: workoutType,
-    methodology,
+    type: translate(workoutType),
+    methodology: translate(methodology),
   };
 }
 
