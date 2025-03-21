@@ -84,17 +84,21 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-medium">Actualizar progreso</DialogTitle>
+          <DialogTitle className="text-2xl font-bold tracking-tight">
+            Actualizar progreso
+          </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="date">Fecha</Label>
+            <Label className="text-xs md:text-sm" htmlFor="date">
+              Fecha
+            </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
+                    "w-full justify-start text-left font-normal text-xs md:text-sm",
                     !date && "text-muted-foreground"
                   )}
                 >
@@ -119,8 +123,11 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="value">Valor actual ({goal.unit || ""})</Label>
+            <Label className="text-xs md:text-sm" htmlFor="value">
+              Valor actual ({goal.unit || ""})
+            </Label>
             <Input
+              className="text-xs md:text-sm"
               id="value"
               type="number"
               step="0.1"
@@ -131,9 +138,12 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas (opcional)</Label>
+            <Label className="text-xs md:text-sm" htmlFor="notes">
+              Notas (opcional)
+            </Label>
             <Textarea
               id="notes"
+              className="text-xs md:text-sm"
               placeholder="Observaciones adicionales..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

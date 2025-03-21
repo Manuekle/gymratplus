@@ -113,7 +113,7 @@ export function GoalsDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-2 items-center justify-center">
               {getGoalTypeIcon(goal.type as GoalType)}
-              <CardTitle className="text-sm font-normal capitalize">
+              <CardTitle className="text-sm font-medium tracking-tight capitalize">
                 {goal.title}
               </CardTitle>
             </div>
@@ -124,12 +124,14 @@ export function GoalsDashboard() {
               {getGoalStatusText(goal)}
             </Badge>
           </div>
-          <CardDescription>{goal.description}</CardDescription>
+          <CardDescription className="text-xs">
+            {goal.description}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span>Progreso:</span>
                 <span className="font-medium">{progressValue.toFixed(0)}%</span>
               </div>
