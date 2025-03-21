@@ -172,8 +172,10 @@ export default function WorkoutHistory() {
 
   if (workoutSessions.length === 0) {
     return (
-      <div className="text-center py-56">
-        <h2 className="text-md mb-4">No hay entrenamientos completados</h2>
+      <Card className="text-center py-56 items-center flex">
+        <h2 className="text-sm font-medium">
+          No hay entrenamientos completados
+        </h2>
         <Button
           size="sm"
           className="text-xs px-6"
@@ -181,7 +183,7 @@ export default function WorkoutHistory() {
         >
           Iniciar un entrenamiento
         </Button>
-      </div>
+      </Card>
     );
   }
 

@@ -105,7 +105,9 @@ export default function HealthPage() {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle>Datos Físicos</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Datos Físicos
+          </CardTitle>
           <CardDescription className="text-xs">
             Métricas corporales actuales
           </CardDescription>
@@ -165,8 +167,12 @@ export default function HealthPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle>Objetivos y Actividad</CardTitle>
-          <CardDescription>Metas y nivel de actividad física</CardDescription>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Objetivos y Actividad
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Metas y nivel de actividad física
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-6">

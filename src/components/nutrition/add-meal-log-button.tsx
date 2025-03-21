@@ -752,7 +752,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-md font-medium">
+          <DialogTitle className="text-2xl font-bold tracking-tight">
             Registrar Comida
           </DialogTitle>
           <DialogDescription className="text-xs">

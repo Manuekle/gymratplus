@@ -110,7 +110,7 @@ export default function ExerciseProgressForm({
           <X size={20} />
         </Button>
 
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-2xl font-bold tracking-tight">
           {isEditing ? "Editar registro" : "Nuevo registro de ejercicios"}
         </h2>
 

@@ -269,8 +269,8 @@ export function ExerciseProgressChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-muted-foreground mb-4 text-sm">
-              No hay datos de ejercicios disponibles
+            <p className="mb-4 text-sm font-medium">
+              No hay datos de ejercicios disponibles.
             </p>
             <ExerciseProgress
               onSuccess={() => {
@@ -280,8 +280,8 @@ export function ExerciseProgressChart() {
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-muted-foreground mb-4">
-              No hay datos para el período seleccionado
+            <p className="font-medium mb-4">
+              No hay datos para el período seleccionado.
             </p>
           </div>
         ) : (

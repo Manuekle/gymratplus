@@ -154,7 +154,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="font-medium text-md">
+          <DialogTitle className="text-2xl font-bold tracking-tight">
             {isEditing ? "Editar objetivo" : "Nuevo objetivo"}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
@@ -268,7 +268,9 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
 
           {type === "strength" && (
             <div className="space-y-2">
-              <Label htmlFor="exerciseType">Ejercicio</Label>
+              <Label className="text-xs md:text-sm" htmlFor="exerciseType">
+                Ejercicio
+              </Label>
               <Select value={exerciseType} onValueChange={setExerciseType}>
                 <SelectTrigger className="text-xs md:text-sm">
                   <SelectValue placeholder="Selecciona un ejercicio" />

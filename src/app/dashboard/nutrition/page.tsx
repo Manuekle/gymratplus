@@ -204,24 +204,24 @@ export default function NutritionPage() {
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
-              <CardTitle>Calorías Diarias</CardTitle>
-              <CardDescription>Consumo calórico del día actual</CardDescription>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                Calorías Diarias
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Consumo calórico del día actual
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <div>
-                    <div className="text-sm text-muted-foreground">
-                      Consumidas
-                    </div>
+                    <div className="text-xs font-medium">Consumidas</div>
                     <div className="text-3xl font-bold">
                       {todayData ? todayData.todayTotals.calories : 0}{" "}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm text-muted-foreground">
-                      Objetivo
-                    </div>
+                    <div className="text-xs font-medium">Objetivo</div>
                     <div className="text-3xl font-bold">
                       {user?.nutrition.calorieTarget}
                     </div>
@@ -244,8 +244,10 @@ export default function NutritionPage() {
 
                 <div className="flex justify-between text-sm">
                   <div>
-                    <span className="text-muted-foreground">Restantes: </span>
-                    <span className="font-medium">
+                    <span className="text-muted-foreground text-xs">
+                      Restantes:{" "}
+                    </span>
+                    <span className="font-medium text-xs">
                       {(user?.nutrition.calorieTarget ?? 0) -
                         (todayData?.todayTotals.calories ?? 0) >
                       0
@@ -257,8 +259,10 @@ export default function NutritionPage() {
                     </span>
                   </div>
                   <div>
-                    <span className="text-muted-foreground">Progreso: </span>
-                    <span className="font-medium">
+                    <span className="text-muted-foreground text-xs">
+                      Progreso:{" "}
+                    </span>
+                    <span className="font-medium text-xs">
                       {Math.min(
                         100,
                         Math.round(
@@ -281,8 +285,10 @@ export default function NutritionPage() {
 
           <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
-              <CardTitle>Macronutrientes</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl font-bold tracking-tight">
+                Macronutrientes
+              </CardTitle>
+              <CardDescription className="text-xs">
                 Distribución de proteínas, carbohidratos y grasas
               </CardDescription>
             </CardHeader>
@@ -292,9 +298,9 @@ export default function NutritionPage() {
                   <div className="flex justify-between">
                     <div className="flex items-center gap-2">
                       <SteakIcon size={18} className="text-muted-foreground" />
-                      <span className="text-sm">Proteínas</span>
+                      <span className="text-xs">Proteínas</span>
                     </div>
-                    <div className="text-sm">
+                    <div className="text-xs">
                       <span className="font-medium">
                         {Math.round(todayData?.todayTotals.protein ?? 0)}g
                       </span>
@@ -326,9 +332,9 @@ export default function NutritionPage() {
                         size={18}
                         className="text-muted-foreground"
                       />
-                      <span className="text-sm">Carbohidratos</span>
+                      <span className="text-xs">Carbohidratos</span>
                     </div>
-                    <div className="text-sm">
+                    <div className="text-xs">
                       <span className="font-medium">
                         {Math.round(todayData?.todayTotals.carbs ?? 0)}g
                       </span>
@@ -360,9 +366,9 @@ export default function NutritionPage() {
                         size={18}
                         className="text-muted-foreground"
                       />
-                      <span className="text-sm">Grasas</span>
+                      <span className="text-xs">Grasas</span>
                     </div>
-                    <div className="text-sm">
+                    <div className="text-xs">
                       <span className="font-medium">
                         {Math.round(todayData?.todayTotals.fat ?? 0)}g
                       </span>
@@ -393,8 +399,10 @@ export default function NutritionPage() {
           <Card className="col-span-2">
             <CardHeader className="pb-2 flex flex-row justify-between items-start">
               <span>
-                <CardTitle>Historial de Comidas</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-2xl font-bold tracking-tight">
+                  Historial de Comidas
+                </CardTitle>
+                <CardDescription className="text-xs">
                   Registro de alimentos consumidos
                 </CardDescription>
               </span>

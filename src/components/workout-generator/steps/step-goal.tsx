@@ -57,7 +57,7 @@ export function StepGoal({ value, onChange }: StepGoalProps) {
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle className="font-medium text-md">
+        <DialogTitle className="text-2xl font-bold tracking-tight">
           ¿Cuál es tu objetivo principal?
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

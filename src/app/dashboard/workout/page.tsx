@@ -68,7 +68,9 @@ export default function WorkoutPage() {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle>Rutina de Entrenamiento</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Rutina de Entrenamiento
+          </CardTitle>
           <CardDescription className="text-xs">
             Información sobre tu plan de entrenamiento actual
           </CardDescription>
@@ -95,9 +97,11 @@ export default function WorkoutPage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm">
                   {/* <Calendar02Icon className="mr-2 h-4 w-4 text-muted-foreground" /> */}
-                  <span>Días de entrenamiento por semana</span>
+                  <span className="text-xs">
+                    Días de entrenamiento por semana
+                  </span>
                 </div>
-                <span className="font-medium">
+                <span className="font-medium text-xs">
                   {user?.activity.trainingFrequency}
                 </span>
               </div>
@@ -118,7 +122,9 @@ export default function WorkoutPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle>Progreso de Ejercicios</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Progreso de Ejercicios
+          </CardTitle>
           <CardDescription className="text-xs">
             Evolución de tus levantamientos principales
           </CardDescription>

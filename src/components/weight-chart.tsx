@@ -224,11 +224,13 @@ export function WeightChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-gray-500">No hay datos de peso disponibles</p>
+            <p className="text-sm font-medium">
+              No hay datos de peso disponibles
+            </p>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-gray-500">
+            <p className="text-sm font-medium">
               No hay datos para el período seleccionado
             </p>
           </div>

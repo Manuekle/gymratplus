@@ -73,7 +73,9 @@ export default function WorkoutSummary() {
     <Card className="">
       <CardHeader className="pb-2 w-full flex flex-row justify-between">
         <span>
-          <CardTitle>Historial</CardTitle>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Historial
+          </CardTitle>
           <CardDescription className="text-xs">
             Aquí puedes ver tu resumen de entrenamientos
           </CardDescription>
@@ -86,7 +88,7 @@ export default function WorkoutSummary() {
         </Link>
       </CardHeader>
       <CardContent>
-        <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3>
+        {/* <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3> */}
         <div className="space-y-4">
           {loading ? (
             <div className="flex flex-col gap-2">
@@ -108,7 +110,7 @@ export default function WorkoutSummary() {
               ))}
             </div>
           ) : workoutSessions.length === 0 ? (
-            <div className="justify-center h-24 md:h-80 items-center flex flex-col">
+            <div className="justify-center py-24 items-center flex flex-col">
               <h2 className="text-sm font-medium">
                 No hay entrenamientos recientes.
               </h2>

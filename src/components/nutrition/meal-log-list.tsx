@@ -112,10 +112,10 @@ export function MealLogList({
   if (mealLogs.length === 0) {
     return (
       <div className="text-center py-12">
-        <h3 className="text-md font-medium mb-2">
-          No hay comidas registradas para esta fecha
+        <h3 className="text-sm font-medium mb-2">
+          No hay comidas registradas para esta fecha.
         </h3>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-xs text-muted-foreground mb-6">
           Registra tus comidas para llevar un seguimiento de tu alimentación
         </p>
         <AddMealLogButton selectedDate={selectedDate} />

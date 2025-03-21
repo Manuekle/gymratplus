@@ -15,7 +15,9 @@ export default function WorkoutCreator() {
   return (
     <Card className="">
       <CardHeader className="pb-2">
-        <CardTitle>Mis Rutinas</CardTitle>
+        <CardTitle className="text-2xl font-bold tracking-tight">
+          Mis Rutinas
+        </CardTitle>
         <CardDescription className="text-xs">
           Aquí puedes ver tus rutinas de entrenamiento
         </CardDescription>

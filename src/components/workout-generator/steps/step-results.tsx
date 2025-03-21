@@ -36,7 +36,7 @@ export function StepResults({ workout }: StepResultsProps) {
         </p>
       </div> */}
       <DialogHeader>
-        <DialogTitle className="font-medium text-md">
+        <DialogTitle className="text-2xl font-bold tracking-tight">
           ¡Tu entrenamiento está listo!
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">
@@ -132,7 +132,6 @@ export function StepResults({ workout }: StepResultsProps) {
         <div className="flex justify-end pt-5">
           <Button
             size="sm"
-            variant="outline"
             className="text-xs"
             onClick={() => window.location.reload()}
           >

@@ -48,7 +48,9 @@ export default function WorkoutSummary() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold">Resumen de Entrenamientos</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Resumen de Entrenamientos
+          </h2>
         </div>
         <Link
           href="/dashboard/workout/history"
@@ -87,7 +89,9 @@ export default function WorkoutSummary() {
         </div>
       </div> */}
 
-      <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3>
+      {/* <h3 className="text-sm text-muted-foreground mb-2">
+        Entrenamientos recientes
+      </h3> */}
       <div className="space-y-4">
         {loading ? (
           <div className="flex flex-col gap-2">
@@ -109,7 +113,7 @@ export default function WorkoutSummary() {
             ))}
           </div>
         ) : workoutSessions.length === 0 ? (
-          <div className="justify-center py-14 items-center flex flex-col">
+          <div className="justify-center py-16 items-center flex flex-col">
             <h2 className="text-sm font-medium">
               No hay entrenamientos recientes.
             </h2>

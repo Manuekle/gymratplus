@@ -233,11 +233,11 @@ export function MealLogCalendar() {
         <div className="flex-1">
           <Card className="h-full">
             <CardHeader>
-              <CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight">
                 Comidas del{" "}
                 {format(selectedDate, "d 'de' MMMM, yyyy", { locale: es })}
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs">
                 Registro de todas las comidas consumidas en esta fecha
               </CardDescription>
             </CardHeader>

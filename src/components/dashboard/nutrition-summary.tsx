@@ -143,7 +143,9 @@ export default function NutritionSummary() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold">Resumen Nutricional</h2>
+          <h2 className="text-2xl font-bold tracking-tight">
+            Resumen Nutricional
+          </h2>
         </div>
         <Link
           href="/dashboard/nutrition"
@@ -159,11 +161,11 @@ export default function NutritionSummary() {
           return (
             <div key={index}>
               <div className="flex justify-between mb-1">
-                <span className="text-sm font-medium">{macro.name}</span>
+                <span className="text-xs font-medium">{macro.name}</span>
                 {/* <span className="text-sm">
                   {macro.consumed} / {macro.goal} {macro.unit}
                 </span> */}
-                <div className="text-sm">
+                <div className="text-xs">
                   <span className="font-medium">
                     {Math.round(macro.consumed ?? 0)}
                     {macro.unit}

@@ -229,7 +229,7 @@ export default function WorkoutTimerFloat({
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-md font-medium">
+            <DialogTitle className="text-2xl font-bold tracking-tight">
               ¿Qué deseas hacer con este entrenamiento?
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -240,7 +240,7 @@ export default function WorkoutTimerFloat({
 
           <div className="flex flex-col space-y-2 py-4">
             <div className="text-center mb-2">
-              <span className="text-sm text-muted-foreground">
+              <span className="text-xs text-muted-foreground">
                 Tiempo transcurrido
               </span>
               <div className="text-xl font-bold">{formatTime(elapsedTime)}</div>

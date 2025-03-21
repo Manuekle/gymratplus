@@ -93,7 +93,9 @@ export default function WorkoutDetail() {
       <div className="border rounded-lg p-4">
         <div className="flex justify-between items-start gap-8">
           <div className="flex flex-col gap-1 w-full">
-            <CardTitle className="text-md">{workout.name}</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              {workout.name}
+            </CardTitle>
             <CardDescription className="text-xs">
               {workout.description}
             </CardDescription>

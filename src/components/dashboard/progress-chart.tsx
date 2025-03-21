@@ -257,7 +257,9 @@ export default function ProgressChart() {
   return (
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-bold">Seguimiento de Progreso</h2>
+        <h2 className="text-2xl font-bold tracking-tight">
+          Seguimiento de Progreso
+        </h2>
         {/* <Button
           size="sm"
           onClick={() => setShowAddForm(true)}
@@ -355,9 +357,7 @@ export default function ProgressChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
-            <p className="text-sm text-muted-foreground">
-              No hay datos disponibles
-            </p>
+            <p className="text-sm font-medium">No hay datos disponibles</p>
             <NewProgress
               onSuccess={() => {
                 loadData();

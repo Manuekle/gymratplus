@@ -225,7 +225,9 @@ export default function ProfilePage() {
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
               <div>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                  <h2 className="text-2xl font-bold">{session?.user?.name}</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">
+                    {session?.user?.name}
+                  </h2>
                   {/* <div className="flex gap-2 justify-center md:justify-start">
                     <Badge
                       variant="outline"
@@ -305,7 +307,9 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Información de contacto</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              Información de contacto
+            </CardTitle>
             <CardDescription className="text-xs">
               Datos de contacto y comunicación
             </CardDescription>
@@ -415,7 +419,9 @@ export default function ProfilePage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle>Preferencias de entrenamiento</CardTitle>
+            <CardTitle className="text-2xl font-bold tracking-tight">
+              Preferencias de entrenamiento
+            </CardTitle>
             <CardDescription className="text-xs">
               Información sobre tus preferencias
             </CardDescription>

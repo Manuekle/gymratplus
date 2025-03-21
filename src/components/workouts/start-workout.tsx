@@ -229,7 +229,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       </DialogTrigger>
       <DialogContent className="space-y-4 w-full">
         <DialogHeader>
-          <DialogTitle className="text-md font-medium">
+          <DialogTitle className="text-2xl font-bold tracking-tight">
             Selecciona el día de entrenamiento
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">

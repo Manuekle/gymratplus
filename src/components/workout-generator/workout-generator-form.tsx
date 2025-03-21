@@ -154,10 +154,10 @@ export function WorkoutGeneratorForm() {
       {step <= totalSteps && (
         <div className="mb-8">
           <div className="flex justify-between mb-2">
-            <span className="text-sm font-medium">
+            <span className="text-xs font-medium">
               Paso {step} de {totalSteps}
             </span>
-            <span className="text-sm text-muted-foreground">
+            <span className="text-xs text-muted-foreground">
               {Math.round((step / totalSteps) * 100)}% completado
             </span>
           </div>
