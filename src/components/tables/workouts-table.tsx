@@ -11,8 +11,8 @@ import {
   createActionsColumn,
   createDateColumn,
 } from "@/components/ui/data-table";
-
-import { Delete01Icon, EyeIcon } from "hugeicons-react";
+import { toast } from "sonner";
+import { Delete02Icon, EyeIcon } from "hugeicons-react";
 
 interface Workout {
   id: string;
@@ -62,9 +62,29 @@ export default function WorkoutsTable() {
   //   alert(`Editando tienda: ${workout.name}`);
   // };
 
-  const handleDelete = (workout: Workout) => {
+  const handleDelete = async (workout: Workout) => {
     console.log(`Eliminar ${workout.name}`);
-    // alert(`¿Estás seguro de que deseas eliminar la tienda: ${workout.name}?`);
+
+    // funcion para eliminar de la /api/workouts/[id]
+    try {
+      const res = await fetch(`/api/workouts/${workout.id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        console.log(data);
+        toast.success("Rutina eliminada correctamente.", {
+          description: "La rutina ha sido eliminada correctamente.",
+        });
+      }
+    } catch (error) {
+      console.error("Error eliminando la rutina:", error);
+      toast.error("Error eliminando la rutina.", {
+        description: "Ocurrió un error eliminando la rutina.",
+      });
+    } finally {
+      window.location.reload();
+    }
   };
 
   const columns = [
@@ -79,7 +99,7 @@ export default function WorkoutsTable() {
       },
       {
         label: "Eliminar",
-        icon: Delete01Icon,
+        icon: Delete02Icon,
         onClick: handleDelete,
       },
     ]),

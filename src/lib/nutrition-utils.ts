@@ -168,6 +168,44 @@ export async function createNutritionPlan(
     dietaryPreference
   );
 
+  const translationDictionary: Record<string, string> = {
+    description: "Descripción",
+    goal: "Objetivo",
+    "lose-weight": "Perder peso",
+    maintain: "Mantener",
+    "gain-muscle": "Ganar músculo",
+    dietaryPreference: "Preferencia alimentaria",
+    vegetarian: "Vegetariano",
+    keto: "Keto",
+    "no-preference": "Sin preferencia",
+    dailyCalorieTarget: "Objetivo diario de calorías",
+    dailyProteinTarget: "Objetivo diario de proteínas",
+    dailyCarbTarget: "Objetivo diario de carbohidratos",
+    dailyFatTarget: "Objetivo diario de grasas",
+    macros: "Macronutrientes",
+    protein: "Proteína",
+    carbs: "Carbohidratos",
+    fat: "Grasas",
+    mealType: "Tipo de comida",
+    breakfast: "Desayuno",
+    lunch: "Almuerzo",
+    dinner: "Cena",
+    snacks: "Meriendas",
+    calories: "Calorías",
+    entries: "Entradas",
+    quantity: "Cantidad",
+    food: "Alimento",
+    userId: "ID de usuario",
+    date: "Fecha",
+    mealLog: "Registro de comidas",
+    nutritionPlan: "Plan de nutrición",
+    calorieTarget: "Objetivo calórico",
+  };
+
+  const translate = (key: string) => {
+    return translationDictionary[key] ?? key;
+  };
+
   // Return the complete nutrition plan
   return {
     macros: {
@@ -186,11 +224,11 @@ export async function createNutritionPlan(
           (profile.dailyCalorieTarget ?? 2000)) *
           100
       )}%)`,
-      description: `Based on your ${getGoalText(
+      description: `Basado en tu objetivo de ${translate(
         goal
-      )} goal and a daily target of ${
+      )} y un objetivo diario de ${
         profile.dailyCalorieTarget ?? 2000
-      } calories`,
+      } calorías`,
     },
     meals: {
       breakfast,
@@ -408,15 +446,15 @@ async function createMealLog(
 }
 
 // Helper function to get text representation of goal
-function getGoalText(goal: string) {
-  switch (goal) {
-    case "lose-weight":
-      return "weight loss";
-    case "maintain":
-      return "maintenance";
-    case "gain-muscle":
-      return "muscle gain";
-    default:
-      return goal;
-  }
-}
+// function getGoalText(goal: string) {
+//   switch (goal) {
+//     case "lose-weight":
+//       return "weight loss";
+//     case "maintain":
+//       return "maintenance";
+//     case "gain-muscle":
+//       return "muscle gain";
+//     default:
+//       return goal;
+//   }
+// }

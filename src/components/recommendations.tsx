@@ -232,10 +232,10 @@ export default function RecommendationsComponent() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-medium flex items-center">
-          <span className="mr-2">Tu Plan de Fitness Personalizado</span>
+        <CardTitle className="text-2xl font-bold tracking-tight">
+          Tu Plan de Fitness Personalizado
         </CardTitle>
-        <CardDescription className="text-muted-foreground">
+        <CardDescription className="text-muted-foreground text-xs">
           Según su perfil, hemos creado planes personalizados de entrenamiento y
           nutrición para usted
         </CardDescription>
@@ -244,15 +244,14 @@ export default function RecommendationsComponent() {
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
-            <p className="text-muted-foreground text-sm">
-              Generando tus recomendaciones personalizadas...
+            <p className="text-muted-foreground text-xs">
+              Generando tus recomendaciones personalizadas
             </p>
           </div>
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-[#DE3163] text-sm pb-14">{error}</p>
             <Button
-              variant="outline"
               onClick={() => router.push("/dashboard/profile")}
               className="text-xs"
               size="sm"

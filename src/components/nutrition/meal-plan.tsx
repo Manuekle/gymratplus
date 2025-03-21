@@ -102,8 +102,12 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>Plan Nutricional</CardTitle>
-          <CardDescription>{translatedText}</CardDescription>
+          <CardTitle className="font-bold tracking-tight">
+            Plan Nutricional
+          </CardTitle>
+          <CardDescription className="text-xs">
+            {translatedText}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">

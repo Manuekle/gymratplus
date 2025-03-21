@@ -220,7 +220,7 @@ export function createActionsColumn<T>(
                   className={action.className}
                 >
                   <Icon className="mr-2 h-4 w-4" />
-                  {action.label}
+                  <h1 className="text-xs">{action.label}</h1>
                 </DropdownMenuItem>
               );
             })}

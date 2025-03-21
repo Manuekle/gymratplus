@@ -158,8 +158,8 @@ export default function StepOnboarding1() {
     switch (currentStep) {
       case 0:
         if (!formData.gender || !formData.birthdate) {
-          toast.error("Please fill in all required fields", {
-            description: "Gender and Date of Birth are required.",
+          toast.error("Rellene todos los campos obligatorios", {
+            description: "El sexo y la fecha de nacimiento son obligatorios.",
           });
           return false;
         }
@@ -170,9 +170,9 @@ export default function StepOnboarding1() {
           !formData.currentWeight ||
           !formData.targetWeight
         ) {
-          toast.error("Please enter valid measurements", {
+          toast.error("Por favor, introduzca medidas válidas", {
             description:
-              "Height, current weight, and target weight are required.",
+              "Se requiere la altura, el peso actual y el peso objetivo.",
           });
           return false;
         }
@@ -184,29 +184,29 @@ export default function StepOnboarding1() {
           !formData.bodyFatPercentage ||
           !formData.muscleMass
         ) {
-          toast.error("Please complete all fields", {
+          toast.error("Rellene todos los campos", {
             description:
-              "Activity level, goal, body fat percentage, and muscle mass are required.",
+              "Se requiere nivel de actividad, objetivo, porcentaje de grasa corporal y masa muscular.",
           });
           return false;
         }
         break;
       case 3:
         if (formData.trainingFrequency === 0) {
-          toast.error("Please select training frequency", {
-            description: "Select at least one training day.",
+          toast.error("Seleccione la frecuencia de formación", {
+            description: "Seleccione al menos un día de formación.",
           });
           return false;
         }
         if (!formData.preferredWorkoutTime) {
-          toast.error("Please select preferred workout time", {
-            description: "Choose your preferred time to work out.",
+          toast.error("Seleccione la hora de entrenamiento que prefiera", {
+            description: "Elige la hora que prefieras para entrenar.",
           });
           return false;
         }
         if (!formData.dietaryPreference) {
-          toast.error("Please select dietary preference", {
-            description: "Choose your dietary preference.",
+          toast.error("Seleccione su preferencia dietética", {
+            description: "Elija su preferencia dietética.",
           });
           return false;
         }
@@ -236,7 +236,7 @@ export default function StepOnboarding1() {
               payload.birthdate = dateObj.toISOString();
             } else {
               console.warn(
-                "Invalid date detected, sending as is:",
+                "Fecha no válida detectada, enviando tal cual:",
                 payload.birthdate
               );
             }
@@ -265,17 +265,17 @@ export default function StepOnboarding1() {
       const updatedProfile = await response.json();
       console.log("Updated profile:", updatedProfile);
 
-      toast.success("Profile saved successfully!", {
-        description: "Your profile information has been updated.",
+      toast.success("¡Perfil guardado correctamente!", {
+        description: "La información de tu perfil ha sido actualizada.",
       });
 
       // Redirigir a la página de recomendaciones después de guardar el perfil
       router.push("/onboarding/recommendations");
     } catch (error) {
       console.error("Error submitting profile:", error);
-      toast.error("Failed to save profile", {
+      toast.error("No se ha podido guardar el perfil", {
         description:
-          "Please try again. If the problem persists, contact support.",
+          "Por favor, inténtelo de nuevo. Si el problema persiste, póngase en contacto con el servicio de asistencia.",
       });
     } finally {
       setIsSubmitting(false);
@@ -285,8 +285,10 @@ export default function StepOnboarding1() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle>Información de Perfil</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold tracking-tight">
+          Información de Perfil
+        </CardTitle>
+        <CardDescription className="text-xs">
           Háganos saber sobre usted para que podamos personalizar su experiencia
         </CardDescription>
       </CardHeader>
@@ -816,6 +818,8 @@ export default function StepOnboarding1() {
 
           <div className="flex justify-between pt-4">
             <Button
+              size="sm"
+              className="text-xs px-4"
               variant="outline"
               onClick={handlePrevious}
               disabled={currentStep === 0}
@@ -828,8 +832,9 @@ export default function StepOnboarding1() {
             ) : (
               <Button
                 onClick={handleSubmit}
+                size="sm"
                 disabled={isSubmitting}
-                className="bg-foreground text-white dark:bg-white dark:text-black border"
+                className="bg-foreground text-white dark:bg-white dark:text-black border text-xs px-4"
               >
                 {isSubmitting ? (
                   <>
