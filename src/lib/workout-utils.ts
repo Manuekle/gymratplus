@@ -359,7 +359,7 @@ export async function createWorkoutPlan(
   gender: string | null,
   trainingFrequency: number,
   workoutType: string,
-  workoutHistory: any[],
+  _workoutHistory: any[],
   methodology = "standard"
 ) {
   // Determine the workout type based on body distribution
