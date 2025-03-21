@@ -5,9 +5,9 @@ import { NextAuthOptions, User, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { Redis } from "@upstash/redis";
 import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
+import { Redis } from "@upstash/redis";
 
 // Inicializar Redis
 const redis = new Redis({
@@ -29,6 +29,7 @@ interface CustomUser extends User {
   email?: string | null; // Permitir null y undefined
   password?: string | null;
   name: string;
+  experienceLevel: string;
   image: string;
 }
 
@@ -137,6 +138,7 @@ export const authOptions: NextAuthOptions = {
           id: customUser.id,
           email: customUser.email ?? "",
           name: customUser.name ?? "",
+          experienceLevel: customUser.experienceLevel ?? "",
           image: customUser.image ?? "",
         });
         await redis.expire(`user:${customUser.id}:data`, 30 * 24 * 60 * 60); // 30 días
@@ -159,6 +161,7 @@ export const authOptions: NextAuthOptions = {
         if (userData) {
           session.user.name = userData.name ?? "";
           session.user.email = userData.email ?? "";
+          session.user.experienceLevel = userData.experienceLevel ?? "";
           session.user.image = userData.image ?? null;
         }
 

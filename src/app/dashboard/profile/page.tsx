@@ -15,39 +15,167 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState } from "react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   BirthdayCakeIcon,
   Calendar01Icon,
   Mail01Icon,
   SmartPhone01Icon,
-  UserCircleIcon,
+  StarIcon,
 } from "hugeicons-react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
-  const [isEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  // const { toast } = useToast();
 
   const { data: session } = useSession();
   console.log(session);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setIsUploading(true);
+
+      // Crear objeto FormData
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Subir imagen
+      const uploadResponse = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!uploadResponse.ok) {
+        throw new Error("Error al subir la imagen. Inténtalo de nuevo.");
+      }
+
+      const { url } = await uploadResponse.json();
+
+      // Actualizar el perfil con la nueva URL de la imagen
+      const updateResponse = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ image: url }),
+      });
+
+      if (!updateResponse.ok) {
+        throw new Error("No se pudo actualizar la imagen de perfil.");
+      }
+
+      // TODO: Actualizar el estado global o contexto en lugar de recargar la página
+      // Por ejemplo: updateUserProfile({ image: url });
+
+      toast.success("¡Imagen actualizada!", {
+        description: "Tu foto de perfil ha sido actualizada correctamente.",
+      });
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+
+      toast.error("Error", {
+        description: error instanceof Error ? error.message : "Algo salió mal.",
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      // Get form values
+      const email =
+        (document.getElementById("email") as HTMLInputElement)?.value || "";
+      const phone =
+        (document.getElementById("phone") as HTMLInputElement)?.value || "";
+
+      const experienceLevel =
+        document.querySelector("[data-value]")?.getAttribute("data-value") ||
+        "";
+
+      // Update profile
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          phone,
+          experienceLevel,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      setIsEditing(false);
+
+      // Force refresh to show updated data
+      // window.location.reload();
+
+      toast.success("Perfil actualizado", {
+        description: "Tu perfil ha sido actualizado correctamente.",
+      });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Error", {
+        description: "No se pudo actualizar el perfil.",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
       <Card>
         <CardContent className="pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
-            <div className="flex flex-col items-center md:items-start">
+            <div className="flex flex-col items-center md:items-start relative">
               {session?.user?.image && (
-                <Avatar className="h-24 w-24 border-4 border-background">
-                  <AvatarImage
-                    src={session?.user.image}
-                    alt="Profile picture"
-                  />
-                  <AvatarFallback className="text-2xl">
-                    {session?.user?.name
-                      ?.split(" ")
-                      .map((word) => word[0])
-                      .join("")
-                      .toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
+                <div className="relative group">
+                  <Avatar className="h-24 w-24 border-4 border-background">
+                    <AvatarImage
+                      src={session?.user.image}
+                      alt="Profile picture"
+                    />
+                    <AvatarFallback className="text-2xl">
+                      {session?.user?.name
+                        ?.split(" ")
+                        .map((word) => word[0])
+                        .join("")
+                        .toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+                  {isEditing && (
+                    <div
+                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      onClick={() =>
+                        document.getElementById("profile-image-upload")?.click()
+                      }
+                    >
+                      <span className="text-white text-xs">Cambiar</span>
+                      <input
+                        id="profile-image-upload"
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleImageUpload}
+                      />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -67,10 +195,24 @@ export default function ProfilePage() {
               </div>
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                {/* <div className="flex items-center text-muted-foreground text-xs">
-                  <MapPinIcon className="h-4 w-4 mr-1" />
-                  <span>Bogota, Colombia</span>
-                </div> */}
+                <div className="flex items-center text-muted-foreground text-xs">
+                  <BirthdayCakeIcon className="h-4 w-4 mr-1" />
+                  <span>
+                    Cumple el{" "}
+                    {(() => {
+                      // Obtain the createdAt value
+                      const birthdate = (
+                        session?.user as { profile?: { birthdate?: string } }
+                      )?.profile?.birthdate;
+                      return birthdate
+                        ? new Date(birthdate).toLocaleDateString("es-ES", {
+                            day: "numeric",
+                            month: "long",
+                          })
+                        : "Fecha no disponible";
+                    })()}
+                  </span>
+                </div>
                 <div className="flex items-center text-muted-foreground text-xs">
                   <Calendar01Icon className="h-4 w-4 mr-1" />
                   <span>
@@ -92,15 +234,22 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* <div className="flex justify-center md:justify-end md:self-start pt-4 md:pt-0">
+            <div className="flex justify-center md:justify-end md:self-start pt-4 md:pt-0">
               <Button
-                onClick={() => setIsEditing(!isEditing)}
-                className="text-xs"
+                onClick={
+                  isEditing ? handleSaveProfile : () => setIsEditing(true)
+                }
+                className="text-xs px-4"
                 size="sm"
+                disabled={isUploading}
               >
-                {isEditing ? "Guardar" : "Editar perfil"}
+                {isUploading
+                  ? "Subiendo..."
+                  : isEditing
+                  ? "Guardar"
+                  : "Editar perfil"}
               </Button>
-            </div> */}
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -129,8 +278,23 @@ export default function ProfilePage() {
                   <Input className="text-sm" id="phone" defaultValue="" />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="emergency">Contacto de emergencia</Label>
-                  <Input className="text-sm" id="emergency" defaultValue="" />
+                  <Label htmlFor="emergency">Experiencia</Label>
+                  <Select defaultValue="">
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecciona tu experiencia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="lose-weight">
+                        <div className="flex items-center">Principiante</div>
+                      </SelectItem>
+                      <SelectItem value="maintain">
+                        <div className="flex items-center">Intermedio</div>
+                      </SelectItem>
+                      <SelectItem value="gain-muscle">
+                        <div className="flex items-center">Avanzado</div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </>
             ) : (
@@ -145,7 +309,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                <Separator />
+                {/* <Separator />
 
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
                   <BirthdayCakeIcon className="h-5 w-5 text-muted-foreground" />
@@ -155,7 +319,7 @@ export default function ProfilePage() {
                     </div>
                     <div className="text-muted-foreground text-xs"></div>
                   </div>
-                </div>
+                </div> */}
 
                 <Separator />
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
@@ -169,11 +333,9 @@ export default function ProfilePage() {
                 <Separator />
 
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <UserCircleIcon className="h-5 w-5 text-muted-foreground" />
+                  <StarIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium text-sm">
-                      Contacto de emergencia
-                    </div>
+                    <div className="font-medium text-sm">Experiencia</div>
                     <div className="text-muted-foreground text-xs"></div>
                   </div>
                 </div>

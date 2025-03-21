@@ -259,3 +259,59 @@ function calculateMetabolicRate(data: {
 
   return Math.round(bmr);
 }
+
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const data = await request.json();
+    const userId = session.user.id;
+
+    // Update user data
+    if (data.name || data.email || data.image || data.experienceLevel) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          name: data.name,
+          email: data.email,
+          image: data.image,
+          experienceLevel: data.experienceLevel,
+        },
+      });
+    }
+
+    // Update or create profile data
+    const profile = await prisma.profile.upsert({
+      where: { userId },
+      update: {
+        phone: data.phone,
+        birthdate: data.birthdate,
+        preferredWorkoutTime: data.preferredWorkoutTime,
+        dailyActivity: data.dailyActivity,
+        goal: data.goal,
+        dietaryPreference: data.dietaryPreference,
+      },
+      create: {
+        userId,
+        phone: data.phone,
+        birthdate: data.birthdate,
+        preferredWorkoutTime: data.preferredWorkoutTime,
+        dailyActivity: data.dailyActivity,
+        goal: data.goal,
+        dietaryPreference: data.dietaryPreference,
+      },
+    });
+
+    return NextResponse.json({ success: true, profile });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return NextResponse.json(
+      { error: "Failed to update profile" },
+      { status: 500 }
+    );
+  }
+}

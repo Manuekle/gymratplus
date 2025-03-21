@@ -5,6 +5,7 @@ declare module "next-auth/jwt" {
     id?: string;
     profile?: {
       gender?: string;
+      phone?: string;
       birthdate?: Date | string;
       height?: string;
       currentWeight?: string;
@@ -22,9 +23,11 @@ declare module "next-auth" {
       id: string;
       email: string;
       name: string;
+      experienceLevel: string;
     } & DefaultSession["user"];
     profile?: {
       gender?: string;
+      phone?: string;
       birthdate?: Date | string;
       height?: string;
       currentWeight?: string;

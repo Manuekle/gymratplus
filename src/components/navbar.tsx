@@ -17,6 +17,7 @@ import {
   Settings01Icon,
 } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { Badge } from "./ui/badge";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -25,8 +26,9 @@ export function Navbar() {
     <div className="border-b">
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
-          <div>
+          <div className="flex flex-row items-center space-x-2">
             <h1 className="text-2xl font-bold">GymRat+</h1>
+            <Badge variant="outline">Beta</Badge>
           </div>
           <div className="flex flex-row items-center space-x-4">
             <Button variant="ghost" size="icon">
