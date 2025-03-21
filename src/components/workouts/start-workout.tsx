@@ -241,15 +241,18 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
             <Icons.spinner className="h-6 w-6 animate-spin" />
           </div>
         ) : activeWorkoutExists ? (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircleIcon className="h-4 w-4" />
-            <AlertTitle>Entrenamiento activo</AlertTitle>
-            <AlertDescription>
+          <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
+            <span className="flex items-center gap-2 pb-1 text-destructive">
+              <AlertCircleIcon size={14} />
+              <AlertTitle className="text-sm">Entrenamiento activo</AlertTitle>
+            </span>
+            <AlertDescription className="text-xs text-destructive">
               Ya tienes un entrenamiento en progreso. ¿Qué deseas hacer?
             </AlertDescription>
-            <div className="flex gap-2 mt-4">
+            <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={continueActiveWorkout}
                 className="text-xs"
                 disabled={loading}
@@ -257,6 +260,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 Continuar entrenamiento actual
               </Button>
               <Button
+                size="sm"
                 variant="destructive"
                 onClick={finishAndStartNew}
                 className="text-xs"
@@ -268,7 +272,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 Finalizar actual e iniciar nuevo
               </Button>
             </div>
-          </Alert>
+          </div>
         ) : (
           <>
             <div className="flex flex-col space-y-2">
