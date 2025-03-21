@@ -24,9 +24,14 @@ import {
 import {
   BirthdayCakeIcon,
   Calendar01Icon,
+  Clock01Icon,
   Mail01Icon,
   SmartPhone01Icon,
+  SmileIcon,
   StarIcon,
+  SteakIcon,
+  Target02Icon,
+  WorkoutGymnasticsIcon,
 } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -95,11 +100,32 @@ export default function ProfilePage() {
   };
 
   // const [email, setEmail] = useState(session?.user?.email || "");
+  const [name, setName] = useState(session?.user?.name || "");
+
   const [phone, setPhone] = useState(
     (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
+
   const [experienceLevel, setExperienceLevel] = useState(
     session?.user?.experienceLevel || ""
+  );
+
+  const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
+    (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
+      ?.preferredWorkoutTime || ""
+  );
+  const [dailyActivity, setDailyActivity] = useState(
+    (session?.user as { profile?: { dailyActivity?: string } })?.profile
+      ?.dailyActivity || ""
+  );
+
+  const [goal, setGoal] = useState(
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
+  );
+
+  const [dietaryPreference, setDietaryPreference] = useState(
+    (session?.user as { profile?: { dietaryPreference?: string } })?.profile
+      ?.dietaryPreference || ""
   );
 
   const handleSaveProfile = async () => {
@@ -123,8 +149,13 @@ export default function ProfilePage() {
         },
         body: JSON.stringify({
           // email,
+          name,
           phone,
           experienceLevel,
+          preferredWorkoutTime,
+          dailyActivity,
+          goal,
+          dietaryPreference,
         }),
       });
 
@@ -329,42 +360,69 @@ export default function ProfilePage() {
             {isEditing ? (
               <>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label className="text-xs md:text-sm" htmlFor="email">
+                    Correo electronico
+                  </Label>
                   <Input
                     disabled
-                    className="text-sm"
+                    className="text-xs md:text-sm"
                     id="email"
                     // onChange={(e) => setEmail(e.target.value)}
                     defaultValue={session?.user?.email || ""}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="phone">Teléfono</Label>
+                  <Label className="text-xs md:text-sm" htmlFor="name">
+                    Nombre
+                  </Label>
                   <Input
-                    className="text-sm"
+                    // disabled
+                    className="text-xs md:text-sm"
+                    id="name"
+                    onChange={(e) => setName(e.target.value)}
+                    defaultValue={session?.user?.name || ""}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs md:text-sm" htmlFor="phone">
+                    Teléfono
+                  </Label>
+                  <Input
+                    className="text-xs md:text-sm"
                     id="phone"
                     defaultValue={phone}
                     onChange={(e) => setPhone(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="experience">Experiencia</Label>
+                  <Label className="text-xs md:text-sm" htmlFor="experience">
+                    Experiencia
+                  </Label>
                   <Select
                     defaultValue={session?.user?.experienceLevel}
                     value={experienceLevel}
                     onValueChange={(value) => setExperienceLevel(value)}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger className="text-xs md:text-sm">
                       <SelectValue placeholder="Selecciona tu experiencia" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="principiante">
+                      <SelectItem
+                        className="text-xs md:text-sm"
+                        value="principiante"
+                      >
                         <div className="flex items-center">Principiante</div>
                       </SelectItem>
-                      <SelectItem value="intermedio">
+                      <SelectItem
+                        className="text-xs md:text-sm"
+                        value="intermedio"
+                      >
                         <div className="flex items-center">Intermedio</div>
                       </SelectItem>
-                      <SelectItem value="avanzado">
+                      <SelectItem
+                        className="text-xs md:text-sm"
+                        value="avanzado"
+                      >
                         <div className="flex items-center">Avanzado</div>
                       </SelectItem>
                     </SelectContent>
@@ -376,24 +434,26 @@ export default function ProfilePage() {
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
                   <Mail01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium text-sm">Email</div>
+                    <div className="font-medium text-sm">
+                      Correo electronico
+                    </div>
                     <div className="text-muted-foreground text-xs">
                       {session?.user?.email}
                     </div>
                   </div>
                 </div>
 
-                {/* <Separator />
+                <Separator />
 
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <BirthdayCakeIcon className="h-5 w-5 text-muted-foreground" />
+                  <SmileIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <div className="font-medium text-sm">
-                      Fecha de cumpleaños
+                    <div className="font-medium text-sm">Nombre</div>
+                    <div className="text-muted-foreground text-xs">
+                      {session?.user?.name}
                     </div>
-                    <div className="text-muted-foreground text-xs"></div>
                   </div>
-                </div> */}
+                </div>
 
                 <Separator />
                 <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
@@ -439,122 +499,356 @@ export default function ProfilePage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <div className="text-sm font-medium">Horario preferido</div>
-                  <div className="text-xs text-muted-foreground">
-                    {(() => {
-                      const time = (
-                        session?.user as {
-                          profile?: { preferredWorkoutTime?: string };
+              {isEditing ? (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label
+                        className="text-xs md:text-sm"
+                        htmlFor="preferredWorkoutTime"
+                      >
+                        Horario preferido
+                      </Label>
+                      <Select
+                        value={preferredWorkoutTime}
+                        onValueChange={(value) =>
+                          setPreferredWorkoutTime(value)
                         }
-                      )?.profile?.preferredWorkoutTime;
-                      switch (time) {
-                        case "early-morning":
-                          return "Temprano en la mañana (5-8 AM)";
-                        case "morning":
-                          return "Mañana (8-11 AM)";
-                        case "noon":
-                          return "Mediodía (11 AM-2 PM)";
-                        case "afternoon":
-                          return "Tarde (2-5 PM)";
-                        case "evening":
-                          return "Atardecer (5-8 PM)";
-                        case "night":
-                          return "Noche (8-11 PM)";
-                        default:
-                          return "No especificado";
-                      }
-                    })()}
+                      >
+                        <SelectTrigger className="text-xs md:text-sm">
+                          <div className="flex flex-row items-center gap-4">
+                            <Clock01Icon
+                              size={18}
+                              className="text-foreground"
+                            />
+                            <SelectValue placeholder="Seleccione su hora preferida" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="early-morning"
+                          >
+                            Temprano en la mañana (5-8 AM)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="morning"
+                          >
+                            Mañana (8-11 AM)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="noon"
+                          >
+                            Mediodía (11 AM-2 PM)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="afternoon"
+                          >
+                            Tarde (2-5 PM)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="evening"
+                          >
+                            Atardecer (5-8 PM)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="night"
+                          >
+                            Noche (8-11 PM)
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label
+                        className="text-xs md:text-sm"
+                        htmlFor="dailyActivity"
+                      >
+                        Actividad diaria
+                      </Label>
+                      <Select
+                        value={dailyActivity}
+                        onValueChange={(value) => setDailyActivity(value)}
+                      >
+                        <SelectTrigger className="text-xs md:text-sm">
+                          {/* <SelectValue placeholder="Select your daily activity" /> */}
+                          <div className="flex flex-row items-center gap-4">
+                            <WorkoutGymnasticsIcon
+                              size={18}
+                              className="text-foreground"
+                            />
+                            <SelectValue placeholder="Seleccione su actividad diaria" />
+                          </div>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="office-work"
+                          >
+                            Trabajo de oficina (sedentario)
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="light-physical"
+                          >
+                            Trabajo físico ligero
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="moderate-physical"
+                          >
+                            Trabajo físico moderado
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="heavy-physical"
+                          >
+                            Trabajo físico pesado
+                          </SelectItem>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            value="very-heavy-physical"
+                          >
+                            Trabajo físico muy pesado
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium">Actividad diaria</div>
-                  <div className="text-xs text-muted-foreground">
-                    {(() => {
-                      const activity = (
-                        session?.user as {
-                          profile?: { dailyActivity?: string };
-                        }
-                      )?.profile?.dailyActivity;
-                      switch (activity) {
-                        case "office-work":
-                          return "Trabajo de oficina (sedentario)";
-                        case "light-physical":
-                          return "Trabajo físico ligero";
-                        case "moderate-physical":
-                          return "Trabajo físico moderado";
-                        case "heavy-physical":
-                          return "Trabajo físico pesado";
-                        case "very-heavy-physical":
-                          return "Trabajo físico muy pesado";
-                        default:
-                          return "No especificado";
-                      }
-                    })()}
+                  <Separator />
+
+                  <div className="space-y-2">
+                    <Label className="text-xs md:text-sm" htmlFor="goal">
+                      Objetivo actual
+                    </Label>
+                    <Select
+                      value={goal}
+                      onValueChange={(value) => setGoal(value)}
+                    >
+                      <SelectTrigger className="text-xs md:text-sm">
+                        <div className="flex flex-row items-center gap-4">
+                          <Target02Icon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su objetivo" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="lose-weight"
+                        >
+                          Perder peso
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="maintain"
+                        >
+                          Mantener peso
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="gain-muscle"
+                        >
+                          Ganar músculo
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
-                </div>
-              </div>
 
-              <Separator />
+                  <Separator />
 
-              <div>
-                <div className="text-sm font-medium mb-2">Objetivo actual</div>
-                <div className="flex flex-wrap gap-2">
-                  <Badge>
-                    {(() => {
-                      const goal = (
-                        session?.user as {
-                          profile?: { goal?: string };
+                  <div className="space-y-2">
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="dietaryPreference"
+                    >
+                      Preferencia dietetica
+                    </Label>
+                    <Select
+                      value={dietaryPreference}
+                      onValueChange={(value) => setDietaryPreference(value)}
+                    >
+                      <SelectTrigger className="text-xs md:text-sm">
+                        <div className="flex flex-row items-center gap-4">
+                          <SteakIcon size={18} className="text-foreground" />
+                          <SelectValue placeholder="Seleccione su preferencia dietética" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="no-preference"
+                        >
+                          Sin preferencia específica
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="vegetarian"
+                        >
+                          Vegetariano
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="vegan"
+                        >
+                          Vegano
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="pescatarian"
+                        >
+                          Pescetariano
+                        </SelectItem>
+                        <SelectItem className="text-xs md:text-sm" value="keto">
+                          Keto
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="paleo"
+                        >
+                          Paleo
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="mediterranean"
+                        >
+                          Mediterránea
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <div className="text-sm font-medium">
+                        Horario preferido
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {(() => {
+                          const time = (
+                            session?.user as {
+                              profile?: { preferredWorkoutTime?: string };
+                            }
+                          )?.profile?.preferredWorkoutTime;
+                          switch (time) {
+                            case "early-morning":
+                              return "Temprano en la mañana (5-8 AM)";
+                            case "morning":
+                              return "Mañana (8-11 AM)";
+                            case "noon":
+                              return "Mediodía (11 AM-2 PM)";
+                            case "afternoon":
+                              return "Tarde (2-5 PM)";
+                            case "evening":
+                              return "Atardecer (5-8 PM)";
+                            case "night":
+                              return "Noche (8-11 PM)";
+                            default:
+                              return "No especificado";
+                          }
+                        })()}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-sm font-medium">
+                        Actividad diaria
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {(() => {
+                          const activity = (
+                            session?.user as {
+                              profile?: { dailyActivity?: string };
+                            }
+                          )?.profile?.dailyActivity;
+                          switch (activity) {
+                            case "office-work":
+                              return "Trabajo de oficina (sedentario)";
+                            case "light-physical":
+                              return "Trabajo físico ligero";
+                            case "moderate-physical":
+                              return "Trabajo físico moderado";
+                            case "heavy-physical":
+                              return "Trabajo físico pesado";
+                            case "very-heavy-physical":
+                              return "Trabajo físico muy pesado";
+                            default:
+                              return "No especificado";
+                          }
+                        })()}
+                      </div>
+                    </div>
+                  </div>
+                  <Separator />
+
+                  <div>
+                    <div className="text-sm font-medium mb-2">
+                      Objetivo actual
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      <Badge>
+                        {(() => {
+                          const goal = (
+                            session?.user as {
+                              profile?: { goal?: string };
+                            }
+                          )?.profile?.goal;
+                          switch (goal) {
+                            case "lose-weight":
+                              return "Perder peso";
+                            case "maintain":
+                              return "Mantener peso";
+                            case "gain-muscle":
+                              return "Ganar músculo";
+                            default:
+                              return "No especificado";
+                          }
+                        })()}
+                      </Badge>
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  <div>
+                    <div className="text-sm font-medium">
+                      Preferencia dietetica
+                    </div>
+                    <div className="text-muted-foreground text-xs">
+                      {(() => {
+                        const preference = (
+                          session?.user as {
+                            profile?: { dietaryPreference?: string };
+                          }
+                        )?.profile?.dietaryPreference;
+                        switch (preference) {
+                          case "no-preference":
+                            return "Sin preferencia específica";
+                          case "vegetarian":
+                            return "Vegetariano";
+                          case "vegan":
+                            return "Vegano";
+                          case "pescatarian":
+                            return "Pescetariano";
+                          case "keto":
+                            return "Keto";
+                          case "paleo":
+                            return "Paleo";
+                          case "mediterranean":
+                            return "Mediterránea";
+                          default:
+                            return "No especificado";
                         }
-                      )?.profile?.goal;
-                      switch (goal) {
-                        case "lose-weight":
-                          return "Bajar de peso";
-                        case "maintain":
-                          return "Mantener peso";
-                        case "gain-muscle":
-                          return "Aumentar peso";
-                        default:
-                          return "No especificado";
-                      }
-                    })()}
-                  </Badge>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div>
-                <div className="text-sm font-medium">Preferencia dietetica</div>
-                <div className="text-muted-foreground text-xs">
-                  {(() => {
-                    const preference = (
-                      session?.user as {
-                        profile?: { dietaryPreference?: string };
-                      }
-                    )?.profile?.dietaryPreference;
-                    switch (preference) {
-                      case "no-preference":
-                        return "Sin preferencia específica";
-                      case "vegetarian":
-                        return "Vegetariano";
-                      case "vegan":
-                        return "Vegano";
-                      case "pescatarian":
-                        return "Pescetariano";
-                      case "keto":
-                        return "Keto";
-                      case "paleo":
-                        return "Paleo";
-                      case "mediterranean":
-                        return "Mediterránea";
-                      default:
-                        return "No especificado";
-                    }
-                  })()}
-                </div>
-              </div>
+                      })()}
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>

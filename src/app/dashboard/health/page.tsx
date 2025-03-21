@@ -34,11 +34,7 @@ interface UserProfile {
   gender: string;
   height: number;
   currentWeight: number;
-  activity: {
-    level: string;
-    daily: string;
-    trainingFrequency: number;
-  };
+  dailyActivity: string;
   nutrition: {
     calorieTarget: number;
     proteinTarget: number;
@@ -69,11 +65,7 @@ export default function HealthPage() {
       gender: profile.gender,
       height: Number(profile.height),
       currentWeight: Number(profile.currentWeight),
-      activity: {
-        level: profile.activity?.level || "",
-        daily: profile.activity?.daily || "",
-        trainingFrequency: Number(profile.activity?.trainingFrequency || 0),
-      },
+      dailyActivity: profile.dailyActivity,
       nutrition: {
         calorieTarget: Number(profile.nutrition?.calorieTarget || 0),
         proteinTarget: Number(profile.nutrition?.proteinTarget || 0),
@@ -87,7 +79,7 @@ export default function HealthPage() {
     });
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
 
-  console.log(user);
+  // console.log(user);
 
   // Calculate BMI
   const heightInMeters = user && user.height ? user.height / 100 : 0; // Convertir cm a metros
@@ -186,7 +178,7 @@ export default function HealthPage() {
                   <SelectItem value="lose-weight">
                     <div className="flex items-center">
                       <ArrowDown01Icon className="mr-2 h-4 w-4 text-red-500" />
-                      Bajar de peso
+                      Perder peso
                     </div>
                   </SelectItem>
                   <SelectItem value="maintain">
@@ -198,7 +190,7 @@ export default function HealthPage() {
                   <SelectItem value="gain-muscle">
                     <div className="flex items-center">
                       <ArrowUp01Icon className="mr-2 h-4 w-4 text-green-500" />
-                      Aumentar peso
+                      Ganar músculo
                     </div>
                   </SelectItem>
                 </SelectContent>
@@ -209,7 +201,7 @@ export default function HealthPage() {
               <label className="text-sm font-medium">
                 Nivel de actividad física
               </label>
-              <Select value={user?.activity?.daily} disabled>
+              <Select value={user?.dailyActivity} disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu nivel de actividad" />
                 </SelectTrigger>
