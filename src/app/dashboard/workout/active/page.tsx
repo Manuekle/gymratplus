@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
+  Card,
   CardContent,
   CardDescription,
   CardHeader,
@@ -15,6 +16,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout-timer-float";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Componente de spinner (ajusta según tus componentes)
 const Spinner = () => (
@@ -340,8 +343,46 @@ export default function ActiveWorkout() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <Spinner />
+      <div className="p-6 space-y-6">
+        {/* Título y botón */}
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-6 w-48" />
+          <Skeleton className="h-10 w-36 rounded-md" />
+        </div>
+
+        {/* Grid de ejercicios */}
+        <Card className="grid grid-cols-3 gap-4 px-4">
+          {Array(9) // Generar 9 tarjetas de ejercicios (ajusta según sea necesario)
+            .fill(0)
+            .map((_, i) => (
+              <Card key={i} className="p-4 space-y-4 col-span-3 md:col-span-1">
+                {/* Título y botón */}
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-5 w-32" />
+                  <Skeleton className="h-8 w-24 rounded-md" />
+                </div>
+
+                {/* Info de ejercicio */}
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-16" />
+
+                {/* Sets */}
+                <div className="space-y-2">
+                  {Array(3) // Para cada set dentro del ejercicio
+                    .fill(0)
+                    .map((_, j) => (
+                      <div key={j} className="flex items-center gap-2">
+                        <Skeleton className="h-6 w-6" /> {/* Número de set */}
+                        <Skeleton className="h-8 w-16 rounded-md" />{" "}
+                        {/* Peso */}
+                        <Skeleton className="h-8 w-16 rounded-md" />{" "}
+                        {/* Reps */}
+                      </div>
+                    ))}
+                </div>
+              </Card>
+            ))}
+        </Card>
       </div>
     );
   }
@@ -398,14 +439,23 @@ export default function ActiveWorkout() {
               className="text-xs"
             >
               {saving ? <Spinner /> : null}
-              Finalizar entrenamiento
+              Guardar notas
             </Button>
           </div>
 
           <div className="mb-6">
             <Progress value={progress} className="h-2" />
           </div>
-
+          <div className="pb-6">
+            <h3 className="text-sm font-medium mb-2">Notas</h3>
+            <Textarea
+              className="w-full"
+              rows={3}
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Añade notas sobre tu entrenamiento..."
+            />
+          </div>
           {restTimer.active && (
             <div className="bg-foreground p-4 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in">
               <h3 className="text-md  mb-2 text-white dark:text-black">
@@ -567,17 +617,6 @@ export default function ActiveWorkout() {
               </div>
             ))}
           </div>
-
-          {/* <div className="pt-4">
-            <h3 className="text-lg font-medium mb-2">Notas</h3>
-            <Textarea
-              className="w-full"
-              rows={3}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Añade notas sobre tu entrenamiento..."
-            />
-          </div> */}
         </div>
       </div>
     </div>

@@ -123,16 +123,19 @@ export default function WorkoutHistory() {
         </div>
         {/* Skeleton de estadísticas */}
         <Skeleton className="h-4 w-56 mb-2" />
-        <div className="grid grid-cols-4 gap-4 pb-6 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-6 pt-6">
           {Array(4)
             .fill(0)
             .map((_, i) => (
-              <Card key={i} className="px-4 py-8 flex flex-row justify-between">
+              <Card
+                key={i}
+                className="px-4 py-8 flex flex-row justify-between items-center"
+              >
                 <div>
-                  <Skeleton className="h-4 w-24 mb-2" />
+                  <Skeleton className="h-4 w-32 mb-2" />
                   <Skeleton className="h-8 w-16" />
                 </div>
-                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-12 w-12 rounded-full" />
               </Card>
             ))}
         </div>
@@ -149,7 +152,7 @@ export default function WorkoutHistory() {
           {Array(6)
             .fill(0)
             .map((_, i) => (
-              <Card key={i} className="p-4 space-y-4">
+              <Card key={i} className="p-4 space-y-4 col-span-3 md:col-span-1">
                 <Skeleton className="h-6 w-32" />
                 <Skeleton className="h-4 w-40" />
 

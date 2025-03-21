@@ -23,6 +23,7 @@ import {
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { AlertCircleIcon } from "hugeicons-react";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Exercise = {
   id: string;
@@ -294,7 +295,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
               </Select>
             </div>
             {selectedDay && (
-              <div className="max-h-[400px] overflow-y-auto p-2 scrollbar-hide no-scrollbar">
+              <ScrollArea className="max-h-[300px] p-2">
                 <div className="grid md:grid-cols-2 gap-6">
                   {days
                     .find((day: Day) => day.day === selectedDay)
@@ -344,7 +345,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                       </div>
                     ))}
                 </div>
-              </div>
+              </ScrollArea>
             )}
             <DialogFooter>
               <Button
