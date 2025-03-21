@@ -24,6 +24,7 @@ export interface NotificationPayload {
 export async function createNotification(data: NotificationPayload) {
   const notification = await prisma.notification.create({
     data: {
+      userId: data.userId, // Agrega esta línea
       title: data.title,
       message: data.message,
       type: data.type,
