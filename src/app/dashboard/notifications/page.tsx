@@ -2,8 +2,8 @@
 
 import React from "react";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { es } from "date-fns/locale";
-import { Bell, Filter } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,8 +21,16 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { NotificationItem } from "@/components/notifications/notification-item";
 import { useNotifications } from "@/hooks/use-notifications";
+import {
+  ArrowLeft01Icon,
+  FilterAddIcon,
+  Notification03Icon,
+} from "hugeicons-react";
+import { Icons } from "@/components/icons";
 
 export default function NotificationsPage() {
+  const router = useRouter();
+
   const { notifications, isLoading, markAsRead, unreadCount } =
     useNotifications();
 
@@ -70,11 +78,23 @@ export default function NotificationsPage() {
   };
 
   return (
-    <div className="container py-6 max-w-5xl">
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/dashboard")}
+            className="mb-2 text-xs"
+          >
+            <ArrowLeft01Icon className="h-4 w-4 mr-2" /> Volver
+          </Button>
+        </div>
+      </div>
+      <div className="flex md:flex-row flex-col md:items-center items-start md:gap-0 gap-4 justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Notificaciones</h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             Gestiona tus notificaciones y alertas
           </p>
         </div>
@@ -82,8 +102,8 @@ export default function NotificationsPage() {
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="h-9">
-                <Filter className="mr-2 h-4 w-4" />
+              <Button size="sm" className="text-xs px-6">
+                <FilterAddIcon className="mr-2 h-4 w-4" />
                 Filtrar
               </Button>
             </DropdownMenuTrigger>
@@ -115,7 +135,9 @@ export default function NotificationsPage() {
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="w-full max-w-md grid grid-cols-2">
-          <TabsTrigger value="all">Todas</TabsTrigger>
+          <TabsTrigger className="text-sm" value="all">
+            Todas
+          </TabsTrigger>
           <TabsTrigger value="unread" disabled={unreadCount === 0}>
             No leídas {unreadCount > 0 && `(${unreadCount})`}
           </TabsTrigger>
@@ -123,25 +145,28 @@ export default function NotificationsPage() {
 
         <TabsContent value="all" className="mt-4">
           <Card>
-            <CardHeader className="p-4 border-b">
-              <CardTitle className="text-lg">
+            <CardHeader className="px-4 border-b">
+              <CardTitle className="text-sm">
                 Todas las notificaciones
               </CardTitle>
-              <CardDescription>
+              <CardDescription className="text-xs text-muted-foreground">
                 Historial de todas tus notificaciones y alertas
               </CardDescription>
             </CardHeader>
 
             <CardContent className="p-0">
               {isLoading ? (
-                <div className="p-6 text-center">
-                  Cargando notificaciones...
+                <div className="flex flex-col gap-1 items-center justify-center p-6">
+                  <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground" />
+                  <h1 className="text-sm text-muted-foreground">
+                    Cargando notificaciones
+                  </h1>
                 </div>
               ) : filteredNotifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                  <Bell className="h-12 w-12 text-muted-foreground opacity-30" />
-                  <h3 className="font-medium">No hay notificaciones</h3>
-                  <p className="text-sm text-muted-foreground text-center max-w-sm">
+                  <Notification03Icon className="h-12 w-12 text-muted-foreground opacity-30" />
+                  <h3 className="font-medium text-sm">No hay notificaciones</h3>
+                  <p className="text-xs text-muted-foreground text-center max-w-sm">
                     No tienes notificaciones en este momento. Las nuevas
                     notificaciones aparecerán aquí.
                   </p>
@@ -186,11 +211,12 @@ export default function NotificationsPage() {
             <CardContent className="p-0">
               {isLoading ? (
                 <div className="p-6 text-center">
-                  Cargando notificaciones...
+                  <Icons.spinner className="h-6 w-6 animate-spin" />
+                  Cargando notificaciones
                 </div>
               ) : filteredNotifications.filter((n) => !n.read).length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                  <Bell className="h-12 w-12 text-muted-foreground opacity-30" />
+                  <Notification03Icon className="h-12 w-12 text-muted-foreground opacity-30" />
                   <h3 className="font-medium">
                     No hay notificaciones sin leer
                   </h3>
