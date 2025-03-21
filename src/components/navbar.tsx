@@ -41,7 +41,13 @@ export function Navbar() {
                   {session?.user?.image && (
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={session?.user.image} alt="@username" />
-                      <AvatarFallback>JP</AvatarFallback>
+                      <AvatarFallback className="text-xs">
+                        {session?.user?.name
+                          ?.split(" ")
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                   )}
                 </Button>
