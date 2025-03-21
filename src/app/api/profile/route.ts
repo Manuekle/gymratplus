@@ -279,7 +279,7 @@ export async function PUT(request: Request) {
     const data = await request.json();
     const userId = session.user.id;
 
-    // Update user data
+    // Actualizar datos del usuario
     if (data.name || data.email || data.image || data.experienceLevel) {
       await prisma.user.update({
         where: { id: userId },
@@ -292,7 +292,7 @@ export async function PUT(request: Request) {
       });
     }
 
-    // Update or create profile data
+    // Actualizar o crear el perfil del usuario
     const profile = await prisma.profile.upsert({
       where: { userId },
       update: {
@@ -314,15 +314,25 @@ export async function PUT(request: Request) {
       },
     });
 
-    // console.log("Profile updated:", profile);
-    // Actualizar la caché de Redis
-    const cacheKey = `user_profile_${userId}`;
-    // await redis.set(cacheKey, JSON.stringify(profile), "PX", PROFILE_CACHE_TTL);
-    await redis.set(cacheKey, profile, {
+    // Clave correcta para Redis
+    const cacheKey = `profile:${userId}`;
+
+    // Eliminar la caché anterior
+    await redis.del(cacheKey);
+
+    // Guardar el nuevo perfil en Redis
+    await redis.set(cacheKey, JSON.stringify(profile), {
       ex: PROFILE_CACHE_TTL,
     });
 
-    return NextResponse.json({ success: true, profile });
+    // Refrescar la sesión actualizada
+    const updatedSession = await getServerSession(authOptions);
+
+    return NextResponse.json({
+      success: true,
+      profile,
+      session: updatedSession,
+    });
   } catch (error) {
     console.error("Error updating profile:", error);
     return NextResponse.json(

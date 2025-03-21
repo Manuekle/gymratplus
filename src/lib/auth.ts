@@ -154,16 +154,40 @@ export const authOptions: NextAuthOptions = {
         });
 
         // Obtener datos básicos desde Redis
-        const userData = (await redis.hgetall(
+        let userData = (await redis.hgetall(
           `user:${session.user.id}:data`
         )) as Record<string, string | undefined>;
 
-        if (userData) {
-          session.user.name = userData.name ?? "";
-          session.user.email = userData.email ?? "";
-          session.user.experienceLevel = userData.experienceLevel ?? "";
-          session.user.image = userData.image ?? null;
+        if (!userData || Object.keys(userData).length === 0) {
+          // Si no hay datos en Redis, obtenerlos de la BD
+          const userFromDB = await prisma.user.findUnique({
+            where: { id: session.user.id },
+            select: {
+              name: true,
+              email: true,
+              experienceLevel: true,
+              image: true,
+            },
+          });
+
+          if (userFromDB) {
+            userData = {
+              name: userFromDB.name ?? "",
+              email: userFromDB.email ?? "",
+              experienceLevel: userFromDB.experienceLevel ?? "",
+              image: userFromDB.image ?? "",
+            };
+
+            // Guardar en Redis para futuras consultas rápidas
+            await redis.hmset(`user:${session.user.id}:data`, userData);
+            await redis.expire(`user:${session.user.id}:data`, 60 * 60 * 24); // 24 horas
+          }
         }
+
+        session.user.name = userData.name ?? "";
+        session.user.email = userData.email ?? "";
+        session.user.experienceLevel = userData.experienceLevel ?? "";
+        session.user.image = userData.image ?? "";
 
         // Obtener el perfil del usuario desde Redis o la BD
         let profile: any = await redis.get(`profile:${session.user.id}`);

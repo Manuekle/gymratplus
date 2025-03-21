@@ -30,6 +30,7 @@ import {
 } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Icons } from "@/components/icons";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -93,17 +94,26 @@ export default function ProfilePage() {
     }
   };
 
+  const [email, setEmail] = useState(session?.user?.email || "");
+  const [phone, setPhone] = useState(
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
+  );
+  const [experienceLevel, setExperienceLevel] = useState(
+    session?.user?.experienceLevel || ""
+  );
+
   const handleSaveProfile = async () => {
     try {
+      setIsUploading(true);
       // Get form values
-      const email =
-        (document.getElementById("email") as HTMLInputElement)?.value || "";
-      const phone =
-        (document.getElementById("phone") as HTMLInputElement)?.value || "";
+      // const email =
+      //   (document.getElementById("email") as HTMLInputElement)?.value || "";
+      // const phone =
+      //   (document.getElementById("phone") as HTMLInputElement)?.value || "";
 
-      const experienceLevel =
-        document.querySelector("[data-value]")?.getAttribute("data-value") ||
-        "";
+      // const experienceLevel =
+      //   document.querySelector("[data-value]")?.getAttribute("data-value") ||
+      //   "";
 
       // Update profile
       const response = await fetch("/api/profile", {
@@ -136,6 +146,8 @@ export default function ProfilePage() {
       toast.error("Error", {
         description: "No se pudo actualizar el perfil.",
       });
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -245,11 +257,16 @@ export default function ProfilePage() {
                 size="sm"
                 disabled={isUploading}
               >
-                {isUploading
-                  ? "Subiendo..."
-                  : isEditing
-                  ? "Guardar"
-                  : "Editar perfil"}
+                {isUploading ? (
+                  <span className="flex items-center">
+                    <Icons.spinner className="animate-spin h-4 w-4 mr-2" />
+                    <h1>Subiendo</h1>
+                  </span>
+                ) : isEditing ? (
+                  "Guardar"
+                ) : (
+                  "Editar perfil"
+                )}
               </Button>
             </div>
           </div>
@@ -273,27 +290,37 @@ export default function ProfilePage() {
                     disabled
                     className="text-sm"
                     id="email"
+                    onChange={(e) => setEmail(e.target.value)}
                     defaultValue={session?.user?.email || ""}
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Teléfono</Label>
-                  <Input className="text-sm" id="phone" defaultValue="" />
+                  <Input
+                    className="text-sm"
+                    id="phone"
+                    defaultValue={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="emergency">Experiencia</Label>
-                  <Select defaultValue={session?.user?.experienceLevel}>
+                  <Label htmlFor="experience">Experiencia</Label>
+                  <Select
+                    defaultValue={session?.user?.experienceLevel}
+                    value={experienceLevel}
+                    onValueChange={(value) => setExperienceLevel(value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona tu experiencia" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="lose-weight">
+                      <SelectItem value="principiante">
                         <div className="flex items-center">Principiante</div>
                       </SelectItem>
-                      <SelectItem value="maintain">
+                      <SelectItem value="intermedio">
                         <div className="flex items-center">Intermedio</div>
                       </SelectItem>
-                      <SelectItem value="gain-muscle">
+                      <SelectItem value="avanzado">
                         <div className="flex items-center">Avanzado</div>
                       </SelectItem>
                     </SelectContent>
@@ -330,7 +357,6 @@ export default function ProfilePage() {
                   <div>
                     <div className="font-medium text-sm">Teléfono</div>
                     <div className="text-muted-foreground text-xs">
-                      {/* {session?.user?.profile?.phone || "No especificado"} */}
                       {(() => {
                         // Obtain the createdAt value
                         const phone = (
@@ -348,7 +374,7 @@ export default function ProfilePage() {
                   <StarIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Experiencia</div>
-                    <div className="text-muted-foreground text-xs">
+                    <div className="text-muted-foreground text-xs capitalize">
                       {session?.user?.experienceLevel || "No especificado"}
                     </div>
                   </div>
