@@ -81,6 +81,7 @@ export default function ProfilePage() {
       toast.success("¡Imagen actualizada!", {
         description: "Tu foto de perfil ha sido actualizada correctamente.",
       });
+      window.location.reload();
     } catch (error) {
       console.error("Error al subir la imagen:", error);
 
@@ -129,6 +130,7 @@ export default function ProfilePage() {
       toast.success("Perfil actualizado", {
         description: "Tu perfil ha sido actualizado correctamente.",
       });
+      window.location.reload();
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Error", {
@@ -268,6 +270,7 @@ export default function ProfilePage() {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
+                    disabled
                     className="text-sm"
                     id="email"
                     defaultValue={session?.user?.email || ""}
@@ -279,7 +282,7 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="emergency">Experiencia</Label>
-                  <Select defaultValue="">
+                  <Select defaultValue={session?.user?.experienceLevel}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecciona tu experiencia" />
                     </SelectTrigger>
@@ -326,7 +329,9 @@ export default function ProfilePage() {
                   <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Teléfono</div>
-                    <div className="text-muted-foreground text-xs"></div>
+                    <div className="text-muted-foreground text-xs">
+                      {session?.user?.profile?.phone || "No especificado"}
+                    </div>
                   </div>
                 </div>
 
@@ -336,7 +341,9 @@ export default function ProfilePage() {
                   <StarIcon className="h-5 w-5 text-muted-foreground" />
                   <div>
                     <div className="font-medium text-sm">Experiencia</div>
-                    <div className="text-muted-foreground text-xs"></div>
+                    <div className="text-muted-foreground text-xs">
+                      {session?.user?.experienceLevel || "No especificado"}
+                    </div>
                   </div>
                 </div>
               </>

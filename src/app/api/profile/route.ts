@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import { Redis } from "@upstash/redis";
+
+const redis = new Redis({
+  url: process.env.KV_REST_API_URL || "",
+  token: process.env.KV_REST_API_TOKEN || "",
+});
+
+const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
 // Reemplazar la función POST completa con esta versión más robusta
 export async function POST(req: Request) {
@@ -276,10 +284,10 @@ export async function PUT(request: Request) {
       await prisma.user.update({
         where: { id: userId },
         data: {
-          name: data.name,
-          email: data.email,
-          image: data.image,
-          experienceLevel: data.experienceLevel,
+          name: data.name ?? undefined,
+          email: data.email ?? undefined,
+          image: data.image ?? undefined,
+          experienceLevel: data.experienceLevel ?? undefined,
         },
       });
     }
@@ -288,22 +296,30 @@ export async function PUT(request: Request) {
     const profile = await prisma.profile.upsert({
       where: { userId },
       update: {
-        phone: data.phone,
-        birthdate: data.birthdate,
-        preferredWorkoutTime: data.preferredWorkoutTime,
-        dailyActivity: data.dailyActivity,
-        goal: data.goal,
-        dietaryPreference: data.dietaryPreference,
+        phone: data.phone ?? undefined,
+        birthdate: data.birthdate ?? undefined,
+        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
+        dailyActivity: data.dailyActivity ?? undefined,
+        goal: data.goal ?? undefined,
+        dietaryPreference: data.dietaryPreference ?? undefined,
       },
       create: {
         userId,
-        phone: data.phone,
-        birthdate: data.birthdate,
-        preferredWorkoutTime: data.preferredWorkoutTime,
-        dailyActivity: data.dailyActivity,
-        goal: data.goal,
-        dietaryPreference: data.dietaryPreference,
+        phone: data.phone ?? undefined,
+        birthdate: data.birthdate ?? undefined,
+        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
+        dailyActivity: data.dailyActivity ?? undefined,
+        goal: data.goal ?? undefined,
+        dietaryPreference: data.dietaryPreference ?? undefined,
       },
+    });
+
+    // console.log("Profile updated:", profile);
+    // Actualizar la caché de Redis
+    const cacheKey = `user_profile_${userId}`;
+    // await redis.set(cacheKey, JSON.stringify(profile), "PX", PROFILE_CACHE_TTL);
+    await redis.set(cacheKey, profile, {
+      ex: PROFILE_CACHE_TTL,
     });
 
     return NextResponse.json({ success: true, profile });
