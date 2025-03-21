@@ -1,8 +1,8 @@
+"use client";
+
 import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
-// import { useToast } from "@/hooks/use-toast";
-// import { Button } from "@/components/ui/button";
-// import { NotificationToast } from "@/components/notifications/notification-toast";
+import { toast } from "sonner";
 import { NotificationType } from "@/types/notifications-types";
 
 interface Notification {
@@ -51,10 +51,9 @@ export function useNotifications() {
           setLastNotificationId(latest.id);
           alert(`Nueva notificación: ${latest.title}`);
 
-          // toast({
-          //   title: latest.title,
-          //   description: latest.message,
-          // });
+          toast.success(latest.title, {
+            description: latest.message,
+          });
 
           // Mostrar toast para la nueva notificación
           // toast({

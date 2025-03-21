@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +13,7 @@ import { NotificationItem } from "@/components/notifications/notification-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNotifications } from "@/hooks/use-notifications";
 import { Notification03Icon } from "hugeicons-react";
+import Link from "next/link";
 
 export function NotificationBell() {
   const { notifications, isLoading, unreadCount, markAsRead, refetch } =
@@ -118,16 +121,18 @@ export function NotificationBell() {
           </TabsContent>
         </Tabs>
 
-        {/* <div className="p-2 border-t text-center">
+        <div className="p-2 border-t text-center">
           <Button
             variant="ghost"
             size="sm"
             asChild
             className="text-xs h-8 w-full text-muted-foreground"
           >
-            <Link href="/notifications">Ver todas las notificaciones</Link>
+            <Link href="/dashboard/notifications">
+              Ver todas las notificaciones
+            </Link>
           </Button>
-        </div> */}
+        </div>
       </PopoverContent>
     </Popover>
   );

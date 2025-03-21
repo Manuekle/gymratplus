@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
