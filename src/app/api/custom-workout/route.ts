@@ -80,11 +80,35 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
+    const translations = {
+      "Full Body": "Cuerpo Completo",
+      "Upper/Lower Split": "División Superior/Inferior",
+      "Push/Pull/Legs": "Empuje/Tirón/Piernas",
+      Weider: "Weider",
+      standard: "estándar",
+      circuit: "circuito",
+      hiit: "HIIT",
+      "drop-sets": "series descendentes",
+      pyramid: "pirámide",
+      supersets: "superseries",
+      strength: "fuerza",
+      "gain-muscle": "ganancia muscular",
+      hypertrophy: "hipertrofia",
+      endurance: "resistencia",
+      "lose-weight": "pérdida de peso",
+      "fat-loss": "reducción de grasa",
+      mobility: "movilidad",
+    };
+
     // Create a new workout in the database
     const workout = await prisma.workout.create({
       data: {
         name,
-        description: `Custom ${splitType} workout with ${methodology} methodology for ${goal} goal`,
+        description: `Entrenamiento ${
+          translations[splitType as keyof typeof translations]
+        } con metodología ${
+          translations[methodology as keyof typeof translations]
+        } para ${translations[goal as keyof typeof translations]}`,
         userId,
       },
     });
