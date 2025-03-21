@@ -1,6 +1,6 @@
+import { Inter } from "next/font/google";
 import { Toaster as Sonner } from "sonner";
 // At the top of the file, import the Inter font
-import { Inter } from "next/font/google";
 
 // Initialize the Inter font
 const inter = Inter({ subsets: ["latin"] });
