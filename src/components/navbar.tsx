@@ -13,11 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
   Door01Icon,
-  Notification03Icon,
+  // Notification03Icon,
   Settings01Icon,
 } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "./ui/badge";
+import { NotificationBell } from "./notifications/notification-bell";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -31,9 +32,7 @@ export function Navbar() {
             <Badge variant="outline">Beta</Badge>
           </div>
           <div className="flex flex-row items-center space-x-4">
-            <Button variant="ghost" size="icon">
-              <Notification03Icon className="h-5 w-5" />
-            </Button>
+            <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

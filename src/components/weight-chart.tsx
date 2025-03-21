@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import ChartSkeleton from "./skeleton/charts-skeleton";
+import { Button } from "./ui/button";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -214,12 +215,12 @@ export function WeightChart() {
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-red-500 mb-2">Error: {error}</p>
-            <button
+            <Button
               onClick={() => loadData()}
               className="px-3 py-1 bg-primary text-white rounded-md text-sm"
             >
               Reintentar
-            </button>
+            </Button>
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">

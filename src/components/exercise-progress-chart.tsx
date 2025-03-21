@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { ExerciseProgress } from "./progress/excercise-progress";
 import ChartSkeleton from "./skeleton/charts-skeleton";
+import { Button } from "./ui/button";
 
 // Removed unused ChartDataItem interface
 // Removed top-level state declarations; state is managed inside the ExerciseProgressChart component.
@@ -262,12 +263,9 @@ export function ExerciseProgressChart() {
         ) : error ? (
           <div className="flex flex-col items-center justify-center h-full">
             <p className="text-red-500 mb-2">Error: {error}</p>
-            <button
-              onClick={() => loadData()}
-              className="px-3 py-1 bg-primary text-white rounded-md text-sm"
-            >
+            <Button size="sm" onClick={() => loadData()} className="text-xs">
               Reintentar
-            </button>
+            </Button>
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">

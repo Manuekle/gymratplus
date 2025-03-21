@@ -3,13 +3,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
-import { Redis } from "@upstash/redis";
-
-// Inicializar cliente de Redis con Upstash
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL || "",
-  token: process.env.KV_REST_API_TOKEN || "",
-});
+import { redis } from "@/lib/redis";
 
 export async function POST(request: Request) {
   try {

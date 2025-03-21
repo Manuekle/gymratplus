@@ -7,13 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
-import { Redis } from "@upstash/redis";
-
-// Inicializar Redis
-const redis = new Redis({
-  url: process.env.KV_REST_API_URL || "",
-  token: process.env.KV_REST_API_TOKEN || "",
-});
+import { redis } from "@/lib/redis";
 
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 

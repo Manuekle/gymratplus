@@ -77,12 +77,12 @@ export default function GoalProgressForm({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-background rounded-lg shadow-lg w-full max-w-md p-6 relative">
-        <button
+        <Button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-700"
         >
           <X size={20} />
-        </button>
+        </Button>
 
         <h2 className="text-xl font-bold mb-4">Actualizar progreso</h2>
         <p className="text-muted-foreground mb-4">{goal.title}</p>

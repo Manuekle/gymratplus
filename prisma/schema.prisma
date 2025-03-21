@@ -50,6 +50,7 @@ model User {
   profile          Profile?
   workouts         Workout[]
   workoutSessions  WorkoutSession[]
+  notifications    Notification[]
   customFoods      Food[]
   customRecipes    Recipe[] // Nuevo: relación con recetas personalizadas
   mealLogs         MealLog[]
@@ -342,12 +343,16 @@ model GoalProgress {
 
 model Notification {
   id        String   @id @default(cuid())
+  userId    String // Nuevo campo para relación con usuario
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Nueva relación
   title     String
   message   String
   type      String // workout, meal, water, weight, etc.
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }
 
 model WorkoutSession {

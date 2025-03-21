@@ -1,4 +1,5 @@
 import { ArrowRight01Icon, CheckmarkCircle01Icon } from "hugeicons-react";
+import { Button } from "../ui/button";
 
 export default function UpcomingEvents() {
   const today = new Date();
@@ -64,9 +65,9 @@ export default function UpcomingEvents() {
           {/* <Calendar className="h-5 w-5 text-blue-500" /> */}
           <h2 className="text-lg font-bold">Eventos Próximos</h2>
         </div>
-        <button className="text-xs text-gray-500 flex items-center gap-1">
+        <Button className="text-xs text-gray-500 flex items-center gap-1">
           Ver calendario <ArrowRight01Icon className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
 
       <div className="mb-4">
@@ -101,9 +102,9 @@ export default function UpcomingEvents() {
             {event.completed ? (
               <CheckmarkCircle01Icon className="h-5 w-5 " />
             ) : (
-              <button className="text-xs bg-white text-blue-600 px-3 py-1 rounded-full border border-blue-200">
+              <Button className="text-xs bg-white text-blue-600 px-3 py-1 rounded-full border border-blue-200">
                 {event.type === "workout" ? "Iniciar" : "Completar"}
-              </button>
+              </Button>
             )}
           </div>
         ))}
