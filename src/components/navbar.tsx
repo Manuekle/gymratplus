@@ -14,7 +14,7 @@ import {
 import {
   Door01Icon,
   // Notification03Icon,
-  Settings01Icon,
+  // Settings01Icon,
 } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "./ui/badge";
@@ -39,9 +39,19 @@ export function Navbar() {
                   variant="ghost"
                   className="relative h-8 w-8 rounded-full"
                 >
-                  {session?.user?.image && (
+                  {(session?.user?.image && (
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={session?.user.image} alt="@username" />
+                      <AvatarFallback className="text-xs">
+                        {session?.user?.name
+                          ?.split(" ")
+                          .map((word) => word[0])
+                          .join("")
+                          .toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
+                  )) || (
+                    <Avatar className="h-8 w-8">
                       <AvatarFallback className="text-xs">
                         {session?.user?.name
                           ?.split(" ")
@@ -65,10 +75,10 @@ export function Navbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>
+                {/* <DropdownMenuItem>
                   <Settings01Icon className="mr-2 h-4 w-4" />
                   <span>Ajustes</span>
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
                 <ThemeToggle />
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
