@@ -9,6 +9,7 @@ import { StepMethodology } from "./steps/step-methodology";
 import { StepFrequency } from "./steps/step-frequency";
 import { StepName } from "./steps/step-name";
 import { StepResults } from "./steps/step-results";
+import { Workout } from "@/types/workout-types";
 import {
   Dialog,
   DialogContent,
@@ -36,19 +37,6 @@ export function WorkoutGeneratorForm() {
     name: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-  type Day = {
-    day: string;
-    exercises: string[];
-  };
-
-  type Workout = {
-    id: string;
-    name: string;
-    exercises: string[];
-    description: string;
-    type: string;
-    days: Day[];
-  };
 
   const [workoutResult, setWorkoutResult] = useState<Workout | null>(null);
 

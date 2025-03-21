@@ -12,27 +12,7 @@ import { Calendar01Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-type Exercise = {
-  name: string;
-  notes?: string;
-  sets: number;
-  reps?: number;
-  restTime: number;
-};
-
-type Day = {
-  day: string;
-  exercises: Exercise[];
-};
-
-type Workout = {
-  id: string;
-  name: string;
-  exercises: string[];
-  description: string;
-  type: string;
-  days: Day[];
-};
+import { Workout } from "@/types/workout-types";
 
 interface StepResultsProps {
   workout: Workout;
