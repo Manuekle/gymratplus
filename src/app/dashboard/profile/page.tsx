@@ -330,7 +330,14 @@ export default function ProfilePage() {
                   <div>
                     <div className="font-medium text-sm">Teléfono</div>
                     <div className="text-muted-foreground text-xs">
-                      {session?.user?.profile?.phone || "No especificado"}
+                      {/* {session?.user?.profile?.phone || "No especificado"} */}
+                      {(() => {
+                        // Obtain the createdAt value
+                        const phone = (
+                          session?.user as { profile?: { phone?: string } }
+                        )?.profile?.phone;
+                        return phone || "No especificado";
+                      })()}
                     </div>
                   </div>
                 </div>
