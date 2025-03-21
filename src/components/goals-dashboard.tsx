@@ -26,6 +26,7 @@ import {
 import { NewGoal } from "./goals/new-goal";
 import { UpdateGoal } from "./goals/update-goal";
 import ProgressSkeleton from "./skeleton/progress-skeleton";
+import { DeleteGoal } from "./goals/delete-goal";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
@@ -168,8 +169,9 @@ export function GoalsDashboard() {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex justify-end pt-2">
+        <CardFooter className="flex justify-end pt-2 gap-2">
           <UpdateGoal goal={goal} onSuccess={handleFormSuccess} />
+          <DeleteGoal goal={goal} onSuccess={handleFormSuccess} />
         </CardFooter>
       </Card>
     );

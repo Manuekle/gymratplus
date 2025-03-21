@@ -260,13 +260,6 @@ export default function ProgressChart() {
         <h2 className="text-2xl font-bold tracking-tight">
           Seguimiento de Progreso
         </h2>
-        {/* <Button
-          size="sm"
-          onClick={() => setShowAddForm(true)}
-          className="px-6 text-xs"
-        >
-          Añadir registro
-        </Button> */}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mb-4 items-center">

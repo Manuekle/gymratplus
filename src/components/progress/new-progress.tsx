@@ -219,7 +219,7 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
               size="sm"
               className="text-xs px-6"
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !date}
             >
               {isSubmitting ? (
                 <>

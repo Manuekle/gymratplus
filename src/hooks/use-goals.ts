@@ -203,6 +203,7 @@ export const useGoals = () => {
       dataCacheRef.current = {};
 
       toast.success("Objetivo eliminado correctamente");
+      window.location.reload();
       return true;
     } catch (error) {
       console.error("Error al eliminar objetivo:", error);

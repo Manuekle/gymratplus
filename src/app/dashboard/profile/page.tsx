@@ -279,7 +279,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            <div className="flex justify-center md:justify-end md:self-start pt-4 md:pt-0">
+            <div className="flex justify-center gap-2 md:justify-end md:self-start pt-4 md:pt-0">
               <Button
                 onClick={
                   isEditing ? handleSaveProfile : () => setIsEditing(true)
@@ -299,6 +299,17 @@ export default function ProfilePage() {
                   "Editar perfil"
                 )}
               </Button>
+              {/* button cancel */}
+              {isEditing && (
+                <Button
+                  onClick={() => setIsEditing(false)}
+                  className="text-xs px-4"
+                  size="sm"
+                  variant="destructive"
+                >
+                  Cancelar
+                </Button>
+              )}
             </div>
           </div>
         </CardContent>
