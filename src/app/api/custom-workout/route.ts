@@ -12,7 +12,7 @@ export async function POST(request: Request) {
     }
     const userId = (session.user as { id: string }).id;
 
-    // Obtener los parámetros de la solicitud
+    // Get request parameters
     const {
       goal = "gain-muscle",
       splitType = "Full Body",
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       name = "Custom Workout",
     } = await request.json();
 
-    // Validar los parámetros
+    // Validate parameters
     const validGoals = [
       "strength",
       "gain-muscle",
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // Obtener el perfil del usuario
+    // Get user profile
     const profile = await prisma.profile.findUnique({
       where: { userId },
     });
@@ -80,7 +80,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // Crear un nuevo entrenamiento en la base de datos
+    // Create a new workout in the database
     const workout = await prisma.workout.create({
       data: {
         name,
@@ -89,10 +89,10 @@ export async function POST(request: Request) {
       },
     });
 
-    // Obtener o crear ejercicios
+    // Get or create exercises
     const exercises = await getOrCreateExercises();
 
-    // Crear plan de entrenamiento basado en los parámetros
+    // Create workout plan based on parameters
     const workoutExercises = await createWorkoutPlan(
       workout.id,
       exercises,
@@ -100,11 +100,11 @@ export async function POST(request: Request) {
       profile.gender,
       trainingFrequency,
       splitType,
-      [], // No hay historial de entrenamiento para considerar
+      [], // No workout history to consider
       methodology
     );
 
-    // Obtener detalles de ejercicios para cada ejercicio de entrenamiento
+    // Get exercise details for each workout exercise
     const workoutExercisesWithNames = await Promise.all(
       workoutExercises.map(async (exercise) => {
         const exerciseDetails = await prisma.exercise.findUnique({
@@ -117,7 +117,7 @@ export async function POST(request: Request) {
       })
     );
 
-    // Formatear el plan de entrenamiento para la respuesta
+    // Format workout plan for response
     const formattedWorkout = {
       id: workout.id,
       name: workout.name,
@@ -165,11 +165,11 @@ interface FormattedWorkoutDay {
 function formatWorkoutPlan(
   workoutExercises: WorkoutExercise[]
 ): FormattedWorkoutDay[] {
-  // Agrupar ejercicios por grupo muscular
+  // Group exercises by muscle group/day
   const exercisesByDay = workoutExercises.reduce<
     Record<string, WorkoutExercise[]>
   >((acc, ex) => {
-    // Extraer el grupo muscular del campo notes
+    // Extract the muscle group from the notes field
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
     const muscleGroup = muscleGroupMatch
       ? muscleGroupMatch[1].trim()
@@ -180,10 +180,10 @@ function formatWorkoutPlan(
     return acc;
   }, {});
 
-  // Formatear cada grupo muscular
+  // Format each muscle group
   return Object.entries(exercisesByDay).map(([muscleGroup, exercises]) => {
     return {
-      day: muscleGroup, // Usamos el grupo muscular como identificador del día
+      day: muscleGroup, // Use muscle group as day identifier
       exercises: exercises.map((ex) => ({
         id: ex.id,
         name: ex.name || "Ejercicio",
