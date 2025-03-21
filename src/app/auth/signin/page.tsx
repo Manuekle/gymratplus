@@ -68,11 +68,16 @@ export default function SignInPage() {
               <Label htmlFor="password">Contraseña</Label>
               <Input id="password" name="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              size="sm"
+              type="submit"
+              className="text-xs w-full"
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Iniciando sesión...
+                  Iniciando sesión
                 </>
               ) : (
                 "Iniciar Sesión"
@@ -92,7 +97,8 @@ export default function SignInPage() {
           <div className="border-t pt-4">
             <Button
               variant="outline"
-              className="w-full"
+              size="sm"
+              className="w-full text-xs"
               onClick={async () => {
                 setLoadingGoogle(true);
                 await signIn("google", { callbackUrl: "/" });

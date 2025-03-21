@@ -7,6 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { Redis } from "@upstash/redis";
 import { JWT } from "next-auth/jwt";
+import { AdapterUser } from "next-auth/adapters";
 
 // Inicializar Redis
 const redis = new Redis({
@@ -25,7 +26,10 @@ async function getUserIdFromSession() {
 // Definir un tipo de usuario extendido para incluir la contraseña
 interface CustomUser extends User {
   id: string;
-  password?: string;
+  email?: string | null; // Permitir null y undefined
+  password?: string | null;
+  name: string;
+  image: string;
 }
 
 export const authOptions: NextAuthOptions = {
@@ -49,22 +53,50 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        console.log("Received Credentials:", credentials);
+
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales requeridas");
         }
 
+        // Buscar en la base de datos primero
+        const user: CustomUser | null = (await prisma.user.findUnique({
+          where: { email: credentials.email },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            image: true,
+            password: true,
+          },
+        })) as CustomUser | null;
+
+        // Si user.password es null, asignarle undefined
+        if (user) {
+          user.password = user.password ?? undefined;
+        }
+
         // Buscar en caché
-        const cacheKey = `user:email:${credentials.email}`;
-        const cachedUser = await redis.get<string>(cacheKey);
+        if (!user) {
+          const cacheKey = `user:email:${credentials.email}`;
+          const cachedUser = await redis.get<string>(cacheKey);
 
-        const user: CustomUser | null = cachedUser
-          ? JSON.parse(cachedUser)
-          : await prisma.user.findUnique({
-              where: { email: credentials.email },
-            });
+          if (cachedUser) {
+            try {
+              const parsedUser = JSON.parse(cachedUser);
+              console.log("Usuario cargado desde caché:", parsedUser);
+              return parsedUser; // Retorna el usuario desde caché si está disponible
+            } catch (error) {
+              console.error("Error al parsear el usuario en caché:", error);
+            }
+          }
 
-        if (!user || !user.password) {
           throw new Error("Usuario no encontrado");
+        }
+
+        // Validar la contraseña
+        if (!user.password) {
+          throw new Error("Contraseña no encontrada en la base de datos");
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -76,10 +108,11 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Contraseña inválida");
         }
 
-        // Guardar en caché si es necesario
-        if (!cachedUser) {
-          await redis.set(cacheKey, JSON.stringify(user), { ex: 60 * 10 }); // 10 min
-        }
+        // Guardar en caché si aún no está
+        const cacheKey = `user:email:${credentials.email}`;
+        await redis.set(cacheKey, JSON.stringify(user), { ex: 60 * 10 }); // 10 min
+
+        console.log("Usuario guardado en caché:", user);
 
         return {
           id: user.id,
@@ -95,16 +128,18 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: CustomUser }) {
+    async jwt({ token, user }: { token: JWT; user?: User | AdapterUser }) {
       if (user) {
-        token.id = user.id;
-        await redis.hset(`user:${user.id}:data`, {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          image: user.image,
+        const customUser = user as CustomUser; // Forzar tipo CustomUser
+
+        token.id = customUser.id;
+        await redis.hset(`user:${customUser.id}:data`, {
+          id: customUser.id,
+          email: customUser.email ?? "",
+          name: customUser.name ?? "",
+          image: customUser.image ?? "",
         });
-        await redis.expire(`user:${user.id}:data`, 30 * 24 * 60 * 60); // 30 días
+        await redis.expire(`user:${customUser.id}:data`, 30 * 24 * 60 * 60); // 30 días
       }
       return token;
     },
@@ -177,7 +212,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/auth/signin",
-    error: "/auth/signin",
+    error: "/auth/error",
   },
   secret: process.env.NEXTAUTH_SECRET,
   debug: process.env.NODE_ENV === "development",

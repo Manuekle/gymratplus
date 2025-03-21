@@ -68,6 +68,8 @@ export default function SignUpPage() {
         throw new Error(data.error || "Error al registrar usuario");
       }
 
+      console.log("Logging in with:", { email, password });
+
       // Iniciar sesión automáticamente
       const result = await signIn("credentials", {
         redirect: false,
@@ -75,12 +77,14 @@ export default function SignUpPage() {
         password,
       });
 
+      console.log(result);
+
       if (result?.error) {
         setError(result.error);
+        // router.push("/auth/error");
       } else {
         // Redireccionar a onboarding o dashboard
         router.push("/onboarding");
-        router.refresh();
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -125,7 +129,12 @@ export default function SignUpPage() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              size="sm"
+              type="submit"
+              className="w-full text-xs"
+              disabled={loading}
+            >
               {loading ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
@@ -147,7 +156,8 @@ export default function SignUpPage() {
           <div className="border-t pt-4">
             <Button
               variant="outline"
-              className="w-full"
+              className="w-full text-xs"
+              size="sm"
               onClick={async () => {
                 setLoadingGoogle(true);
                 await signIn("google", { callbackUrl: "/onboarding" });
@@ -158,7 +168,7 @@ export default function SignUpPage() {
               {loadingGoogle ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Registrando...
+                  Registrando
                 </>
               ) : (
                 <>
