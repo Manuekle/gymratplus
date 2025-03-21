@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Icons } from "@/components/icons";
 
-import { motion } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -95,94 +94,88 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <Card className="w-full max-w-md shadow-lg">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-2xl">Crear Cuenta</CardTitle>
-            <CardDescription className="text-center text-xs">
-              Regístrate para acceder a todos los beneficios de la plataforma.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <form onSubmit={handleSubmit} className="space-y-4 gap-4">
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="name">Nombre</Label>
-                <Input id="name" name="name" type="text" required />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="email">Correo electrónico</Label>
-                <Input id="email" name="email" type="email" required />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="password">Contraseña</Label>
-                <Input id="password" name="password" type="password" required />
-              </div>
-              <div className="flex flex-col gap-2">
-                <Label htmlFor="repeatPassword">Repetir Contraseña</Label>
-                <Input
-                  id="repeatPassword"
-                  name="repeatPassword"
-                  type="password"
-                  required
-                />
-              </div>
-              <Button type="submit" className="w-full" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Registrando...
-                  </>
-                ) : (
-                  "Registrarse"
-                )}
-              </Button>
-              {error && (
-                <p className="text-[#E52020] text-xs text-center">
-                  Error al Registrarse Intenta de nuevo.
-                </p>
-              )}
-              {error && (
-                <p className="text-[#E52020] text-xs text-center">{error}</p>
-              )}
-            </form>
-            <div className="border-t pt-4">
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={async () => {
-                  setLoadingGoogle(true);
-                  await signIn("google", { callbackUrl: "/onboarding" });
-                  setLoadingGoogle(false);
-                }}
-                disabled={loadingGoogle}
-              >
-                {loadingGoogle ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Registrando...
-                  </>
-                ) : (
-                  <>
-                    <FcGoogle className="mr-2 h-5 w-5" />
-                    Registrarse con Google
-                  </>
-                )}
-              </Button>
+    <div className="flex h-screen items-center justify-center p-4">
+      <Card className="w-full max-w-md shadow-lg">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-center text-2xl">Crear Cuenta</CardTitle>
+          <CardDescription className="text-center text-xs">
+            Regístrate para acceder a todos los beneficios de la plataforma.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4 gap-4">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="name">Nombre</Label>
+              <Input id="name" name="name" type="text" required />
             </div>
-            <div className="mt-4 text-center text-xs">
-              ¿Ya tienes una cuenta?{" "}
-              <Link href="/auth/signin" className="text-primary">
-                Inicia sesión
-              </Link>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Correo electrónico</Label>
+              <Input id="email" name="email" type="email" required />
             </div>
-          </CardContent>
-        </Card>
-      </motion.div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="password">Contraseña</Label>
+              <Input id="password" name="password" type="password" required />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="repeatPassword">Repetir Contraseña</Label>
+              <Input
+                id="repeatPassword"
+                name="repeatPassword"
+                type="password"
+                required
+              />
+            </div>
+            <Button type="submit" className="w-full" disabled={loading}>
+              {loading ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Registrando...
+                </>
+              ) : (
+                "Registrarse"
+              )}
+            </Button>
+            {error && (
+              <p className="text-[#E52020] text-xs text-center">
+                Error al Registrarse Intenta de nuevo.
+              </p>
+            )}
+            {error && (
+              <p className="text-[#E52020] text-xs text-center">{error}</p>
+            )}
+          </form>
+          <div className="border-t pt-4">
+            <Button
+              variant="outline"
+              className="w-full"
+              onClick={async () => {
+                setLoadingGoogle(true);
+                await signIn("google", { callbackUrl: "/onboarding" });
+                setLoadingGoogle(false);
+              }}
+              disabled={loadingGoogle}
+            >
+              {loadingGoogle ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Registrando...
+                </>
+              ) : (
+                <>
+                  <FcGoogle className="mr-2 h-5 w-5" />
+                  Registrarse con Google
+                </>
+              )}
+            </Button>
+          </div>
+          <div className="mt-4 text-center text-xs">
+            ¿Ya tienes una cuenta?{" "}
+            <Link href="/auth/signin" className="text-primary">
+              Inicia sesión
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
