@@ -270,8 +270,8 @@ export default function ProgressChart() {
             onClick={() => setDataType("weight")}
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "weight"
-                ? "bg-[#578FCA] text-white"
-                : "text-muted-foreground border"
+                ? "bg-[#578FCA] text-white dark:text-[#578FCA]"
+                : "text-muted-foreground "
             }`}
           >
             Peso
@@ -282,11 +282,11 @@ export default function ProgressChart() {
             onClick={() => setDataType("bodyFat")}
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "bodyFat"
-                ? "bg-[#FBA518] text-white"
-                : "text-muted-foreground border"
+                ? "bg-[#FBA518] text-white dark:text-[#FBA518]"
+                : "text-muted-foreground"
             }`}
           >
-            Grasa Corporal
+            Grasa corporal
           </Button>
           <Button
             size="sm"
@@ -294,11 +294,11 @@ export default function ProgressChart() {
             onClick={() => setDataType("muscle")}
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "muscle"
-                ? "bg-[#DE3163] text-white"
-                : "text-muted-foreground border"
+                ? "bg-[#DE3163] text-white dark:text-[#DE3163]"
+                : "text-muted-foreground"
             }`}
           >
-            Masa Muscular
+            Masa muscular
           </Button>
         </div>
 
