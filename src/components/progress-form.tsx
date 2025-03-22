@@ -184,9 +184,12 @@ export default function ProgressForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="notes">Notas</Label>
+            <Label className="text-xs md:text-sm" htmlFor="notes">
+              Notas
+            </Label>
             <Textarea
               id="notes"
+              className="text-xs md:text-sm"
               placeholder="Observaciones adicionales..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

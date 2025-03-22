@@ -425,7 +425,7 @@ export default function ActiveWorkout() {
         <div className="border rounded-lg p-4 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-md font-medium">
+              <CardTitle className="text-2xl font-bold tracking-tight">
                 {workoutSession.notes}
               </CardTitle>
               <CardDescription className="text-xs">
@@ -447,9 +447,9 @@ export default function ActiveWorkout() {
             <Progress value={progress} className="h-2" />
           </div>
           <div className="pb-6">
-            <h3 className="text-sm font-medium mb-2">Notas</h3>
+            <h3 className="text-xs md:text-sm font-medium mb-2">Notas</h3>
             <Textarea
-              className="w-full"
+              className="w-full text-xs md:text-sm"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -482,18 +482,18 @@ export default function ActiveWorkout() {
               <div
                 key={exercise.id}
                 className={`
-              ${exercise.completed ? "opacity-70" : "border p-4 rounded-lg"}
+              ${exercise.completed ? "opacity-70" : "border py-4 rounded-lg"}
               ${
                 restTimer.exerciseId === exercise.id
                   ? "border-zinc-300 shadow-sm"
-                  : "border p-4 rounded-lg"
+                  : "border py-4 rounded-lg"
               }
             `}
               >
                 <CardHeader className="pb-2">
-                  <div className="flex justify-between items-center">
+                  <div className="flex flex-col md:flex-row justify-start md:justify-between items-start gap-4 md:gap-0 md:items-center">
                     <div>
-                      <CardTitle className="text-sm">
+                      <CardTitle className="text-md tracking-tight font-bold">
                         {exercise.exercise.name}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">

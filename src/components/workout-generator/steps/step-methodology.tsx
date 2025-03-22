@@ -14,6 +14,7 @@ import {
   GitCompareIcon,
   MayanPyramidIcon,
 } from "hugeicons-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const methodologies = [
   {
@@ -117,30 +118,40 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
         </DialogDescription>
       </DialogHeader>
 
-      <RadioGroup value={value} onValueChange={onChange} className="grid gap-4">
-        {methodologies.map((method) => (
-          <Label key={method.id} htmlFor={method.id} className="cursor-pointer">
-            <RadioGroupItem
-              value={method.id}
-              id={method.id}
-              className="peer sr-only"
-            />
-            <div className="w-full rounded-lg border border-accent peer-data-[state=checked]:border-zinc-200 peer-data-[state=checked]:shadow-sm hover:border-zinc-200 transform transition-all">
-              <div className="flex items-center p-4 gap-4">
-                <div className="mt-0.5 p-2 rounded-full border text-muted-foreground">
-                  {method.icon}
-                </div>
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-sm">{method.name}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {method.description}
-                  </p>
+      <ScrollArea className="md:h-full h-96">
+        <RadioGroup
+          value={value}
+          onValueChange={onChange}
+          className="grid gap-4"
+        >
+          {methodologies.map((method) => (
+            <Label
+              key={method.id}
+              htmlFor={method.id}
+              className="cursor-pointer"
+            >
+              <RadioGroupItem
+                value={method.id}
+                id={method.id}
+                className="peer sr-only"
+              />
+              <div className="w-full rounded-lg border border-accent peer-data-[state=checked]:border-zinc-200 peer-data-[state=checked]:shadow-sm hover:border-zinc-200 transform transition-all">
+                <div className="flex items-center p-4 gap-4">
+                  <div className="mt-0.5 p-2 rounded-full border text-muted-foreground">
+                    {method.icon}
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <h3 className="text-sm">{method.name}</h3>
+                    <p className="text-xs text-muted-foreground">
+                      {method.description}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          </Label>
-        ))}
-      </RadioGroup>
+            </Label>
+          ))}
+        </RadioGroup>
+      </ScrollArea>
     </div>
   );
 }

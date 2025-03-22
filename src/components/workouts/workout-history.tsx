@@ -1,13 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { CardTitle, CardDescription } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { ArrowRight01Icon, Clock01Icon } from "hugeicons-react";
@@ -70,8 +64,8 @@ export default function WorkoutSummary() {
   //   );
   // }
   return (
-    <Card className="">
-      <CardHeader className="pb-2 w-full flex flex-row justify-between">
+    <div className="p-6 rounded-lg shadow-sm border">
+      <div className="flex justify-between items-center w-full mb-4">
         <span>
           <CardTitle className="text-2xl font-bold tracking-tight">
             Historial
@@ -82,73 +76,72 @@ export default function WorkoutSummary() {
         </span>
         <Link
           href="workout/history"
-          className="text-xs text-muted-foreground flex items-center gap-1"
+          className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
         >
           Ver todos <ArrowRight01Icon className="h-4 w-4" />
         </Link>
-      </CardHeader>
-      <CardContent>
-        {/* <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3> */}
-        <div className="space-y-4">
-          {loading ? (
-            <div className="flex flex-col gap-2">
-              {Array.from({ length: 6 }).map((_, index) => (
-                <div key={index} className="p-3 border rounded-lg">
-                  <div className="flex justify-between">
-                    <Skeleton className="h-4 w-56" />
-                    <Skeleton className="h-4 w-10" />
-                  </div>
-                  <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
-                    <div className="flex items-center">
-                      <Skeleton className="h-4 w-10" />
-                    </div>
-                    <div>
-                      <Skeleton className="h-4 w-10" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : workoutSessions.length === 0 ? (
-            <div className="justify-center py-24 items-center flex flex-col">
-              <h2 className="text-sm font-medium">
-                No hay entrenamientos recientes.
-              </h2>
-              <p className="text-muted-foreground text-xs">
-                Inicia un nuevo entrenamiento para ver tu historial aquí.
-              </p>
-            </div>
-          ) : (
-            workoutSessions.map((session) => (
-              <div key={session.id} className="p-3 border rounded-lg">
+      </div>
+
+      {/* <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3> */}
+      <div className="space-y-4">
+        {loading ? (
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="p-3 border rounded-lg">
                 <div className="flex justify-between">
-                  <h4 className="font-bold tracking-tight text-lg">
-                    {" "}
-                    {session.notes?.replace("Día: ", "") || "Entrenamiento"}
-                  </h4>
-                  <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(session.date), {
-                      addSuffix: true,
-                      locale: es,
-                    })}
-                  </span>
+                  <Skeleton className="h-4 w-56" />
+                  <Skeleton className="h-4 w-10" />
                 </div>
                 <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                   <div className="flex items-center">
-                    <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
-                    <span>
-                      {session.duration ? `${session.duration} min` : "N/A"}
-                    </span>
+                    <Skeleton className="h-4 w-10" />
                   </div>
                   <div>
-                    <span>{session.exercises.length} ejercicios</span>
+                    <Skeleton className="h-4 w-10" />
                   </div>
                 </div>
               </div>
-            ))
-          )}
-        </div>
-      </CardContent>
-    </Card>
+            ))}
+          </div>
+        ) : workoutSessions.length === 0 ? (
+          <div className="justify-center py-24 items-center flex flex-col">
+            <h2 className="text-sm font-medium">
+              No hay entrenamientos recientes.
+            </h2>
+            <p className="text-muted-foreground text-xs">
+              Inicia un nuevo entrenamiento para ver tu historial aquí.
+            </p>
+          </div>
+        ) : (
+          workoutSessions.map((session) => (
+            <div key={session.id} className="p-3 border rounded-lg">
+              <div className="flex justify-between">
+                <h4 className="font-bold tracking-tight text-lg">
+                  {" "}
+                  {session.notes?.replace("Día: ", "") || "Entrenamiento"}
+                </h4>
+                <span className="text-xs text-muted-foreground">
+                  {formatDistanceToNow(new Date(session.date), {
+                    addSuffix: true,
+                    locale: es,
+                  })}
+                </span>
+              </div>
+              <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
+                <div className="flex items-center">
+                  <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
+                  <span>
+                    {session.duration ? `${session.duration} min` : "N/A"}
+                  </span>
+                </div>
+                <div>
+                  <span>{session.exercises.length} ejercicios</span>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+    </div>
   );
 }

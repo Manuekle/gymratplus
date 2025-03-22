@@ -14,7 +14,7 @@ export function createSortableColumn<T>(
       return (
         <Button
           variant="ghost"
-          className="text-xs md:text-sm"
+          className="text-xs md:text-sm tracking-tighter font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}
@@ -154,7 +154,7 @@ export function createDateColumn<T>(
       return (
         <Button
           variant="ghost"
-          className="text-xs md:text-sm"
+          className="text-xs md:text-sm tracking-tighter font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}
@@ -220,7 +220,7 @@ export function createActionsColumn<T>(
                   className={action.className}
                 >
                   <Icon className="mr-2 h-4 w-4" />
-                  <h1 className="text-xs">{action.label}</h1>
+                  <h1 className="text-xs font-medium">{action.label}</h1>
                 </DropdownMenuItem>
               );
             })}
