@@ -297,6 +297,7 @@ export async function PUT(request: Request) {
         dailyActivity: data.dailyActivity ?? undefined,
         goal: data.goal ?? undefined,
         dietaryPreference: data.dietaryPreference ?? undefined,
+        waterIntake: data.waterIntake ?? undefined,
       },
       create: {
         userId,
@@ -306,6 +307,7 @@ export async function PUT(request: Request) {
         dailyActivity: data.dailyActivity ?? undefined,
         goal: data.goal ?? undefined,
         dietaryPreference: data.dietaryPreference ?? undefined,
+        waterIntake: data.waterIntake ?? undefined,
       },
     });
 

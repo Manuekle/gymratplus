@@ -231,6 +231,7 @@ model MealLog {
   protein         Float
   carbs           Float
   fat             Float
+  waterIntake     Float? // Nuevo campo para registrar el consumo de agua
   notes           String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
