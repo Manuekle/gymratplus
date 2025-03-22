@@ -414,7 +414,7 @@ export default function WorkoutHistory() {
                           {exercise.sets.map((set: Set) => (
                             <div
                               key={set.id}
-                              className="grid grid-cols-3 gap-2 text-sm py-1 border-t dark:border-gray-700"
+                              className="grid grid-cols-3 gap-2 text-sm py-1 border-t dark:border-zinc-700"
                             >
                               <div>{set.setNumber}</div>
                               <div>{set.weight || "-"}</div>
