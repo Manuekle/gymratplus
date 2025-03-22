@@ -211,10 +211,12 @@ export default function WorkoutHistory() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
-                <p className="text-3xl font-bold">{stats.totalSessions}</p>
+                <p className="text-xl md:text-3xl font-bold tracking-tighter">
+                  {stats.totalSessions}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center">
                 <Calendar01Icon className="h-6 w-6 text-pink-600 dark:text-pink-300" />
@@ -227,10 +229,12 @@ export default function WorkoutHistory() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
-                <p className="text-3xl font-bold">{stats.totalExercises}</p>
+                <p className="text-xl md:text-3xl font-bold">
+                  {stats.totalExercises}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
                 <Dumbbell01Icon className="h-6 w-6 text-blue-600 dark:text-blue-300" />
@@ -243,10 +247,12 @@ export default function WorkoutHistory() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
-                <p className="text-3xl font-bold">{stats.totalSets}</p>
+                <p className="text-xl md:text-3xl font-bold">
+                  {stats.totalSets}
+                </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
                 <CheckmarkCircle02Icon className="h-6 w-6 text-green-600 dark:text-green-300" />
@@ -259,10 +265,10 @@ export default function WorkoutHistory() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
-                <p className="text-3xl font-bold">
+                <p className="text-xl md:text-3xl font-bold">
                   {stats.averageDuration} min
                 </p>
               </div>
@@ -303,11 +309,11 @@ export default function WorkoutHistory() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
+                      <CardTitle className="text-2xl font-bold tracking-tight flex items-center gap-2">
                         {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                       </CardTitle>
-                      <p className="text-sm text-muted-foreground flex items-center gap-1">
-                        <Calendar02Icon size={14} />
+                      <p className="text-xs text-muted-foreground flex items-center gap-2 pt-1">
+                        <Calendar02Icon size={12} />
                         {format(sessionDate, "PPP", { locale: es })}
                       </p>
                     </div>
@@ -323,7 +329,7 @@ export default function WorkoutHistory() {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Duración</p>
-                      <p className="font-medium">
+                      <p className="font-semibold tracking-tighter">
                         {session.duration ? `${session.duration} min` : "N/A"}
                       </p>
                     </div>
@@ -331,13 +337,15 @@ export default function WorkoutHistory() {
                       <p className="text-xs text-muted-foreground">
                         Ejercicios
                       </p>
-                      <p className="font-medium">{session.exercises.length}</p>
+                      <p className="font-semibold tracking-tighter">
+                        {session.exercises.length}
+                      </p>
                     </div>
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">
                         Sets completados
                       </p>
-                      <p className="font-medium">
+                      <p className="font-semibold tracking-tighter">
                         {session.exercises.reduce(
                           (acc: number, ex: Exercise) =>
                             acc +
@@ -374,44 +382,44 @@ export default function WorkoutHistory() {
                   )}
 
                   {isExpanded && (
-                    <div className="space-y-4 pt-4">
+                    <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 pt-4">
                       {session.exercises.map((exercise: Exercise) => (
                         <div
                           key={exercise.id}
                           className="border rounded-md p-3"
                         >
                           <div className="flex justify-between items-center mb-2">
-                            <h4 className="font-medium text-muted-foreground">
+                            <h4 className="font-semibold text-md tracking-tight">
                               {exercise.exercise.name}
                             </h4>
                             <Badge
                               variant="outline"
                               className={
                                 exercise.completed
-                                  ? "bg-green-50 dark:bg-green-800"
-                                  : "bg-yellow-50 dark:bg-yellow-800"
+                                  ? "text-white bg-green-700"
+                                  : "bg-yellow-50 dark:bg-yellow-700"
                               }
                             >
                               {exercise.completed ? "Completado" : "Incompleto"}
                             </Badge>
                           </div>
 
-                          <div className="grid grid-cols-4 gap-2 text-xs font-medium mb-1 text-muted-foreground">
+                          <div className="grid grid-cols-3 gap-2 text-xs font-medium mb-1 text-muted-foreground">
                             <div>Set</div>
                             <div>Peso (kg)</div>
                             <div>Reps</div>
-                            <div>Estado</div>
+                            {/* <div>Estado</div> */}
                           </div>
 
                           {exercise.sets.map((set: Set) => (
                             <div
                               key={set.id}
-                              className="grid grid-cols-4 gap-2 text-sm py-1 border-t dark:border-gray-700"
+                              className="grid grid-cols-3 gap-2 text-sm py-1 border-t dark:border-gray-700"
                             >
                               <div>{set.setNumber}</div>
                               <div>{set.weight || "-"}</div>
                               <div>{set.reps || "-"}</div>
-                              <div>
+                              {/* <div>
                                 {set.completed ? (
                                   <span className="text-green-600 dark:text-green-400 flex items-center">
                                     <CheckmarkCircle02Icon className="h-4 w-4 mr-1" />{" "}
@@ -422,7 +430,7 @@ export default function WorkoutHistory() {
                                     No completado
                                   </span>
                                 )}
-                              </div>
+                              </div> */}
                             </div>
                           ))}
                         </div>

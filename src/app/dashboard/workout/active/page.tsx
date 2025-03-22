@@ -503,7 +503,10 @@ export default function ActiveWorkout() {
                     </div>
                     <div className="flex items-center gap-2">
                       {exercise.completed ? (
-                        <Badge variant="outline" className="bg-green-100">
+                        <Badge
+                          variant="outline"
+                          className="text-white bg-green-700"
+                        >
                           Completado
                         </Badge>
                       ) : (
