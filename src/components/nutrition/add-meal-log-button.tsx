@@ -95,24 +95,37 @@ function MacroCircle({
   fat: number;
   size?: number;
 }) {
-  // Calcular porcentajes para el gráfico circular
-  const total = protein * 4 + carbs * 4 + fat * 9;
-  const proteinPct = total > 0 ? (protein * 4 * 100) / total : 0;
-  const carbsPct = total > 0 ? (carbs * 4 * 100) / total : 0;
-  const fatPct = total > 0 ? (fat * 9 * 100) / total : 0;
+  // Cálculos de calorías y porcentajes
+  const proteinCalories = protein * 4;
+  const carbsCalories = carbs * 4;
+  const fatCalories = fat * 9;
+  const totalCalories = proteinCalories + carbsCalories + fatCalories;
+
+  // Cálculo de porcentajes para el gráfico
+  const proteinPct =
+    totalCalories > 0 ? (proteinCalories * 100) / totalCalories : 0;
+  const carbsPct =
+    totalCalories > 0 ? (carbsCalories * 100) / totalCalories : 0;
+  const fatPct = totalCalories > 0 ? (fatCalories * 100) / totalCalories : 0;
+
+  // Cálculo de stroke-dasharray y stroke-dashoffset
+  const circumference = 2 * Math.PI * 45;
+  const proteinDash = (proteinPct / 100) * circumference;
+  const carbsDash = (carbsPct / 100) * circumference;
+  const fatDash = (fatPct / 100) * circumference;
 
   return (
     <div className="relative" style={{ width: size, height: size }}>
-      <svg viewBox="0 0 100 100" className="transform -rotate-90">
-        {/* Círculo base */}
+      <svg viewBox="0 0 100 100" className="transform -rotate-90 w-full h-full">
+        {/* Círculo base invisible */}
         <circle
           cx="50"
           cy="50"
           r="45"
           fill="none"
-          stroke="hsl(var(--muted))"
+          stroke="#e2e8f0"
           strokeWidth="10"
-          className="opacity-20"
+          className="opacity-0"
         />
 
         {/* Proteínas (amarillo) */}
@@ -121,9 +134,9 @@ function MacroCircle({
           cy="50"
           r="45"
           fill="none"
-          stroke="hsl(var(--warning))"
+          stroke="#FFD700"
           strokeWidth="10"
-          strokeDasharray={`${proteinPct} ${100 - proteinPct}`}
+          strokeDasharray={`${proteinDash} ${circumference}`}
           strokeLinecap="round"
         />
 
@@ -133,10 +146,10 @@ function MacroCircle({
           cy="50"
           r="45"
           fill="none"
-          stroke="hsl(var(--success))"
+          stroke="#4CAF50"
           strokeWidth="10"
-          strokeDasharray={`${carbsPct} ${100 - carbsPct}`}
-          strokeDashoffset={-proteinPct}
+          strokeDasharray={`${carbsDash} ${circumference}`}
+          strokeDashoffset={-proteinDash}
           strokeLinecap="round"
         />
 
@@ -146,17 +159,17 @@ function MacroCircle({
           cy="50"
           r="45"
           fill="none"
-          stroke="hsl(var(--destructive))"
+          stroke="#FF9800"
           strokeWidth="10"
-          strokeDasharray={`${fatPct} ${100 - fatPct}`}
-          strokeDashoffset={-(proteinPct + carbsPct)}
+          strokeDasharray={`${fatDash} ${circumference}`}
+          strokeDashoffset={-(proteinDash + carbsDash)}
           strokeLinecap="round"
         />
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-2xl font-bold">{calories}</span>
-          <span className="text-sm text-muted-foreground block">kcal</span>
+          <span className="text-sm tracking-tight font-bold">{calories}</span>
+          <span className="text-xs text-muted-foreground block">kcal</span>
         </div>
       </div>
     </div>
@@ -716,7 +729,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   size={60}
                 />
                 {isSelected && (
-                  <div className="absolute -top-2 -right-2 bg-primary text-white rounded-full p-1">
+                  <div className="absolute -top-2 -right-2 bg-primary dark:text-black text-white rounded-full p-1">
                     <Tick02Icon size={12} />
                   </div>
                 )}
