@@ -13,24 +13,26 @@ export default function ErrorPage() {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center text-center p-6">
-      <div className="max-w-md bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-lg">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
+      <div className="max-w-md bg-white dark:bg-black p-8 rounded-2xl shadow-lg">
+        <h1 className="text-4xl font-bold tracking-tighter text-black dark:text-white">
           ¡Oops!
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
+        <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm">
           Algo salió mal. Por favor, intenta nuevamente más tarde.
         </p>
         <div className="mt-6 flex flex-col gap-4">
           <Button
+            size="sm"
             variant="default"
-            className="w-full"
+            className="w-full text-xs"
             onClick={() => router.push("/")}
           >
             Volver al inicio
           </Button>
           <Button
+            size="sm"
             variant="outline"
-            className="w-full"
+            className="w-full text-xs"
             onClick={() => router.refresh()}
           >
             Reintentar
