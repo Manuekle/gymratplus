@@ -4,12 +4,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redis } from "@/lib/redis";
 
-export async function saveUserImage(userId: string, imageUrl: string) {
-  await redis.set(`user:${userId}:image`, imageUrl, {
-    ex: 60 * 60 * 24, // Expira en 24 horas
-  });
-}
-
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
