@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { CustomSonner } from "@/components/custom-sonner";
+import ProfileCheck from "@/components/alerts/profile-check";
 
 export default function DashboardLayout({
   children,
@@ -19,6 +20,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-background">
       <CustomSonner position="top-center" />
+      <ProfileCheck />
       <Navbar />
       <div className="container mx-auto py-10 px-4">
         <h1 className="text-3xl font-bold tracking-tight mb-6 ">
