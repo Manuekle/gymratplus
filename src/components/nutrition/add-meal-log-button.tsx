@@ -45,7 +45,7 @@ import {
   MinusSignIcon,
   PlusSignIcon,
   Search01Icon,
-  Tick02Icon,
+  // Tick02Icon,
 } from "hugeicons-react";
 
 type Food = {
@@ -710,7 +710,9 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             <button
               key={item.id}
               className={`w-full p-3 border rounded-lg hover:bg-muted/50 transition-colors cursor-pointer flex items-center gap-4 ${
-                isSelected ? "border-zinc-300 shadow-sm bg-muted/50" : ""
+                isSelected
+                  ? "border-zinc-200 dark:border-zinc-800 shadow-sm bg-muted/50"
+                  : ""
               }`}
               onClick={() =>
                 toggleItemSelection(
@@ -728,24 +730,24 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   fat={item.fat}
                   size={60}
                 />
-                {isSelected && (
+                {/* {isSelected && (
                   <div className="absolute -top-2 -right-2 bg-primary dark:text-black text-white rounded-full p-1">
                     <Tick02Icon size={12} />
                   </div>
-                )}
+                )} */}
               </div>
 
               <div className="flex-1 text-left">
-                <h3 className="font-medium">{item.name}</h3>
+                <h3 className="font-semibold tracking-tight">{item.name}</h3>
                 <p className="text-xs text-muted-foreground">
                   {activeTab === "foods"
                     ? `${(item as Food).serving}g por porción`
                     : `${(item as Recipe).servings} porciones`}
                 </p>
                 <div className="flex gap-4 text-xs mt-1">
-                  <span className="text-warning">P: {item.protein}g</span>
-                  <span className="text-success">C: {item.carbs}g</span>
-                  <span className="text-destructive">G: {item.fat}g</span>
+                  <span className="text-[#FFD700]">P: {item.protein}g</span>
+                  <span className="text-[#4CAF50]">C: {item.carbs}g</span>
+                  <span className="text-[#FF9800]">G: {item.fat}g</span>
                 </div>
               </div>
             </button>
