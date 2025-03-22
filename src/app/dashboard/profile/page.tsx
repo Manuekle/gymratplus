@@ -214,7 +214,9 @@ export default function ProfilePage() {
                         document.getElementById("profile-image-upload")?.click()
                       }
                     >
-                      <span className="text-white text-xs">cambiar</span>
+                      <span className="text-white font-medium tracking-tighter text-xs">
+                        cambiar
+                      </span>
                       <input
                         id="profile-image-upload"
                         type="file"
@@ -243,7 +245,9 @@ export default function ProfilePage() {
                         document.getElementById("profile-image-upload")?.click()
                       }
                     >
-                      <span className="text-white text-xs">cambiar</span>
+                      <span className="text-white font-medium tracking-tighter text-xs">
+                        cambiar
+                      </span>
                       <input
                         id="profile-image-upload"
                         type="file"
