@@ -343,7 +343,7 @@ export function ExerciseProgressChart() {
                 type="monotone"
                 dataKey="squat"
                 name="Sentadilla"
-                stroke="#8b5cf6"
+                stroke="#E79E4F"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -351,7 +351,7 @@ export function ExerciseProgressChart() {
                 type="monotone"
                 dataKey="benchPress"
                 name="Press banca"
-                stroke="#10b981"
+                stroke="#872341"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -359,7 +359,7 @@ export function ExerciseProgressChart() {
                 type="monotone"
                 dataKey="deadlift"
                 name="Peso muerto"
-                stroke="#f59e0b"
+                stroke="#1F4068"
                 strokeWidth={2}
                 dot={{ r: 4 }}
               />
@@ -373,7 +373,7 @@ export function ExerciseProgressChart() {
           <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
             <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#10b981]">Press banca: </span>
+              <span className="font-medium text-[#872341]">Press banca: </span>
               {progressChange.benchPress.change > 0
                 ? `+${progressChange.benchPress.change.toFixed(1)} kg`
                 : progressChange.benchPress.change < 0
@@ -381,7 +381,7 @@ export function ExerciseProgressChart() {
                 : "Sin cambios"}
             </div>
             <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#8b5cf6]">Sentadilla: </span>
+              <span className="font-medium text-[#E79E4F]">Sentadilla: </span>
               {progressChange.squat.change > 0
                 ? `+${progressChange.squat.change.toFixed(1)} kg`
                 : progressChange.squat.change < 0
@@ -389,7 +389,7 @@ export function ExerciseProgressChart() {
                 : "Sin cambios"}
             </div>
             <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#f59e0b]">Peso muerto: </span>
+              <span className="font-medium text-[#1F4068]">Peso muerto: </span>
               {progressChange.deadlift.change > 0
                 ? `+${progressChange.deadlift.change.toFixed(1)} kg`
                 : progressChange.deadlift.change < 0
