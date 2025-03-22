@@ -36,6 +36,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
+import { BirthDatePicker } from "@/components/ui/birth-date-picker";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -106,6 +107,8 @@ export default function ProfilePage() {
     (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
 
+  const [birthdate, setBirthdate] = useState<string>("");
+
   const [experienceLevel, setExperienceLevel] = useState(
     session?.user?.experienceLevel || ""
   );
@@ -152,6 +155,7 @@ export default function ProfilePage() {
           name,
           phone,
           experienceLevel,
+          birthdate,
           preferredWorkoutTime,
           dailyActivity,
           goal,
@@ -359,115 +363,162 @@ export default function ProfilePage() {
           <CardContent className="space-y-4">
             {isEditing ? (
               <>
-                <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="email">
-                    Correo electronico
-                  </Label>
-                  <Input
-                    disabled
-                    className="text-xs md:text-sm"
-                    id="email"
-                    // onChange={(e) => setEmail(e.target.value)}
-                    defaultValue={session?.user?.email || ""}
-                  />
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs md:text-sm" htmlFor="email">
+                      Correo electronico
+                    </Label>
+                    <Input
+                      disabled
+                      className="text-xs md:text-sm"
+                      id="email"
+                      // onChange={(e) => setEmail(e.target.value)}
+                      defaultValue={session?.user?.email || ""}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs md:text-sm" htmlFor="name">
+                      Nombre
+                    </Label>
+                    <Input
+                      // disabled
+                      className="text-xs md:text-sm"
+                      id="name"
+                      onChange={(e) => setName(e.target.value)}
+                      defaultValue={session?.user?.name || ""}
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="name">
-                    Nombre
-                  </Label>
-                  <Input
-                    // disabled
-                    className="text-xs md:text-sm"
-                    id="name"
-                    onChange={(e) => setName(e.target.value)}
-                    defaultValue={session?.user?.name || ""}
-                  />
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-xs md:text-sm" htmlFor="phone">
+                      Teléfono
+                    </Label>
+                    <Input
+                      className="text-xs md:text-sm"
+                      id="phone"
+                      defaultValue={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs md:text-sm" htmlFor="experience">
+                      Experiencia
+                    </Label>
+                    <Select
+                      defaultValue={session?.user?.experienceLevel}
+                      value={experienceLevel}
+                      onValueChange={(value) => setExperienceLevel(value)}
+                    >
+                      <SelectTrigger className="text-xs md:text-sm">
+                        <SelectValue placeholder="Selecciona tu experiencia" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="principiante"
+                        >
+                          <div className="flex items-center">Principiante</div>
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="intermedio"
+                        >
+                          <div className="flex items-center">Intermedio</div>
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="avanzado"
+                        >
+                          <div className="flex items-center">Avanzado</div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="phone">
-                    Teléfono
-                  </Label>
-                  <Input
-                    className="text-xs md:text-sm"
-                    id="phone"
-                    defaultValue={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="experience">
-                    Experiencia
-                  </Label>
-                  <Select
-                    defaultValue={session?.user?.experienceLevel}
-                    value={experienceLevel}
-                    onValueChange={(value) => setExperienceLevel(value)}
-                  >
-                    <SelectTrigger className="text-xs md:text-sm">
-                      <SelectValue placeholder="Selecciona tu experiencia" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem
-                        className="text-xs md:text-sm"
-                        value="principiante"
-                      >
-                        <div className="flex items-center">Principiante</div>
-                      </SelectItem>
-                      <SelectItem
-                        className="text-xs md:text-sm"
-                        value="intermedio"
-                      >
-                        <div className="flex items-center">Intermedio</div>
-                      </SelectItem>
-                      <SelectItem
-                        className="text-xs md:text-sm"
-                        value="avanzado"
-                      >
-                        <div className="flex items-center">Avanzado</div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Separator />
+
+                <BirthDatePicker
+                  value={birthdate}
+                  onValueChange={setBirthdate}
+                />
               </>
             ) : (
               <>
-                <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <Mail01Icon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium text-sm">
-                      Correo electronico
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <Mail01Icon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">
+                        Correo electronico
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {session?.user?.email}
+                      </div>
                     </div>
-                    <div className="text-muted-foreground text-xs">
-                      {session?.user?.email}
+                  </div>
+
+                  {/* <Separator className=""/> */}
+                  {/* hide separator in md */}
+                  <div className="md:hidden block py-4">
+                    <Separator />
+                  </div>
+
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <BirthdayCakeIcon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">
+                        Fecha de nacimiento
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {(() => {
+                          const birthdate = (
+                            session?.user as {
+                              profile?: { birthdate?: string };
+                            }
+                          )?.profile?.birthdate;
+                          return birthdate
+                            ? new Date(birthdate).toLocaleDateString("es-ES", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
+                            : "Fecha no disponible";
+                        })()}
+                      </div>
                     </div>
                   </div>
                 </div>
-
                 <Separator />
-
-                <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <SmileIcon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium text-sm">Nombre</div>
-                    <div className="text-muted-foreground text-xs">
-                      {session?.user?.name}
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <SmileIcon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">Nombre</div>
+                      <div className="text-muted-foreground text-xs">
+                        {session?.user?.name}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <Separator />
-                <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium text-sm">Teléfono</div>
-                    <div className="text-muted-foreground text-xs">
-                      {(() => {
-                        // Obtain the createdAt value
-                        const phone = (
-                          session?.user as { profile?: { phone?: string } }
-                        )?.profile?.phone;
-                        return phone || "No especificado";
-                      })()}
+                  {/* <Separator /> */}
+                  <div className="md:hidden block py-4">
+                    <Separator />
+                  </div>
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">Teléfono</div>
+                      <div className="text-muted-foreground text-xs">
+                        {(() => {
+                          // Obtain the createdAt value
+                          const phone = (
+                            session?.user as { profile?: { phone?: string } }
+                          )?.profile?.phone;
+                          return phone || "No especificado";
+                        })()}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { format } from "date-fns";
+// import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,19 +20,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
+// import {
+//   Popover,
+//   PopoverContent,
+//   PopoverTrigger,
+// } from "@/components/ui/popover";
+// import { Calendar } from "@/components/ui/calendar";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { cn } from "@/lib/utils";
+// import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Icons } from "@/components/icons";
 import {
   Activity03Icon,
-  BirthdayCakeIcon,
   BodyPartMuscleIcon,
   BodyWeightIcon,
   Clock01Icon,
@@ -43,6 +42,7 @@ import {
   WeightScaleIcon,
   WorkoutGymnasticsIcon,
 } from "hugeicons-react";
+import { BirthDatePicker } from "../ui/birth-date-picker";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
   (i + 140).toString()
@@ -299,7 +299,7 @@ export default function StepOnboarding1() {
             {[0, 1, 2, 3].map((step) => (
               <div key={step} className="flex flex-col items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                  className={`w-8 h-8 rounded-full flex items-center text-xs md:text-sm justify-center ${
                     step <= currentStep
                       ? "bg-zinc-900 text-white dark:bg-white dark:text-black border"
                       : "bg-background dark:bg-background border text-muted-foreground dark:text-gray-300"
@@ -323,14 +323,16 @@ export default function StepOnboarding1() {
               {currentStep === 0 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="gender">Genero</Label>
+                    <Label className="text-xs md:text-sm" htmlFor="gender">
+                      Genero
+                    </Label>
                     <Select
                       value={formData.gender}
                       onValueChange={(value) =>
                         updateFormData({ gender: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4 text-black dark:text-white">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -367,51 +369,39 @@ export default function StepOnboarding1() {
                               strokeLinejoin="round"
                             />
                           </svg>
-                          <SelectValue placeholder="Seleccione su género" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su género"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="male">Masculino</SelectItem>
-                        <SelectItem value="female">Femenino</SelectItem>
-                        <SelectItem value="other">Otro</SelectItem>
+                        <SelectItem className="text-xs md:text-sm" value="male">
+                          Masculino
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="female"
+                        >
+                          Femenino
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="other"
+                        >
+                          Otro
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="birthdate">Fecha de nacimiento</Label>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "w-full justify-start text-left font-normal",
-                            !formData.birthdate && "text-muted-foreground"
-                          )}
-                        >
-                          <BirthdayCakeIcon className="mr-2 h-4 w-4" />
-                          {formData.birthdate ? (
-                            format(formData.birthdate, "PPP")
-                          ) : (
-                            <span>Seleccione una fecha</span>
-                          )}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0">
-                        <Calendar
-                          mode="single"
-                          selected={
-                            typeof formData.birthdate === "string"
-                              ? new Date(formData.birthdate)
-                              : formData.birthdate
-                          }
-                          onSelect={(date) =>
-                            updateFormData({ birthdate: date })
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <div>
+                    <BirthDatePicker
+                      value={formData.birthdate}
+                      onValueChange={(value) =>
+                        updateFormData({ birthdate: value })
+                      }
+                    />
                   </div>
                 </div>
               )}
@@ -419,14 +409,16 @@ export default function StepOnboarding1() {
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="height">Altura (cm)</Label>
+                    <Label className="text-xs md:text-sm" htmlFor="height">
+                      Altura (cm)
+                    </Label>
                     <Select
                       value={formData.height}
                       onValueChange={(value) =>
                         updateFormData({ height: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <RulerIcon size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su altura" />
@@ -434,7 +426,11 @@ export default function StepOnboarding1() {
                       </SelectTrigger>
                       <SelectContent>
                         {heightOptions.map((height) => (
-                          <SelectItem key={height} value={height}>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            key={height}
+                            value={height}
+                          >
                             {height} cm
                           </SelectItem>
                         ))}
@@ -443,14 +439,19 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="currentWeight">Peso Actual (kg)</Label>
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="currentWeight"
+                    >
+                      Peso Actual (kg)
+                    </Label>
                     <Select
                       value={formData.currentWeight}
                       onValueChange={(value) =>
                         updateFormData({ currentWeight: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <WeightScaleIcon
                             size={18}
@@ -470,25 +471,37 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="targetWeight">Peso Objetivo (kg)</Label>
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="targetWeight"
+                    >
+                      Peso Objetivo (kg)
+                    </Label>
                     <Select
                       value={formData.targetWeight}
                       onValueChange={(value) =>
                         updateFormData({ targetWeight: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <BodyWeightIcon
                             size={18}
                             className="text-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su peso objetivo" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su peso objetivo"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         {weightOptions.map((weight) => (
-                          <SelectItem key={weight} value={weight}>
+                          <SelectItem
+                            className="text-xs md:text-sm"
+                            key={weight}
+                            value={weight}
+                          >
                             {weight} kg
                           </SelectItem>
                         ))}
@@ -501,37 +514,60 @@ export default function StepOnboarding1() {
               {currentStep === 2 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="activityLevel">Nivel de actividad</Label>
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="activityLevel"
+                    >
+                      Nivel de actividad
+                    </Label>
                     <Select
                       value={formData.activityLevel}
                       onValueChange={(value) =>
                         updateFormData({ activityLevel: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <Activity03Icon
                             size={18}
                             className="text-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su nivel de actividad" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su nivel de actividad"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="sedentary">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="sedentary"
+                        >
                           Sedentario (poco o ningún ejercicio)
                         </SelectItem>
-                        <SelectItem value="light">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="light"
+                        >
                           Ligeramente activo (ejercicio ligero 1-3 días/semana)
                         </SelectItem>
-                        <SelectItem value="moderate">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="moderate"
+                        >
                           Moderadamente activo (ejercicio moderado 3-5
                           días/semana)
                         </SelectItem>
-                        <SelectItem value="active">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="active"
+                        >
                           Activo (ejercicio intenso 6-7 días/semana)
                         </SelectItem>
-                        <SelectItem value="very-active">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="very-active"
+                        >
                           Muy activo (ejercicio muy intenso y trabajo físico)
                         </SelectItem>
                       </SelectContent>
@@ -539,7 +575,10 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="bodyFatPercentage">
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="bodyFatPercentage"
+                    >
                       Procentaje de grasa corporal
                     </Label>
                     <Select
@@ -548,49 +587,82 @@ export default function StepOnboarding1() {
                         updateFormData({ bodyFatPercentage: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <PercentSquareIcon
                             size={18}
                             className="text-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su porcentaje de grasa corporal" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su porcentaje de grasa corporal"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
                           <>
-                            <SelectItem value="essential">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="essential"
+                            >
                               Grasa esencial (5%)
                             </SelectItem>
-                            <SelectItem value="athletes">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="athletes"
+                            >
                               Atletas (6-13%)
                             </SelectItem>
-                            <SelectItem value="fitness">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="fitness"
+                            >
                               Forma física (14-17%)
                             </SelectItem>
-                            <SelectItem value="average">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="average"
+                            >
                               Promedio (18-24%)
                             </SelectItem>
-                            <SelectItem value="above-average">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="above-average"
+                            >
                               Por encima del promedio (25%+)
                             </SelectItem>
                           </>
                         ) : (
                           <>
-                            <SelectItem value="essential">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="essential"
+                            >
                               Grasa esencial (8%)
                             </SelectItem>
-                            <SelectItem value="athletes">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="athletes"
+                            >
                               Atletas (14-20%)
                             </SelectItem>
-                            <SelectItem value="fitness">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="fitness"
+                            >
                               Forma física (21-24%)
                             </SelectItem>
-                            <SelectItem value="average">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="average"
+                            >
                               Promedio (25-31%)
                             </SelectItem>
-                            <SelectItem value="above-average">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="above-average"
+                            >
                               Por encima del promedio (32%+)
                             </SelectItem>
                           </>
@@ -600,50 +672,79 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="muscleMass">Masa muscular</Label>
+                    <Label className="text-xs md:text-sm" htmlFor="muscleMass">
+                      Masa muscular
+                    </Label>
                     <Select
                       value={formData.muscleMass}
                       onValueChange={(value) =>
                         updateFormData({ muscleMass: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <BodyPartMuscleIcon
                             size={18}
                             className="text-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su masa muscular" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su masa muscular"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         {formData.gender === "male" ? (
                           <>
-                            <SelectItem value="low">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="low"
+                            >
                               Bajo (menos del 40%)
                             </SelectItem>
-                            <SelectItem value="healthy">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="healthy"
+                            >
                               Saludable (40-45%)
                             </SelectItem>
-                            <SelectItem value="athletic">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="athletic"
+                            >
                               Atlético (45-50%)
                             </SelectItem>
-                            <SelectItem value="high">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="high"
+                            >
                               Alto (más del 50%)
                             </SelectItem>
                           </>
                         ) : (
                           <>
-                            <SelectItem value="low">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="low"
+                            >
                               Bajo (menos del 30%)
                             </SelectItem>
-                            <SelectItem value="healthy">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="healthy"
+                            >
                               Saludable (30-35%)
                             </SelectItem>
-                            <SelectItem value="athletic">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="athletic"
+                            >
                               Atlético (35-40%)
                             </SelectItem>
-                            <SelectItem value="high">
+                            <SelectItem
+                              className="text-xs md:text-sm"
+                              value="high"
+                            >
                               Alto (más del 40%)
                             </SelectItem>
                           </>
@@ -653,21 +754,39 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="goal">Objetivo</Label>
+                    <Label className="text-xs md:text-sm" htmlFor="goal">
+                      Objetivo
+                    </Label>
                     <Select
                       value={formData.goal}
                       onValueChange={(value) => updateFormData({ goal: value })}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <Target02Icon size={18} className="text-foreground" />
-                          <SelectValue placeholder="Seleccione su objetivo" />
+                          <SelectValue
+                            className="text-xs md:text-sm"
+                            placeholder="Seleccione su objetivo"
+                          />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="lose-weight">Perder peso</SelectItem>
-                        <SelectItem value="maintain">Mantener peso</SelectItem>
-                        <SelectItem value="gain-muscle">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="lose-weight"
+                        >
+                          Perder peso
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="maintain"
+                        >
+                          Mantener peso
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="gain-muscle"
+                        >
                           Ganar músculo
                         </SelectItem>
                       </SelectContent>
@@ -679,14 +798,19 @@ export default function StepOnboarding1() {
               {currentStep === 3 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="dailyActivity">Actividad diaria</Label>
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="dailyActivity"
+                    >
+                      Actividad diaria
+                    </Label>
                     <Select
                       value={formData.dailyActivity}
                       onValueChange={(value) =>
                         updateFormData({ dailyActivity: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         {/* <SelectValue placeholder="Select your daily activity" /> */}
                         <div className="flex flex-row items-center gap-4">
                           <WorkoutGymnasticsIcon
@@ -717,7 +841,12 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Frecuencia de entrenamiento (dias por semana)</Label>
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="trainingFrequency"
+                    >
+                      Frecuencia de entrenamiento (dias por semana)
+                    </Label>
                     <ToggleGroup
                       type="multiple"
                       variant="outline"
@@ -733,7 +862,7 @@ export default function StepOnboarding1() {
                           key={day.id}
                           value={day.id}
                           aria-label={day.label}
-                          className="w-10 h-10"
+                          className="w-10 h-10 text-xs md:text-sm"
                         >
                           {day.label}
                         </ToggleGroupItem>
@@ -742,7 +871,10 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="preferredWorkoutTime">
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="preferredWorkoutTime"
+                    >
                       Tiempo de entrenamiento
                     </Label>
                     <Select
@@ -751,35 +883,55 @@ export default function StepOnboarding1() {
                         updateFormData({ preferredWorkoutTime: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <Clock01Icon size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su hora preferida" />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="early-morning">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="early-morning"
+                        >
                           Temprano en la mañana (5-8 AM)
                         </SelectItem>
-                        <SelectItem value="morning">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="morning"
+                        >
                           Mañana (8-11 AM)
                         </SelectItem>
-                        <SelectItem value="noon">
+                        <SelectItem className="text-xs md:text-sm" value="noon">
                           Mediodía (11 AM-2 PM)
                         </SelectItem>
-                        <SelectItem value="afternoon">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="afternoon"
+                        >
                           Tarde (2-5 PM)
                         </SelectItem>
-                        <SelectItem value="evening">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="evening"
+                        >
                           Atardecer (5-8 PM)
                         </SelectItem>
-                        <SelectItem value="night">Noche (8-11 PM)</SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="night"
+                        >
+                          Noche (8-11 PM)
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="dietaryPreference">
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="dietaryPreference"
+                    >
                       Preferencia dietetica
                     </Label>
                     <Select
@@ -788,24 +940,50 @@ export default function StepOnboarding1() {
                         updateFormData({ dietaryPreference: value })
                       }
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
                           <SteakIcon size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su preferencia dietética" />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="no-preference">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="no-preference"
+                        >
                           Sin preferencia específica
                         </SelectItem>
-                        <SelectItem value="vegetarian">Vegetariano</SelectItem>
-                        <SelectItem value="vegan">Vegano</SelectItem>
-                        <SelectItem value="pescatarian">
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="vegetarian"
+                        >
+                          Vegetariano
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="vegan"
+                        >
+                          Vegano
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="pescatarian"
+                        >
                           Pescetariano
                         </SelectItem>
-                        <SelectItem value="keto">Keto</SelectItem>
-                        <SelectItem value="paleo">Paleo</SelectItem>
-                        <SelectItem value="mediterranean">
+                        <SelectItem className="text-xs md:text-sm" value="keto">
+                          Keto
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="paleo"
+                        >
+                          Paleo
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-sm"
+                          value="mediterranean"
+                        >
                           Mediterránea
                         </SelectItem>
                       </SelectContent>
@@ -828,7 +1006,9 @@ export default function StepOnboarding1() {
             </Button>
 
             {currentStep < 3 ? (
-              <Button onClick={handleNext}>Siguiente</Button>
+              <Button className="text-xs px-4" size="sm" onClick={handleNext}>
+                Siguiente
+              </Button>
             ) : (
               <Button
                 onClick={handleSubmit}
