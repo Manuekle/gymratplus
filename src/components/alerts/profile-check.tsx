@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -164,6 +165,13 @@ const ProfileCheck = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
+            <AlertDialogCancel
+              // window.location.reload();
+              className="text-xs"
+              onClick={() => window.location.reload()} // Reload the page
+            >
+              Volver
+            </AlertDialogCancel>
             <AlertDialogAction className="text-xs" onClick={handleRedirect}>
               Completar datos ahora
             </AlertDialogAction>
