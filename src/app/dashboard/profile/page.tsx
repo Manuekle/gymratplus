@@ -107,7 +107,10 @@ export default function ProfilePage() {
     (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
 
-  const [birthdate, setBirthdate] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<string>(
+    (session?.user as { profile?: { birthdate?: string } })?.profile
+      ?.birthdate || ""
+  );
 
   const [experienceLevel, setExperienceLevel] = useState(
     session?.user?.experienceLevel || ""
@@ -145,6 +148,57 @@ export default function ProfilePage() {
       //   "";
 
       // Update profile
+
+      // verficar que esten lleno si no alert con toast
+      if (!name) {
+        toast.error("Error", {
+          description: "El nombre es requerido.",
+        });
+        return;
+      }
+      if (!phone) {
+        toast.error("Error", {
+          description: "El teléfono es requerido.",
+        });
+        return;
+      }
+      if (!experienceLevel) {
+        toast.error("Error", {
+          description: "La experiencia es requerida.",
+        });
+        return;
+      }
+      if (!birthdate) {
+        toast.error("Error", {
+          description: "La fecha de nacimiento es requerida.",
+        });
+        return;
+      }
+      if (!preferredWorkoutTime) {
+        toast.error("Error", {
+          description: "El horario preferido es requerido.",
+        });
+        return;
+      }
+      if (!dailyActivity) {
+        toast.error("Error", {
+          description: "La actividad diaria es requerida.",
+        });
+        return;
+      }
+      if (!goal) {
+        toast.error("Error", {
+          description: "El objetivo es requerido.",
+        });
+        return;
+      }
+      if (!dietaryPreference) {
+        toast.error("Error", {
+          description: "La preferencia dietética es requerida.",
+        });
+        return;
+      }
+
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: {
