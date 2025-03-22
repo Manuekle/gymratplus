@@ -2,6 +2,13 @@ import { NextResponse } from "next/server";
 import { put } from "@vercel/blob";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
+import { redis } from "@/lib/redis";
+
+export async function saveUserImage(userId: string, imageUrl: string) {
+  await redis.set(`user:${userId}:image`, imageUrl, {
+    ex: 60 * 60 * 24, // Expira en 24 horas
+  });
+}
 
 export async function POST(request: Request) {
   try {
@@ -34,6 +41,11 @@ export async function POST(request: Request) {
     const blob = await put(filename, file, {
       access: "public",
       token: process.env.BLOB_READ_WRITE_TOKEN, // Asegúrate de definir esta variable en tu .env
+    });
+
+    // Actualizar la imagen en caché (Redis)
+    await redis.set(`user:${userId}:image`, blob.url, {
+      ex: 60 * 60 * 24, // Expira en 24 horas
     });
 
     return NextResponse.json({ success: true, url: blob.url });
