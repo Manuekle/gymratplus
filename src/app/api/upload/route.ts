@@ -43,10 +43,10 @@ export async function POST(request: Request) {
       token: process.env.BLOB_READ_WRITE_TOKEN, // Asegúrate de definir esta variable en tu .env
     });
 
-    // Actualizar la imagen en caché (Redis)
-    await redis.set(`user:${userId}:image`, blob.url, {
-      ex: 60 * 60 * 24, // Expira en 24 horas
-    });
+    const cacheKey = `user:${session.user.id}:data`;
+
+    // Actualizar solo la imagen sin perder los otros datos
+    await redis.hset(cacheKey, { image: blob.url });
 
     return NextResponse.json({ success: true, url: blob.url });
   } catch (error) {
