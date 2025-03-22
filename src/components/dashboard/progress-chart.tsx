@@ -376,7 +376,7 @@ export default function ProgressChart() {
             >
               <CartesianGrid
                 strokeDasharray="3 3"
-                stroke={isDark ? "#374151" : "#e5e7eb"}
+                stroke={isDark ? "#3D3D3E" : "#e5e7eb"}
               />
               <XAxis
                 dataKey="date"
@@ -390,18 +390,18 @@ export default function ProgressChart() {
               />
               <Tooltip
                 contentStyle={{
-                  backgroundColor: isDark ? "#1f2937" : "#ffffff",
-                  border: `1px solid ${isDark ? "#374151" : "#e5e7eb"}`,
+                  backgroundColor: isDark ? "#121212" : "#ffffff",
+                  border: `1px solid ${isDark ? "#3D3D3E" : "#e5e7eb"}`,
                   borderRadius: "0.375rem",
                 }}
                 labelStyle={{
                   fontSize: 12,
                   fontWeight: "bold",
-                  color: isDark ? "#e5e7eb" : "#1f2937",
+                  color: isDark ? "#e5e7eb" : "#121212",
                 }}
                 itemStyle={{
                   fontSize: 12,
-                  color: isDark ? "#e5e7eb" : "#1f2937",
+                  color: isDark ? "#e5e7eb" : "#121212",
                 }}
                 formatter={(value) => [
                   `${value}${chartConfig.unit}`,
