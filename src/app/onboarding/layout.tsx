@@ -1,3 +1,19 @@
+// app/onboarding/layout.js
+export const metadata = {
+  title: "Primeros pasos - GymRat+",
+  description:
+    "Completa tu perfil y configura tu cuenta para una experiencia personalizada",
+  keywords:
+    "onboarding, configuración inicial, bienvenida, primeros pasos, introducción",
+  robots: "noindex", // Opcional: si no quieres que estas páginas sean indexadas por buscadores
+  openGraph: {
+    title: "Primeros pasos | GymRat+",
+    description:
+      "Configura tu cuenta en pocos minutos para comenzar a usar todas las funcionalidades",
+    images: [{ url: "/og-onboarding.webp" }],
+  },
+};
+
 export default function OnboardingLayout({
   children,
 }: {
