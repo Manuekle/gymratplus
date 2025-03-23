@@ -8,8 +8,8 @@ import {
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  _req: Request,
-  { params }: { params: { id: string } }
+  _req: NextRequest,
+  { params }: { params: { id: string } } // 👈 Destructuración directa
 ) {
   const session = await getServerSession(authOptions);
 
