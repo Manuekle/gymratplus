@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
@@ -7,10 +7,12 @@ import {
 } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(
-  _req: NextRequest,
-  { params }: { params: { id: string } } // 👈 Destructuración directa
-) {
+interface Context {
+  params: { id: string };
+}
+
+export async function GET(context: Context) {
+  const { params } = context; // 👈 Extraemos los parámetros correctamente
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -42,7 +44,6 @@ export async function GET(
     );
   }
 }
-
 export async function PATCH(
   _req: NextRequest,
   context: { params: { id: string } }
