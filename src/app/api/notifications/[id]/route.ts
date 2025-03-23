@@ -7,12 +7,10 @@ import {
 } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
-interface Context {
-  params: { id: string };
-}
-
-export async function GET(_req: NextRequest, context: Context) {
-  const { params } = context; // 👈 Extraemos los parámetros correctamente
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Record<string, string> } // 👈 Cambio aquí
+) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -44,6 +42,7 @@ export async function GET(_req: NextRequest, context: Context) {
     );
   }
 }
+
 export async function PATCH(
   _req: NextRequest,
   context: { params: { id: string } }
