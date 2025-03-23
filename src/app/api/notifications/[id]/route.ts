@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
@@ -8,10 +8,9 @@ import {
 import { prisma } from "@/lib/prisma";
 
 export async function GET(
-  _req: NextRequest,
-  context: { params: { id: string } }
+  _req: Request,
+  { params }: { params: { id: string } }
 ) {
-  const { params } = context;
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
