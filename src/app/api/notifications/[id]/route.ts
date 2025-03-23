@@ -7,10 +7,7 @@ import {
 } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: Record<string, string> } // 👈 Cambio aquí
-) {
+export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -18,8 +15,11 @@ export async function GET(
   }
 
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!notification) {
@@ -43,11 +43,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  _req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { params } = context;
+export async function PATCH(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -55,8 +51,10 @@ export async function PATCH(
   }
 
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
     const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!notification) {
@@ -70,7 +68,7 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const updatedNotification = await markNotificationAsRead(params.id);
+    const updatedNotification = await markNotificationAsRead(id ?? "");
     return NextResponse.json(updatedNotification);
   } catch (error) {
     console.error("Error marking notification as read:", error);
