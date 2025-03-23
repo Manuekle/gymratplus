@@ -22,7 +22,6 @@ import { Progress } from "@/components/ui/progress";
 import { CalorieChart } from "@/components/calorie-chart";
 import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
-import WaterLog from "@/components/nutrition/water-log";
 
 interface UserProfile {
   id: string;
@@ -397,7 +396,7 @@ export default function NutritionPage() {
                 </div>
               </div>
             </CardContent>
-            <CardHeader className="pb-2">
+            {/* <CardHeader className="pb-2">
               <CardTitle className="text-2xl font-bold tracking-tight">
                 Consumo de agua
               </CardTitle>
@@ -407,7 +406,7 @@ export default function NutritionPage() {
             </CardHeader>
             <CardContent>
               <WaterLog waterIntake={user?.waterIntake ?? 0} />
-            </CardContent>
+            </CardContent> */}
           </Card>
 
           <Card className="col-span-2">

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,8 +12,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { NotificationItem } from "@/components/notifications/notification-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNotifications } from "@/hooks/use-notifications";
-import { Notification03Icon } from "hugeicons-react";
 import Link from "next/link";
+import { Notification02Icon } from "hugeicons-react";
+import { ScrollArea } from "../ui/scroll-area";
 
 export function NotificationBell() {
   const { notifications, isLoading, unreadCount, markAsRead, refetch } =
@@ -31,7 +32,7 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Notification03Icon />
+          <Notification02Icon className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge
               className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] min-w-[18px] min-h-[18px] flex items-center justify-center"
@@ -66,25 +67,24 @@ export function NotificationBell() {
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent
-            value="all"
-            className="max-h-[300px] overflow-y-auto focus:outline-none"
-          >
+          <TabsContent value="all">
             {isLoading ? (
               <NotificationsSkeleton />
             ) : notifications.length > 0 ? (
               <div className="divide-y">
-                {notifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onMarkAsRead={markAsRead}
-                  />
-                ))}
+                <ScrollArea className="h-[150px] md:h-[300px]">
+                  {notifications.map((notification) => (
+                    <NotificationItem
+                      key={notification.id}
+                      notification={notification}
+                      onMarkAsRead={markAsRead}
+                    />
+                  ))}
+                </ScrollArea>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <Notification03Icon className="h-10 w-10 text-muted-foreground opacity-40" />
+                <Notification02Icon className="h-10 w-10 text-muted-foreground opacity-40" />
                 <p className="text-xs text-muted-foreground text-center">
                   No tienes notificaciones
                 </p>
@@ -92,10 +92,7 @@ export function NotificationBell() {
             )}
           </TabsContent>
 
-          <TabsContent
-            value="unread"
-            className="max-h-[300px] overflow-y-auto focus:outline-none"
-          >
+          <TabsContent value="unread">
             {isLoading ? (
               <NotificationsSkeleton />
             ) : notifications.filter((n) => !n.read).length > 0 ? (
@@ -112,7 +109,7 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <Notification03Icon className="h-10 w-10 text-muted-foreground opacity-40" />
+                <Notification02Icon className="h-10 w-10 text-muted-foreground opacity-40" />
                 <p className="text-sm text-muted-foreground text-center">
                   No tienes notificaciones sin leer
                 </p>

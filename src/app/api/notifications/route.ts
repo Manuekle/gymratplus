@@ -1,38 +1,94 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
+import { type NextRequest, NextResponse } from "next/server";
+import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
   getUserNotifications,
-  markNotificationAsRead,
-} from "@/server/notifications";
+  createNotification,
+  markAllNotificationsAsRead,
+  deleteAllNotifications,
+  type CreateNotificationParams,
+} from "@/lib/notification-service";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const notifications = await getUserNotifications(session.user.id);
-  return NextResponse.json(notifications);
-}
-
-export async function POST(request: Request) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const { id } = await request.json();
-
-  if (!id) {
+  try {
+    const notifications = await getUserNotifications(session.user.id);
+    return NextResponse.json(notifications);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
     return NextResponse.json(
-      { error: "ID de notificación requerido" },
-      { status: 400 }
+      { error: "Failed to fetch notifications" },
+      { status: 500 }
     );
   }
+}
 
-  const notification = await markNotificationAsRead(id, session.user.id);
-  return NextResponse.json(notification);
+export async function POST(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const body = await req.json();
+    const notificationData: CreateNotificationParams = {
+      userId: session.user.id,
+      title: body.title,
+      message: body.message,
+      type: body.type,
+    };
+
+    const notification = await createNotification(notificationData);
+    return NextResponse.json(notification);
+  } catch (error) {
+    console.error("Error creating notification:", error);
+    return NextResponse.json(
+      { error: "Failed to create notification" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PATCH(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const result = await markAllNotificationsAsRead(session.user.id);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Error marking notifications as read:", error);
+    return NextResponse.json(
+      { error: "Failed to mark notifications as read" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  try {
+    const result = await deleteAllNotifications(session.user.id);
+    return NextResponse.json(result);
+  } catch (error) {
+    console.error("Error deleting notifications:", error);
+    return NextResponse.json(
+      { error: "Failed to delete notifications" },
+      { status: 500 }
+    );
+  }
 }

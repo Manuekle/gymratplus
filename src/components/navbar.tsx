@@ -11,11 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  Door01Icon,
-  // Notification03Icon,
-  // Settings01Icon,
-} from "hugeicons-react";
+import { Door01Icon } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "./ui/badge";
 import { NotificationBell } from "./notifications/notification-bell";

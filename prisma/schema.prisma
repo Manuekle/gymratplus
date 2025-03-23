@@ -231,7 +231,6 @@ model MealLog {
   protein         Float
   carbs           Float
   fat             Float
-  waterIntake     Float? // Nuevo campo para registrar el consumo de agua
   notes           String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
@@ -246,6 +245,17 @@ model MealLog {
   @@index([foodId])
   @@index([recipeId])
   @@index([consumedAt])
+}
+
+model DailyWaterIntake {
+  id        String   @id @default(cuid())
+  userId    String
+  date      DateTime @default(now())
+  intake    Float    @default(0) // En litros
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, date])
 }
 
 model Weight {

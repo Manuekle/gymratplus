@@ -1,136 +1,77 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { toast } from "sonner";
 import { DropletIcon } from "hugeicons-react";
+import { cn } from "@/lib/utils";
 
-interface WaterLogProps {
-  waterIntake?: number;
-}
+const MAX_INTAKE = 8; // 8 gotas = 4L (cada gota representa 0.5L)
 
-interface ApiResponse {
-  waterIntake: number;
-  success: boolean;
-  message?: string;
-}
-
-const MAX_WATER_INTAKE = 8; // 8 gotas = 4L (cada gota es 0.5L)
-
-/** Componente principal */
-export default function WaterLog({
-  waterIntake: initialWaterIntake = 0,
-}: WaterLogProps) {
-  const [waterIntake, setWaterIntake] = useState<number>(initialWaterIntake);
-  const [isUpdating, setIsUpdating] = useState<boolean>(false);
-
-  // Obtiene la fecha en formato YYYY-MM-DD
-  const getCurrentDate = () => new Date().toISOString().split("T")[0];
+export default function WaterLog() {
+  const [intake, setIntake] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchCurrentWaterIntake();
-
-    // Verifica cada minuto si es un nuevo día
-    const timer = setInterval(() => {
-      const savedDate = localStorage.getItem("lastWaterUpdate");
-      if (savedDate !== getCurrentDate()) {
-        resetWaterIntake();
-      }
-    }, 60000);
-
-    return () => clearInterval(timer);
+    fetchWaterIntake();
   }, []);
 
-  /** Obtiene el consumo actual de agua de la API */
-  const fetchCurrentWaterIntake = async () => {
+  // Obtener la ingesta actual desde la API
+  const fetchWaterIntake = async () => {
     try {
       const response = await fetch("/api/profile/water");
       if (!response.ok) throw new Error("Error fetching data");
 
-      const data: ApiResponse = await response.json();
-      setWaterIntake(data.waterIntake || 0);
-      localStorage.setItem("lastWaterUpdate", getCurrentDate());
+      const data = await response.json();
+      setIntake(data.intake || 0);
     } catch (error) {
-      console.error("Failed to fetch water intake:", error);
-      toast.error("Error al actualizar", {
-        description: "Ocurrió un problema al actualizar tu consumo.",
-      });
+      console.error("Error fetching water intake:", error);
+      toast.error("No se pudo cargar la ingesta de agua.");
     }
   };
 
-  /** Reinicia el consumo de agua al comenzar un nuevo día */
-  const resetWaterIntake = async () => {
-    await updateWaterIntake(0);
-    // toast({
-    //   title: "New Day",
-    //   description: "Water intake tracking has been reset",
-    // });
-    toast.success("Consumo diario", {
-      description: `Se ha restablecido el seguimiento del consumo de agua`,
-    });
-    localStorage.setItem("lastWaterUpdate", getCurrentDate());
-  };
+  // Actualizar la ingesta en la API
+  const updateWaterIntake = async (newIntake: number) => {
+    if (loading) return;
+    setLoading(true);
 
-  /** Actualiza el consumo de agua en la API */
-  const updateWaterIntake = async (newValue: number) => {
-    if (isUpdating) return;
-
-    setIsUpdating(true);
     try {
       const response = await fetch("/api/profile/water", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ waterIntake: newValue }),
+        body: JSON.stringify({ intake: newIntake }),
       });
 
-      if (!response.ok) throw new Error("Failed to update");
+      if (!response.ok) throw new Error("Error updating intake");
 
-      setWaterIntake(newValue);
-
+      setIntake(newIntake);
       toast.success("Consumo actualizado", {
-        description: `Toma de agua actualizada a ${newValue}L`,
+        description: `Has tomado ${newIntake}L de agua hoy.`,
       });
     } catch (error) {
-      console.error("Failed to update water intake:", error);
-      toast.error("Error al actualizar", {
-        description: "Ocurrió un problema al actualizar tu consumo.",
-      });
+      console.error("Error updating water intake:", error);
+      toast.error("No se pudo actualizar la ingesta de agua.");
     } finally {
-      setIsUpdating(false);
+      setLoading(false);
     }
   };
 
-  /** Maneja el click en una gota para sumar 0.5L */
-  const handleClick = (index: number) => {
-    const currentLevel = index + 0.5;
-    if (waterIntake >= currentLevel) return;
-
-    const newValue = Math.min(MAX_WATER_INTAKE, waterIntake + 0.5);
-    updateWaterIntake(newValue);
+  // Manejar clics para sumar 0.5L
+  const handleClick = (_index: number) => {
+    const newIntake = Math.min(MAX_INTAKE, intake + 0.5);
+    if (newIntake !== intake) updateWaterIntake(newIntake);
   };
 
-  /** Maneja el doble click para restar 0.5L */
+  // Manejar doble clics para restar 0.5L
   const handleDoubleClick = useCallback(() => {
-    if (waterIntake > 0) {
-      const newValue = Math.max(0, waterIntake - 0.5);
-      updateWaterIntake(newValue);
-    }
-  }, [waterIntake]);
-
-  /** Calcula cuánto llenar la gota (completa, media o vacía) */
-  const getDropletFill = (index: number): number => {
-    const fullDroplets = Math.floor(waterIntake);
-    const partialDroplet = waterIntake % 1;
-
-    if (index < fullDroplets) return 1; // Llena
-    if (index === fullDroplets && partialDroplet >= 0.5) return 0.5; // Media
-    return 0; // Vacía
-  };
+    if (intake > 0) updateWaterIntake(Math.max(0, intake - 0.5));
+  }, [intake]);
 
   return (
     <div className="flex flex-wrap gap-3">
-      {Array.from({ length: MAX_WATER_INTAKE }).map((_, index) => {
-        const fillLevel = getDropletFill(index);
+      {Array.from({ length: MAX_INTAKE }).map((_, index) => {
+        const isFilled = intake >= index + 0.5;
 
         return (
           <div
@@ -139,16 +80,10 @@ export default function WaterLog({
             onClick={() => handleClick(index)}
             onDoubleClick={handleDoubleClick}
           >
-            <DropletIcon size={26} className="text-blue-300" />
-            {fillLevel > 0 && (
-              <div
-                className="absolute bottom-0 left-0 right-0 bg-blue-300 rounded-b-full"
-                style={{
-                  height: `${fillLevel * 100}%`,
-                  opacity: 0.7,
-                }}
-              />
-            )}
+            <DropletIcon
+              size={24}
+              className={cn("text-gray-300", isFilled && "text-blue-500")}
+            />
           </div>
         );
       })}

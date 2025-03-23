@@ -28,6 +28,7 @@ import {
 import { useState, useEffect } from "react";
 import { WeightChart } from "@/components/weight-chart";
 import { useSession } from "next-auth/react";
+import { WaterIntakeTracker } from "@/components/water/water-intake-tracker";
 
 interface UserProfile {
   id: string;
@@ -231,6 +232,8 @@ export default function HealthPage() {
           </div>
         </CardContent>
       </Card>
+
+      <WaterIntakeTracker />
     </div>
   );
 }

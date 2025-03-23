@@ -6,7 +6,58 @@ import { redis } from "@/lib/redis";
 
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
-// Reemplazar la función POST completa con esta versión más robusta
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+
+    // Try to get profile from Redis cache first
+    const cacheKey = `profile:${userId}`;
+    const cachedProfile = await redis.get(cacheKey);
+
+    if (cachedProfile) {
+      // Check if cachedProfile is already an object or a string that needs parsing
+      const profileData =
+        typeof cachedProfile === "string"
+          ? JSON.parse(cachedProfile)
+          : cachedProfile;
+
+      return NextResponse.json(profileData);
+    }
+
+    // If not in cache, get from database
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      return NextResponse.json(
+        { error: "Perfil no encontrado" },
+        { status: 404 }
+      );
+    }
+
+    // Store in Redis cache for future requests
+    await redis.set(cacheKey, JSON.stringify(profile), {
+      ex: PROFILE_CACHE_TTL,
+    });
+
+    return NextResponse.json(profile);
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    return NextResponse.json(
+      { error: "Error al obtener el perfil" },
+      { status: 500 }
+    );
+  }
+}
+
+// Existing POST and PUT routes remain the same...
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -91,6 +142,12 @@ export async function POST(req: Request) {
       },
     });
 
+    // Cache the profile in Redis
+    const cacheKey = `profile:${userId}`;
+    await redis.set(cacheKey, JSON.stringify(profile), {
+      ex: PROFILE_CACHE_TTL,
+    });
+
     // Simular un pequeño retraso para mostrar el estado de carga
     await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -104,7 +161,83 @@ export async function POST(req: Request) {
   }
 }
 
-// Funciones auxiliares para cálculos
+export async function PUT(request: Request) {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const data = await request.json();
+    const userId = session.user.id;
+
+    // Actualizar datos del usuario
+    if (data.name || data.email || data.image || data.experienceLevel) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: {
+          name: data.name ?? undefined,
+          email: data.email ?? undefined,
+          image: data.image ?? undefined,
+          experienceLevel: data.experienceLevel ?? undefined,
+        },
+      });
+    }
+
+    // Actualizar o crear el perfil del usuario
+    const profile = await prisma.profile.upsert({
+      where: { userId },
+      update: {
+        phone: data.phone ?? undefined,
+        birthdate: data.birthdate ?? undefined,
+        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
+        dailyActivity: data.dailyActivity ?? undefined,
+        goal: data.goal ?? undefined,
+        dietaryPreference: data.dietaryPreference ?? undefined,
+        waterIntake: data.waterIntake ?? undefined,
+      },
+      create: {
+        userId,
+        phone: data.phone ?? undefined,
+        birthdate: data.birthdate ?? undefined,
+        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
+        dailyActivity: data.dailyActivity ?? undefined,
+        goal: data.goal ?? undefined,
+        dietaryPreference: data.dietaryPreference ?? undefined,
+        waterIntake: data.waterIntake ?? undefined,
+      },
+    });
+
+    // Clave correcta para Redis
+    const cacheKey = `profile:${userId}`;
+
+    // Eliminar la caché anterior
+    await redis.del(cacheKey);
+
+    // Guardar el nuevo perfil en Redis
+    await redis.set(cacheKey, JSON.stringify(profile), {
+      ex: PROFILE_CACHE_TTL,
+    });
+
+    // Refrescar la sesión actualizada
+    const updatedSession = await getServerSession(authOptions);
+
+    return NextResponse.json({
+      success: true,
+      profile,
+      session: updatedSession,
+    });
+  } catch (error) {
+    console.error("Error updating profile:", error);
+    return NextResponse.json(
+      { error: "Failed to update profile" },
+      { status: 500 }
+    );
+  }
+}
+
+// Helper functions for calculations
 function calculateDailyCalories(data: {
   gender: string;
   height: string;
@@ -261,80 +394,4 @@ function calculateMetabolicRate(data: {
   }
 
   return Math.round(bmr);
-}
-
-export async function PUT(request: Request) {
-  try {
-    const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const data = await request.json();
-    const userId = session.user.id;
-
-    // Actualizar datos del usuario
-    if (data.name || data.email || data.image || data.experienceLevel) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: {
-          name: data.name ?? undefined,
-          email: data.email ?? undefined,
-          image: data.image ?? undefined,
-          experienceLevel: data.experienceLevel ?? undefined,
-        },
-      });
-    }
-
-    // Actualizar o crear el perfil del usuario
-    const profile = await prisma.profile.upsert({
-      where: { userId },
-      update: {
-        phone: data.phone ?? undefined,
-        birthdate: data.birthdate ?? undefined,
-        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
-        dailyActivity: data.dailyActivity ?? undefined,
-        goal: data.goal ?? undefined,
-        dietaryPreference: data.dietaryPreference ?? undefined,
-        waterIntake: data.waterIntake ?? undefined,
-      },
-      create: {
-        userId,
-        phone: data.phone ?? undefined,
-        birthdate: data.birthdate ?? undefined,
-        preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,
-        dailyActivity: data.dailyActivity ?? undefined,
-        goal: data.goal ?? undefined,
-        dietaryPreference: data.dietaryPreference ?? undefined,
-        waterIntake: data.waterIntake ?? undefined,
-      },
-    });
-
-    // Clave correcta para Redis
-    const cacheKey = `profile:${userId}`;
-
-    // Eliminar la caché anterior
-    await redis.del(cacheKey);
-
-    // Guardar el nuevo perfil en Redis
-    await redis.set(cacheKey, JSON.stringify(profile), {
-      ex: PROFILE_CACHE_TTL,
-    });
-
-    // Refrescar la sesión actualizada
-    const updatedSession = await getServerSession(authOptions);
-
-    return NextResponse.json({
-      success: true,
-      profile,
-      session: updatedSession,
-    });
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    return NextResponse.json(
-      { error: "Failed to update profile" },
-      { status: 500 }
-    );
-  }
 }
