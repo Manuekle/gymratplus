@@ -15,12 +15,39 @@ import { Door01Icon } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "./ui/badge";
 import { NotificationBell } from "./notifications/notification-bell";
+import { useEffect, useState } from "react";
 
 export function Navbar() {
   const { data: session } = useSession();
+  const [scrolled, setScrolled] = useState(false);
+
+  // Efecto para detectar el scroll
+  useEffect(() => {
+    const handleScroll = () => {
+      // Establecer un umbral de scroll (por ejemplo, 50px)
+      const isScrolled = window.scrollY > 50;
+      if (isScrolled !== scrolled) {
+        setScrolled(isScrolled);
+      }
+    };
+
+    // Agregar el listener de scroll
+    window.addEventListener("scroll", handleScroll);
+
+    // Limpiar el listener cuando el componente se desmonte
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [scrolled]);
 
   return (
-    <div className="border-b">
+    <div
+      className={`${
+        scrolled
+          ? "fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 shadow-md transition-all duration-300"
+          : "border-b bg-background transition-all duration-300"
+      }`}
+    >
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
           <div className="flex flex-row items-center space-x-2">
