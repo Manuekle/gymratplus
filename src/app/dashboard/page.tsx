@@ -6,9 +6,9 @@ import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
-  description:
-    "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
+  title: "Dashboard - GymRat+",
+  description: "Panel principal con el resumen de tu actividad y progreso",
+  keywords: "dashboard, panel, resumen, actividad, progreso",
 };
 
 export default function DashboardPage() {
