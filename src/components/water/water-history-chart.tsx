@@ -3,7 +3,6 @@
 
 import { format, subDays, isSameDay, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useTheme } from "next-themes";
 import {
   ResponsiveContainer,
