@@ -1,21 +1,25 @@
-"use client";
-
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+// "use client";
+export const metadata = {
+  title: "Entrenamiento - Dashboard - GymRat+",
+  description:
+    "Planifica y registra tus rutinas de ejercicio y progreso físico",
+  keywords:
+    "entrenamiento, ejercicio, rutinas, fitness, progreso físico, workout",
+};
+// import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+// import Link from "next/link";
+// import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/navbar";
 import { CustomSonner } from "@/components/custom-sonner";
 import ProfileCheck from "@/components/alerts/profile-check";
+import { DashboardHeader } from "@/components/dashboard-header";
 
-export default function DashboardLayout({
+export default function WorkoutLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-
-  // const { data: session, status } = useSession();
-  // console.log(session);
+  // const pathname = usePathname();
 
   return (
     <>
@@ -24,7 +28,7 @@ export default function DashboardLayout({
         <ProfileCheck />
         <Navbar />
         <div className="container mx-auto py-10 px-4">
-          <h1 className="text-3xl font-bold tracking-tight mb-6 ">
+          {/* <h1 className="text-3xl font-bold tracking-tight mb-6 ">
             {!pathname.split("/")[2] && "Dashboard"}
             {pathname.split("/")[2] === "profile" && "Perfil"}
             {pathname.split("/")[2] === "health" && "Salud"}
@@ -36,7 +40,6 @@ export default function DashboardLayout({
             value={pathname.split("/")[2]}
             className="space-y-4"
           >
-            {/* Contenedor con scroll solo en móviles */}
             <div className="w-full overflow-x-auto md:overflow-visible">
               <TabsList className="flex flex-wrap h-auto gap-4 px-2">
                 <TabsTrigger value="dashboard" asChild>
@@ -56,8 +59,8 @@ export default function DashboardLayout({
                 </TabsTrigger>
               </TabsList>
             </div>
-          </Tabs>
-
+          </Tabs> */}
+          <DashboardHeader />
           <div className="mt-6">{children}</div>
         </div>
       </div>
