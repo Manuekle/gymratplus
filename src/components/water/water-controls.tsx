@@ -19,9 +19,9 @@ export function WaterControls({
   return (
     <div className="flex flex-col items-center space-y-4">
       <Button
-        variant="default"
+        variant="outline"
         size="icon"
-        className="md:h-14 h-12 w-12 md:w-14  rounded-xl bg-black text-white hover:bg-gray-800"
+        className="md:h-14 h-12 w-12 md:w-14 rounded-xl text-black dark:text-white border"
         onClick={onAdd}
         disabled={isUpdating || intake >= 10}
         aria-label="Añadir agua"
@@ -39,7 +39,7 @@ export function WaterControls({
       <Button
         variant="outline"
         size="icon"
-        className="md:h-14 h-12 w-12 md:w-14 rounded-xl bg-gray-100 hover:bg-gray-200"
+        className="md:h-14 h-12 w-12 md:w-14 rounded-xl text-black dark:text-white border"
         onClick={onRemove}
         disabled={isUpdating || intake <= 0}
         aria-label="Quitar agua"
