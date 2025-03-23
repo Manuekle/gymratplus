@@ -35,8 +35,8 @@ export function NotificationBell() {
           <Notification02Icon className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge
-              className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] min-w-[18px] min-h-[18px] flex items-center justify-center"
-              variant="destructive"
+              variant={"outline"}
+              className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] min-w-[18px] min-h-[18px] flex items-center justify-center tracking-tighter font-bold"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
             </Badge>
@@ -52,7 +52,7 @@ export function NotificationBell() {
               onClick={() => markAsRead("all")}
               variant="ghost"
               size="sm"
-              className="text-xs h-8"
+              className="text-xs h-8 hidden"
             >
               Marcar todas como leídas
             </Button>
@@ -97,15 +97,17 @@ export function NotificationBell() {
               <NotificationsSkeleton />
             ) : notifications.filter((n) => !n.read).length > 0 ? (
               <div className="divide-y">
-                {notifications
-                  .filter((n) => !n.read)
-                  .map((notification) => (
-                    <NotificationItem
-                      key={notification.id}
-                      notification={notification}
-                      onMarkAsRead={markAsRead}
-                    />
-                  ))}
+                <ScrollArea className="h-[150px] md:h-[300px]">
+                  {notifications
+                    .filter((n) => !n.read)
+                    .map((notification) => (
+                      <NotificationItem
+                        key={notification.id}
+                        notification={notification}
+                        onMarkAsRead={markAsRead}
+                      />
+                    ))}
+                </ScrollArea>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">

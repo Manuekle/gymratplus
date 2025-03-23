@@ -79,11 +79,7 @@ export async function PATCH(request: NextRequest) {
   }
 }
 
-export async function DELETE(
-  _req: NextRequest,
-  context: { params: { id: string } }
-) {
-  const { params } = context;
+export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -91,8 +87,10 @@ export async function DELETE(
   }
 
   try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
     const notification = await prisma.notification.findUnique({
-      where: { id: params.id },
+      where: { id: id },
     });
 
     if (!notification) {
@@ -106,7 +104,7 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const deletedNotification = await deleteNotification(params.id);
+    const deletedNotification = await deleteNotification(id ?? "");
     return NextResponse.json(deletedNotification);
   } catch (error) {
     console.error("Error deleting notification:", error);
