@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
@@ -7,8 +7,11 @@ import {
 } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(context: { params: { id: string } }) {
-  const { params } = context; // Extraer params correctamente
+export async function GET(
+  _req: NextRequest,
+  context: { params: { id: string } }
+) {
+  const { params } = context;
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -17,9 +20,7 @@ export async function GET(context: { params: { id: string } }) {
 
   try {
     const notification = await prisma.notification.findUnique({
-      where: {
-        id: params.id,
-      },
+      where: { id: params.id },
     });
 
     if (!notification) {
@@ -43,7 +44,11 @@ export async function GET(context: { params: { id: string } }) {
   }
 }
 
-export async function PATCH({ params }: { params: { id: string } }) {
+export async function PATCH(
+  _req: NextRequest,
+  context: { params: { id: string } }
+) {
+  const { params } = context;
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -51,11 +56,8 @@ export async function PATCH({ params }: { params: { id: string } }) {
   }
 
   try {
-    // First check if the notification belongs to the user
     const notification = await prisma.notification.findUnique({
-      where: {
-        id: params.id,
-      },
+      where: { id: params.id },
     });
 
     if (!notification) {
@@ -80,7 +82,11 @@ export async function PATCH({ params }: { params: { id: string } }) {
   }
 }
 
-export async function DELETE({ params }: { params: { id: string } }) {
+export async function DELETE(
+  _req: NextRequest,
+  context: { params: { id: string } }
+) {
+  const { params } = context;
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -88,11 +94,8 @@ export async function DELETE({ params }: { params: { id: string } }) {
   }
 
   try {
-    // First check if the notification belongs to the user
     const notification = await prisma.notification.findUnique({
-      where: {
-        id: params.id,
-      },
+      where: { id: params.id },
     });
 
     if (!notification) {
