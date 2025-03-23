@@ -12,22 +12,19 @@ const NotificationSkeleton = ({ cantidad = 5 }) => {
   ];
 
   return (
-    <div className="w-full space-y-4 p-4">
+    <div className="w-full space-y-4 py-4">
       {Array.from({ length: cantidadNotificaciones }).map((_, index) => (
-        <div
-          key={index}
-          className="flex items-start space-x-3 p-4 border-b border-gray-200"
-        >
-          <div className="flex-shrink-0 mt-1">
-            <Skeleton className="h-6 w-6 rounded-full bg-gray-100" />
+        <div key={index} className="flex items-start space-x-3 py-4 border-b">
+          <div className="flex-shrink-0 mt-1 px-4">
+            <Skeleton className="h-6 w-6 rounded-full " />
           </div>
-          <div className="flex-1 space-y-2">
-            <Skeleton className="h-5 w-48 bg-gray-200" />
-            <Skeleton className="h-4 w-64 bg-gray-200" />
+          <div className="flex-1 space-y-2 px-4">
+            <Skeleton className="h-5 w-48 " />
+            <Skeleton className="h-4 w-64 " />
             <Skeleton
               className={`${
                 tiempoVariaciones[index % tiempoVariaciones.length]
-              } bg-gray-100`}
+              } `}
             />
           </div>
         </div>

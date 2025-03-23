@@ -126,7 +126,7 @@ export default function NotificationsPage() {
               variant="default"
               size="sm"
               onClick={() => markAsRead("all")}
-              className="h-9"
+              className="text-xs"
             >
               Marcar todas como leídas
             </Button>

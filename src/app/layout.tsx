@@ -28,7 +28,14 @@ export default function RootLayout({
   }, []);
   return (
     <html lang="es" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body
+        className={`overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] ${inter.className} antialiased`}
+      >
+        <style jsx>{`
+          div::-webkit-scrollbar {
+            display: none;
+          }
+        `}</style>
         <Analytics />
         <AuthProvider>
           <ThemeProvider>{children}</ThemeProvider>
