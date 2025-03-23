@@ -37,10 +37,9 @@ export function useWaterIntake() {
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
-        toast({
-          title: "Error",
+
+        toast.error("Error", {
           description: "No se pudo cargar el consumo de agua",
-          variant: "destructive",
         });
       } finally {
         setIsLoading(false);
@@ -148,14 +147,7 @@ export function useWaterIntake() {
         return true;
       } catch (err) {
         setError(err instanceof Error ? err.message : "Error desconocido");
-        // toast({
-        //   title: "Error",
-        //   description:
-        //     err instanceof Error
-        //       ? err.message
-        //       : "No se pudo actualizar el consumo de agua",
-        //   variant: "destructive",
-        // });
+
         toast.error("Error", {
           description:
             err instanceof Error
