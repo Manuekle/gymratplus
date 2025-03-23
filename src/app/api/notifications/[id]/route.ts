@@ -11,7 +11,7 @@ interface Context {
   params: { id: string };
 }
 
-export async function GET(context: Context) {
+export async function GET(_req: NextRequest, context: Context) {
   const { params } = context; // 👈 Extraemos los parámetros correctamente
   const session = await getServerSession(authOptions);
 
