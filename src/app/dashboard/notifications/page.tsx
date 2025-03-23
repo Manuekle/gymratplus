@@ -176,7 +176,7 @@ export default function NotificationsPage() {
                   {Object.entries(groupedNotifications).map(
                     ([date, notifications]) => (
                       <div key={date}>
-                        <div className="px-4 py-2 bg-muted/50 text-sm font-medium">
+                        <div className="px-4 text-xs md:text-lg font-bold tracking-tighter">
                           {formatGroupDate(date)}
                         </div>
                         <div className="divide-y">

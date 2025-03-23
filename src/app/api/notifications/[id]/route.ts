@@ -1,4 +1,4 @@
-import { type NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import {
@@ -7,10 +7,8 @@ import {
 } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function GET(context: { params: { id: string } }) {
+  const { params } = context; // Extraer params correctamente
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -45,10 +43,7 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -85,10 +80,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE({ params }: { params: { id: string } }) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
