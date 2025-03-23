@@ -28,6 +28,14 @@ export default function RootLayout({
   }, []);
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <meta
+          name="description"
+          content="Aplicación de fitness para seguimiento de entrenamientos y nutrición"
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://gymratplus.vercel.app/" />
+      </head>
       <body
         className={`overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] ${inter.className} antialiased`}
       >
