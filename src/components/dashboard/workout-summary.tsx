@@ -95,7 +95,7 @@ export default function WorkoutSummary() {
       <div className="space-y-4">
         {loading ? (
           <div className="flex flex-col gap-2">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: 2 }).map((_, index) => (
               <div key={index} className="p-3 border rounded-lg">
                 <div className="flex justify-between">
                   <Skeleton className="h-4 w-56" />
@@ -122,7 +122,7 @@ export default function WorkoutSummary() {
             </p>
           </div>
         ) : (
-          workoutSessions.map((session) => (
+          workoutSessions.slice(0, 2).map((session) => (
             <div key={session.id} className="p-3 border rounded-lg">
               <div className="flex justify-between">
                 <h4 className="font-bold tracking-tight text-lg">
