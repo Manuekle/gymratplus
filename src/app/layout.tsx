@@ -61,6 +61,10 @@ export default function RootLayout({
           content="https://gymratplus.vercel.app/og-image.webp"
         />
         <meta name="twitter:site" content="@tu_cuenta" />
+        <meta
+          name="google-site-verification"
+          content="0RPzGmepK5heQ-2axeEVsJ9o2FVPXcNp67TZSjmjF0E"
+        />
 
         {/* Favicon */}
         <link rel="icon" href="https://gymratplus.vercel.app/favicon.ico" />
