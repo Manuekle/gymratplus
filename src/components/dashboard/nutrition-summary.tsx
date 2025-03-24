@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { Session } from "next-auth";
 
 interface UserProfile {
   id: string;
@@ -87,19 +86,32 @@ export default function NutritionSummary() {
     // Si no hay usuario en la sesión, no hacemos nada
     if (!session?.user) return;
 
-    const profile = (session.user as Session["user"] & { profile: UserProfile })
-      .profile;
-    if (!profile || !profile.nutrition) return;
+    interface ExtendedSessionUser {
+      profile: {
+        id: string;
+        dailyCalorieTarget: number | string;
+        dailyProteinTarget: number | string;
+        dailyCarbTarget: number | string;
+        dailyFatTarget: number | string;
+        waterIntake: number | string;
+        goal: string;
+        createdAt: string;
+        updatedAt: string;
+      };
+    }
+
+    const profile = (session.user as unknown as ExtendedSessionUser)?.profile;
+    if (!profile) return;
 
     analyticsData("today");
     // Configurar el usuario solo si hay cambios en la sesión
     setUser({
       id: profile.id,
       nutrition: {
-        calorieTarget: profile.nutrition.calorieTarget,
-        proteinTarget: profile.nutrition.proteinTarget,
-        carbTarget: profile.nutrition.carbTarget,
-        fatTarget: profile.nutrition.fatTarget,
+        calorieTarget: Number(profile.dailyCalorieTarget),
+        proteinTarget: Number(profile.dailyProteinTarget),
+        carbTarget: Number(profile.dailyCarbTarget),
+        fatTarget: Number(profile.dailyFatTarget),
       },
       waterIntake: Number(profile.waterIntake),
       goal: profile.goal,
@@ -107,6 +119,8 @@ export default function NutritionSummary() {
       updatedAt: profile.updatedAt,
     });
   }, [session?.user]);
+
+  console.log(user);
 
   const macros = [
     {
