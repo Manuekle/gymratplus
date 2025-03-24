@@ -64,8 +64,8 @@ export async function POST(request: Request) {
                 workoutId: workout.id,
                 exerciseId: exercise.id,
                 sets: 3,
-                reps: 10,
-                restTime: 60,
+                reps: "10",
+                restTime: "60",
                 notes: muscleGroup,
                 order: muscleGroupIndex + exerciseIndex,
               },
@@ -88,8 +88,8 @@ export async function POST(request: Request) {
           id: exercise.id,
           name: exercise.exercise.name,
           sets: exercise.sets,
-          reps: exercise.reps,
-          restTime: exercise.restTime ?? 60, // Valor por defecto para evitar null
+          reps: exercise.reps.toString(),
+          restTime: exercise.restTime.toString() ?? "60", // Valor por defecto para evitar null
           notes: exercise.notes ?? "Sin grupo muscular", // Valor por defecto
         }));
       });
@@ -123,8 +123,8 @@ function formatWorkoutPlan(
     id: string;
     name: string;
     sets: number;
-    reps: number;
-    restTime: number;
+    reps: string;
+    restTime: string;
     notes: string;
   }[]
 ): { day: string; exercises: typeof workoutExercises }[] {

@@ -3,8 +3,8 @@ export type Exercise = {
   name: string;
   notes?: string;
   sets: number;
-  reps: number;
-  restTime: number;
+  reps: string;
+  restTime: string;
 };
 
 export type Day = {

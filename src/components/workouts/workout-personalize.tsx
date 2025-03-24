@@ -91,6 +91,7 @@ export function WorkoutPersonalize() {
       }
 
       toast.success("Entrenamiento creado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error creating personalized workout:", error);
       toast.error("Error al crear el entrenamiento");
