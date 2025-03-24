@@ -9,12 +9,10 @@ import {
 } from "@/lib/goal-notifications";
 
 // POST /api/goals/[id]/progress - Añadir una actualización de progreso
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   try {
-    const id = params.id;
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -63,6 +61,10 @@ export async function POST(
         { error: "La fecha es obligatoria" },
         { status: 400 }
       );
+    }
+
+    if (!id) {
+      throw new Error("goalId is required");
     }
 
     // Crear nueva actualización de progreso
