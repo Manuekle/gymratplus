@@ -5,14 +5,6 @@ import type { Notification } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import {
-  Alert02Icon,
-  BodyPartMuscleIcon,
-  DropletIcon,
-  FrenchFries02Icon,
-  TapeMeasureIcon,
-  WeightScaleIcon,
-} from "hugeicons-react";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -37,17 +29,17 @@ export function NotificationItem({
   const getTypeIcon = () => {
     switch (notification.type) {
       case "workout":
-        return <BodyPartMuscleIcon size={16} className="text-pink-300" />;
+        return "💪"; // Emoji de músculo
       case "meal":
-        return <FrenchFries02Icon size={16} className="text-amber-400" />;
+        return "🍟"; // Emoji de papas fritas
       case "water":
-        return <DropletIcon size={16} className="text-blue-400" />;
+        return "💧"; // Emoji de gota de agua
       case "weight":
-        return <WeightScaleIcon size={16} className="text-indigo-400" />;
+        return "⚖️"; // Emoji de balanza
       case "goal":
-        return <TapeMeasureIcon size={16} className="text-lime-400" />;
+        return "📏"; // Emoji de regla
       default:
-        return <Alert02Icon size={16} className="text-rose-400" />;
+        return "⚠️"; // Emoji de alerta
     }
   };
 

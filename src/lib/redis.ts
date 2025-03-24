@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Redis } from "@upstash/redis";
 
 export const redis = new Redis({
@@ -13,6 +12,7 @@ export const WATER_INTAKE_KEY = (userId: string, date: string) =>
 export const WATER_HISTORY_KEY = (userId: string) => `water:history:${userId}`;
 export const NOTIFICATION_CHANNEL = "notifications";
 export const WATER_INTAKE_CHANNEL = "water-intake";
+export const WORKOUT_CHANNEL = "workout";
 
 // Store water intake for a specific day
 export async function storeWaterIntake(
@@ -79,16 +79,52 @@ export async function getWaterIntakeHistory(
   }
 }
 
-// Publish a notification
+// Add to notification list instead of publishing
 export async function publishNotification(
   userId: string,
   notification: any
 ): Promise<void> {
-  await redis.publish(
+  await redis.lpush(
     NOTIFICATION_CHANNEL,
     JSON.stringify({
       userId,
       notification,
+    })
+  );
+}
+
+// Add to water intake list
+export async function publishWaterIntake(
+  userId: string,
+  intake: number,
+  targetIntake: number
+): Promise<void> {
+  await redis.lpush(
+    WATER_INTAKE_CHANNEL,
+    JSON.stringify({
+      userId,
+      intake,
+      targetIntake,
+    })
+  );
+}
+
+// Add to workout list
+export async function publishWorkout(
+  userId: string,
+  workoutSessionId: string,
+  action: string,
+  workoutName: string,
+  day?: string
+): Promise<void> {
+  await redis.lpush(
+    WORKOUT_CHANNEL,
+    JSON.stringify({
+      userId,
+      workoutSessionId,
+      action,
+      workoutName,
+      day,
     })
   );
 }

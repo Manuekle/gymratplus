@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { toast } from "sonner";
+
 export type GoalType = "weight" | "strength" | "measurement" | "activity";
 export type GoalStatus = "active" | "completed" | "abandoned";
 
@@ -35,7 +36,7 @@ export interface Goal {
   updatedAt?: Date | string;
 }
 
-export const useGoals = () => {
+export function useGoals() {
   const [isLoading, setIsLoading] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
 
@@ -68,14 +69,26 @@ export const useGoals = () => {
           url += `?${params.toString()}`;
         }
 
+        console.log("Fetching goals from:", url);
         const response = await fetch(url);
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Error al obtener objetivos");
+          const errorData = await response
+            .json()
+            .catch(() => ({ error: `Error HTTP: ${response.status}` }));
+          throw new Error(
+            errorData.error || `Error al obtener objetivos: ${response.status}`
+          );
         }
 
         const data = await response.json();
+        console.log("Goals data received:", data);
+
+        // Verificar que data es un array
+        if (!Array.isArray(data)) {
+          console.error("La respuesta no es un array:", data);
+          throw new Error("Formato de respuesta inválido");
+        }
 
         // Guardar en caché
         dataCacheRef.current[cacheKey] = data;
@@ -84,7 +97,11 @@ export const useGoals = () => {
         return data;
       } catch (error) {
         console.error("Error al cargar objetivos:", error);
-        toast.error("No se pudieron cargar los objetivos");
+        toast.error(
+          "No se pudieron cargar los objetivos: " +
+            (error instanceof Error ? error.message : "Error desconocido")
+        );
+        setGoals([]);
         return [];
       } finally {
         setIsLoading(false);
@@ -277,6 +294,11 @@ export const useGoals = () => {
     }
   }, []);
 
+  // Cargar objetivos automáticamente al montar el componente
+  useEffect(() => {
+    fetchGoals();
+  }, [fetchGoals]);
+
   return {
     isLoading,
     goals,
@@ -288,4 +310,4 @@ export const useGoals = () => {
     addProgressUpdate,
     fetchProgressUpdates,
   };
-};
+}

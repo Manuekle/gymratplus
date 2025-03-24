@@ -25,6 +25,19 @@ export async function createWorkoutCompletedNotification(
   });
 }
 
+export async function createWorkoutSessionStartedNotification(
+  userId: string,
+  workoutName: string,
+  day: string
+) {
+  return createNotification({
+    userId,
+    title: "Entrenamiento iniciado",
+    message: `Has iniciado una sesión de entrenamiento "${workoutName}" para el día ${day}.`,
+    type: "workout",
+  });
+}
+
 // Water intake notifications
 export async function createWaterReminderNotification(userId: string) {
   return createNotification({
@@ -89,6 +102,33 @@ export async function createWeightGoalAchievedNotification(
 }
 
 // Goal notifications
+export async function createGoalCreatedNotification(
+  userId: string,
+  goalTitle: string
+) {
+  return createNotification({
+    userId,
+    title: "Nuevo objetivo creado",
+    message: `Has creado un nuevo objetivo: ${goalTitle}`,
+    type: "goal",
+  });
+}
+
+export async function createGoalProgressUpdatedNotification(
+  userId: string,
+  goalTitle: string,
+  progress: number
+) {
+  return createNotification({
+    userId,
+    title: "Progreso actualizado",
+    message: `Has actualizado tu progreso en el objetivo "${goalTitle}" a ${progress.toFixed(
+      1
+    )}%`,
+    type: "goal",
+  });
+}
+
 export async function createGoalReminderNotification(
   userId: string,
   goalTitle: string
@@ -107,8 +147,20 @@ export async function createGoalAchievedNotification(
 ) {
   return createNotification({
     userId,
-    title: "Objetivo alcanzado",
+    title: "¡Objetivo alcanzado!",
     message: `¡Felicidades! Has alcanzado tu objetivo: ${goalTitle}`,
+    type: "goal",
+  });
+}
+
+export async function createGoalCompletedNotification(
+  userId: string,
+  goalTitle: string
+) {
+  return createNotification({
+    userId,
+    title: "Objetivo completado",
+    message: `Has marcado como completado tu objetivo: ${goalTitle}`,
     type: "goal",
   });
 }

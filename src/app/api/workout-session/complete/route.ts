@@ -2,6 +2,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
+import {
+  createWorkoutCompletedNotification,
+  publishWorkoutNotification,
+} from "@/lib/workout-notifications";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -23,6 +27,11 @@ export async function PUT(req: NextRequest) {
     // Verificar que la sesión pertenece al usuario
     const workoutSession = await prisma.workoutSession.findUnique({
       where: { id: workoutSessionId },
+      include: {
+        workout: {
+          select: { name: true },
+        },
+      },
     });
 
     if (!workoutSession) {
@@ -54,6 +63,9 @@ export async function PUT(req: NextRequest) {
             sets: true,
           },
         },
+        workout: {
+          select: { name: true },
+        },
       },
     });
 
@@ -76,6 +88,41 @@ export async function PUT(req: NextRequest) {
       },
       data: { completed: true },
     });
+
+    // Create notification for workout completion
+    try {
+      // Check if user has notifications enabled
+      const userProfile = await prisma.profile.findUnique({
+        where: { userId: session.user.id },
+        select: { notificationsActive: true },
+      });
+
+      if (userProfile?.notificationsActive !== false) {
+        // Default to true if not set
+        const workoutName = workoutSession.workout?.name || "Entrenamiento";
+
+        // Create notification in database directly
+        await createWorkoutCompletedNotification(session.user.id, workoutName);
+
+        // Add to Redis list for polling
+        await publishWorkoutNotification(
+          session.user.id,
+          workoutSessionId,
+          "completed",
+          workoutName
+        );
+
+        console.log(
+          `Workout completion notification created for user ${session.user.id}`
+        );
+      }
+    } catch (notificationError) {
+      // Log but don't fail the request if notification creation fails
+      console.error(
+        "Error creating workout completion notification:",
+        notificationError
+      );
+    }
 
     return NextResponse.json(updatedWorkoutSession);
   } catch (error) {

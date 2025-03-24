@@ -31,7 +31,7 @@ import { DeleteGoal } from "./goals/delete-goal";
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  const [activeTab, setActiveTab] = useState<GoalType | "weight">("weight");
+  const [activeTab, setActiveTab] = useState<GoalType | "all">("all");
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
   const { isLoading, goals, fetchGoals } = useGoals();
@@ -41,7 +41,11 @@ export function GoalsDashboard() {
   }, []);
 
   const loadGoals = useCallback(async () => {
-    await fetchGoals(activeTab);
+    if (activeTab === "all") {
+      await fetchGoals(undefined); // O manejarlo de otra forma
+    } else {
+      await fetchGoals(activeTab);
+    }
   }, [activeTab, fetchGoals]);
 
   useEffect(() => {
@@ -181,10 +185,11 @@ export function GoalsDashboard() {
     <div className="w-full space-y-6">
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as GoalType | "weight")}
+        onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
         <div className="flex md:flex-row flex-col justify-between">
           <TabsList className="mb-4 gap-3">
+            <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="weight">Peso</TabsTrigger>
             <TabsTrigger value="strength">Fuerza</TabsTrigger>
             <TabsTrigger value="measurement">Medidas</TabsTrigger>

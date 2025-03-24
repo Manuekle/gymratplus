@@ -8,6 +8,7 @@ export const subscriberClient = new Redis({
 
 export const NOTIFICATION_CHANNEL = "notifications";
 export const WATER_INTAKE_CHANNEL = "water-intake";
+export const WORKOUT_CHANNEL = "workout"; // Add workout channel
 
 // For Upstash Redis, we need to use the HTTP-based approach
 export async function initNotificationSubscriber() {
@@ -104,9 +105,83 @@ export async function initNotificationSubscriber() {
       }
     };
 
+    // Check workout notifications
+    const checkWorkoutNotifications = async () => {
+      try {
+        const workoutUpdates = await subscriberClient.lrange(
+          WORKOUT_CHANNEL,
+          0,
+          -1
+        );
+
+        for (const message of workoutUpdates) {
+          try {
+            const data = JSON.parse(message);
+            // Remove workoutSessionId from destructuring since it's not used
+            const { userId, action, workoutName, day } = data;
+
+            if (userId && action) {
+              let title = "";
+              let messageText = "";
+
+              switch (action) {
+                case "started":
+                  title = "Entrenamiento iniciado";
+                  messageText = `Has iniciado una sesión de entrenamiento "${workoutName}" para el día ${
+                    day || "de hoy"
+                  }.`;
+                  break;
+                case "completed":
+                  title = "Entrenamiento completado";
+                  messageText = `¡Felicidades! Has completado tu sesión de entrenamiento "${workoutName}".`;
+                  break;
+                case "cancelled":
+                  title = "Entrenamiento cancelado";
+                  messageText = `Has cancelado la sesión de entrenamiento "${workoutName}".`;
+                  break;
+                case "progress":
+                  title = "Progreso de entrenamiento";
+                  messageText = `Has completado el 50% de tu sesión de entrenamiento "${workoutName}".`;
+                  break;
+                default:
+                  continue; // Skip unknown actions
+              }
+
+              await createNotification({
+                userId,
+                title,
+                message: messageText,
+                type: "workout",
+              });
+
+              console.log(
+                `Workout notification created for user ${userId}: ${title}`
+              );
+            }
+          } catch (error) {
+            console.error(
+              "Error processing workout notification message:",
+              error
+            );
+          }
+        }
+
+        if (workoutUpdates.length > 0) {
+          await subscriberClient.ltrim(
+            WORKOUT_CHANNEL,
+            workoutUpdates.length,
+            -1
+          );
+        }
+      } catch (error) {
+        console.error("Error checking workout notifications:", error);
+      }
+    };
+
     // Set up interval for polling
     const notificationInterval = setInterval(checkForNotifications, 5000); // Check every 5 seconds
     const waterIntakeInterval = setInterval(checkWaterIntake, 5000);
+    const workoutInterval = setInterval(checkWorkoutNotifications, 5000);
 
     console.log("Redis polling initialized");
 
@@ -114,6 +189,7 @@ export async function initNotificationSubscriber() {
     return () => {
       clearInterval(notificationInterval);
       clearInterval(waterIntakeInterval);
+      clearInterval(workoutInterval);
     };
   } catch (error) {
     console.error("Failed to initialize Redis polling:", error);

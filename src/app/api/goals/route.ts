@@ -1,15 +1,19 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
+import {
+  createGoalCreatedNotification,
+  publishGoalNotification,
+} from "@/lib/goal-notifications";
 
 // GET /api/goals - Obtener objetivos del usuario
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -17,37 +21,10 @@ export async function GET(req: NextRequest) {
     const type = url.searchParams.get("type"); // Filtrar por tipo de objetivo
     const status = url.searchParams.get("status"); // Filtrar por estado
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
-    }
-
     // Consulta base
-    const query: {
+    const query: any = {
       where: {
-        userId: string;
-        type?: string | undefined;
-        status?: string | undefined;
-      };
-      orderBy: {
-        createdAt: "desc";
-      };
-      include: {
-        progressUpdates: {
-          orderBy: {
-            date: "asc";
-          };
-        };
-      };
-    } = {
-      where: {
-        userId: user.id,
+        userId: session.user.id,
       },
       orderBy: {
         createdAt: "desc",
@@ -63,14 +40,16 @@ export async function GET(req: NextRequest) {
 
     // Añadir filtros si están presentes
     if (type) {
-      query.where.type = type || undefined;
+      query.where.type = type;
     }
 
     if (status) {
-      query.where.status = status || undefined;
+      query.where.status = status;
     }
 
+    console.log("Executing goals query:", JSON.stringify(query, null, 2));
     const goals = await prisma.goal.findMany(query);
+    console.log(`Found ${goals.length} goals`);
 
     return NextResponse.json(goals);
   } catch (error) {
@@ -87,7 +66,7 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session?.user?.email) {
+    if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -105,17 +84,6 @@ export async function POST(req: NextRequest) {
       targetDate,
     } = body;
 
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
-    }
-
     // Validación de campos
     if (!type || !title) {
       return NextResponse.json(
@@ -129,7 +97,7 @@ export async function POST(req: NextRequest) {
 
     if (type === "weight" && !initialValue) {
       const profile = await prisma.profile.findUnique({
-        where: { userId: user.id },
+        where: { userId: session.user.id },
       });
 
       if (profile?.currentWeight) {
@@ -165,7 +133,7 @@ export async function POST(req: NextRequest) {
     // Crear nuevo objetivo
     const newGoal = await prisma.goal.create({
       data: {
-        userId: user.id,
+        userId: session.user.id,
         type,
         title,
         description,
@@ -192,6 +160,31 @@ export async function POST(req: NextRequest) {
           notes: "Valor inicial",
         },
       });
+    }
+
+    // Create notification for goal creation
+    try {
+      // Check if user has notifications enabled
+      const userProfile = await prisma.profile.findUnique({
+        where: { userId: session.user.id },
+        select: { notificationsActive: true },
+      });
+
+      if (userProfile?.notificationsActive !== false) {
+        // Default to true if not set
+        // Create notification in database directly
+        await createGoalCreatedNotification(session.user.id, title);
+
+        // Add to Redis list for polling
+        await publishGoalNotification(session.user.id, "created", title);
+
+        console.log(
+          `Goal creation notification created for user ${session.user.id}`
+        );
+      }
+    } catch (notificationError) {
+      // Log but don't fail the request if notification creation fails
+      console.error("Error creating goal notification:", notificationError);
     }
 
     return NextResponse.json(newGoal);

@@ -1,68 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-// GET /api/goals/[id] - Obtener un objetivo específico
-export async function GET(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const id = url.pathname.split("/").pop();
-
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    const goal = await prisma.goal.findFirst({
-      where: {
-        id: id,
-        userId: user.id,
-      },
-      include: {
-        progressUpdates: {
-          orderBy: {
-            date: "asc",
-          },
-        },
-      },
-    });
-
-    if (!goal) {
-      return NextResponse.json(
-        { error: "Objetivo no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(goal);
-  } catch (error) {
-    console.error("Error al obtener objetivo:", error);
-    return NextResponse.json(
-      { error: "Error al obtener objetivo" },
-      { status: 500 }
-    );
-  }
-}
+import {
+  createGoalCompletedNotification,
+  publishGoalNotification,
+} from "@/lib/goal-notifications";
+import { createNotification } from "@/lib/notification-service";
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
-export async function PUT(request: NextRequest) {
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const url = new URL(request.url);
-    const id = url.pathname.split("/").pop();
-
+    const id = params.id;
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -117,10 +69,12 @@ export async function PUT(request: NextRequest) {
     if (targetDate !== undefined) updateData.targetDate = new Date(targetDate);
 
     // Si se está completando el objetivo
+    let wasCompleted = false;
     if (status === "completed" && existingGoal.status !== "completed") {
       updateData.status = "completed";
       updateData.completedDate = new Date();
       updateData.progress = 100;
+      wasCompleted = true;
     }
     // Si se está abandonando o reactivando
     else if (status !== undefined) {
@@ -135,66 +89,56 @@ export async function PUT(request: NextRequest) {
       data: updateData,
     });
 
+    // Create notification for goal update
+    try {
+      // Check if user has notifications enabled
+      const userProfile = await prisma.profile.findUnique({
+        where: { userId: user.id },
+        select: { notificationsActive: true },
+      });
+
+      if (userProfile?.notificationsActive !== false) {
+        // Default to true if not set
+        const goalTitle = updatedGoal.title;
+
+        if (wasCompleted) {
+          // Create notification for goal completion
+          await createGoalCompletedNotification(user.id, goalTitle);
+
+          // Add to Redis list for polling
+          await publishGoalNotification(user.id, "completed", goalTitle);
+
+          console.log(
+            `Goal completion notification created for user ${user.id}`
+          );
+        } else {
+          // Create notification for goal update
+          await createNotification({
+            userId: user.id,
+            title: "Objetivo actualizado",
+            message: `Has actualizado tu objetivo: ${goalTitle}`,
+            type: "goal",
+          });
+
+          // Add to Redis list for polling
+          await publishGoalNotification(user.id, "updated", goalTitle);
+
+          console.log(`Goal update notification created for user ${user.id}`);
+        }
+      }
+    } catch (notificationError) {
+      // Log but don't fail the request if notification creation fails
+      console.error(
+        "Error creating goal update notification:",
+        notificationError
+      );
+    }
+
     return NextResponse.json(updatedGoal);
   } catch (error) {
     console.error("Error al actualizar objetivo:", error);
     return NextResponse.json(
       { error: "Error al actualizar objetivo" },
-      { status: 500 }
-    );
-  }
-}
-
-// DELETE /api/goals/[id] - Eliminar un objetivo específico
-export async function DELETE(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const id = url.pathname.split("/").pop();
-
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Verificar que el objetivo pertenece al usuario
-    const existingGoal = await prisma.goal.findFirst({
-      where: {
-        id: id,
-        userId: user.id,
-      },
-    });
-
-    if (!existingGoal) {
-      return NextResponse.json(
-        { error: "Objetivo no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Eliminar el objetivo (las actualizaciones de progreso se eliminarán en cascada)
-    await prisma.goal.delete({
-      where: {
-        id: id,
-      },
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error al eliminar objetivo:", error);
-    return NextResponse.json(
-      { error: "Error al eliminar objetivo" },
       { status: 500 }
     );
   }

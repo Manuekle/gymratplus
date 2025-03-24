@@ -1,74 +1,20 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-// GET /api/goals/[id]/progress - Obtener actualizaciones de progreso de un objetivo
-export async function GET(request: NextRequest) {
-  try {
-    const url = new URL(request.url);
-    const segments = url.pathname.split("/");
-    const id = segments[segments.indexOf("goals") + 1];
-
-    const session = await getServerSession(authOptions);
-
-    if (!session?.user?.email) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-    }
-
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-    });
-
-    if (!user) {
-      return NextResponse.json(
-        { error: "Usuario no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Verificar que el objetivo pertenece al usuario
-    const goal = await prisma.goal.findFirst({
-      where: {
-        id: id,
-        userId: user.id,
-      },
-    });
-
-    if (!goal) {
-      return NextResponse.json(
-        { error: "Objetivo no encontrado" },
-        { status: 404 }
-      );
-    }
-
-    // Obtener actualizaciones de progreso
-    const progressUpdates = await prisma.goalProgress.findMany({
-      where: {
-        goalId: id,
-      },
-      orderBy: {
-        date: "asc",
-      },
-    });
-
-    return NextResponse.json(progressUpdates);
-  } catch (error) {
-    console.error("Error al obtener actualizaciones de progreso:", error);
-    return NextResponse.json(
-      { error: "Error al obtener actualizaciones de progreso" },
-      { status: 500 }
-    );
-  }
-}
+import {
+  createGoalAchievedNotification,
+  createGoalProgressUpdatedNotification,
+  publishGoalNotification,
+} from "@/lib/goal-notifications";
 
 // POST /api/goals/[id]/progress - Añadir una actualización de progreso
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const url = new URL(request.url);
-    const segments = url.pathname.split("/");
-    const id = segments[segments.indexOf("goals") + 1];
-
+    const id = params.id;
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -131,6 +77,7 @@ export async function POST(request: NextRequest) {
 
     // Actualizar el valor actual y el progreso del objetivo
     let progress = goal.progress || 0;
+    let goalAchieved = false;
 
     if (
       goal.initialValue != null &&
@@ -174,6 +121,7 @@ export async function POST(request: NextRequest) {
       status = "completed";
       completedDate = new Date();
       progress = 100;
+      goalAchieved = true;
     }
 
     // Actualizar el objetivo
@@ -199,6 +147,59 @@ export async function POST(request: NextRequest) {
           currentWeight: value.toString(),
         },
       });
+    }
+
+    // Create notification for goal progress update
+    try {
+      // Check if user has notifications enabled
+      const userProfile = await prisma.profile.findUnique({
+        where: { userId: user.id },
+        select: { notificationsActive: true },
+      });
+
+      if (userProfile?.notificationsActive !== false) {
+        // Default to true if not set
+        const goalTitle = goal.title;
+
+        if (goalAchieved) {
+          // Create notification for goal achievement
+          await createGoalAchievedNotification(user.id, goalTitle);
+
+          // Add to Redis list for polling
+          await publishGoalNotification(user.id, "achieved", goalTitle);
+
+          console.log(
+            `Goal achievement notification created for user ${user.id}`
+          );
+        } else if (
+          progress >= 50 &&
+          progress < 100 &&
+          (goal.progress || 0) < 50
+        ) {
+          // Create notification for reaching 50% progress (only once)
+          await createGoalProgressUpdatedNotification(
+            user.id,
+            goalTitle,
+            progress
+          );
+
+          // Add to Redis list for polling
+          await publishGoalNotification(
+            user.id,
+            "progress",
+            goalTitle,
+            progress
+          );
+
+          console.log(`Goal progress notification created for user ${user.id}`);
+        }
+      }
+    } catch (notificationError) {
+      // Log but don't fail the request if notification creation fails
+      console.error(
+        "Error creating goal progress notification:",
+        notificationError
+      );
     }
 
     return NextResponse.json(newProgressUpdate);

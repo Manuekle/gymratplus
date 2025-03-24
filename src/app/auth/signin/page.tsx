@@ -99,7 +99,7 @@ export default function SignInPage() {
                     Iniciando sesión
                   </>
                 ) : (
-                  "Iniciar Sesión"
+                  "Iniciar sesión"
                 )}
               </Button>
               {/* Suspense boundary for useSearchParams */}

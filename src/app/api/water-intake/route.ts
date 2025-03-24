@@ -6,59 +6,9 @@ import {
   storeWaterIntake,
   getWaterIntake,
   publishNotification,
-  redis,
-  WATER_INTAKE_CHANNEL,
+  publishWaterIntake,
 } from "@/lib/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/create-system-notifications";
-
-// GET current water intake
-export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
-
-  if (!session?.user) {
-    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
-  }
-
-  const url = new URL(req.url);
-  const now = new Date();
-  const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-    .toISOString()
-    .split("T")[0];
-
-  const date = url.searchParams.get("date") || localDate;
-  console.log(date);
-
-  try {
-    // Get from Redis first (faster)
-    const intake = await getWaterIntake(session.user.id, date);
-
-    // If not in Redis, check database
-    if (intake === 0) {
-      const dbIntake = await prisma.dailyWaterIntake.findUnique({
-        where: {
-          userId_date: {
-            userId: session.user.id,
-            date: new Date(date),
-          },
-        },
-      });
-
-      if (dbIntake) {
-        // Store in Redis for future requests
-        await storeWaterIntake(session.user.id, date, dbIntake.intake);
-        return NextResponse.json({ intake: dbIntake.intake });
-      }
-    }
-
-    return NextResponse.json({ intake });
-  } catch (error) {
-    console.error("Error fetching water intake:", error);
-    return NextResponse.json(
-      { error: "Error al obtener el consumo de agua" },
-      { status: 500 }
-    );
-  }
-}
 
 // POST update water intake
 export async function POST(req: NextRequest) {
@@ -70,12 +20,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const now = new Date();
-    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-      .toISOString()
-      .split("T")[0];
-
-    const { intake, date = localDate } = body;
+    const { intake, date = new Date().toISOString().split("T")[0] } = body;
 
     // Enhanced validation
     if (intake === undefined || intake === null) {
@@ -144,14 +89,11 @@ export async function POST(req: NextRequest) {
           "¡Felicidades! Has alcanzado tu meta diaria de consumo de agua.",
       });
 
-      // Also publish to water intake channel
-      await redis.publish(
-        WATER_INTAKE_CHANNEL,
-        JSON.stringify({
-          userId: session.user.id,
-          intake: numericIntake,
-          targetIntake: userProfile.waterIntake,
-        })
+      // Also add to water intake list for polling
+      await publishWaterIntake(
+        session.user.id,
+        numericIntake,
+        userProfile.waterIntake
       );
     }
 
@@ -160,6 +102,50 @@ export async function POST(req: NextRequest) {
     console.error("Error updating water intake:", error);
     return NextResponse.json(
       { error: "Error al actualizar el consumo de agua" },
+      { status: 500 }
+    );
+  }
+}
+
+// GET current water intake
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  const url = new URL(req.url);
+  const date =
+    url.searchParams.get("date") || new Date().toISOString().split("T")[0];
+
+  try {
+    // Get from Redis first (faster)
+    const intake = await getWaterIntake(session.user.id, date);
+
+    // If not in Redis, check database
+    if (intake === 0) {
+      const dbIntake = await prisma.dailyWaterIntake.findUnique({
+        where: {
+          userId_date: {
+            userId: session.user.id,
+            date: new Date(date),
+          },
+        },
+      });
+
+      if (dbIntake) {
+        // Store in Redis for future requests
+        await storeWaterIntake(session.user.id, date, dbIntake.intake);
+        return NextResponse.json({ intake: dbIntake.intake });
+      }
+    }
+
+    return NextResponse.json({ intake });
+  } catch (error) {
+    console.error("Error fetching water intake:", error);
+    return NextResponse.json(
+      { error: "Error al obtener el consumo de agua" },
       { status: 500 }
     );
   }
