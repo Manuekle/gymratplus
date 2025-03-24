@@ -63,7 +63,7 @@ export default function RootLayout({
         <meta name="twitter:site" content="@tu_cuenta" />
 
         {/* Favicon */}
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="https://gymratplus.vercel.app/favicon.ico" />
       </head>
       <body
         className={`overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] ${inter.className} antialiased`}
