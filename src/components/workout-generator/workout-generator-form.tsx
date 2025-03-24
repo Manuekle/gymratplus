@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 import { Icons } from "../icons";
+import { WorkoutPersonalize } from "../workouts/workout-personalize";
 
 export type FormData = {
   goal: string;
@@ -169,68 +170,71 @@ export function WorkoutGeneratorForm() {
           </div>
         </div>
       )}
-      <Dialog>
-        <DialogTrigger asChild className="mb-8">
-          <Button className="text-xs" size="sm">
-            Generar rutina
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="max-w-sm max-h-[900px] overflow-hidden ">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={step}
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.3 }}
-            >
-              {renderStep()}
-            </motion.div>
-          </AnimatePresence>
-          <DialogFooter>
-            {step <= totalSteps && (
-              <div className="flex justify-between mt-6 w-full">
-                <Button
-                  variant="outline"
-                  onClick={prevStep}
-                  disabled={step === 1}
-                  className="text-xs px-4"
-                  size="sm"
-                >
-                  Anterior
-                </Button>
+      <div className="flex flex-row gap-2">
+        <Dialog>
+          <DialogTrigger asChild className="mb-8">
+            <Button className="text-xs" size="sm">
+              Generar rutina
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-sm max-h-[900px] overflow-hidden ">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={step}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.3 }}
+              >
+                {renderStep()}
+              </motion.div>
+            </AnimatePresence>
+            <DialogFooter>
+              {step <= totalSteps && (
+                <div className="flex justify-between mt-6 w-full">
+                  <Button
+                    variant="outline"
+                    onClick={prevStep}
+                    disabled={step === 1}
+                    className="text-xs px-4"
+                    size="sm"
+                  >
+                    Anterior
+                  </Button>
 
-                {step < totalSteps ? (
-                  <Button
-                    onClick={nextStep}
-                    disabled={!isStepValid()}
-                    className="text-xs px-4"
-                    size="sm"
-                  >
-                    Siguiente
-                  </Button>
-                ) : (
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!isStepValid() || isSubmitting}
-                    className="text-xs px-4"
-                    size="sm"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <Icons.spinner className="h-2 w-2 animate-spin" />
-                        Generando rutina
-                      </>
-                    ) : (
-                      <>Generar rutina</>
-                    )}
-                  </Button>
-                )}
-              </div>
-            )}
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+                  {step < totalSteps ? (
+                    <Button
+                      onClick={nextStep}
+                      disabled={!isStepValid()}
+                      className="text-xs px-4"
+                      size="sm"
+                    >
+                      Siguiente
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleSubmit}
+                      disabled={!isStepValid() || isSubmitting}
+                      className="text-xs px-4"
+                      size="sm"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Icons.spinner className="h-2 w-2 animate-spin" />
+                          Generando rutina
+                        </>
+                      ) : (
+                        <>Generar rutina</>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              )}
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+        <WorkoutPersonalize />
+      </div>
     </div>
   );
 }

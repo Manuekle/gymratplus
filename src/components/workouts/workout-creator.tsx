@@ -25,6 +25,7 @@ export default function WorkoutCreator() {
       <CardContent>
         <div className="space-y-2">
           <WorkoutGeneratorForm />
+
           {/* <WorkoutModal /> */}
           <WorkoutsTable />
         </div>

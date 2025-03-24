@@ -61,6 +61,8 @@ export default function WorkoutDetail() {
     fetchWorkout();
   }, [id, session, router]);
 
+  // const [exerciseAdded, setExerciseAdded] = useState(false);
+
   if (!workout) return <WorkoutSkeleton />;
 
   return (
@@ -75,13 +77,6 @@ export default function WorkoutDetail() {
           <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
         </Button>
         <span className="flex flex-row gap-2">
-          <Button
-            size="sm"
-            className="text-xs"
-            onClick={() => setIsModalOpen(true)}
-          >
-            Agregar ejercicio
-          </Button>
           <StartWorkout workout={workout} />
         </span>
       </div>
