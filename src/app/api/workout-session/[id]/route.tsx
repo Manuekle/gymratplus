@@ -5,18 +5,17 @@ import { getServerSession } from "next-auth/next";
 import { publishNotification } from "@/lib/redis";
 import { createNotification } from "@/lib/notification-service";
 
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
 
-    const workoutSessionId = params.id;
+    const workoutSessionId = id;
 
     if (!workoutSessionId) {
       return NextResponse.json(
