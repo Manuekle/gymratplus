@@ -1,317 +1,57 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { prisma } from "@/lib/prisma";
-
+import { exercises } from "@/data/exercises";
 // Get or create exercises in the database
-export async function getOrCreateExercises() {
-  // Check if exercises already exist
-  const count = await prisma.exercise.count();
 
-  if (count > 0) {
-    // If they exist, return all exercises
+export async function getOrCreateExercises() {
+  // First, check if any exercises exist
+  const existingExercisesCount = await prisma.exercise.count();
+
+  if (existingExercisesCount > 0) {
+    // If exercises exist, return all existing exercises
     return prisma.exercise.findMany();
   }
 
-  // If they don't exist, create basic exercises
-  const exercisesToCreate = [
-    // Leg Exercises
-    {
-      name: "Sentadillas",
-      muscleGroup: "piernas",
-      equipment: "peso libre",
-      description:
-        "Ejercicio compuesto para piernas, enfocado en cuádriceps, glúteos y pantorrillas",
-    },
-    {
-      name: "Prensa de piernas",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description:
-        "Ejercicio compuesto para piernas, enfocado en cuádriceps y glúteos",
-    },
-    {
-      name: "Extensiones de cuádriceps",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para cuádriceps",
-    },
-    {
-      name: "Curl femoral",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para isquiotibiales",
-    },
-    {
-      name: "Elevaciones de pantorrilla",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para pantorrillas",
-    },
-    {
-      name: "Abductores",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para abductores de cadera",
-    },
-    {
-      name: "Aductores",
-      muscleGroup: "piernas",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para aductores de cadera",
-    },
-    {
-      name: "Peso muerto",
-      muscleGroup: "piernas",
-      equipment: "peso libre",
-      description:
-        "Ejercicio compuesto para isquiotibiales, glúteos y espalda baja",
-    },
-    {
-      name: "Zancadas",
-      muscleGroup: "piernas",
-      equipment: "peso libre",
-      description:
-        "Ejercicio compuesto para piernas, enfocado en cuádriceps, glúteos e isquiotibiales",
-    },
-    {
-      name: "Hip Thrust",
-      muscleGroup: "piernas",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para glúteos",
-    },
+  // If no exercises exist, prepare to create them
+  const exercisesToCreate = exercises;
 
-    // Chest Exercises
-    {
-      name: "Press de banca",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para pecho, hombros y tríceps",
-    },
-    {
-      name: "Press de banca inclinado",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para pecho superior, hombros y tríceps",
-    },
-    {
-      name: "Press de banca declinado",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para pecho inferior, hombros y tríceps",
-    },
-    {
-      name: "Aperturas con mancuernas",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para pecho",
-    },
-    {
-      name: "Fondos en paralelas",
-      muscleGroup: "pecho",
-      equipment: "peso corporal",
-      description: "Ejercicio compuesto para pecho inferior y tríceps",
-    },
-    {
-      name: "Máquina de press",
-      muscleGroup: "pecho",
-      equipment: "máquina",
-      description: "Ejercicio compuesto para pecho",
-    },
-    {
-      name: "Contractor de pecho",
-      muscleGroup: "pecho",
-      equipment: "máquina",
-      description: "Ejercicio de aislamiento para pecho",
-    },
-    {
-      name: "Pullover",
-      muscleGroup: "pecho",
-      equipment: "peso libre",
-      description: "Ejercicio para pecho y dorsal",
-    },
+  // Upsert exercises (create or update)
+  const createdExercises = await prisma.$transaction(async (tx) => {
+    const exerciseResults = [];
 
-    // Back Exercises
-    {
-      name: "Dominadas",
-      muscleGroup: "espalda",
-      equipment: "peso corporal",
-      description: "Ejercicio compuesto para espalda y bíceps",
-    },
-    {
-      name: "Remo con barra",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para espalda y bíceps",
-    },
-    {
-      name: "Remo con mancuerna",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para espalda y bíceps",
-    },
-    {
-      name: "Jalón al pecho",
-      muscleGroup: "espalda",
-      equipment: "máquina",
-      description: "Ejercicio compuesto para espalda y bíceps",
-    },
-    {
-      name: "Remo en máquina",
-      muscleGroup: "espalda",
-      equipment: "máquina",
-      description: "Ejercicio compuesto para espalda y bíceps",
-    },
-    {
-      name: "Pull-over",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio para dorsal y pecho",
-    },
-    {
-      name: "Hiperextensiones",
-      muscleGroup: "espalda",
-      equipment: "peso corporal",
-      description: "Ejercicio para espalda baja",
-    },
-    {
-      name: "Encogimientos de hombros",
-      muscleGroup: "espalda",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para trapecios",
-    },
+    for (const exercise of exercisesToCreate) {
+      // Try to find an existing exercise
+      console.log("nuevos");
+      const existingExercise = await tx.exercise.findFirst({
+        where: {
+          name: exercise.name,
+        },
+        select: { id: true },
+      });
 
-    // Shoulder Exercises
-    {
-      name: "Press militar",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para hombros y tríceps",
-    },
-    {
-      name: "Elevaciones laterales",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para deltoides lateral",
-    },
-    {
-      name: "Elevaciones frontales",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para deltoides anterior",
-    },
-    {
-      name: "Pájaro",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para deltoides posterior",
-    },
-    {
-      name: "Press Arnold",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para hombros",
-    },
-    {
-      name: "Remo al mentón",
-      muscleGroup: "hombros",
-      equipment: "peso libre",
-      description: "Ejercicio compuesto para hombros y trapecios",
-    },
+      let upsertedExercise;
+      if (existingExercise) {
+        // If exercise exists, update it
+        upsertedExercise = await tx.exercise.update({
+          where: {
+            id: existingExercise.id,
+          },
+          data: exercise,
+        });
+      } else {
+        // If exercise doesn't exist, create it
+        upsertedExercise = await tx.exercise.create({
+          data: exercise,
+        });
+      }
+      console.log(upsertedExercise);
+      exerciseResults.push(upsertedExercise);
+    }
 
-    // Arm Exercises
-    {
-      name: "Curl de bíceps con barra",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para bíceps",
-    },
-    {
-      name: "Curl de bíceps con mancuernas",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para bíceps",
-    },
-    {
-      name: "Curl martillo",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para bíceps y braquial",
-    },
-    {
-      name: "Curl concentrado",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para bíceps",
-    },
-    {
-      name: "Extensiones de tríceps",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para tríceps",
-    },
-    {
-      name: "Press francés",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para tríceps",
-    },
-    {
-      name: "Fondos en banco",
-      muscleGroup: "brazos",
-      equipment: "peso corporal",
-      description: "Ejercicio compuesto para tríceps",
-    },
-    {
-      name: "Patada de tríceps",
-      muscleGroup: "brazos",
-      equipment: "peso libre",
-      description: "Ejercicio de aislamiento para tríceps",
-    },
+    return exerciseResults;
+  });
 
-    // Core Exercises
-    {
-      name: "Plancha",
-      muscleGroup: "core",
-      equipment: "peso corporal",
-      description: "Ejercicio isométrico para core",
-    },
-    {
-      name: "Crunch",
-      muscleGroup: "core",
-      equipment: "peso corporal",
-      description: "Ejercicio para abdominales superiores",
-    },
-    {
-      name: "Elevaciones de piernas",
-      muscleGroup: "core",
-      equipment: "peso corporal",
-      description: "Ejercicio para abdominales inferiores",
-    },
-    {
-      name: "Russian twist",
-      muscleGroup: "core",
-      equipment: "peso corporal",
-      description: "Ejercicio para oblicuos",
-    },
-    {
-      name: "Rueda abdominal",
-      muscleGroup: "core",
-      equipment: "accesorio",
-      description: "Ejercicio compuesto para core",
-    },
-    {
-      name: "Mountain climber",
-      muscleGroup: "core",
-      equipment: "peso corporal",
-      description: "Ejercicio dinámico para core y cardio",
-    },
-  ];
-
-  // Create all exercises in the database
-  return prisma.$transaction(
-    exercisesToCreate.map((exercise) =>
-      prisma.exercise.create({ data: exercise })
-    )
-  );
+  return createdExercises;
 }
 
 // Determine the best workout type based on user profile
