@@ -204,7 +204,7 @@ function formatWorkoutPlan(
     return acc;
   }, {});
 
-  // Format each muscle groups
+  // Format each muscle group
   return Object.entries(exercisesByDay).map(([muscleGroup, exercises]) => {
     return {
       day: muscleGroup, // Use muscle group as day identifier
