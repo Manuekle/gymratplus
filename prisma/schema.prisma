@@ -123,9 +123,9 @@ model WorkoutExercise {
   exerciseId String
   exercise   Exercise @relation(fields: [exerciseId], references: [id])
   sets       Int
-  reps       Int
+  reps       String
   weight     Float? // en kg
-  restTime   Int? // en segundos
+  restTime   String? // en segundos
   order      Int
   notes      String?
   createdAt  DateTime @default(now())
@@ -399,7 +399,7 @@ model SetSession {
   exerciseSession   ExerciseSession @relation(fields: [exerciseSessionId], references: [id], onDelete: Cascade)
   setNumber         Int // número de serie (1, 2, 3...)
   weight            Float? // peso utilizado
-  reps              Int? // repeticiones realizadas
+  reps              String? // repeticiones realizadas
   isDropSet         Boolean         @default(false)
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())
