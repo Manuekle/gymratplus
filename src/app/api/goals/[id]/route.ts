@@ -9,12 +9,10 @@ import {
 import { createNotification } from "@/lib/notification-service";
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest) {
   try {
-    const id = params.id;
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
