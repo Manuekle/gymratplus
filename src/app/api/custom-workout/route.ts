@@ -141,19 +141,12 @@ export async function POST(request: Request) {
       })
     );
 
-    // Convert reps to number to fix type error
-    const workoutExercisesFixed = workoutExercisesWithNames.map((exercise) => ({
-      ...exercise,
-      reps: Number(exercise.reps), // Convertimos reps a número
-      restTime: exercise.restTime ? Number(exercise.restTime) : null, // Convertimos restTime a número o null
-    }));
-
     // Format workout plan for response
     const formattedWorkout = {
       id: workout.id,
       name: workout.name,
       description: workout.description,
-      days: formatWorkoutPlan(workoutExercisesFixed),
+      days: formatWorkoutPlan(workoutExercisesWithNames),
       type: splitType,
       methodology,
       goal,
