@@ -122,12 +122,12 @@ export async function POST() {
             id: we.id,
             name: we.exercise?.name || "Unknown Exercise",
             sets: adaptSetsBasedOnProgress(
-              we.sets,
+              Number(we.sets),
               adherence,
               profile.goal || "default-goal"
             ),
             reps: adaptRepsBasedOnProgress(
-              we.reps,
+              Number(we.reps),
               adherence,
               profile.goal || "default-goal"
             ),
