@@ -138,6 +138,7 @@ export async function POST(request: Request) {
           ...exercise,
           name: exerciseDetails ? exerciseDetails.name : "Unknown Exercise",
           reps: Number(exercise.reps), // Convertimos reps a número
+          restTime: exercise.restTime ? Number(exercise.restTime) : null, // Convertimos restTime a número o dejamos null
         };
       })
     );
