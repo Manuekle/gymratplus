@@ -12,9 +12,6 @@ export default function WorkoutSkeleton() {
           <Button variant="outline" className="w-32">
             <Skeleton className="h-4 w-full" />
           </Button>
-          <Button variant="outline" className="w-32">
-            <Skeleton className="h-4 w-full" />
-          </Button>
         </span>
       </div>
       <div className="border rounded-lg p-4">
