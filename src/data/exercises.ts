@@ -96,7 +96,7 @@ export const exercises = [
   },
   {
     name: "Patada para glúteo en polea",
-    muscleGroup: "glúteos",
+    muscleGroup: "piernas",
     equipment: "máquina",
     description: "Ejercicio de aislamiento para glúteos.",
   },

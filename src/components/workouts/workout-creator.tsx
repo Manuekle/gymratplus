@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import WorkoutsTable from "../tables/workouts-table";
 import { WorkoutGeneratorForm } from "../workout-generator/workout-generator-form";
-// import ExerciseButtons from "../config/add-exercise-button";
+import ExerciseButtons from "../config/add-exercise-button";
 
 export default function WorkoutCreator() {
   return (
@@ -25,7 +25,7 @@ export default function WorkoutCreator() {
       <CardContent>
         <div className="space-y-2">
           <WorkoutGeneratorForm />
-          {/* <ExerciseButtons /> */}
+          <ExerciseButtons />
           <WorkoutsTable />
         </div>
       </CardContent>
