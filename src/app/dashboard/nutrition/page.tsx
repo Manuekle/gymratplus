@@ -22,6 +22,8 @@ import { Progress } from "@/components/ui/progress";
 import { CalorieChart } from "@/components/calorie-chart";
 import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 interface UserProfile {
   id: string;
@@ -419,7 +421,14 @@ export default function NutritionPage() {
                   Registro de alimentos consumidos
                 </CardDescription>
               </span>
-              <AddMealLogButton />
+              <div className="flex flex-row gap-2 items-center">
+                <AddMealLogButton />
+                <Link href="/dashboard/nutrition/food-plans">
+                  <Button size="sm" className="text-xs" variant="outline">
+                    Ver Planes de Comida
+                  </Button>
+                </Link>
+              </div>
             </CardHeader>
             <CardContent>
               <MealLogCalendar />
