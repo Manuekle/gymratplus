@@ -1,10 +1,12 @@
 🏗️ Checklist de desarrollo
 
 1. Definición de funcionalidades
-- ✅ Calendario para organizar el día (eventos, recordatorios, entrenamientos). ✅ Rutinas de gimnasio personalizadas con planificación semanal.
+- ✅ Calendario para organizar el día (eventos, recordatorios, entrenamientos).
+- ✅ Rutinas de gimnasio personalizadas con planificación semanal.
 - ✅ Registro de alimentación con conteo de calorías y macronutrientes.
 - ✅ Cálculo de peso ideal y calorías necesarias según objetivos.
-- ✅ Inteligencia artificial para sugerir alimentos y ejercicios según progreso. ✅ Notificaciones y recordatorios (ejemplo: "Hoy es día de pierna").
+- ✅ Inteligencia artificial para sugerir alimentos y ejercicios según progreso.
+- ✅ Notificaciones y recordatorios (ejemplo: "Hoy es día de pierna").
 - ✅ Seguimiento del progreso con estadísticas y gráficos.
 
 2. Arquitectura de la aplicación
