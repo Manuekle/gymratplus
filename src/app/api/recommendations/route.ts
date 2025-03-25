@@ -122,16 +122,16 @@ export async function POST() {
             id: we.id,
             name: we.exercise?.name || "Unknown Exercise",
             sets: adaptSetsBasedOnProgress(
-              Number(we.sets),
+              we.sets,
               adherence,
               profile.goal || "default-goal"
             ),
             reps: adaptRepsBasedOnProgress(
-              Number(we.reps),
+              we.reps,
               adherence,
               profile.goal || "default-goal"
             ),
-            restTime: we.restTime ? Number(we.restTime) : null, // Convertimos `restTime` a número o dejamos `null`
+            restTime: we.restTime,
             notes: we.notes || "General",
           }))
         ),

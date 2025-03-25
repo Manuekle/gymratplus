@@ -166,25 +166,25 @@ export const exercises = [
   // Forearm Exercises
   {
     name: "Curl de muñeca con barra",
-    muscleGroup: "brazos",
+    muscleGroup: "antebrazo",
     equipment: "peso libre",
     description: "Aislamiento para flexores del antebrazo",
   },
   {
     name: "Curl de muñeca inverso",
-    muscleGroup: "brazos",
+    muscleGroup: "antebrazo",
     equipment: "peso libre",
     description: "Aislamiento para extensores del antebrazo",
   },
   {
     name: "Sujeción con agarre",
-    muscleGroup: "brazos",
+    muscleGroup: "antebrazo",
     equipment: "peso libre",
     description: "Ejercicio isométrico para mejorar fuerza de agarre",
   },
   {
     name: "Farmer's Walk",
-    muscleGroup: "brazos",
+    muscleGroup: "antebrazo",
     equipment: "peso libre",
     description: "Trabajo de antebrazo y agarre cargando pesas al caminar",
   },
