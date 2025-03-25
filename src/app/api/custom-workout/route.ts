@@ -137,6 +137,7 @@ export async function POST(request: Request) {
         return {
           ...exercise,
           name: exerciseDetails ? exerciseDetails.name : "Unknown Exercise",
+          reps: Number(exercise.reps), // Convertimos reps a número
         };
       })
     );
