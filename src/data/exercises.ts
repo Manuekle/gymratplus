@@ -1,5 +1,5 @@
 export const exercises = [
-  // Leg Exercises
+  // Pierna
   {
     name: "Sentadillas",
     muscleGroup: "piernas",
@@ -21,7 +21,13 @@ export const exercises = [
     description: "Ejercicio de aislamiento para cuádriceps",
   },
   {
-    name: "Curl femoral",
+    name: "Curl femoral sentado",
+    muscleGroup: "piernas",
+    equipment: "máquina",
+    description: "Ejercicio de aislamiento para isquiotibiales",
+  },
+  {
+    name: "Curl femoral acostado",
     muscleGroup: "piernas",
     equipment: "máquina",
     description: "Ejercicio de aislamiento para isquiotibiales",
@@ -88,8 +94,32 @@ export const exercises = [
     equipment: "máquina",
     description: "Alternativa de elevaciones de pantorrilla",
   },
+  {
+    name: "Patada para glúteo en polea",
+    muscleGroup: "glúteos",
+    equipment: "máquina",
+    description: "Ejercicio de aislamiento para glúteos.",
+  },
+  {
+    name: "Peso muerto con mancuernas",
+    muscleGroup: "piernas",
+    equipment: "mancuernas",
+    description: "Ejercicio compuesto para espalda baja y piernas.",
+  },
+  {
+    name: "Sentadilla Hack",
+    muscleGroup: "piernas",
+    equipment: "máquina",
+    description: "Ejercicio guiado para enfatizar cuádriceps y glúteos.",
+  },
+  {
+    name: "Sentadilla en Smith",
+    muscleGroup: "piernas",
+    equipment: "máquina",
+    description: "Variación de la sentadilla para un control más guiado.",
+  },
 
-  // Chest Exercises
+  // Pecho
   {
     name: "Press de banca",
     muscleGroup: "pecho",
@@ -113,6 +143,12 @@ export const exercises = [
     muscleGroup: "pecho",
     equipment: "peso libre",
     description: "Ejercicio de aislamiento para pecho",
+  },
+  {
+    name: "Aperturas en polea",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description: "Ejercicio de aislamiento para el pecho.",
   },
   {
     name: "Fondos en paralelas",
@@ -145,12 +181,6 @@ export const exercises = [
     description: "Variante más libre del press de banca",
   },
   {
-    name: "Press en máquina inclinada",
-    muscleGroup: "pecho",
-    equipment: "máquina",
-    description: "Aislamiento para la parte superior del pecho",
-  },
-  {
     name: "Flexiones de brazos",
     muscleGroup: "pecho",
     equipment: "peso corporal",
@@ -162,34 +192,59 @@ export const exercises = [
     equipment: "peso corporal",
     description: "Variación enfocada en pecho y tríceps",
   },
+  {
+    name: "Press inclinado con mancuernas",
+    muscleGroup: "pecho",
+    equipment: "peso libre",
+    description: "Enfocado en la parte superior del pecho",
+  },
+  {
+    name: "Cruce de poleas alta",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description:
+      "Aislamiento intenso para pectorales con resistencia constante",
+  },
+  {
+    name: "Press declinado en máquina",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description: "Variante controlada para pecho inferior",
+  },
+  {
+    name: "Flexiones con aplauso",
+    muscleGroup: "pecho",
+    equipment: "peso corporal",
+    description: "Variación pliométrica para potencia pectoral",
+  },
+  {
+    name: "Press de pecho en máquina Hammer",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description: "Movimiento compuesto con trayectoria guiada",
+  },
+  {
+    name: "Peck Deck",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description: "Ejercicio guiado para trabajar el pecho con amplitud.",
+  },
+  {
+    name: "Peck Fly",
+    muscleGroup: "pecho",
+    equipment: "máquina",
+    description:
+      "Ejercicio guiado para aislar y desarrollar los músculos del pecho.",
+  },
 
-  // Forearm Exercises
+  // Espalda
   {
-    name: "Curl de muñeca con barra",
-    muscleGroup: "antebrazo",
-    equipment: "peso libre",
-    description: "Aislamiento para flexores del antebrazo",
+    name: "Peck Fly Invertido",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description:
+      "Ejercicio para fortalecer los deltoides posteriores y la parte superior de la espalda, utilizando una máquina guiada.",
   },
-  {
-    name: "Curl de muñeca inverso",
-    muscleGroup: "antebrazo",
-    equipment: "peso libre",
-    description: "Aislamiento para extensores del antebrazo",
-  },
-  {
-    name: "Sujeción con agarre",
-    muscleGroup: "antebrazo",
-    equipment: "peso libre",
-    description: "Ejercicio isométrico para mejorar fuerza de agarre",
-  },
-  {
-    name: "Farmer's Walk",
-    muscleGroup: "antebrazo",
-    equipment: "peso libre",
-    description: "Trabajo de antebrazo y agarre cargando pesas al caminar",
-  },
-
-  // Back Exercises
   {
     name: "Dominadas",
     muscleGroup: "espalda",
@@ -262,8 +317,37 @@ export const exercises = [
     equipment: "peso libre",
     description: "Variante de remo para dorsal y trapecios",
   },
-
-  // Shoulder Exercises
+  {
+    name: "Remo con cable sentado",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description: "Ejercicio compuesto para dorsales y trapecios",
+  },
+  {
+    name: "Jalón al pecho con agarre neutro",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description: "Variación que reduce estrés en hombros",
+  },
+  {
+    name: "Peso muerto con trampa",
+    muscleGroup: "espalda",
+    equipment: "peso libre",
+    description: "Desarrollo completo de espalda y cadena posterior",
+  },
+  {
+    name: "Remo invertido en smith",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description: "Versión estabilizada para espalda media",
+  },
+  {
+    name: "Pull-over en polea",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description: "Aislamiento de dorsales con resistencia variable",
+  },
+  // Hombro
   {
     name: "Press militar",
     muscleGroup: "hombros",
@@ -301,7 +385,7 @@ export const exercises = [
     description: "Ejercicio compuesto para hombros y trapecios",
   },
 
-  // Arm Exercises
+  // Brazo
   {
     name: "Curl de bíceps con barra",
     muscleGroup: "brazos",
@@ -331,6 +415,18 @@ export const exercises = [
     muscleGroup: "brazos",
     equipment: "peso libre",
     description: "Ejercicio de aislamiento para tríceps",
+  },
+  {
+    name: "Extensión de codo en polea",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Ejercicio de aislamiento para tríceps.",
+  },
+  {
+    name: "Extensión vertical con mancuerna",
+    muscleGroup: "brazos",
+    equipment: "mancuerna",
+    description: "Ejercicio para desarrollar la parte larga del tríceps.",
   },
   {
     name: "Press francés",
@@ -375,8 +471,91 @@ export const exercises = [
     equipment: "peso libre",
     description: "Variante del press francés para tríceps",
   },
-
-  // Core Exercises
+  {
+    name: "Press cerrado en smith",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Variante de press para énfasis en tríceps",
+  },
+  {
+    name: "Extensión de tríceps en polea con soga",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Aislamiento completo con rango extendido",
+  },
+  {
+    name: "Curl inverso con barra",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Enfocado en antebrazos y braquiorradial",
+  },
+  {
+    name: "Curl de muñeca giratorio",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Desarrollo completo de antebrazos con rotación",
+  },
+  {
+    name: "Curl predicador en máquina",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Aislamiento de bíceps con soporte mecánico",
+  },
+  {
+    name: "Extensiones tras nuca con disco",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Ejercicio unilateral para tríceps largo",
+  },
+  {
+    name: "Curl de martillo en polea baja",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Resistencia constante para braquial y antebrazos",
+  },
+  {
+    name: "Farmer's Walk con mancuernas",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Desarrollo de agarre y antebrazos con carga",
+  },
+  {
+    name: "Press de tríceps en máquina",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Movimiento guiado para cabeza medial del tríceps",
+  },
+  {
+    name: "Curl de bíceps en máquina Scott",
+    muscleGroup: "brazos",
+    equipment: "máquina",
+    description: "Aislamiento máximo con soporte para bíceps",
+  },
+  {
+    name: "Curl de muñeca con barra",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Aislamiento para flexores del antebrazo",
+  },
+  {
+    name: "Curl de muñeca inverso",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Aislamiento para extensores del antebrazo",
+  },
+  {
+    name: "Sujeción con agarre",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Ejercicio isométrico para mejorar fuerza de agarre",
+  },
+  {
+    name: "Farmer's Walk",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Trabajo de antebrazo y agarre cargando pesas al caminar",
+  },
+  // Abdomen
   {
     name: "Plancha",
     muscleGroup: "core",
