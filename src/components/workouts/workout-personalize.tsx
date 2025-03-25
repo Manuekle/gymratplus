@@ -22,6 +22,8 @@ import {
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
 import { ScrollArea } from "../ui/scroll-area";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
 
 interface Exercise {
   id: string;
@@ -35,6 +37,7 @@ export function WorkoutPersonalize() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [muscleFilter, setMuscleFilter] = useState("all");
+  const [name, setName] = useState("");
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -74,22 +77,24 @@ export function WorkoutPersonalize() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ exerciseIds: selectedExercises }),
+        body: JSON.stringify({
+          exerciseIds: selectedExercises,
+          name: name || "Entrenamiento Personalizado", // Pass the name, with a default if empty
+        }),
       });
 
       if (!response.ok) {
-        const errorData = await response.json(); // Obtener detalles del error de la API
+        const errorData = await response.json();
         throw new Error(
           errorData.details || "Failed to create personalized workout"
-        ); // Usar detalles del error o mensaje genérico
+        );
       }
 
-      // const result = await response.json();
-      // setWorkoutResult(result);
       toast.success("Entrenamiento creado con éxito");
+      window.location.reload();
     } catch (error) {
       console.error("Error creating personalized workout:", error);
-      toast.error("Error al crear el entrenamiento"); // Mostrar el mensaje de error
+      toast.error("Error al crear el entrenamiento");
     } finally {
       setSubmitting(false);
     }
@@ -124,23 +129,37 @@ export function WorkoutPersonalize() {
               Crea tu plan de entrenamiento personalizado
             </DialogDescription>
           </DialogHeader>
-          <div className="mb-4">
-            <Select value={muscleFilter} onValueChange={setMuscleFilter}>
-              <SelectTrigger className="w-full text-xs md:text-sm">
-                <SelectValue placeholder="Filtrar por grupo muscular" />
-              </SelectTrigger>
-              <SelectContent>
-                {muscleGroups.map((group) => (
-                  <SelectItem
-                    className="text-xs md:text-sm"
-                    key={group}
-                    value={group}
-                  >
-                    {group === "all" ? "Todos" : group}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="mb-4 flex flex-col gap-4">
+            <div className="space-y-2">
+              <Label className="text-xs md:text-sm" htmlFor="workout-name">
+                Nombre del entrenamiento
+              </Label>
+              <Input
+                className="text-xs md:text-sm"
+                id="workout-name"
+                placeholder="Ej: Mi rutina de hipertrofia"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Select value={muscleFilter} onValueChange={setMuscleFilter}>
+                <SelectTrigger className="w-full text-xs md:text-sm">
+                  <SelectValue placeholder="Filtrar por grupo muscular" />
+                </SelectTrigger>
+                <SelectContent>
+                  {muscleGroups.map((group) => (
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      key={group}
+                      value={group}
+                    >
+                      {group === "all" ? "Todos" : group}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           {loading ? (
             <p>Cargando ejercicios...</p>
@@ -168,7 +187,7 @@ export function WorkoutPersonalize() {
           <DialogFooter>
             <Button
               size="sm"
-              className="text-xs"
+              className="text-xs px-4 mt-4"
               onClick={handleSubmit}
               disabled={submitting || selectedExercises.length === 0}
             >
