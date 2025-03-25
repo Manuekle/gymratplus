@@ -157,11 +157,34 @@ export async function POST() {
         dailyFatTarget: profile.dailyFatTarget ?? undefined,
       };
 
-      const nutritionPlan = await createNutritionPlan(nutritionProfile);
+      const existingRecommendation = await prisma.foodRecommendation.findFirst({
+        where: { userId: session.user.id },
+      });
+
+      let foodRecommendation;
+
+      if (!existingRecommendation) {
+        const nutritionPlan = await createNutritionPlan(nutritionProfile);
+        const { macros, meals, calorieTarget } = nutritionPlan;
+
+        foodRecommendation = await prisma.foodRecommendation.create({
+          data: {
+            userId: session.user.id,
+            macros: JSON.parse(JSON.stringify(macros)), // Convert to plain JSON
+            meals: JSON.parse(JSON.stringify(meals)), // Convert to plain JSON
+            calorieTarget: calorieTarget ?? 0, // Asigna un valor predeterminado si es undefined
+          },
+        });
+
+        console.log("Plan de nutrición creado");
+      } else {
+        console.log("El usuario ya tiene una recomendación de comida");
+        foodRecommendation = existingRecommendation; // Usa el existente
+      }
 
       return NextResponse.json({
         workoutPlan,
-        nutritionPlan,
+        foodRecommendation,
         recommendations: generateRecommendations(profile, null, weightHistory),
       });
     }
@@ -220,9 +243,22 @@ export async function POST() {
 
     const nutritionPlan = await createNutritionPlan(nutritionProfile);
 
+    const { macros, meals, calorieTarget } = nutritionPlan;
+
+    const foodRecommendation = await prisma.foodRecommendation.create({
+      data: {
+        userId: session.user.id,
+        macros: JSON.parse(JSON.stringify(macros)), // Convert to plain JSON
+        meals: JSON.parse(JSON.stringify(meals)), // Convert to plain JSON
+        calorieTarget: calorieTarget ?? 0, // Asigna un valor predeterminado si es undefined
+      },
+    });
+
+    console.log("plan de nutri");
+
     return NextResponse.json({
       workoutPlan,
-      nutritionPlan,
+      foodRecommendation,
       recommendations: generateRecommendations(profile, null, weightHistory),
     });
   } catch (error) {

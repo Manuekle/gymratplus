@@ -38,27 +38,29 @@ model Session {
 }
 
 model User {
-  id               String             @id @default(cuid())
-  name             String?
-  email            String?            @unique
-  experienceLevel  String?
-  emailVerified    DateTime?
-  image            String?
-  password         String?
-  accounts         Account[]
-  sessions         Session[]
-  profile          Profile?
-  workouts         Workout[]
-  workoutSessions  WorkoutSession[]
-  notifications    Notification[]
-  customFoods      Food[]
-  customRecipes    Recipe[] // Nuevo: relación con recetas personalizadas
-  mealLogs         MealLog[]
-  weights          Weight[]
-  createdAt        DateTime           @default(now())
-  updatedAt        DateTime           @updatedAt
-  ExerciseProgress ExerciseProgress[]
-  Goal             Goal[]
+  id                  String               @id @default(cuid())
+  name                String?
+  email               String?              @unique
+  experienceLevel     String?
+  emailVerified       DateTime?
+  image               String?
+  password            String?
+  accounts            Account[]
+  sessions            Session[]
+  profile             Profile?
+  workouts            Workout[]
+  workoutSessions     WorkoutSession[]
+  notifications       Notification[]
+  customFoods         Food[]
+  customRecipes       Recipe[] // Nuevo: relación con recetas personalizadas
+  mealLogs            MealLog[]
+  weights             Weight[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  ExerciseProgress    ExerciseProgress[]
+  Goal                Goal[]
+  foodRecommendations FoodRecommendation[]
+  foodPlans           FoodPlan[]
 }
 
 model Profile {
@@ -404,4 +406,51 @@ model SetSession {
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+}
+
+model FoodRecommendation {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date          DateTime @default(now())
+  macros        Json // Stores protein, carbs, fat, description
+  meals         Json // Stores breakfast, lunch, dinner, snacks with their entries
+  calorieTarget Int
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model FoodPlan {
+  id            String           @id @default(cuid())
+  userId        String
+  user          User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  goal          String // e.g., "bulking", "cutting", "maintenance"
+  calorieTarget Int
+  protein       Int // in grams
+  carbs         Int // in grams
+  fat           Int // in grams
+  isActive      Boolean          @default(false)
+  supplements   PlanSupplement[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@index([userId])
+}
+
+model PlanSupplement {
+  id          String   @id @default(cuid())
+  foodPlanId  String
+  foodPlan    FoodPlan @relation(fields: [foodPlanId], references: [id], onDelete: Cascade)
+  name        String
+  dosage      String
+  frequency   String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([foodPlanId])
 }

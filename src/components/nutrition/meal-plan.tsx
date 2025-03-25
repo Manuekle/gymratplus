@@ -17,7 +17,14 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
-import { FrenchFries02Icon, RiceBowl01Icon, SteakIcon } from "hugeicons-react";
+import {
+  // Apple01Icon,
+  FrenchFries02Icon,
+  // NoodlesIcon,
+  RiceBowl01Icon,
+  SteakIcon,
+} from "hugeicons-react";
+// import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
 // Tipos para el plan de comidas
 export type Food = {
@@ -66,12 +73,16 @@ export type NutritionPlanType = {
 };
 
 interface MealPlanProps {
-  nutritionPlan: NutritionPlanType;
+  foodRecommendation: NutritionPlanType;
   isLoading?: boolean;
 }
 
-export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
+export function MealPlan({
+  foodRecommendation,
+  isLoading = false,
+}: MealPlanProps) {
   const { t } = useTranslation("common");
+  console.log(foodRecommendation);
 
   if (isLoading) {
     return <MealPlanSkeleton />;
@@ -96,7 +107,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
   //   },
   // };
 
-  const translatedText = t(nutritionPlan.macros.description);
+  const translatedText = t(foodRecommendation.macros.description);
 
   return (
     <div className="space-y-4">
@@ -117,7 +128,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                   <div>
                     <p className="text-xs text-muted-foreground">Proteínas</p>
                     <p className="text-md font-medium">
-                      {nutritionPlan.macros.protein}
+                      {foodRecommendation.macros.protein}
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
@@ -134,7 +145,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                       Carbohidratos
                     </p>
                     <p className="text-md font-medium">
-                      {nutritionPlan.macros.carbs}
+                      {foodRecommendation.macros.carbs}
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
@@ -149,7 +160,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
                   <div>
                     <p className="text-xs text-muted-foreground">Grasas</p>
                     <p className="text-md font-medium">
-                      {nutritionPlan.macros.fat}
+                      {foodRecommendation.macros.fat}
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
@@ -161,8 +172,8 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
           </div>
         </CardContent>
       </Card>
-
-      {/* <Tabs defaultValue="breakfast" className="w-full">
+      {/* 
+      <Tabs defaultValue="breakfast" className="w-full">
         <TabsList className="grid grid-cols-4 w-full ">
           <TabsTrigger value="breakfast">
             {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
@@ -178,7 +189,7 @@ export function MealPlan({ nutritionPlan, isLoading = false }: MealPlanProps) {
           </TabsTrigger>
         </TabsList>
 
-        {Object.entries(nutritionPlan.meals).map(([key, meal]) => (
+        {Object.entries(foodRecommendation.meals).map(([key, meal]) => (
           <TabsContent key={key} value={key === "snacks" ? "snack" : key}>
             <Card>
               <CardHeader>

@@ -35,7 +35,7 @@ export type Recommendations = {
       }>;
     }>;
   };
-  nutritionPlan: {
+  foodRecommendation: {
     macros: {
       protein: string;
       carbs: string;
@@ -281,7 +281,7 @@ export default function RecommendationsComponent() {
 
               <TabsContent value="nutrition" className="mt-0">
                 <MealPlan
-                  nutritionPlan={recommendations.nutritionPlan}
+                  foodRecommendation={recommendations.foodRecommendation}
                   isLoading={isLoading}
                 />
               </TabsContent>

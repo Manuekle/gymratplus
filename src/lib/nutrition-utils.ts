@@ -30,28 +30,6 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
     return foods;
   }
 
-  // const createdFoods = await prisma.$transaction(
-  //   foodsToCreate.map((food) => prisma.food.create({ data: food }))
-  // );
-
-  // if (dietaryPreference === "vegetarian") {
-  //   return createdFoods.filter(
-  //     (food) =>
-  //       !food.name.toLowerCase().includes("pollo") &&
-  //       !food.name.toLowerCase().includes("carne") &&
-  //       !food.name.toLowerCase().includes("pescado") &&
-  //       !food.name.toLowerCase().includes("salmón")
-  //   );
-  // } else if (dietaryPreference === "keto") {
-  //   return createdFoods.filter(
-  //     (food) =>
-  //       food.carbs < 10 ||
-  //       food.category === "proteína" ||
-  //       food.category === "grasa"
-  //   );
-  // }
-
-  // return createdFoods;
   // Verificar si la tabla food está vacía
   const foodCount = await prisma.food.count();
 
@@ -205,6 +183,15 @@ export async function createNutritionPlan(
   const translate = (key: string) => {
     return translationDictionary[key] ?? key;
   };
+
+  // const foodRecommendation = await prisma.foodRecommendation.create({
+  //   data: {
+  //     userId: session.user.id,
+  //     macros,
+  //     meals,
+  //     calorieTarget,
+  //   },
+  // });Tu plan
 
   // Return the complete nutrition plan
   return {
@@ -444,17 +431,3 @@ async function createMealLog(
 
   return mealLog;
 }
-
-// Helper function to get text representation of goal
-// function getGoalText(goal: string) {
-//   switch (goal) {
-//     case "lose-weight":
-//       return "weight loss";
-//     case "maintain":
-//       return "maintenance";
-//     case "gain-muscle":
-//       return "muscle gain";
-//     default:
-//       return goal;
-//   }
-// }
