@@ -131,7 +131,7 @@ export async function POST() {
               adherence,
               profile.goal || "default-goal"
             ),
-            restTime: we.restTime,
+            restTime: we.restTime ? Number(we.restTime) : null, // Convertimos `restTime` a número o dejamos `null`
             notes: we.notes || "General",
           }))
         ),
