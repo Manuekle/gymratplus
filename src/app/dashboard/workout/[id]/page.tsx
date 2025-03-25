@@ -67,7 +67,7 @@ export default function WorkoutDetail() {
 
   return (
     <div>
-      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+      <div className="mb-4 flex flex-row justify-between w-full items-center gap-2">
         <Button
           variant="outline"
           className="text-xs"
