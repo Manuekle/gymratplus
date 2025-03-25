@@ -9,7 +9,6 @@ import {
   createBackBicepsWorkout,
   createShoulderWorkout,
   createCoreWorkout,
-  createForearmWorkout,
 } from "@/lib/workout-utils";
 
 export async function GET() {
@@ -67,9 +66,6 @@ export async function POST(req: Request) {
         break;
       case "shoulder":
         await createShoulderWorkout(workout.id, exercises, goal);
-        break;
-      case "forearm":
-        await createForearmWorkout(workout.id, exercises, goal);
         break;
       case "core":
         await createCoreWorkout(workout.id, exercises, goal);
