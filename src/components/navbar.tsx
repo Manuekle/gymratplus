@@ -21,31 +21,22 @@ export function Navbar() {
   const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
 
-  // Efecto para detectar el scroll
   useEffect(() => {
     const handleScroll = () => {
-      // Establecer un umbral de scroll (por ejemplo, 50px)
       const isScrolled = window.scrollY > 50;
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled);
-      }
+      setScrolled(isScrolled);
     };
 
-    // Agregar el listener de scroll
     window.addEventListener("scroll", handleScroll);
-
-    // Limpiar el listener cuando el componente se desmonte
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, [scrolled]);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <div
-      className={`${
+      className={`fixed top-0 left-0 right-0 z-50 border-b border-border/40 transition-all duration-300 ${
         scrolled
-          ? "fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-background/80 shadow-md transition-all duration-300"
-          : "border-b bg-background transition-all duration-300"
+          ? "bg-background/80 backdrop-blur-md shadow-sm"
+          : "bg-background/0 backdrop-blur-0 shadow-none"
       }`}
     >
       <div className="flex h-16 items-center px-4 container mx-auto">

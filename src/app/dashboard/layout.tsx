@@ -24,7 +24,7 @@ export default function DashboardLayout({
         <CustomSonner position="top-center" />
         <ProfileCheck />
         <Navbar />
-        <div className="container mx-auto py-10 px-4">
+        <div className="container mx-auto py-10 px-4 mt-16">
           <DashboardHeader />
           <div className="mt-6">{children}</div>
         </div>
