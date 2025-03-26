@@ -114,6 +114,7 @@ export default function NotificationsPage() {
                   key={type}
                   checked={selectedTypes.includes(type)}
                   onCheckedChange={() => toggleType(type)}
+                  className="text-xs md:text-sm capitalize"
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </DropdownMenuCheckboxItem>
