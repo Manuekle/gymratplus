@@ -1,3 +1,5 @@
+import AnimatedLayout from "@/components/layouts/animated-layout";
+
 export const metadata = {
   title: "Iniciar Sesión - GymRat+",
   description:
@@ -14,5 +16,5 @@ export default function SignInLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AnimatedLayout>{children}</AnimatedLayout>;
 }
