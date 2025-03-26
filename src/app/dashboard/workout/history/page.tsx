@@ -20,7 +20,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 // import { Icons } from "@/components/icons";
 
-export default function WorkoutHistory() {
+export default function WorkoutHistoryPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([]);

@@ -52,7 +52,7 @@ interface Set {
   isDropSet?: boolean;
 }
 
-export default function ActiveWorkout() {
+export default function ActiveWorkoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);

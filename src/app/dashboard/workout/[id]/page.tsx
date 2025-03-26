@@ -36,7 +36,7 @@ interface Workout {
   }[];
 }
 
-export default function WorkoutDetail() {
+export default function WorkouPage() {
   const { id } = useParams();
   const router = useRouter();
   const { data: session } = useSession();

@@ -31,7 +31,7 @@ interface UserProfile {
   };
 }
 
-export default function WorkoutPage() {
+export default function WorkoutsPage() {
   const { data: session } = useSession();
 
   const [user, setUser] = useState<UserProfile | null>(null);
