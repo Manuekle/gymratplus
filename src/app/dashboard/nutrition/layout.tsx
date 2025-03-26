@@ -1,3 +1,5 @@
+import AnimatedLayout from "@/components/layouts/animated-layout";
+
 export const metadata = {
   title: "Nutrición - Dashboard - GymRat+",
   description: "Seguimiento de tu dieta, calorías y macronutrientes diarios",
@@ -10,5 +12,5 @@ export default function NutritionLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AnimatedLayout>{children}</AnimatedLayout>;
 }

@@ -1,3 +1,5 @@
+import AnimatedLayout from "@/components/layouts/animated-layout";
+
 export const metadata = {
   title: "Salud - Dashboard - GymRat+",
   description: "Monitorea tus métricas de salud y bienestar general",
@@ -9,5 +11,5 @@ export default function HealthLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AnimatedLayout>{children}</AnimatedLayout>;
 }

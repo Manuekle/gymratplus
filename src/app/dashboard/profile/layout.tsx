@@ -1,3 +1,5 @@
+import AnimatedLayout from "@/components/layouts/animated-layout";
+
 export const metadata = {
   title: "Perfil - Dashboard - GymRat+",
   description: "Gestiona tu información personal y preferencias de cuenta",
@@ -9,5 +11,5 @@ export default function ProfileLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AnimatedLayout>{children}</AnimatedLayout>;
 }

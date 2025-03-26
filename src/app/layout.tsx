@@ -7,6 +7,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import RedisInitializer from "@/components/init/redis-initializer";
+import { motion, AnimatePresence } from "framer-motion";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -80,7 +81,18 @@ export default function RootLayout({
         <Analytics />
         <RedisInitializer />
         <AuthProvider>
-          <ThemeProvider>{children}</ThemeProvider>
+          <ThemeProvider>
+            <AnimatePresence mode="wait">
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {children}
+              </motion.div>
+            </AnimatePresence>
+          </ThemeProvider>
         </AuthProvider>
       </body>
     </html>

@@ -1,3 +1,5 @@
+import AnimatedLayout from "@/components/layouts/animated-layout";
+
 export const metadata = {
   title: "Notificaciones - Dashboard - GymRat+",
   description: "Revisa tus alertas, mensajes y actualizaciones importantes",
@@ -13,5 +15,5 @@ export default function NotificationsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <AnimatedLayout>{children}</AnimatedLayout>;
 }
