@@ -189,11 +189,12 @@ export default function WorkoutTimerFloat({
                 </span>
               </div>
               <Button
+                size="icon"
                 className="p-1 rounded-sm"
                 onClick={() => setIsMinimized(true)}
               >
                 <ArrowExpandIcon
-                  size={16}
+                  size={14}
                   className="text-white dark:text-black"
                 />
               </Button>
@@ -206,7 +207,12 @@ export default function WorkoutTimerFloat({
             </div>
 
             <div className="flex justify-between">
-              <Button className="p-1" onClick={togglePause}>
+              <Button
+                size="sm"
+                variant="default"
+                className="p-1"
+                onClick={togglePause}
+              >
                 {isPaused ? (
                   <PlayIcon size={16} className="text-white dark:text-black" />
                 ) : (
@@ -215,10 +221,11 @@ export default function WorkoutTimerFloat({
               </Button>
 
               <Button
-                className="bg-[#DE3163] p-1 rounded-sm"
+                size="sm"
+                className="text-xs px-4 bg-destructive dark:bg-[#DE3163] dark:text-white"
                 onClick={() => setShowConfirmDialog(true)}
               >
-                <Cancel01Icon size={16} className="text-white" />
+                <Cancel01Icon size={16} />
               </Button>
             </div>
           </div>
