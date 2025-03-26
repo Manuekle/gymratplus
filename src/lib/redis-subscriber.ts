@@ -179,11 +179,18 @@ export async function initNotificationSubscriber() {
     };
 
     // Set up interval for polling
-    const notificationInterval = setInterval(checkForNotifications, 5000); // Check every 5 seconds
-    const waterIntakeInterval = setInterval(checkWaterIntake, 5000);
-    const workoutInterval = setInterval(checkWorkoutNotifications, 5000);
+    const POLLING_INTERVAL = 15000; // 15 segundos
+    const notificationInterval = setInterval(
+      checkForNotifications,
+      POLLING_INTERVAL
+    );
+    const waterIntakeInterval = setInterval(checkWaterIntake, POLLING_INTERVAL);
+    const workoutInterval = setInterval(
+      checkWorkoutNotifications,
+      POLLING_INTERVAL
+    );
 
-    console.log("Redis polling initialized");
+    console.log("Redis polling initialized with 15-second intervals");
 
     // Return a function to clean up intervals if needed
     return () => {

@@ -11,6 +11,63 @@ import { redis } from "@/lib/redis";
 
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
+// Cache en memoria para datos de usuario
+const userDataCache = new Map<
+  string,
+  {
+    data: Record<string, string | undefined>;
+    timestamp: number;
+  }
+>();
+
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos en milisegundos
+
+// Función helper para obtener datos de usuario con caché
+async function getUserDataWithCache(userId: string) {
+  const cached = userDataCache.get(userId);
+  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+    return cached.data;
+  }
+
+  let userData = (await redis.hgetall(`user:${userId}:data`)) as Record<
+    string,
+    string | undefined
+  >;
+
+  if (!userData || Object.keys(userData).length === 0) {
+    const userFromDB = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        name: true,
+        email: true,
+        experienceLevel: true,
+        image: true,
+      },
+    });
+
+    if (userFromDB) {
+      userData = {
+        name: userFromDB.name ?? "",
+        email: userFromDB.email ?? "",
+        experienceLevel: userFromDB.experienceLevel ?? "",
+        image: userFromDB.image ?? "",
+      };
+
+      await redis.hmset(`user:${userId}:data`, userData);
+      await redis.expire(`user:${userId}:data`, 60 * 60 * 24); // 24 horas
+    }
+  }
+
+  if (userData) {
+    userDataCache.set(userId, {
+      data: userData,
+      timestamp: Date.now(),
+    });
+  }
+
+  return userData;
+}
+
 async function getUserIdFromSession() {
   // Esta función es un placeholder. Implementa la lógica adecuada
   // para obtener el userId de la sesión actual en el contexto de servidor.
@@ -147,41 +204,13 @@ export const authOptions: NextAuthOptions = {
           ex: 60 * 60 * 24 * 7, // Expira en 7 días
         });
 
-        // Obtener datos básicos desde Redis
-        let userData = (await redis.hgetall(
-          `user:${session.user.id}:data`
-        )) as Record<string, string | undefined>;
+        // Obtener datos básicos usando el sistema de caché
+        const userData = await getUserDataWithCache(session.user.id);
 
-        if (!userData || Object.keys(userData).length === 0) {
-          // Si no hay datos en Redis, obtenerlos de la BD
-          const userFromDB = await prisma.user.findUnique({
-            where: { id: session.user.id },
-            select: {
-              name: true,
-              email: true,
-              experienceLevel: true,
-              image: true,
-            },
-          });
-
-          if (userFromDB) {
-            userData = {
-              name: userFromDB.name ?? "",
-              email: userFromDB.email ?? "",
-              experienceLevel: userFromDB.experienceLevel ?? "",
-              image: userFromDB.image ?? "",
-            };
-
-            // Guardar en Redis para futuras consultas rápidas
-            await redis.hmset(`user:${session.user.id}:data`, userData);
-            await redis.expire(`user:${session.user.id}:data`, 60 * 60 * 24); // 24 horas
-          }
-        }
-
-        session.user.name = userData.name ?? "";
-        session.user.email = userData.email ?? "";
-        session.user.experienceLevel = userData.experienceLevel ?? "";
-        session.user.image = userData.image ?? "";
+        session.user.name = userData?.name ?? "";
+        session.user.email = userData?.email ?? "";
+        session.user.experienceLevel = userData?.experienceLevel ?? "";
+        session.user.image = userData?.image ?? "";
 
         // Obtener el perfil del usuario desde Redis o la BD
         let profile: any = await redis.get(`profile:${session.user.id}`);

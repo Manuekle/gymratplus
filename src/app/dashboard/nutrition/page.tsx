@@ -398,17 +398,6 @@ export default function NutritionPage() {
                 </div>
               </div>
             </CardContent>
-            {/* <CardHeader className="pb-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">
-                Consumo de agua
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Seguimiento de consumo de agua diario
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <WaterLog waterIntake={user?.waterIntake ?? 0} />
-            </CardContent> */}
           </Card>
 
           <Card className="col-span-2">

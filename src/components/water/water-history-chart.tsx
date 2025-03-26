@@ -38,17 +38,18 @@ export function WaterHistoryChart({
     );
 
     for (let i = 0; i < 7; i++) {
-      const date = subDays(lastMonday, -i); // Avanza desde el lunes en adelante
+      const date = subDays(lastMonday, -i);
       dates.push({
         date: format(date, "yyyy-MM-dd"),
         formattedDate: format(date, "dd MMM", { locale: es }),
-        dayLabel: format(date, "EEEE", { locale: es }), // Nombre del día en español
+        dayLabel: format(date, "EEEE", { locale: es }),
         liters: 0,
       });
     }
 
     return dates.map((item) => {
-      const historyItem = history.find((h) => {
+      // Encontrar todas las entradas para este día
+      const dayEntries = history.filter((h) => {
         try {
           return isSameDay(parseISO(h.date), parseISO(item.date));
         } catch (e) {
@@ -57,12 +58,20 @@ export function WaterHistoryChart({
         }
       });
 
+      // Tomar el último valor de litros del día (el más alto)
+      const lastEntry = dayEntries.reduce(
+        (last, current) => (current.liters > last.liters ? current : last),
+        { date: item.date, liters: 0 }
+      );
+
       return {
         ...item,
-        liters: historyItem ? historyItem.liters : 0,
+        liters: lastEntry.liters,
       };
     });
   };
+
+  console.log(history);
 
   const { theme, systemTheme } = useTheme();
   const currentTheme = theme === "system" ? systemTheme : theme;
