@@ -412,7 +412,7 @@ export default function NutritionPage() {
           </Card>
 
           <Card className="col-span-2">
-            <CardHeader className="pb-2 flex flex-row justify-between items-start">
+            <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
               <span>
                 <CardTitle className="text-2xl font-bold tracking-tight">
                   Historial de Comidas

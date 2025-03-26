@@ -9,7 +9,10 @@ export default function WorkoutSkeleton() {
           <Skeleton className="h-4 w-full" />
         </Button>
         <span className="flex flex-row gap-4">
-          <Button variant="outline" className="w-full md:w-32">
+          <Button variant="outline" className="w-32">
+            <Skeleton className="h-4 w-full" />
+          </Button>
+          <Button variant="outline" className="w-32">
             <Skeleton className="h-4 w-full" />
           </Button>
         </span>
