@@ -12,7 +12,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 // import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
+  ArrowLeft01Icon,
   ChocolateIcon,
   EggsIcon,
   FrenchFries02Icon,
@@ -29,6 +31,7 @@ import {
   TableRow,
 } from "./ui/table";
 import { Skeleton } from "./ui/skeleton";
+import { Button } from "./ui/button";
 
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
@@ -36,6 +39,7 @@ export default function FoodRecommendations() {
   const [selectedRecommendation, setSelectedRecommendation] =
     useState<any>(null);
   const [foods, setFoods] = useState<Record<string, any>>({});
+  const router = useRouter();
 
   useEffect(() => {
     const fetchRecommendations = async () => {
@@ -305,216 +309,233 @@ export default function FoodRecommendations() {
   };
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="text-2xl font-bold tracking-tight">
-          Tu Plan de Alimentación
-        </CardTitle>
-        <CardDescription className="text-muted-foreground text-xs">
-          Según su perfil, hemos creado planes de nutrición para usted
-        </CardDescription>
-        <div className="flex justify-between items-center">
-          {recommendations.length > 1 && (
-            <div className="flex items-center space-x-2">
-              <span className="text-sm text-muted-foreground">View:</span>
-              <select
-                className="text-sm border rounded p-1"
-                value={selectedRecommendation.id}
-                onChange={(e) => {
-                  const selected = recommendations.find(
-                    (r) => r.id === e.target.value
-                  );
-                  if (selected) {
-                    setSelectedRecommendation(selected);
-                  }
-                }}
-              >
-                {recommendations.map((rec) => (
-                  <option key={rec.id} value={rec.id}>
-                    {new Date(rec.createdAt).toLocaleDateString()}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          {/* <div className="space-y-1">
+    <div>
+      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+        <Button
+          variant="outline"
+          className="text-xs"
+          size="sm"
+          onClick={() => router.push("/dashboard/nutrition")}
+        >
+          <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
+        </Button>
+      </div>
+
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold tracking-tight">
+            Tu Plan de Alimentación
+          </CardTitle>
+          <CardDescription className="text-muted-foreground text-xs">
+            Según su perfil, hemos creado planes de nutrición para usted
+          </CardDescription>
+          <div className="flex justify-between items-center">
+            {recommendations.length > 1 && (
+              <div className="flex items-center space-x-2">
+                <span className="text-sm text-muted-foreground">View:</span>
+                <select
+                  className="text-sm border rounded p-1"
+                  value={selectedRecommendation.id}
+                  onChange={(e) => {
+                    const selected = recommendations.find(
+                      (r) => r.id === e.target.value
+                    );
+                    if (selected) {
+                      setSelectedRecommendation(selected);
+                    }
+                  }}
+                >
+                  {recommendations.map((rec) => (
+                    <option key={rec.id} value={rec.id}>
+                      {new Date(rec.createdAt).toLocaleDateString()}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-3 gap-4 mb-6">
+            {/* <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Protein</p>
             
           </div> */}
-          <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xs text-muted-foreground">Proteínas</h1>
-                  <h2 className="text-md font-medium">
-                    {formatMacro(macros.protein)}
-                  </h2>
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xs text-muted-foreground">Proteínas</h1>
+                    <h2 className="text-md font-medium">
+                      {formatMacro(macros.protein)}
+                    </h2>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
+                    <SteakIcon className="h-6 w-6 text-pink-600 dark:text-pink-300" />
+                  </div>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
-                  <SteakIcon className="h-6 w-6 text-pink-600 dark:text-pink-300" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* <div className="space-y-1">
+              </CardContent>
+            </Card>
+            {/* <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Carbs</p>
             {formatMacro(macros.carbs)}
           </div> */}
-          <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xs text-muted-foreground">
-                    Carbohidratos
-                  </h1>
-                  <h2 className="text-md font-medium">
-                    {formatMacro(macros.carbs)}
-                  </h2>
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xs text-muted-foreground">
+                      Carbohidratos
+                    </h1>
+                    <h2 className="text-md font-medium">
+                      {formatMacro(macros.carbs)}
+                    </h2>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
+                    <RiceBowl01Icon className="h-6 w-6 text-sky-600 dark:text-sky-300" />
+                  </div>
                 </div>
-                <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
-                  <RiceBowl01Icon className="h-6 w-6 text-sky-600 dark:text-sky-300" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          {/* <div className="space-y-1">
+              </CardContent>
+            </Card>
+            {/* <div className="space-y-1">
             <p className="text-sm text-muted-foreground">Fat</p>
             {formatMacro(macros.fat)}
           </div> */}
-          <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <div>
-                  <h1 className="text-xs text-muted-foreground">Grasas</h1>
-                  <h2 className="text-md font-medium">
-                    {formatMacro(macros.fat)}
-                  </h2>
-                </div>
-                <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
-                  <FrenchFries02Icon className="h-6 w-6 text-amber-600 dark:text-amber-300" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="breakfast" className="space-y-4 w-full">
-          <TabsList className="mb-4 flex flex-wrap h-auto gap-4 w-full">
-            <TabsTrigger value="breakfast">
-              {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
-            </TabsTrigger>
-            <TabsTrigger value="lunch">
-              {mealTypes.lunch.icon} {mealTypes.lunch.label}
-            </TabsTrigger>
-            <TabsTrigger value="dinner">
-              {mealTypes.dinner.icon} {mealTypes.dinner.label}
-            </TabsTrigger>
-            <TabsTrigger value="snack">
-              {mealTypes.snack.icon} {mealTypes.snack.label}
-            </TabsTrigger>
-          </TabsList>
-
-          {Object.entries(meals).map(([key, meal]: [string, any]) => (
-            <TabsContent key={key} value={key === "snacks" ? "snack" : key}>
-              <Card>
-                <CardHeader>
-                  <CardTitle>
-                    {
-                      mealTypes[
-                        key === "snacks"
-                          ? "snack"
-                          : (key as keyof typeof mealTypes)
-                      ].label
-                    }
-                  </CardTitle>
-                  <CardDescription>
-                    Calorías: {meal.calories} | Proteínas: {meal.protein}g |
-                    Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="rounded-md border">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Alimento</TableHead>
-                          <TableHead className="w-[100px] text-center">
-                            Cantidad
-                          </TableHead>
-                          <TableHead className="w-[100px] text-center">
-                            Calorías
-                          </TableHead>
-                          <TableHead className="hidden md:table-cell text-center">
-                            Proteínas
-                          </TableHead>
-                          <TableHead className="hidden md:table-cell text-center">
-                            Carbos
-                          </TableHead>
-                          <TableHead className="hidden md:table-cell text-center">
-                            Grasas
-                          </TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {meal.entries.length > 0 ? (
-                          meal.entries.map((entry: any, index: number) => {
-                            const food = foods[entry.foodId] || {
-                              name: `Alimento ${entry.foodId}`,
-                              category: "Desconocido",
-                              calories: 0,
-                              protein: 0,
-                              carbs: 0,
-                              fat: 0,
-                            };
-
-                            return (
-                              <TableRow key={index}>
-                                <TableCell className="font-medium">
-                                  <div className="flex flex-col">
-                                    <span>{food.name}</span>
-                                    <span className="text-xs text-muted-foreground">
-                                      {food.category}
-                                    </span>
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  {Math.round(entry.quantity * 100)}g
-                                </TableCell>
-                                <TableCell className="text-center">
-                                  {Math.round(food.calories * entry.quantity)}
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell text-center">
-                                  {(food.protein * entry.quantity).toFixed(1)}g
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell text-center">
-                                  {(food.carbs * entry.quantity).toFixed(1)}g
-                                </TableCell>
-                                <TableCell className="hidden md:table-cell text-center">
-                                  {(food.fat * entry.quantity).toFixed(1)}g
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={6} className="h-24 text-center">
-                              No hay alimentos registrados para esta comida.
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+              <CardContent>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xs text-muted-foreground">Grasas</h1>
+                    <h2 className="text-md font-medium">
+                      {formatMacro(macros.fat)}
+                    </h2>
                   </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          ))}
-        </Tabs>
-      </CardContent>
-    </Card>
+                  <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
+                    <FrenchFries02Icon className="h-6 w-6 text-amber-600 dark:text-amber-300" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          <Tabs defaultValue="breakfast" className="space-y-4 w-full">
+            <TabsList className="mb-4 flex flex-wrap h-auto gap-4 w-full">
+              <TabsTrigger value="breakfast">
+                {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
+              </TabsTrigger>
+              <TabsTrigger value="lunch">
+                {mealTypes.lunch.icon} {mealTypes.lunch.label}
+              </TabsTrigger>
+              <TabsTrigger value="dinner">
+                {mealTypes.dinner.icon} {mealTypes.dinner.label}
+              </TabsTrigger>
+              <TabsTrigger value="snack">
+                {mealTypes.snack.icon} {mealTypes.snack.label}
+              </TabsTrigger>
+            </TabsList>
+
+            {Object.entries(meals).map(([key, meal]: [string, any]) => (
+              <TabsContent key={key} value={key === "snacks" ? "snack" : key}>
+                <Card>
+                  <CardHeader>
+                    <CardTitle>
+                      {
+                        mealTypes[
+                          key === "snacks"
+                            ? "snack"
+                            : (key as keyof typeof mealTypes)
+                        ].label
+                      }
+                    </CardTitle>
+                    <CardDescription>
+                      Calorías: {meal.calories} | Proteínas: {meal.protein}g |
+                      Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead>Alimento</TableHead>
+                            <TableHead className="w-[100px] text-center">
+                              Cantidad
+                            </TableHead>
+                            <TableHead className="w-[100px] text-center">
+                              Calorías
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell text-center">
+                              Proteínas
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell text-center">
+                              Carbos
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell text-center">
+                              Grasas
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {meal.entries.length > 0 ? (
+                            meal.entries.map((entry: any, index: number) => {
+                              const food = foods[entry.foodId] || {
+                                name: `Alimento ${entry.foodId}`,
+                                category: "Desconocido",
+                                calories: 0,
+                                protein: 0,
+                                carbs: 0,
+                                fat: 0,
+                              };
+
+                              return (
+                                <TableRow key={index}>
+                                  <TableCell className="font-medium">
+                                    <div className="flex flex-col">
+                                      <span>{food.name}</span>
+                                      <span className="text-xs text-muted-foreground">
+                                        {food.category}
+                                      </span>
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    {Math.round(entry.quantity * 100)}g
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    {Math.round(food.calories * entry.quantity)}
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(food.protein * entry.quantity).toFixed(1)}
+                                    g
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(food.carbs * entry.quantity).toFixed(1)}g
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(food.fat * entry.quantity).toFixed(1)}g
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })
+                          ) : (
+                            <TableRow>
+                              <TableCell
+                                colSpan={6}
+                                className="h-24 text-center"
+                              >
+                                No hay alimentos registrados para esta comida.
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+            ))}
+          </Tabs>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

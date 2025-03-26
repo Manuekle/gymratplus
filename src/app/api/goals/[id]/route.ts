@@ -141,3 +141,55 @@ export async function PUT(request: NextRequest) {
     );
   }
 }
+
+// DELETE /api/goals/[id] - Eliminar un objetivo específico
+export async function DELETE(request: NextRequest) {
+  try {
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.email) {
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Usuario no encontrado" },
+        { status: 404 }
+      );
+    }
+
+    // Verificar que el objetivo pertenece al usuario
+    const existingGoal = await prisma.goal.findFirst({
+      where: {
+        id: id,
+        userId: user.id,
+      },
+    });
+
+    if (!existingGoal) {
+      return NextResponse.json(
+        { error: "Objetivo no encontrado" },
+        { status: 404 }
+      );
+    }
+
+    // Eliminar el objetivo
+    await prisma.goal.delete({
+      where: { id: id },
+    });
+
+    return NextResponse.json({ message: "Objetivo eliminado exitosamente" });
+  } catch (error) {
+    console.error("Error al eliminar objetivo:", error);
+    return NextResponse.json(
+      { error: "Error al eliminar objetivo" },
+      { status: 500 }
+    );
+  }
+}

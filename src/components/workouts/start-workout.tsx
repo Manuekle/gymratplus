@@ -222,7 +222,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       <DialogTrigger asChild>
         <Button
           size="sm"
-          className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90"
+          className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90 w-full md:w-auto"
         >
           Comenzar rutina
         </Button>

@@ -4,15 +4,12 @@ import { Button } from "@/components/ui/button";
 export default function WorkoutSkeleton() {
   return (
     <>
-      <div className="mb-4 flex justify-between w-full items-center">
-        <Button variant="outline" className="w-32">
+      <div className="mb-4 flex flex-col md:flex-row justify-between w-full items-center">
+        <Button variant="outline" className="w-full md:w-32">
           <Skeleton className="h-4 w-full" />
         </Button>
         <span className="flex flex-row gap-4">
-          <Button variant="outline" className="w-32">
-            <Skeleton className="h-4 w-full" />
-          </Button>
-          <Button variant="outline" className="w-32">
+          <Button variant="outline" className="w-full md:w-32">
             <Skeleton className="h-4 w-full" />
           </Button>
         </span>

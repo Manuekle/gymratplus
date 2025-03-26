@@ -67,16 +67,16 @@ export default function WorkoutDetail() {
 
   return (
     <div>
-      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-4 md:gap-2">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full md:w-auto"
           size="sm"
           onClick={() => router.push("/dashboard/workout")}
         >
           <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
         </Button>
-        <span className="flex flex-row gap-2">
+        <span className="flex flex-row gap-2 text-xs w-full md:w-auto">
           <StartWorkout workout={workout} />
         </span>
       </div>
@@ -109,7 +109,11 @@ export default function WorkoutDetail() {
           <Tabs defaultValue={workout.days[0]?.day}>
             <TabsList className="mb-4 flex flex-wrap h-auto gap-4 ">
               {workout.days.map((day, index) => (
-                <TabsTrigger key={index} value={day.day} className="flex-1">
+                <TabsTrigger
+                  key={index}
+                  value={day.day}
+                  className="flex-1 text-xs capitalize"
+                >
                   {day.day}
                 </TabsTrigger>
               ))}
