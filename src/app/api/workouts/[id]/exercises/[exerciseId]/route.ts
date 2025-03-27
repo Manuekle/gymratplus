@@ -3,25 +3,22 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
-type RouteParams = {
-  id: string;
-  exerciseId: string;
-};
-
-export async function GET(
-  _request: NextRequest,
-  { params }: { params: RouteParams }
-) {
+export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const exerciseId = pathParts[pathParts.length - 1];
+    const workoutId = pathParts[pathParts.length - 3];
+
     const workoutExercise = await prisma.workoutExercise.findFirst({
       where: {
-        id: params.exerciseId,
-        workoutId: params.id,
+        id: exerciseId,
+        workoutId: workoutId,
         workout: {
           userId: session.user.id,
         },
@@ -55,23 +52,25 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  request: NextRequest,
-  { params }: { params: RouteParams }
-) {
+export async function PUT(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const exerciseId = pathParts[pathParts.length - 1];
+    const workoutId = pathParts[pathParts.length - 3];
+
     const body = await request.json();
     const { sets, reps, restTime, notes } = body;
 
     const workoutExercise = await prisma.workoutExercise.update({
       where: {
-        id: params.exerciseId,
-        workoutId: params.id,
+        id: exerciseId,
+        workoutId: workoutId,
         workout: {
           userId: session.user.id,
         },
@@ -104,20 +103,22 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  _request: NextRequest,
-  { params }: { params: RouteParams }
-) {
+export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const exerciseId = pathParts[pathParts.length - 1];
+    const workoutId = pathParts[pathParts.length - 3];
+
     await prisma.workoutExercise.delete({
       where: {
-        id: params.exerciseId,
-        workoutId: params.id,
+        id: exerciseId,
+        workoutId: workoutId,
         workout: {
           userId: session.user.id,
         },
