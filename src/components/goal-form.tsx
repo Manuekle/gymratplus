@@ -5,7 +5,6 @@ import type React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { CalendarIcon, X } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +25,7 @@ import {
 import { cn } from "@/lib/utils";
 import { useGoals, type Goal, type GoalType } from "@/hooks/use-goals";
 import { Icons } from "./icons";
+import { Calendar02Icon, Cancel01Icon } from "hugeicons-react";
 
 interface GoalFormProps {
   onClose: () => void;
@@ -150,7 +150,7 @@ export default function GoalForm({
           onClick={onClose}
           className="absolute top-4 right-4 text-muted-foreground hover:text-gray-700"
         >
-          <X size={20} />
+          <Cancel01Icon size={20} />
         </Button>
 
         <h2 className="text-2xl font-bold tracking-tight mb-4">
@@ -291,7 +291,7 @@ export default function GoalForm({
                       !startDate && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <Calendar02Icon className="mr-2 h-4 w-4" />
                     {startDate ? (
                       format(startDate, "PPP", { locale: es })
                     ) : (
@@ -322,7 +322,7 @@ export default function GoalForm({
                       !targetDate && "text-muted-foreground"
                     )}
                   >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    <Calendar02Icon className="mr-2 h-4 w-4" />
                     {targetDate ? (
                       format(targetDate, "PPP", { locale: es })
                     ) : (

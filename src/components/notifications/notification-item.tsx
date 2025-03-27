@@ -25,11 +25,19 @@ export function NotificationItem({
     setIsMarking(false);
   };
 
-  // Get icon based on notification type
+  // Get icon based on notification type and title
   const getTypeIcon = () => {
     switch (notification.type) {
       case "workout":
-        return "💪"; // Emoji de músculo
+        // Si el título contiene "racha" o "hito", usar el emoji de fuego
+        if (
+          notification.title.toLowerCase().includes("racha") ||
+          notification.title.toLowerCase().includes("hito")
+        ) {
+          return "🔥";
+        }
+        // Para otros tipos de notificaciones de entrenamiento
+        return "💪";
       case "meal":
         return "🍟"; // Emoji de papas fritas
       case "water":

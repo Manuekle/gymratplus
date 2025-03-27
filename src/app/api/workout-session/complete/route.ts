@@ -6,6 +6,7 @@ import {
   createWorkoutCompletedNotification,
   publishWorkoutNotification,
 } from "@/lib/workout-notifications";
+import { WorkoutStreakService } from "@/lib/workout-streak-service";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -88,6 +89,10 @@ export async function PUT(req: NextRequest) {
       },
       data: { completed: true },
     });
+
+    // Actualizar la racha de entrenamiento
+    const streakService = new WorkoutStreakService();
+    await streakService.updateStreak(session.user.id, true);
 
     // Create notification for workout completion
     try {

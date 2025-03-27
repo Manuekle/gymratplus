@@ -5,7 +5,7 @@ import type React from "react";
 import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { X } from "lucide-react";
+import { Cancel01Icon } from "hugeicons-react";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -108,7 +108,7 @@ export default function ProgressForm({
           onClick={onClose}
           className="absolute top-4 right-4 text-muted-foreground hover:text-gray-700"
         >
-          <X size={20} />
+          <Cancel01Icon size={20} />
         </button>
 
         <h2 className="text-xl font-bold mb-4">

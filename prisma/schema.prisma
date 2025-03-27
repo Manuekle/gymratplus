@@ -55,6 +55,7 @@ model User {
   customRecipes       Recipe[] // Nuevo: relación con recetas personalizadas
   mealLogs            MealLog[]
   weights             Weight[]
+  workoutStreak       WorkoutStreak?
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
   Goal                Goal[]
@@ -334,15 +335,15 @@ model GoalProgress {
 }
 
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String // Nuevo campo para relación con usuario
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) // Nueva relación
-  title     String
-  message   String
-  type      String // workout, meal, water, weight, etc.
-  read      Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  message       String
+  type          String   // "workout", "streak", "rest_day", "achievement", etc.
+  read          Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@index([userId])
 }
@@ -432,4 +433,18 @@ model PlanSupplement {
   updatedAt   DateTime @updatedAt
 
   @@index([foodPlanId])
+}
+
+model WorkoutStreak {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastWorkoutAt DateTime?
+  lastRestDayAt DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([userId])
 }

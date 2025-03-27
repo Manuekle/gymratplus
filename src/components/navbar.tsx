@@ -16,6 +16,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { Badge } from "./ui/badge";
 import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
+import { WorkoutStreak } from "./workout/workout-streak";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -46,6 +47,11 @@ export function Navbar() {
             <Badge variant="outline">Beta</Badge>
           </div>
           <div className="flex flex-row items-center space-x-4">
+            {session?.user?.id && (
+              <div className="">
+                <WorkoutStreak userId={session.user.id} />
+              </div>
+            )}
             <NotificationBell />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
