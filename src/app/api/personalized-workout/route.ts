@@ -3,6 +3,11 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 
+interface DayExercise {
+  exerciseId: string;
+  day: string;
+}
+
 export async function POST(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -11,27 +16,36 @@ export async function POST(request: Request) {
     }
     const userId = (session.user as { id: string }).id;
 
-    const { exerciseIds, name = "Entrenamiento Personalizado" } =
-      await request.json();
+    const {
+      exerciseIds,
+      name = "Entrenamiento Personalizado",
+      days,
+    } = await request.json();
 
     if (
       !exerciseIds ||
       !Array.isArray(exerciseIds) ||
-      exerciseIds.length === 0
+      exerciseIds.length === 0 ||
+      !days ||
+      !Array.isArray(days) ||
+      days.length === 0
     ) {
       return NextResponse.json(
-        { error: "Exercise IDs are required" },
+        { error: "Exercise IDs and days are required" },
         { status: 400 }
       );
     }
 
     const exercises = await prisma.exercise.findMany({
       where: {
-        id: { in: exerciseIds },
+        id: { in: exerciseIds.map((ex: DayExercise) => ex.exerciseId) },
       },
     });
 
-    if (exercises.length !== exerciseIds.length) {
+    if (
+      exercises.length !==
+      new Set(exerciseIds.map((ex: DayExercise) => ex.exerciseId)).size
+    ) {
       return NextResponse.json(
         { error: "One or more exercise IDs are invalid" },
         { status: 400 }
@@ -46,31 +60,20 @@ export async function POST(request: Request) {
       },
     });
 
-    const exercisesByMuscleGroup: Record<string, typeof exercises> =
-      exercises.reduce((acc, exercise) => {
-        if (!acc[exercise.muscleGroup]) {
-          acc[exercise.muscleGroup] = [];
-        }
-        acc[exercise.muscleGroup].push(exercise);
-        return acc;
-      }, {} as Record<string, typeof exercises>);
-
+    // Crear los ejercicios del entrenamiento con sus respectivos días
     await Promise.all(
-      Object.entries(exercisesByMuscleGroup).flatMap(
-        ([muscleGroup, muscleGroupExercises], muscleGroupIndex) =>
-          muscleGroupExercises.map((exercise, exerciseIndex) =>
-            prisma.workoutExercise.create({
-              data: {
-                workoutId: workout.id,
-                exerciseId: exercise.id,
-                sets: 3,
-                reps: 10,
-                restTime: 60,
-                notes: muscleGroup,
-                order: muscleGroupIndex + exerciseIndex,
-              },
-            })
-          )
+      exerciseIds.map((exercise: DayExercise, index: number) =>
+        prisma.workoutExercise.create({
+          data: {
+            workoutId: workout.id,
+            exerciseId: exercise.exerciseId,
+            sets: 3,
+            reps: 10,
+            restTime: 60,
+            notes: exercise.day,
+            order: index,
+          },
+        })
       )
     );
 
@@ -89,8 +92,8 @@ export async function POST(request: Request) {
           name: exercise.exercise.name,
           sets: exercise.sets,
           reps: exercise.reps,
-          restTime: exercise.restTime ?? 60, // Valor por defecto para evitar null
-          notes: exercise.notes ?? "Sin grupo muscular", // Valor por defecto
+          restTime: exercise.restTime ?? 60,
+          notes: exercise.notes ?? "Sin día asignado",
         }));
       });
 

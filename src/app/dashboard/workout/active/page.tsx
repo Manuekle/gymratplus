@@ -78,6 +78,11 @@ export default function ActiveWorkoutPage() {
     Record<string, NodeJS.Timeout>
   >({});
 
+  const [inputValues, setInputValues] = useState<
+    Record<string, { weight: string; reps: string }>
+  >({});
+  const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
+
   // Cargar la sesión de entrenamiento activa
   useEffect(() => {
     const fetchActiveWorkout = async () => {
@@ -195,6 +200,8 @@ export default function ActiveWorkoutPage() {
     // Si es una actualización de "completed", enviar inmediatamente
     if (immediate || data.completed !== undefined) {
       try {
+        setIsUpdating((prev) => ({ ...prev, [setId]: true }));
+
         // Combinar con actualizaciones pendientes
         const combinedData = {
           ...pendingUpdates[setId],
@@ -214,22 +221,46 @@ export default function ActiveWorkoutPage() {
           body: JSON.stringify({ setId, ...combinedData }),
         });
 
-        // Si se marca como completado, iniciar temporizador de descanso
-        if (response.ok && data.completed) {
-          const exercise = workoutSession?.exercises.find((ex) =>
-            ex.sets.some((set) => set.id === setId)
-          );
+        if (response.ok) {
+          // Actualizar los valores de input después de una actualización exitosa
+          if (data.weight !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                weight: data.weight?.toString() || "",
+              },
+            }));
+          }
+          if (data.reps !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
+            }));
+          }
 
-          if (exercise) {
-            const exerciseData = workoutSession!.exercises.find(
-              (ex) => ex.id === exercise.id
+          // Si se marca como completado, iniciar temporizador de descanso
+          if (data.completed) {
+            const exercise = workoutSession?.exercises.find((ex) =>
+              ex.sets.some((set) => set.id === setId)
             );
-            const restTime = exerciseData?.exercise?.restTime || 60;
-            startRestTimer(exercise.id, restTime);
+
+            if (exercise) {
+              const exerciseData = workoutSession!.exercises.find(
+                (ex) => ex.id === exercise.id
+              );
+              const restTime = exerciseData?.exercise?.restTime || 60;
+              startRestTimer(exercise.id, restTime);
+            }
           }
         }
       } catch (error) {
         console.error("Error al actualizar set:", error);
+        toast.error("Error", {
+          description: "No se pudo actualizar el set",
+        });
+      } finally {
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
       }
       return;
     }
@@ -243,6 +274,7 @@ export default function ActiveWorkoutPage() {
     // Configurar un temporizador para enviar la actualización después de un retraso
     const timer = setTimeout(async () => {
       try {
+        setIsUpdating((prev) => ({ ...prev, [setId]: true }));
         const dataToSend = pendingUpdates[setId];
         if (!dataToSend) return;
 
@@ -253,15 +285,42 @@ export default function ActiveWorkoutPage() {
           return updated;
         });
 
-        await fetch("/api/workout-session/set", {
+        const response = await fetch("/api/workout-session/set", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ setId, ...dataToSend }),
         });
+
+        if (response.ok) {
+          // Actualizar los valores de input después de una actualización exitosa
+          if (dataToSend.weight !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                weight: dataToSend.weight?.toString() || "",
+              },
+            }));
+          }
+          if (dataToSend.reps !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                reps: dataToSend.reps?.toString() || "",
+              },
+            }));
+          }
+        }
       } catch (error) {
         console.error("Error al actualizar set:", error);
+        toast.error("Error", {
+          description: "No se pudo actualizar el set",
+        });
+      } finally {
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
       }
-    }, 1000); // Esperar 1 segundo después del último cambio
+    }, 1000);
 
     setDebounceTimers((prev) => ({
       ...prev,
@@ -340,6 +399,25 @@ export default function ActiveWorkoutPage() {
       Object.values(debounceTimers).forEach((timer) => clearTimeout(timer));
     };
   }, [debounceTimers]);
+
+  // En el useEffect inicial, inicializar los valores de input
+  useEffect(() => {
+    if (workoutSession) {
+      const initialInputValues: Record<
+        string,
+        { weight: string; reps: string }
+      > = {};
+      workoutSession.exercises.forEach((exercise) => {
+        exercise.sets.forEach((set) => {
+          initialInputValues[set.id] = {
+            weight: set.weight?.toString() || "",
+            reps: set.reps?.toString() || "",
+          };
+        });
+      });
+      setInputValues(initialInputValues);
+    }
+  }, [workoutSession]);
 
   if (loading) {
     return (
@@ -561,19 +639,27 @@ export default function ActiveWorkoutPage() {
                             type="number"
                             placeholder="Peso"
                             min="0"
-                            value={set.weight || ""}
-                            onChange={(e) =>
+                            value={inputValues[set.id]?.weight || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setInputValues((prev) => ({
+                                ...prev,
+                                [set.id]: { ...prev[set.id], weight: value },
+                              }));
                               updateSet(set.id, {
-                                weight:
-                                  Number.parseFloat(e.target.value) || null,
-                              })
-                            }
+                                weight: value ? Number.parseFloat(value) : null,
+                              });
+                            }}
                             onBlur={() => {
                               if (pendingUpdates[set.id]) {
-                                updateSet(set.id, {}, true); // Forzar envío al perder el foco
+                                updateSet(set.id, {}, true);
                               }
                             }}
-                            disabled={exercise.completed || set.completed}
+                            disabled={
+                              exercise.completed ||
+                              set.completed ||
+                              isUpdating[set.id]
+                            }
                             className="text-sm"
                           />
                         </div>
@@ -582,18 +668,27 @@ export default function ActiveWorkoutPage() {
                             type="number"
                             placeholder="Reps"
                             min="0"
-                            value={set.reps || ""}
-                            onChange={(e) =>
+                            value={inputValues[set.id]?.reps || ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setInputValues((prev) => ({
+                                ...prev,
+                                [set.id]: { ...prev[set.id], reps: value },
+                              }));
                               updateSet(set.id, {
-                                reps: Number.parseInt(e.target.value) || null,
-                              })
-                            }
+                                reps: value ? Number.parseInt(value) : null,
+                              });
+                            }}
                             onBlur={() => {
                               if (pendingUpdates[set.id]) {
-                                updateSet(set.id, {}, true); // Forzar envío al perder el foco
+                                updateSet(set.id, {}, true);
                               }
                             }}
-                            disabled={exercise.completed || set.completed}
+                            disabled={
+                              exercise.completed ||
+                              set.completed ||
+                              isUpdating[set.id]
+                            }
                             className="text-sm"
                           />
                         </div>
