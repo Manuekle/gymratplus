@@ -270,19 +270,31 @@ export function WorkoutPersonalize() {
                     <SelectValue placeholder="Selecciona el tipo de entrenamiento" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="hipertrofia">
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      value="hipertrofia"
+                    >
                       Hipertrofia (6-12 repeticiones por serie)
                     </SelectItem>
-                    <SelectItem value="fuerza">
+                    <SelectItem className="text-xs md:text-sm" value="fuerza">
                       Fuerza (1-6 repeticiones por serie)
                     </SelectItem>
-                    <SelectItem value="perdida_grasa">
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      value="perdida_grasa"
+                    >
                       Pérdida de grasa (Rutinas con alta intensidad)
                     </SelectItem>
-                    <SelectItem value="resistencia">
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      value="resistencia"
+                    >
                       Resistencia (más de 12 repeticiones)
                     </SelectItem>
-                    <SelectItem value="movilidad">
+                    <SelectItem
+                      className="text-xs md:text-sm"
+                      value="movilidad"
+                    >
                       Movilidad y flexibilidad
                     </SelectItem>
                   </SelectContent>
