@@ -15,7 +15,7 @@ import {
 } from "hugeicons-react";
 import { format, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
-import { Badge } from "@/components/ui/badge";
+// import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 // import { Icons } from "@/components/icons";
@@ -392,7 +392,7 @@ export default function WorkoutHistoryPage() {
                             <h4 className="font-semibold text-md tracking-tight">
                               {exercise.exercise.name}
                             </h4>
-                            <Badge
+                            {/* <Badge
                               variant="outline"
                               className={
                                 exercise.completed
@@ -401,7 +401,7 @@ export default function WorkoutHistoryPage() {
                               }
                             >
                               {exercise.completed ? "Completado" : "Incompleto"}
-                            </Badge>
+                            </Badge> */}
                           </div>
 
                           <div className="grid grid-cols-3 gap-2 text-xs font-medium mb-1 text-muted-foreground">
