@@ -279,6 +279,33 @@ function applyMethodology(exercises: any[], methodology: string, goal: string) {
   }
 }
 
+// Función de utilidad para seleccionar ejercicios únicos
+function selectUniqueExercises(
+  exercises: any[],
+  count: number,
+  usedExercises: Set<string> = new Set()
+): any[] {
+  const availableExercises = exercises.filter(
+    (ex) => !usedExercises.has(ex.id)
+  );
+  const selectedExercises: any[] = [];
+
+  // Si no hay suficientes ejercicios disponibles, reutilizar algunos
+  if (availableExercises.length < count) {
+    return exercises.slice(0, count);
+  }
+
+  // Seleccionar ejercicios únicos aleatoriamente
+  while (selectedExercises.length < count && availableExercises.length > 0) {
+    const randomIndex = Math.floor(Math.random() * availableExercises.length);
+    const exercise = availableExercises.splice(randomIndex, 1)[0];
+    selectedExercises.push(exercise);
+    usedExercises.add(exercise.id);
+  }
+
+  return selectedExercises;
+}
+
 // Create a full body workout plan
 export async function createFullBodyWorkout(
   workoutId: string,
@@ -290,6 +317,7 @@ export async function createFullBodyWorkout(
 ) {
   const workoutExercises = [];
   let order = 1;
+  const usedExercises = new Set<string>();
 
   // Filter exercises by muscle group
   const legExercises = exercises.filter((e) => e.muscleGroup === "piernas");
@@ -302,59 +330,86 @@ export async function createFullBodyWorkout(
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
 
   // Determine workout structure based on training frequency
-  const workoutDays = Math.min(trainingFrequency, 3); // Cap at 3 days for full body
+  const workoutDays = Math.min(trainingFrequency, 3);
 
   // Create workout days
   for (let day = 1; day <= workoutDays; day++) {
-    // Define muscle group name for this day
     const muscleGroupName = "Full Body";
-
-    // Get sets and reps based on goal
     const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
     const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
-    // Select exercises for this day with variety across days
-    // Use different exercises for each day to avoid repetition
+    // Seleccionar ejercicios únicos para cada día
+    const selectedLegExercises = selectUniqueExercises(
+      legExercises,
+      1,
+      usedExercises
+    );
+    const selectedChestExercises = selectUniqueExercises(
+      chestExercises,
+      1,
+      usedExercises
+    );
+    const selectedBackExercises = selectUniqueExercises(
+      backExercises,
+      1,
+      usedExercises
+    );
+    const selectedShoulderExercises = selectUniqueExercises(
+      shoulderExercises,
+      1,
+      usedExercises
+    );
+    const selectedArmExercises = selectUniqueExercises(
+      armExercises,
+      1,
+      usedExercises
+    );
+    const selectedCoreExercises = selectUniqueExercises(
+      coreExercises,
+      1,
+      usedExercises
+    );
+
     const dayExercises = [
       {
-        exercise: legExercises[(day - 1) % legExercises.length],
+        exercise: selectedLegExercises[0],
         sets: compoundSettings.sets,
         reps: compoundSettings.reps,
         restTime: compoundSettings.restTime,
         notes: `${muscleGroupName} - Piernas`,
       },
       {
-        exercise: chestExercises[(day - 1) % chestExercises.length],
+        exercise: selectedChestExercises[0],
         sets: compoundSettings.sets,
         reps: compoundSettings.reps,
         restTime: compoundSettings.restTime,
         notes: `${muscleGroupName} - Pecho`,
       },
       {
-        exercise: backExercises[(day - 1) % backExercises.length],
+        exercise: selectedBackExercises[0],
         sets: compoundSettings.sets,
         reps: compoundSettings.reps,
         restTime: compoundSettings.restTime,
         notes: `${muscleGroupName} - Espalda`,
       },
       {
-        exercise: shoulderExercises[(day - 1) % shoulderExercises.length],
+        exercise: selectedShoulderExercises[0],
         sets: isolationSettings.sets,
         reps: isolationSettings.reps,
         restTime: isolationSettings.restTime,
         notes: `${muscleGroupName} - Hombros`,
       },
       {
-        exercise: armExercises[(day - 1) % armExercises.length],
+        exercise: selectedArmExercises[0],
         sets: isolationSettings.sets,
         reps: isolationSettings.reps,
         restTime: isolationSettings.restTime,
         notes: `${muscleGroupName} - Brazos`,
       },
       {
-        exercise: coreExercises[(day - 1) % coreExercises.length],
+        exercise: selectedCoreExercises[0],
         sets: isolationSettings.sets,
-        reps: day === 1 ? 0 : isolationSettings.reps, // Plank on day 1, reps on other days
+        reps: day === 1 ? 0 : isolationSettings.reps,
         restTime: isolationSettings.restTime,
         notes:
           day === 1
@@ -372,7 +427,6 @@ export async function createFullBodyWorkout(
     // Add exercises for this day to the workout
     for (const ex of finalExercises) {
       if (ex.exercise) {
-        // Make sure the exercise exists
         workoutExercises.push({
           workoutId,
           exerciseId: ex.exercise.id,
@@ -393,7 +447,7 @@ export async function createFullBodyWorkout(
       prisma.workoutExercise.create({
         data: {
           ...ex,
-          exerciseId: ex.exerciseId.toString(), // Convert to string
+          exerciseId: ex.exerciseId.toString(),
         },
       })
     )
@@ -567,6 +621,7 @@ export async function createPushPullLegsSplit(
 ) {
   const workoutExercises = [];
   let order = 1;
+  const usedExercises = new Set<string>();
 
   // Filter exercises by muscle group
   const legExercises = exercises.filter((e) => e.muscleGroup === "piernas");
@@ -575,79 +630,80 @@ export async function createPushPullLegsSplit(
   const shoulderExercises = exercises.filter(
     (e) => e.muscleGroup === "hombros"
   );
-  const armExercises = exercises.filter((e) => e.muscleGroup === "brazos");
+  const tricepsExercises = exercises.filter(
+    (e) =>
+      e.muscleGroup === "brazos" && e.name.toLowerCase().includes("tríceps")
+  );
+  const bicepsExercises = exercises.filter(
+    (e) => e.muscleGroup === "brazos" && e.name.toLowerCase().includes("bíceps")
+  );
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
 
-  // Filter triceps and biceps exercises
-  const tricepsExercises = armExercises.filter((e) =>
-    e.name.toLowerCase().includes("tríceps")
-  );
-  const bicepsExercises = armExercises.filter((e) =>
-    e.name.toLowerCase().includes("bíceps")
-  );
-
   // Determine workout structure based on training frequency
-  const workoutDays = Math.min(trainingFrequency, 6); // Cap at 6 days for PPL
+  const workoutDays = Math.min(trainingFrequency, 6);
 
   // Create workout days
   for (let day = 1; day <= workoutDays; day++) {
     const dayType = day % 3; // 1 = Push, 2 = Pull, 0 = Legs
-    const cycleIndex = Math.floor((day - 1) / 3); // 0, 0, 0, 1, 1, 1, ...
+    const cycleIndex = Math.floor((day - 1) / 3);
 
-    // Get sets and reps based on goal
     const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
     const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
 
     let dayExercises = [];
 
     if (dayType === 1) {
-      // Push day (Chest, Shoulders, Triceps)
+      // Push day
       const muscleGroupName = "Pecho y Tríceps";
+      const selectedChestExercises = selectUniqueExercises(
+        chestExercises,
+        3,
+        usedExercises
+      );
+      const selectedShoulderExercises = selectUniqueExercises(
+        shoulderExercises,
+        2,
+        usedExercises
+      );
+      const selectedTricepsExercises = selectUniqueExercises(
+        tricepsExercises.length > 0
+          ? tricepsExercises
+          : exercises.filter((e) => e.muscleGroup === "brazos"),
+        2,
+        usedExercises
+      );
+
       dayExercises = [
         {
-          exercise: chestExercises[cycleIndex % chestExercises.length],
+          exercise: selectedChestExercises[0],
           sets: compoundSettings.sets,
           reps: compoundSettings.reps,
           restTime: compoundSettings.restTime,
           notes: `${muscleGroupName} - Pecho principal`,
         },
         {
-          exercise: chestExercises[(cycleIndex + 3) % chestExercises.length],
+          exercise: selectedChestExercises[1],
           sets: compoundSettings.sets - 1,
           reps: compoundSettings.reps + 2,
           restTime: compoundSettings.restTime - 30,
           notes: `${muscleGroupName} - Pecho secundario`,
         },
         {
-          exercise: shoulderExercises[cycleIndex % shoulderExercises.length],
+          exercise: selectedShoulderExercises[0],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Hombros`,
         },
         {
-          exercise:
-            shoulderExercises[(cycleIndex + 3) % shoulderExercises.length],
-          sets: isolationSettings.sets,
-          reps: isolationSettings.reps,
-          restTime: isolationSettings.restTime,
-          notes: `${muscleGroupName} - Hombros secundario`,
-        },
-        {
-          exercise:
-            tricepsExercises.length > 0
-              ? tricepsExercises[cycleIndex % tricepsExercises.length]
-              : armExercises[cycleIndex % armExercises.length],
+          exercise: selectedTricepsExercises[0],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Tríceps principal`,
         },
         {
-          exercise:
-            tricepsExercises.length > 1
-              ? tricepsExercises[(cycleIndex + 1) % tricepsExercises.length]
-              : armExercises[(cycleIndex + 1) % armExercises.length],
+          exercise: selectedTricepsExercises[1],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
@@ -655,53 +711,52 @@ export async function createPushPullLegsSplit(
         },
       ];
     } else if (dayType === 2) {
-      // Pull day (Back, Biceps)
+      // Pull day
       const muscleGroupName = "Espalda y Bíceps";
+      const selectedBackExercises = selectUniqueExercises(
+        backExercises,
+        3,
+        usedExercises
+      );
+      const selectedBicepsExercises = selectUniqueExercises(
+        bicepsExercises.length > 0
+          ? bicepsExercises
+          : exercises.filter((e) => e.muscleGroup === "brazos"),
+        2,
+        usedExercises
+      );
+
       dayExercises = [
         {
-          exercise: backExercises[cycleIndex % backExercises.length],
+          exercise: selectedBackExercises[0],
           sets: compoundSettings.sets,
           reps: compoundSettings.reps,
           restTime: compoundSettings.restTime,
           notes: `${muscleGroupName} - Espalda principal`,
         },
         {
-          exercise: backExercises[(cycleIndex + 3) % backExercises.length],
+          exercise: selectedBackExercises[1],
           sets: compoundSettings.sets - 1,
           reps: compoundSettings.reps + 2,
           restTime: compoundSettings.restTime - 30,
           notes: `${muscleGroupName} - Espalda secundaria`,
         },
         {
-          exercise: backExercises[(cycleIndex + 6) % backExercises.length],
+          exercise: selectedBackExercises[2],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Espalda aislamiento`,
         },
         {
-          exercise:
-            shoulderExercises[(cycleIndex + 2) % shoulderExercises.length],
-          sets: isolationSettings.sets,
-          reps: isolationSettings.reps,
-          restTime: isolationSettings.restTime,
-          notes: `${muscleGroupName} - Trapecios`,
-        },
-        {
-          exercise:
-            bicepsExercises.length > 0
-              ? bicepsExercises[cycleIndex % bicepsExercises.length]
-              : armExercises[cycleIndex % armExercises.length],
+          exercise: selectedBicepsExercises[0],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Bíceps principal`,
         },
         {
-          exercise:
-            bicepsExercises.length > 1
-              ? bicepsExercises[(cycleIndex + 1) % bicepsExercises.length]
-              : armExercises[(cycleIndex + 2) % armExercises.length],
+          exercise: selectedBicepsExercises[1],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
@@ -711,51 +766,55 @@ export async function createPushPullLegsSplit(
     } else {
       // Legs day
       const muscleGroupName = "Piernas";
+      const selectedLegExercises = selectUniqueExercises(
+        legExercises,
+        4,
+        usedExercises
+      );
+      const selectedCoreExercises = selectUniqueExercises(
+        coreExercises,
+        2,
+        usedExercises
+      );
+
       dayExercises = [
         {
-          exercise: legExercises[cycleIndex % legExercises.length],
+          exercise: selectedLegExercises[0],
           sets: compoundSettings.sets,
           reps: compoundSettings.reps,
           restTime: compoundSettings.restTime,
           notes: `${muscleGroupName} - Cuádriceps principal`,
         },
         {
-          exercise: legExercises[(cycleIndex + 3) % legExercises.length],
+          exercise: selectedLegExercises[1],
           sets: compoundSettings.sets - 1,
           reps: compoundSettings.reps + 2,
           restTime: compoundSettings.restTime - 30,
           notes: `${muscleGroupName} - Isquiotibiales`,
         },
         {
-          exercise: legExercises[(cycleIndex + 6) % legExercises.length],
+          exercise: selectedLegExercises[2],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Glúteos`,
         },
         {
-          exercise: legExercises[(cycleIndex + 9) % legExercises.length],
+          exercise: selectedLegExercises[3],
           sets: isolationSettings.sets,
           reps: isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes: `${muscleGroupName} - Pantorrillas`,
         },
         {
-          exercise: coreExercises[cycleIndex % coreExercises.length],
+          exercise: selectedCoreExercises[0],
           sets: isolationSettings.sets,
-          reps: cycleIndex === 0 ? 0 : isolationSettings.reps, // Plank on first legs day
+          reps: cycleIndex === 0 ? 0 : isolationSettings.reps,
           restTime: isolationSettings.restTime,
           notes:
             cycleIndex === 0
               ? `${muscleGroupName} - Core (Plancha: 45-60 segundos)`
               : `${muscleGroupName} - Core`,
-        },
-        {
-          exercise: coreExercises[(cycleIndex + 3) % coreExercises.length],
-          sets: isolationSettings.sets,
-          reps: isolationSettings.reps,
-          restTime: isolationSettings.restTime,
-          notes: `${muscleGroupName} - Oblicuos`,
         },
       ];
     }
@@ -789,7 +848,7 @@ export async function createPushPullLegsSplit(
       prisma.workoutExercise.create({
         data: {
           ...ex,
-          exerciseId: ex.exerciseId.toString(), // Convert to string
+          exerciseId: ex.exerciseId.toString(),
         },
       })
     )
