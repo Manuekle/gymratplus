@@ -34,12 +34,88 @@ import { Button } from "@/components/ui/button";
 import { Tick02Icon, UnfoldMoreIcon } from "hugeicons-react";
 
 const COLORS = [
-  "#6B9DE3", // Soft blue
-  "#E77A7A", // Soft red
-  "#7BC9A1", // Soft green
-  "#B480D4", // Soft purple
-  "#F2A96D", // Soft orange
-  "#5BC0CE", // Soft cyan
+  "#A0C4E7", // Soft Sky Blue
+  "#B0D0F0", // Pale Blue
+  "#C8DCF2", // Light Periwinkle Blue
+  "#7FBDDE", // Soft Cornflower Blue
+  "#90CAE4", // Soft Azure
+  "#A5D4EB", // Soft Aqua
+  "#B3E0F2", // Soft Powder Blue
+  "#96B9D3", // Muted Slate Blue
+  "#AECDE0", // Soft Denim Blue
+  "#B7D1E5", // Soft Steel Blue
+
+  // Soft Greens
+  "#A5D6B1", // Sage Green
+  "#B0E0C2", // Mint Green
+  "#C5E6D0", // Pale Seafoam
+  "#9BC3A7", // Soft Sage
+  "#AED6BC", // Light Moss Green
+  "#B8E3C6", // Soft Pistachio
+  "#A3D1A4", // Soft Celadon
+  "#C0E2CC", // Pale Mint
+  "#B5DBC0", // Soft Eucalyptus
+  "#A7CEB3", // Soft Jade
+
+  // Soft Pinks
+  "#F1B5B5", // Soft Blush
+  "#F5C4C4", // Pale Rose
+  "#F8D0D0", // Light Salmon
+  "#E7ABAB", // Soft Coral
+  "#F2BEBE", // Dusty Pink
+  "#F6CCCC", // Soft Peach
+  "#E9B7B7", // Muted Rose
+  "#F4C1C1", // Soft Coral Pink
+  "#EDB3B3", // Light Raspberry
+  "#F0BCBC", // Soft Berry
+
+  // Soft Purples
+  "#D1B0E1", // Lavender Soft
+  "#D8C0E7", // Pale Lilac
+  "#DEC8EC", // Light Wisteria
+  "#C6A0D4", // Soft Orchid
+  "#D3B5E3", // Soft Mauve
+  "#DFCAED", // Pale Periwinkle
+  "#C8A6DC", // Soft Plum
+  "#D5BCE6", // Light Lavender
+  "#CAB0DD", // Soft Amethyst
+  "#D6C3E9", // Pale Violet
+
+  // Soft Oranges
+  "#F7C697", // Soft Peach
+  "#F9D0A9", // Light Apricot
+  "#FADAB8", // Pale Tangerine
+  "#F5BD8A", // Soft Amber
+  "#F8C9A2", // Light Coral
+  "#F9D3B0", // Soft Melon
+  "#F6C18F", // Muted Orange
+  "#F9CFAA", // Soft Apricot
+  "#F5BA93", // Pale Terracotta
+  "#F8D1B5", // Light Caramel
+
+  // Soft Yellows
+  "#F5E6A0", // Soft Butter
+  "#F7EBB3", // Pale Vanilla
+  "#F9F0C2", // Light Cream
+  "#F3E197", // Soft Mustard
+  "#F6E8AB", // Pale Lemon
+  "#F8EDC0", // Soft Banana
+  "#F4E3A0", // Light Corn
+  "#F7E9B5", // Soft Canary
+  "#F2DE96", // Pale Gold
+  "#F5EAC2", // Soft Buttercup
+
+  // Soft Neutrals
+  "#E0E0E0", // Soft Gray
+  "#E5E5E5", // Light Ash
+  "#EBEBEB", // Pale Silver
+  "#D9D9D9", // Soft Stone
+  "#E2E2E2", // Light Slate
+  "#EFEFEF", // Pale Gray
+  "#DBDBDB", // Soft Cloud
+  "#E7E7E7", // Light Fog
+  "#D5D5D5", // Soft Pewter
+  "#EAEAEA", // Pale Ash
 ];
 
 interface FormattedRecord {
