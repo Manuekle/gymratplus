@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import WorkoutExercise from "../../../../components/workouts/workout-exercise";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft01Icon, Calendar01Icon } from "hugeicons-react";
 import { CardDescription, CardTitle } from "@/components/ui/card";
@@ -11,6 +10,7 @@ import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import StartWorkout from "@/components/workouts/start-workout";
+import { WorkoutNew } from "@/components/workout/workout-new";
 
 interface Workout {
   id: string;
@@ -33,6 +33,8 @@ interface Workout {
     name: string;
     sets: number;
     reps: number;
+    restTime: number;
+    notes?: string;
   }[];
 }
 
@@ -42,7 +44,6 @@ export default function WorkouPage() {
   const { data: session } = useSession();
 
   const [workout, setWorkout] = useState<Workout | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     if (!session) return;
@@ -52,7 +53,6 @@ export default function WorkouPage() {
       if (res.ok) {
         const data = await res.json();
         setWorkout(data);
-        // console.log(data);
       } else {
         router.push("/workouts");
       }
@@ -60,8 +60,6 @@ export default function WorkouPage() {
 
     fetchWorkout();
   }, [id, session, router]);
-
-  // const [exerciseAdded, setExerciseAdded] = useState(false);
 
   if (!workout) return <WorkoutSkeleton />;
 
@@ -80,11 +78,7 @@ export default function WorkouPage() {
           <StartWorkout workout={workout} />
         </span>
       </div>
-      <WorkoutExercise
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        workoutId={workout.id}
-      />
+
       <div className="border rounded-lg p-4">
         <div className="flex justify-between items-start gap-8">
           <div className="flex flex-col gap-1 w-full">
@@ -96,18 +90,16 @@ export default function WorkouPage() {
             </CardDescription>
           </div>
           <div className="flex gap-2">
-            {/* <Badge variant="outline" className="flex items-center gap-1">
-              {workout.id}
-            </Badge> */}
             <Badge variant="outline" className="flex items-center gap-1">
               <Calendar01Icon className="h-3 w-3" />
               {workout.days.length} días
             </Badge>
           </div>
         </div>
+
         <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
-            <TabsList className="mb-4 flex flex-wrap h-auto gap-4 ">
+            <TabsList className="mb-4 flex flex-wrap h-auto gap-4">
               {workout.days.map((day, index) => (
                 <TabsTrigger
                   key={index}
@@ -121,48 +113,11 @@ export default function WorkouPage() {
 
             {workout.days.map((day, dayIndex) => (
               <TabsContent key={dayIndex} value={day.day}>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                  {day.exercises.map((exercise, exIndex) => (
-                    <div key={exIndex} className="border rounded-lg shadow-sm">
-                      <div className="flex items-center p-4 border-b ">
-                        <div className="flex-1">
-                          <h4 className="font-medium text-sm">
-                            {exercise.name}
-                          </h4>
-                          {exercise.notes && (
-                            <p className="text-xs text-muted-foreground">
-                              {exercise.notes}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                      <div className="p-4 grid grid-cols-3 gap-4 text-center">
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">
-                            Series
-                          </p>
-                          <p className="font-semibold">{exercise.sets}</p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">
-                            Repeticiones
-                          </p>
-                          <p className="font-semibold">
-                            {exercise.reps || "Tiempo"}
-                          </p>
-                        </div>
-                        <div>
-                          <p className="text-xs text-muted-foreground mb-1">
-                            Descanso
-                          </p>
-                          <p className="font-semibold flex items-center justify-center gap-1">
-                            {exercise.restTime}s
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <WorkoutNew
+                  workoutId={workout.id}
+                  exercises={day.exercises}
+                  days={workout.days.map((d) => d.day)}
+                />
               </TabsContent>
             ))}
           </Tabs>

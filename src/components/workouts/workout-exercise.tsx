@@ -11,8 +11,6 @@ import {
   SelectContent,
   SelectValue,
 } from "@/components/ui/select";
-
-// import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
@@ -22,30 +20,34 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "../ui/label";
+import { DaySelectButton } from "../workout/day-select-button";
 
 interface Exercise {
   id: string;
   name: string;
 }
 
+interface WorkoutExerciseProps {
+  workoutId: string;
+  isOpen: boolean;
+  onClose: () => void;
+  days: string[];
+}
+
 export default function WorkoutExercise({
   workoutId,
   isOpen,
   onClose,
-}: {
-  workoutId: string;
-  isOpen: boolean;
-  onClose: () => void;
-}) {
+  days,
+}: WorkoutExerciseProps) {
   const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const [selectedDay, setSelectedDay] = useState<string>("");
   const [exerciseData, setExerciseData] = useState({
     sets: "",
     reps: "",
-    weight: "",
     restTime: "",
-    notes: "",
   });
 
   useEffect(() => {
@@ -64,11 +66,16 @@ export default function WorkoutExercise({
     e.preventDefault();
 
     if (!selectedExercise) return alert("Selecciona un ejercicio");
+    if (!selectedDay) return alert("Selecciona un día");
 
     const res = await fetch(`/api/workouts/${workoutId}/exercises`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exerciseId: selectedExercise, ...exerciseData }),
+      body: JSON.stringify({
+        exerciseId: selectedExercise,
+        ...exerciseData,
+        notes: selectedDay,
+      }),
     });
 
     if (res.ok) {
@@ -76,10 +83,9 @@ export default function WorkoutExercise({
       setExerciseData({
         sets: "",
         reps: "",
-        weight: "",
         restTime: "",
-        notes: "",
       });
+      setSelectedDay("");
       onClose();
     }
   };
@@ -130,6 +136,18 @@ export default function WorkoutExercise({
                 </Select>
               </div>
             </div>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right text-xs md:text-sm">Día:</Label>
+              <div className="col-span-3">
+                <DaySelectButton
+                  days={days}
+                  value={selectedDay}
+                  onChange={setSelectedDay}
+                />
+              </div>
+            </div>
+
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="sets" className="text-right text-xs md:text-sm">
                 Sets:
@@ -191,46 +209,6 @@ export default function WorkoutExercise({
                       ...exerciseData,
                       restTime: e.target.value,
                     })
-                  }
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="weight" className="text-right text-xs md:text-sm">
-                Peso:
-              </Label>
-              <div className="col-span-3 relative">
-                <Input
-                  className="text-xs md:text-sm"
-                  id="weight"
-                  type="number"
-                  name="weight"
-                  min="0"
-                  placeholder="Peso (kg)"
-                  value={exerciseData.weight}
-                  onChange={(e) =>
-                    setExerciseData({
-                      ...exerciseData,
-                      weight: e.target.value,
-                    })
-                  }
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="notes" className="text-right text-xs md:text-sm">
-                Nota:
-              </Label>
-              <div className="col-span-3 relative">
-                <Input
-                  className="text-xs md:text-sm"
-                  id="notes"
-                  type="text"
-                  name="notes"
-                  placeholder="Notas"
-                  value={exerciseData.notes}
-                  onChange={(e) =>
-                    setExerciseData({ ...exerciseData, notes: e.target.value })
                   }
                 />
               </div>

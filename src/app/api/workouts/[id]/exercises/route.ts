@@ -82,6 +82,66 @@ export async function GET(request: NextRequest) {
   }
 }
 
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+    const { exerciseId, sets, reps, restTime, notes } = body;
+
+    if (!exerciseId || !sets || !reps) {
+      return NextResponse.json(
+        { error: "Faltan campos requeridos" },
+        { status: 400 }
+      );
+    }
+
+    // Obtener el último orden de ejercicio
+    const lastExercise = await prisma.workoutExercise.findFirst({
+      where: { workoutId: params.id },
+      orderBy: { order: "desc" },
+    });
+
+    const newOrder = lastExercise ? lastExercise.order + 1 : 1;
+
+    const workoutExercise = await prisma.workoutExercise.create({
+      data: {
+        workoutId: params.id,
+        exerciseId,
+        sets,
+        reps,
+        restTime,
+        notes,
+        order: newOrder,
+      },
+      include: {
+        exercise: {
+          select: {
+            id: true,
+            name: true,
+            muscleGroup: true,
+            equipment: true,
+          },
+        },
+      },
+    });
+
+    return NextResponse.json(workoutExercise);
+  } catch (error) {
+    console.error("Error creando ejercicio:", error);
+    return NextResponse.json(
+      { error: "Error creando ejercicio" },
+      { status: 500 }
+    );
+  }
+}
+
 // Format workout plan for response
 interface WorkoutExercise {
   id: string;
