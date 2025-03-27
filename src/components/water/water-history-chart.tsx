@@ -145,7 +145,7 @@ export function WaterHistoryChart({
             stroke="red"
             strokeDasharray="3 3"
             label={{
-              value: "Target",
+              value: "Objetivo",
               position: "insideTopRight",
               fontSize: 10,
             }}
