@@ -57,7 +57,6 @@ model User {
   weights             Weight[]
   createdAt           DateTime             @default(now())
   updatedAt           DateTime             @updatedAt
-  ExerciseProgress    ExerciseProgress[]
   Goal                Goal[]
   foodRecommendations FoodRecommendation[]
   foodPlans           FoodPlan[]
@@ -271,26 +270,6 @@ model Weight {
   notes                String?
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
-
-  @@index([userId])
-  @@index([date])
-}
-
-model ExerciseProgress {
-  id     String   @id @default(cuid())
-  userId String
-  user   User     @relation(fields: [userId], references: [id])
-  date   DateTime
-
-  // Ejercicios básicos
-  benchPress Float?
-  squat      Float?
-  deadlift   Float?
-
-  // Metadatos
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([date])

@@ -3,11 +3,36 @@
 import { useState, useRef, useCallback } from "react";
 import { toast } from "sonner";
 
+interface WorkoutSession {
+  id: string;
+  date: string;
+  notes?: string;
+  exercises: {
+    [key: string]: {
+      weight: number;
+      reps: number;
+    };
+  };
+}
+
+interface ExerciseSet {
+  reps: number;
+  weight: number;
+}
+
+interface WorkoutExercise {
+  name: string;
+  sets: ExerciseSet[];
+}
+
 export type ExerciseProgressRecord = {
   id?: string;
-  benchPress?: number;
-  squat?: number;
-  deadlift?: number;
+  exercises: {
+    [key: string]: {
+      weight: number;
+      reps: number;
+    };
+  };
   date: Date | string;
   notes?: string;
 };
@@ -23,11 +48,7 @@ export const useExerciseProgress = () => {
 
   // Usar useCallback para evitar recreaciones de funciones
   const fetchExerciseProgressData = useCallback(
-    async (
-      exercise: "benchPress" | "squat" | "deadlift" | "all" = "all",
-      startDate?: string,
-      endDate?: string
-    ) => {
+    async (exercise: string = "all", startDate?: string, endDate?: string) => {
       setIsLoading(true);
 
       // Crear una clave de caché basada en los parámetros
@@ -41,14 +62,14 @@ export const useExerciseProgress = () => {
       }
 
       try {
-        let url = `/api/exercise-progress?exercise=${exercise}`;
+        let url = `/api/workout-sessions`;
 
         if (startDate) {
-          url += `&startDate=${startDate}`;
+          url += `?startDate=${startDate}`;
         }
 
         if (endDate) {
-          url += `&endDate=${endDate}`;
+          url += startDate ? `&endDate=${endDate}` : `?endDate=${endDate}`;
         }
 
         const response = await fetch(url);
@@ -73,12 +94,17 @@ export const useExerciseProgress = () => {
         }
 
         const data = await response.json();
+        // Transformar los datos para que coincidan con el formato esperado
+        const transformedData = (data as WorkoutSession[]).map((session) => ({
+          id: session.id,
+          date: session.date,
+          notes: session.notes,
+          exercises: session.exercises,
+        }));
 
-        // Guardar en caché usando la referencia
-        dataCacheRef.current[cacheKey] = data;
-
-        setProgressData(data);
-        return data;
+        dataCacheRef.current[cacheKey] = transformedData;
+        setProgressData(transformedData);
+        return transformedData;
       } catch (error) {
         console.error(
           "Error al cargar datos de progreso de ejercicios:",
@@ -100,40 +126,64 @@ export const useExerciseProgress = () => {
     async (recordData: ExerciseProgressRecord) => {
       setIsLoading(true);
       try {
-        const response = await fetch("/api/exercise-progress", {
+        // Primero, intentar obtener el entrenamiento por defecto
+        const response = await fetch("/api/workout-sessions/init", {
+          method: "POST",
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al inicializar el entrenamiento por defecto");
+        }
+
+        const defaultWorkout = await response.json();
+
+        // Transformar los datos al formato esperado por la API
+        const exercises: WorkoutExercise[] = Object.entries(
+          recordData.exercises
+        ).map(([name, data]) => ({
+          name,
+          sets: [{ reps: data.reps, weight: data.weight }],
+        }));
+
+        // Ahora crear el registro de progreso
+        const createResponse = await fetch("/api/workout-sessions", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(recordData),
+          body: JSON.stringify({
+            date: recordData.date,
+            notes: recordData.notes,
+            workoutId: defaultWorkout.id,
+            exercises,
+          }),
         });
 
         // Verificar el tipo de contenido de la respuesta
-        const contentType = response.headers.get("content-type");
+        const contentType = createResponse.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           // Si no es JSON, lanzar un error más descriptivo
-          const text = await response.text();
+          const text = await createResponse.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
             "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
           );
         }
 
-        if (!response.ok) {
-          const errorData = await response.json();
+        if (!createResponse.ok) {
+          const errorData = await createResponse.json();
           throw new Error(
             errorData.error ||
               "Error al crear registro de progreso de ejercicios"
           );
         }
 
-        const newRecord = await response.json();
+        const newRecord = await createResponse.json();
 
         // Limpiar caché después de crear un nuevo registro
         dataCacheRef.current = {};
 
         toast.success("Registro guardado correctamente");
-        window.location.reload();
         return newRecord;
       } catch (error) {
         console.error(
@@ -154,12 +204,24 @@ export const useExerciseProgress = () => {
     async (id: string, recordData: ExerciseProgressRecord) => {
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/exercise-progress/${id}`, {
+        // Transformar los datos al formato esperado por la API
+        const exercises: WorkoutExercise[] = Object.entries(
+          recordData.exercises
+        ).map(([name, data]) => ({
+          name,
+          sets: [{ reps: data.reps, weight: data.weight }],
+        }));
+
+        const response = await fetch(`/api/workout-sessions/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(recordData),
+          body: JSON.stringify({
+            date: recordData.date,
+            notes: recordData.notes,
+            exercises,
+          }),
         });
 
         // Verificar el tipo de contenido de la respuesta
@@ -187,7 +249,6 @@ export const useExerciseProgress = () => {
         dataCacheRef.current = {};
 
         toast.success("Registro actualizado correctamente");
-        window.location.reload();
         return updatedRecord;
       } catch (error) {
         console.error(
@@ -207,7 +268,7 @@ export const useExerciseProgress = () => {
   const deleteExerciseProgressRecord = useCallback(async (id: string) => {
     setIsLoading(true);
     try {
-      const response = await fetch(`/api/exercise-progress/${id}`, {
+      const response = await fetch(`/api/workout-sessions/${id}`, {
         method: "DELETE",
       });
 
@@ -231,7 +292,6 @@ export const useExerciseProgress = () => {
       dataCacheRef.current = {};
 
       toast.success("Registro eliminado correctamente");
-      window.location.reload();
       return true;
     } catch (error) {
       console.error(
@@ -247,64 +307,33 @@ export const useExerciseProgress = () => {
 
   // Obtener estadísticas de progreso (diferencia desde el inicio, promedio, etc.)
   const getExerciseProgressStats = useCallback(
-    (
-      data: ExerciseProgressRecord[],
-      exercise: "benchPress" | "squat" | "deadlift"
-    ) => {
-      if (!data || data.length < 2) {
-        return {
-          change: 0,
-          percentChange: 0,
-          average: data && data.length > 0 ? getValue(data[0], exercise) : 0,
-        };
-      }
+    (exercise: string) => {
+      const exerciseData = progressData
+        .filter((record) => record.exercises[exercise])
+        .map((record) => ({
+          date: new Date(record.date),
+          weight: record.exercises[exercise].weight,
+          reps: record.exercises[exercise].reps,
+        }))
+        .sort((a, b) => a.date.getTime() - b.date.getTime());
 
-      const sortedData = [...data].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
+      if (exerciseData.length < 2) return null;
 
-      const first = sortedData[0];
-      const last = sortedData[sortedData.length - 1];
-
-      const firstValue = getValue(first, exercise);
-      const lastValue = getValue(last, exercise);
-
-      // Calcular promedio
-      const sum = sortedData.reduce(
-        (acc, record) => acc + (getValue(record, exercise) || 0),
-        0
-      );
-      const average = sum / sortedData.length;
-
-      // Calcular cambio
-      const change = lastValue - firstValue;
-      const percentChange = firstValue !== 0 ? (change / firstValue) * 100 : 0;
+      const first = exerciseData[0];
+      const last = exerciseData[exerciseData.length - 1];
+      const change = last.weight - first.weight;
+      const percentageChange = (change / first.weight) * 100;
 
       return {
+        first: first.weight,
+        last: last.weight,
         change,
-        percentChange,
-        average,
+        percentageChange,
+        lastReps: last.reps,
       };
     },
-    []
+    [progressData]
   );
-
-  // Función auxiliar para obtener el valor correspondiente según el ejercicio
-  const getValue = (
-    record: ExerciseProgressRecord,
-    exercise: "benchPress" | "squat" | "deadlift"
-  ) => {
-    switch (exercise) {
-      case "benchPress":
-        return record.benchPress || 0;
-      case "squat":
-        return record.squat || 0;
-      case "deadlift":
-        return record.deadlift || 0;
-      default:
-        return 0;
-    }
-  };
 
   return {
     isLoading,

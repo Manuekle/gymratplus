@@ -10,16 +10,8 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState, useCallback } from "react";
-import {
-  format,
-  subDays,
-  subMonths,
-  subYears,
-  startOfDay,
-  endOfDay,
-  isAfter,
-} from "date-fns";
+import { useEffect, useState } from "react";
+import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useExerciseProgress } from "@/hooks/use-exercise-progress";
 import {
@@ -29,375 +21,304 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ExerciseProgress } from "./progress/excercise-progress";
-import ChartSkeleton from "./skeleton/charts-skeleton";
-import { Button } from "./ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Tick02Icon, UnfoldMoreIcon } from "hugeicons-react";
 
-// Removed unused ChartDataItem interface
-// Removed top-level state declarations; state is managed inside the ExerciseProgressChart component.
-type TimePeriod = "all" | "week" | "month" | "year";
+const COLORS = [
+  "#6B9DE3", // Soft blue
+  "#E77A7A", // Soft red
+  "#7BC9A1", // Soft green
+  "#B480D4", // Soft purple
+  "#F2A96D", // Soft orange
+  "#5BC0CE", // Soft cyan
+];
 
 interface FormattedRecord {
   date: string;
-  benchPress: number;
-  squat: number;
-  deadlift: number;
+  exercises: Record<string, { weight: number; reps: number }>;
   originalDate: Date;
 }
 
 export function ExerciseProgressChart() {
   const { theme, systemTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
-  const [chartData, setChartData] = useState<FormattedRecord[]>([]);
-  const [filteredData, setFilteredData] = useState<FormattedRecord[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const { fetchExerciseProgressData } = useExerciseProgress();
-
-  // Función para filtrar datos según el período de tiempo seleccionado
-  const filterDataByTimePeriod = useCallback(
-    (
-      data: {
-        date: string;
-        benchPress: number;
-        squat: number;
-        deadlift: number;
-        originalDate: Date;
-      }[],
-      period: TimePeriod
-    ) => {
-      if (period === "all" || !data.length) {
-        return data;
-      }
-
-      const today = new Date();
-      let startDate: Date;
-
-      switch (period) {
-        case "week":
-          startDate = subDays(today, 7);
-          break;
-        case "month":
-          startDate = subMonths(today, 1);
-          break;
-        case "year":
-          startDate = subYears(today, 1);
-          break;
-        default:
-          return data;
-      }
-
-      return data.filter((item) => {
-        const itemDate = new Date(item.originalDate);
-        return (
-          isAfter(itemDate, startOfDay(startDate)) &&
-          isAfter(endOfDay(today), itemDate)
-        );
-      });
-    },
-    []
-  );
-
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-
-    try {
-      // Obtener todos los registros sin filtrar por fecha
-      const data = await fetchExerciseProgressData("all");
-
-      if (data && data.length > 0) {
-        // Transformar datos para el gráfico
-        interface RawRecord {
-          date: string | number | Date;
-          benchPress: number;
-          squat: number;
-          deadlift: number;
-        }
-
-        interface FormattedRecord {
-          date: string;
-          benchPress: number;
-          squat: number;
-          deadlift: number;
-          originalDate: Date;
-        }
-
-        const formattedData: FormattedRecord[] = data.map(
-          (record: RawRecord) => ({
-            date: format(new Date(record.date), "d MMM", { locale: es }),
-            benchPress: record.benchPress,
-            squat: record.squat,
-            deadlift: record.deadlift,
-            // Guardar la fecha original para ordenar y filtrar correctamente
-            originalDate: new Date(record.date),
-          })
-        );
-
-        // Ordenar por fecha
-        const sortedData = formattedData.sort(
-          (a, b) => a.originalDate.getTime() - b.originalDate.getTime()
-        );
-
-        setChartData(sortedData);
-
-        // Aplicar filtro de tiempo
-        const filtered = filterDataByTimePeriod(sortedData, timePeriod);
-        setFilteredData(filtered);
-      } else {
-        setChartData([]);
-        setFilteredData([]);
-      }
-    } catch (error) {
-      console.error("Error al cargar datos de ejercicios:", error);
-      setError(
-        error instanceof Error
-          ? error.message
-          : "Error desconocido al cargar datos"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, [timePeriod, fetchExerciseProgressData, filterDataByTimePeriod]);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (mounted) {
-      loadData();
-    }
-  }, [mounted, timePeriod, loadData]);
-
-  if (!mounted) {
-    return null;
-  }
-
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
+  const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
+  const [timeRange, setTimeRange] = useState("30");
+  const [open, setOpen] = useState(false);
+  const { progressData, fetchExerciseProgressData } = useExerciseProgress();
 
-  const getTimePeriodLabel = () => {
-    switch (timePeriod) {
-      case "week":
-        return "Última semana";
-      case "month":
-        return "Último mes";
-      case "year":
-        return "Último año";
-      default:
-        return "Todo el tiempo";
-    }
-  };
+  useEffect(() => {
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - parseInt(timeRange));
+    fetchExerciseProgressData("all", startDate.toISOString());
+  }, [timeRange, fetchExerciseProgressData]);
 
-  // Calcular la diferencia entre el primer y último valor para cada ejercicio
+  // Obtener la lista de ejercicios disponibles
+  const availableExercises = progressData
+    .reduce((acc, record) => {
+      Object.keys(record.exercises).forEach((exercise) => {
+        if (!acc.includes(exercise)) {
+          acc.push(exercise);
+        }
+      });
+      return acc;
+    }, [] as string[])
+    .sort();
+
+  // Formatear los datos para el gráfico
+  const formattedData: FormattedRecord[] = progressData
+    .map((record) => ({
+      date: format(new Date(record.date), "dd 'de' MMM 'del' yy", {
+        locale: es,
+      }),
+      exercises: record.exercises,
+      originalDate: new Date(record.date),
+    }))
+    .sort((a, b) => a.originalDate.getTime() - b.originalDate.getTime());
+
+  // Filtrar los datos según los ejercicios seleccionados
+  const filteredData = formattedData.filter((record) =>
+    selectedExercises.some(
+      (exercise) => record.exercises[exercise] !== undefined
+    )
+  );
+
+  // Calcular el progreso para cada ejercicio seleccionado
   const calculateProgressChange = () => {
     if (filteredData.length < 2) return null;
 
     const firstRecord = filteredData[0];
     const lastRecord = filteredData[filteredData.length - 1];
 
-    return {
-      benchPress: {
-        change: (lastRecord.benchPress || 0) - (firstRecord.benchPress || 0),
-        first: firstRecord.benchPress || 0,
-        last: lastRecord.benchPress || 0,
-      },
-      squat: {
-        change: (lastRecord.squat || 0) - (firstRecord.squat || 0),
-        first: firstRecord.squat || 0,
-        last: lastRecord.squat || 0,
-      },
-      deadlift: {
-        change: (lastRecord.deadlift || 0) - (firstRecord.deadlift || 0),
-        first: firstRecord.deadlift || 0,
-        last: lastRecord.deadlift || 0,
-      },
-    };
+    return selectedExercises.reduce((acc, exercise) => {
+      const first = firstRecord.exercises[exercise]?.weight || 0;
+      const last = lastRecord.exercises[exercise]?.weight || 0;
+      const reps = lastRecord.exercises[exercise]?.reps || 0;
+
+      acc[exercise] = {
+        change: last - first,
+        first,
+        last,
+        reps,
+      };
+      return acc;
+    }, {} as Record<string, { change: number; first: number; last: number; reps: number }>);
   };
 
-  const progressChange = calculateProgressChange();
+  // const progressChange = calculateProgressChange();
+  // console.log(progressChange);
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-start md:justify-end">
-        {/* <h3 className="text-lg font-medium">Progreso en Ejercicios Básicos</h3> */}
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <Label className="text-xs md:text-sm">Rango de tiempo</Label>
           <Select
-            value={timePeriod}
-            onValueChange={(value) => setTimePeriod(value as TimePeriod)}
+            value={timeRange}
+            onValueChange={(value) => setTimeRange(value)}
           >
-            <SelectTrigger className="w-[180px] text-xs">
-              <SelectValue placeholder="Seleccionar período" />
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Selecciona el rango" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem className="text-xs" value="all">
-                Todo el tiempo
-              </SelectItem>
-              <SelectItem className="text-xs" value="week">
+              <SelectItem className="text-xs md:text-sm" value="7">
                 Última semana
               </SelectItem>
-              <SelectItem className="text-xs" value="month">
+              <SelectItem className="text-xs md:text-sm" value="30">
                 Último mes
               </SelectItem>
-              <SelectItem className="text-xs" value="year">
+              <SelectItem className="text-xs md:text-sm" value="90">
+                Últimos 3 meses
+              </SelectItem>
+              <SelectItem className="text-xs md:text-sm" value="180">
+                Últimos 6 meses
+              </SelectItem>
+              <SelectItem className="text-xs md:text-sm" value="365">
                 Último año
               </SelectItem>
             </SelectContent>
           </Select>
-          <ExerciseProgress
-            onSuccess={() => {
-              loadData();
-            }}
-          />
         </div>
       </div>
 
-      <div className="w-full h-[250px]">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <ChartSkeleton />
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-red-500 mb-2">Error: {error}</p>
-            <Button size="sm" onClick={() => loadData()} className="text-xs">
-              Reintentar
-            </Button>
-          </div>
-        ) : chartData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="mb-4 text-sm font-medium">
-              No hay datos de ejercicios disponibles.
-            </p>
-            <ExerciseProgress
-              onSuccess={() => {
-                loadData();
-              }}
-            />
-          </div>
-        ) : filteredData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="font-medium mb-4">
-              No hay datos para el período seleccionado.
-            </p>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={filteredData}
-              margin={{
-                top: 5,
-                right: 10,
-                left: 0,
-                bottom: 5,
-              }}
+      <div className="flex flex-col gap-2">
+        <Label className="text-xs md:text-sm">
+          Selecciona los ejercicios a mostrar:
+        </Label>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={open}
+              className="w-full justify-between"
             >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke={isDark ? "#3D3D3E" : "#e5e7eb"}
-              />
-              <XAxis
-                dataKey="date"
-                stroke={isDark ? "#9ca3af" : "#6b7280"}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                stroke={isDark ? "#9ca3af" : "#6b7280"}
-                tick={{ fontSize: 12 }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: isDark ? "#121212" : "#ffffff",
-                  border: `1px solid ${isDark ? "#3D3D3E" : "#e5e7eb"}`,
-                  borderRadius: "0.375rem",
-                }}
-                labelStyle={{
-                  fontSize: 12,
-                  fontWeight: "bold",
-                  color: isDark ? "#e5e7eb" : "#121212",
-                }}
-                itemStyle={{
-                  fontSize: 12,
-                  color: isDark ? "#e5e7eb" : "#121212",
-                }}
-                formatter={(value, _name, props) => {
-                  // Mapear el dataKey al nombre correcto en español
-                  const exerciseNames = {
-                    benchPress: "Press banca",
-                    squat: "Sentadilla",
-                    deadlift: "Peso muerto",
-                  };
-                  const key = props.dataKey;
-                  return [
-                    `${value} kg`,
-                    key && exerciseNames[key as keyof typeof exerciseNames]
-                      ? exerciseNames[key as keyof typeof exerciseNames]
-                      : key || "",
-                  ];
-                }}
-              />
-              <Line
-                type="monotone"
-                dataKey="squat"
-                name="Sentadilla"
-                stroke="#E79E4F"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="benchPress"
-                name="Press banca"
-                stroke="#872341"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="deadlift"
-                name="Peso muerto"
-                stroke="#1F4068"
-                strokeWidth={2}
-                dot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
+              {selectedExercises.length === 0
+                ? "Seleccionar ejercicios..."
+                : `${selectedExercises.length} ejercicio${
+                    selectedExercises.length === 1 ? "" : "s"
+                  } seleccionado${selectedExercises.length === 1 ? "" : "s"}`}
+              <UnfoldMoreIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-full p-0">
+            <Command>
+              <CommandGroup className="max-h-[300px] overflow-auto">
+                {availableExercises.map((exercise) => (
+                  <CommandItem
+                    key={exercise}
+                    onSelect={() => {
+                      setSelectedExercises((prev) =>
+                        prev.includes(exercise)
+                          ? prev.filter((item) => item !== exercise)
+                          : [...prev, exercise]
+                      );
+                    }}
+                  >
+                    <Tick02Icon
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        selectedExercises.includes(exercise)
+                          ? "opacity-100"
+                          : "opacity-0"
+                      )}
+                    />
+                    {exercise}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
 
-      {filteredData.length > 0 && progressChange && (
-        <div className="text-center">
-          <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#872341]">Press banca: </span>
-              {progressChange.benchPress.change > 0
-                ? `+${progressChange.benchPress.change.toFixed(1)} kg`
-                : progressChange.benchPress.change < 0
-                ? `${progressChange.benchPress.change.toFixed(1)} kg`
-                : "Sin cambios"}
+      {selectedExercises.length > 0 && filteredData.length > 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={filteredData}
+                  margin={{
+                    top: 5,
+                    right: 10,
+                    left: 0,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    stroke={isDark ? "#3D3D3E" : "#e5e7eb"}
+                  />
+                  <XAxis
+                    dataKey="date"
+                    stroke={isDark ? "#9ca3af" : "#6b7280"}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <YAxis
+                    domain={["dataMin - 2", "dataMax + 2"]}
+                    stroke={isDark ? "#9ca3af" : "#6b7280"}
+                    tick={{ fontSize: 12 }}
+                  />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: isDark ? "#121212" : "#ffffff",
+                      border: `1px solid ${isDark ? "#3D3D3E" : "#e5e7eb"}`,
+                      borderRadius: "0.375rem",
+                    }}
+                    formatter={(value: number, name: string) => {
+                      const record = filteredData.find(
+                        (d) =>
+                          d.exercises[name] &&
+                          d.exercises[name].weight === value
+                      );
+
+                      const reps = record?.exercises[name]?.reps;
+                      return [`${value}kg (${reps || 0} reps)`, name];
+                    }}
+                    labelStyle={{
+                      fontSize: 12,
+                      fontWeight: "bold",
+                      color: isDark ? "#e5e7eb" : "#121212",
+                    }}
+                    itemStyle={{
+                      fontSize: 12,
+                      color: isDark ? "#e5e7eb" : "#121212",
+                    }}
+                  />
+                  {/* <Legend /> */}
+                  {selectedExercises.map((exercise, index) => (
+                    <Line
+                      key={exercise}
+                      type="monotone"
+                      dataKey={`exercises.${exercise}.weight`}
+                      name={exercise}
+                      stroke={COLORS[index % COLORS.length]}
+                      strokeWidth={2}
+                      activeDot={{ r: 6 }}
+                      dot={{ fill: isDark ? "#000" : "#eee", r: 4 }}
+                    />
+                  ))}
+                </LineChart>
+              </ResponsiveContainer>
             </div>
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#E79E4F]">Sentadilla: </span>
-              {progressChange.squat.change > 0
-                ? `+${progressChange.squat.change.toFixed(1)} kg`
-                : progressChange.squat.change < 0
-                ? `${progressChange.squat.change.toFixed(1)} kg`
-                : "Sin cambios"}
-            </div>
-            <div className="text-xs text-muted-foreground">
-              <span className="font-medium text-[#1F4068]">Peso muerto: </span>
-              {progressChange.deadlift.change > 0
-                ? `+${progressChange.deadlift.change.toFixed(1)} kg`
-                : progressChange.deadlift.change < 0
-                ? `${progressChange.deadlift.change.toFixed(1)} kg`
-                : "Sin cambios"}
-            </div>
-          </div>
-        </div>
+
+            {calculateProgressChange() && (
+              <div className="flex flex-wrap gap-3 mt-4">
+                {Object.entries(calculateProgressChange() ?? {}).map(
+                  ([exercise, data]) => (
+                    <div
+                      key={exercise}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-card text-card-foreground"
+                    >
+                      <span className="text-sm font-medium">{exercise}:</span>
+                      <span
+                        className={cn(
+                          "text-sm",
+                          data.change > 0
+                            ? "text-green-500"
+                            : data.change < 0
+                            ? "text-red-500"
+                            : "text-muted-foreground"
+                        )}
+                      >
+                        {data.change > 0 ? "+" : ""}
+                        {data.change.toFixed(1)}kg
+                      </span>
+                      <span className="text-sm text-muted-foreground">
+                        ({data.reps} reps)
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="">
+            {selectedExercises.length === 0 ? (
+              <p className="text-center text-xs font-medium">
+                Selecciona al menos un ejercicio para mostrar su progreso
+              </p>
+            ) : (
+              <p className="ext-center text-xs font-medium">
+                No hay datos disponibles para el período seleccionado
+              </p>
+            )}
+          </CardContent>
+        </Card>
       )}
     </div>
   );

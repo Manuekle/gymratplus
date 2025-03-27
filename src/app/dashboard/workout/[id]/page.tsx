@@ -112,7 +112,7 @@ export default function WorkouPage() {
                 <TabsTrigger
                   key={index}
                   value={day.day}
-                  className="flex-1 text-xs capitalize"
+                  className="flex-1 text-xs"
                 >
                   {day.day}
                 </TabsTrigger>

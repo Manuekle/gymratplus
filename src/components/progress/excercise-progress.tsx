@@ -26,31 +26,33 @@ import {
 import { cn } from "@/lib/utils";
 import { Calendar02Icon } from "hugeicons-react";
 import { Icons } from "../icons";
+
 interface ProgressProps {
   onSuccess: () => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   initialData?: {
     id?: string;
-    benchPress?: number;
-    squat?: number;
-    deadlift?: number;
+    exercises?: {
+      [key: string]: number;
+    };
     date?: Date;
     notes?: string;
   };
 }
 
-export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
+export function ExerciseProgress({
+  onSuccess,
+  open,
+  onOpenChange,
+  initialData,
+}: ProgressProps) {
   const isEditing = !!initialData?.id;
   const [date, setDate] = useState<Date | undefined>(
     initialData?.date || new Date()
   );
-  const [benchPress, setBenchPress] = useState<string>(
-    initialData?.benchPress?.toString() || ""
-  );
-  const [squat, setSquat] = useState<string>(
-    initialData?.squat?.toString() || ""
-  );
-  const [deadlift, setDeadlift] = useState<string>(
-    initialData?.deadlift?.toString() || ""
+  const [exercises, setExercises] = useState<{ [key: string]: number }>(
+    initialData?.exercises || {}
   );
   const [notes, setNotes] = useState<string>(initialData?.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -69,8 +71,8 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
       return;
     }
 
-    if (!benchPress && !squat && !deadlift) {
-      setError("Debes proporcionar al menos un valor de ejercicio");
+    if (Object.keys(exercises).length === 0) {
+      setError("Debes proporcionar al menos un ejercicio");
       return;
     }
 
@@ -79,9 +81,7 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
     try {
       const data = {
         date: date.toISOString(),
-        benchPress: benchPress ? Number.parseFloat(benchPress) : undefined,
-        squat: squat ? Number.parseFloat(squat) : undefined,
-        deadlift: deadlift ? Number.parseFloat(deadlift) : undefined,
+        exercises,
         notes,
       };
 
@@ -100,13 +100,20 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
     }
   };
 
+  const handleExerciseChange = (name: string, value: string) => {
+    setExercises((prev) => {
+      const newExercises = { ...prev };
+      if (value) {
+        newExercises[name] = Number(value);
+      } else {
+        delete newExercises[name];
+      }
+      return newExercises;
+    });
+  };
+
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm" className="text-xs px-4">
-          Añadir
-        </Button>
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold tracking-tight">
@@ -162,8 +169,10 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
               type="number"
               step="0.5"
               placeholder="Ej: 80"
-              value={benchPress}
-              onChange={(e) => setBenchPress(e.target.value)}
+              value={exercises["Press banca"] || ""}
+              onChange={(e) =>
+                handleExerciseChange("Press banca", e.target.value)
+              }
             />
           </div>
 
@@ -177,8 +186,10 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
               type="number"
               step="0.5"
               placeholder="Ej: 100"
-              value={squat}
-              onChange={(e) => setSquat(e.target.value)}
+              value={exercises["Sentadilla"] || ""}
+              onChange={(e) =>
+                handleExerciseChange("Sentadilla", e.target.value)
+              }
             />
           </div>
 
@@ -192,8 +203,10 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
               type="number"
               step="0.5"
               placeholder="Ej: 120"
-              value={deadlift}
-              onChange={(e) => setDeadlift(e.target.value)}
+              value={exercises["Peso muerto"] || ""}
+              onChange={(e) =>
+                handleExerciseChange("Peso muerto", e.target.value)
+              }
             />
           </div>
 
@@ -212,20 +225,27 @@ export function ExerciseProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
           {error && <p className="text-red-500 text-xs md:text-sm">{error}</p>}
 
-          <div className="flex justify-end space-x-2 pt-2">
+          <div className="flex justify-end gap-2">
             <Button
+              type="button"
+              variant="outline"
               size="sm"
-              className="text-xs px-4"
+              className="text-xs"
+              onClick={() => onOpenChange?.(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
               type="submit"
+              size="sm"
+              className="text-xs"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando
+                  Guardando...
                 </>
-              ) : isEditing ? (
-                "Actualizar"
               ) : (
                 "Guardar"
               )}
