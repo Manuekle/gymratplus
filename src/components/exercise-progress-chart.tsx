@@ -122,12 +122,12 @@ export function ExerciseProgressChart() {
     <div className="w-full space-y-4">
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div className="flex flex-col gap-2">
-          <Label className="text-xs md:text-sm">Rango de tiempo</Label>
+          <Label className="text-sm">Rango de tiempo</Label>
           <Select
             value={timeRange}
             onValueChange={(value) => setTimeRange(value)}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] text-xs md:text-sm">
               <SelectValue placeholder="Selecciona el rango" />
             </SelectTrigger>
             <SelectContent>
@@ -152,16 +152,14 @@ export function ExerciseProgressChart() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <Label className="text-xs md:text-sm">
-          Selecciona los ejercicios a mostrar:
-        </Label>
+        <Label className="text-sm">Selecciona los ejercicios a mostrar:</Label>
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
               role="combobox"
               aria-expanded={open}
-              className="w-full justify-between"
+              className="w-full justify-between text-xs md:text-sm"
             >
               {selectedExercises.length === 0
                 ? "Seleccionar ejercicios..."
@@ -176,6 +174,7 @@ export function ExerciseProgressChart() {
               <CommandGroup className="max-h-[300px] overflow-auto">
                 {availableExercises.map((exercise) => (
                   <CommandItem
+                    className="text-xs md:text-sm"
                     key={exercise}
                     onSelect={() => {
                       setSelectedExercises((prev) =>
