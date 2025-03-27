@@ -3,9 +3,14 @@ import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 
+type RouteParams = {
+  id: string;
+  exerciseId: string;
+};
+
 export async function GET(
-  request: NextRequest,
-  { params }: { params: { id: string; exerciseId: string } }
+  _request: NextRequest,
+  { params }: { params: RouteParams }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -52,7 +57,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string; exerciseId: string } }
+  { params }: { params: RouteParams }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -100,8 +105,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string; exerciseId: string } }
+  _request: NextRequest,
+  { params }: { params: RouteParams }
 ) {
   const session = await getServerSession(authOptions);
   if (!session) {

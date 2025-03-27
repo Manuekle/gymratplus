@@ -354,12 +354,12 @@ export function ExerciseProgressChart() {
                   ([exercise, data]) => (
                     <div
                       key={exercise}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-card text-card-foreground"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-lg border bg-card text-card-foreground"
                     >
-                      <span className="text-sm font-medium">{exercise}:</span>
+                      <span className="text-xs font-medium">{exercise}:</span>
                       <span
                         className={cn(
-                          "text-sm",
+                          "text-xs",
                           data.change > 0
                             ? "text-green-500"
                             : data.change < 0
@@ -370,7 +370,7 @@ export function ExerciseProgressChart() {
                         {data.change > 0 ? "+" : ""}
                         {data.change.toFixed(1)}kg
                       </span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         ({data.reps} reps)
                       </span>
                     </div>
