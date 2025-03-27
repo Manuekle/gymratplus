@@ -1,12 +1,9 @@
-import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth/next";
 
-export async function POST(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -14,9 +11,12 @@ export async function POST(
       return new NextResponse("No autorizado", { status: 401 });
     }
 
+    const url = new URL(request.url);
+    const id = url.pathname.split("/").pop();
+
     const workoutSession = await prisma.workoutSession.findUnique({
       where: {
-        id: params.id,
+        id: id,
         userId: session.user.id,
       },
       include: {
@@ -68,7 +68,7 @@ export async function POST(
 
     // Marcar la sesión como completada
     const updatedSession = await prisma.workoutSession.update({
-      where: { id: params.id },
+      where: { id: id },
       data: { completed: true },
     });
 
