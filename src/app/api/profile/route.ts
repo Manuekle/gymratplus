@@ -16,21 +16,7 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Try to get profile from Redis cache first
-    const cacheKey = `profile:${userId}`;
-    const cachedProfile = await redis.get(cacheKey);
-
-    if (cachedProfile) {
-      // Check if cachedProfile is already an object or a string that needs parsing
-      const profileData =
-        typeof cachedProfile === "string"
-          ? JSON.parse(cachedProfile)
-          : cachedProfile;
-
-      return NextResponse.json(profileData);
-    }
-
-    // If not in cache, get from database
+    // Obtener directamente de la base de datos
     const profile = await prisma.profile.findUnique({
       where: { userId },
     });
@@ -42,10 +28,15 @@ export async function GET() {
       );
     }
 
-    // Store in Redis cache for future requests
-    await redis.set(cacheKey, JSON.stringify(profile), {
-      ex: PROFILE_CACHE_TTL,
-    });
+    // Actualizar Redis en segundo plano sin esperar la respuesta
+    const cacheKey = `profile:${userId}`;
+    redis
+      .set(cacheKey, JSON.stringify(profile), {
+        ex: PROFILE_CACHE_TTL,
+      })
+      .catch((error) => {
+        console.error("Error actualizando cache Redis:", error);
+      });
 
     return NextResponse.json(profile);
   } catch (error) {

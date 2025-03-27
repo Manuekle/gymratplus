@@ -120,28 +120,29 @@ export async function GET(req: NextRequest) {
     url.searchParams.get("date") || new Date().toISOString().split("T")[0];
 
   try {
-    // Get from Redis first (faster)
-    const intake = await getWaterIntake(session.user.id, date);
-
-    // If not in Redis, check database
-    if (intake === 0) {
-      const dbIntake = await prisma.dailyWaterIntake.findUnique({
-        where: {
-          userId_date: {
-            userId: session.user.id,
-            date: new Date(date),
-          },
+    // Consultar primero en la base de datos
+    const dbIntake = await prisma.dailyWaterIntake.findUnique({
+      where: {
+        userId_date: {
+          userId: session.user.id,
+          date: new Date(date),
         },
-      });
+      },
+    });
 
-      if (dbIntake) {
-        // Store in Redis for future requests
-        await storeWaterIntake(session.user.id, date, dbIntake.intake);
-        return NextResponse.json({ intake: dbIntake.intake });
-      }
+    // Si existe en la base de datos, actualizar Redis en segundo plano
+    if (dbIntake) {
+      storeWaterIntake(session.user.id, date, dbIntake.intake).catch(
+        (error) => {
+          console.error("Error actualizando cache Redis:", error);
+        }
+      );
+      return NextResponse.json({ intake: dbIntake.intake });
     }
 
-    return NextResponse.json({ intake });
+    // Si no existe en la base de datos, intentar obtener de Redis como fallback
+    const redisIntake = await getWaterIntake(session.user.id, date);
+    return NextResponse.json({ intake: redisIntake });
   } catch (error) {
     console.error("Error fetching water intake:", error);
     return NextResponse.json(

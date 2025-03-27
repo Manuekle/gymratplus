@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { getWaterIntakeHistory } from "@/lib/redis";
+import { redis } from "@/lib/redis";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -13,21 +12,7 @@ export async function GET() {
   }
 
   try {
-    // Try to get from Redis first
-    let history: string | any[] = [];
-    try {
-      history = await getWaterIntakeHistory(session.user.id);
-    } catch (redisError) {
-      console.error("Redis error fetching history:", redisError);
-      // Continue to database if Redis fails
-    }
-
-    // If Redis returned data, use it
-    if (history && history.length > 0) {
-      return NextResponse.json(history);
-    }
-
-    // If not in Redis or Redis failed, get from database
+    // Obtener datos de la base de datos primero
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -47,6 +32,26 @@ export async function GET() {
       date: entry.date.toISOString().split("T")[0],
       liters: entry.intake,
     }));
+
+    // Actualizar Redis en segundo plano
+    if (formattedHistory.length > 0) {
+      const historyKey = `water:history:${session.user.id}`;
+      const promises = formattedHistory.map((entry) =>
+        redis.zadd(historyKey, {
+          score: new Date(entry.date).getTime(),
+          member: `${entry.date}:${entry.liters}`,
+        })
+      );
+
+      Promise.all(promises).catch((error) => {
+        console.error("Error actualizando cache Redis:", error);
+      });
+
+      // Establecer expiración para mantener solo los últimos 30 días
+      redis.expire(historyKey, 60 * 60 * 24 * 30).catch((error) => {
+        console.error("Error estableciendo expiración en Redis:", error);
+      });
+    }
 
     return NextResponse.json(formattedHistory);
   } catch (error) {
