@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Baby01Icon,
   BirthdayCakeIcon,
   Calendar01Icon,
   Clock01Icon,
@@ -334,20 +335,28 @@ export default function ProfilePage() {
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <BirthdayCakeIcon className="h-4 w-4 mr-1" />
+                  <Baby01Icon className="h-4 w-4 mr-1" />
                   <span>
-                    Cumple el{" "}
                     {(() => {
-                      // Obtain the createdAt value
                       const birthdate = (
                         session?.user as { profile?: { birthdate?: string } }
                       )?.profile?.birthdate;
-                      return birthdate
-                        ? new Date(birthdate).toLocaleDateString("es-ES", {
-                            day: "numeric",
-                            month: "long",
-                          })
-                        : "Fecha no disponible";
+                      if (!birthdate) return "Edad no disponible";
+
+                      const today = new Date();
+                      const birthDate = new Date(birthdate);
+                      let age = today.getFullYear() - birthDate.getFullYear();
+                      const monthDiff = today.getMonth() - birthDate.getMonth();
+
+                      if (
+                        monthDiff < 0 ||
+                        (monthDiff === 0 &&
+                          today.getDate() < birthDate.getDate())
+                      ) {
+                        age--;
+                      }
+
+                      return `${age} años`;
                     })()}
                   </span>
                 </div>
