@@ -6,6 +6,9 @@ import { getServerSession } from "next-auth/next";
 interface DayExercise {
   exerciseId: string;
   day: string;
+  sets: number;
+  reps: number;
+  restTime: number;
 }
 
 export async function POST(request: Request) {
@@ -20,6 +23,7 @@ export async function POST(request: Request) {
       exerciseIds,
       name = "Entrenamiento Personalizado",
       days,
+      workoutType,
     } = await request.json();
 
     if (
@@ -55,7 +59,7 @@ export async function POST(request: Request) {
     const workout = await prisma.workout.create({
       data: {
         name,
-        description: "Entrenamiento personalizado",
+        description: `Entrenamiento personalizado - ${workoutType}`,
         userId,
       },
     });
@@ -67,9 +71,9 @@ export async function POST(request: Request) {
           data: {
             workoutId: workout.id,
             exerciseId: exercise.exerciseId,
-            sets: 3,
-            reps: 10,
-            restTime: 60,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            restTime: exercise.restTime,
             notes: exercise.day,
             order: index,
           },
@@ -106,6 +110,7 @@ export async function POST(request: Request) {
       name: workout.name,
       description: workout.description,
       days: formatWorkoutPlan(workoutExercisesWithNames),
+      type: workoutType,
     };
 
     return NextResponse.json(formattedWorkout);

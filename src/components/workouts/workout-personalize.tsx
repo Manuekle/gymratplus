@@ -39,7 +39,48 @@ interface Exercise {
 interface DayExercise {
   exerciseId: string;
   day: string;
+  sets: number;
+  reps: number;
+  restTime: number;
 }
+
+type WorkoutType =
+  | "hipertrofia"
+  | "fuerza"
+  | "perdida_grasa"
+  | "resistencia"
+  | "movilidad";
+
+const workoutConfigs: Record<
+  WorkoutType,
+  { sets: number; reps: number; restTime: number }
+> = {
+  hipertrofia: {
+    sets: 4,
+    reps: 12,
+    restTime: 90,
+  },
+  fuerza: {
+    sets: 5,
+    reps: 5,
+    restTime: 180,
+  },
+  perdida_grasa: {
+    sets: 3,
+    reps: 15,
+    restTime: 45,
+  },
+  resistencia: {
+    sets: 3,
+    reps: 20,
+    restTime: 30,
+  },
+  movilidad: {
+    sets: 2,
+    reps: 15,
+    restTime: 60,
+  },
+};
 
 export function WorkoutPersonalize() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -50,6 +91,7 @@ export function WorkoutPersonalize() {
   const [currentDay, setCurrentDay] = useState("");
   const [days, setDays] = useState<string[]>([]);
   const [step, setStep] = useState(1);
+  const [workoutType, setWorkoutType] = useState<WorkoutType>("hipertrofia");
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -101,7 +143,13 @@ export function WorkoutPersonalize() {
     } else {
       setSelectedExercises([
         ...selectedExercises,
-        { exerciseId, day: currentDay },
+        {
+          exerciseId,
+          day: currentDay,
+          sets: workoutConfigs[workoutType].sets,
+          reps: workoutConfigs[workoutType].reps,
+          restTime: workoutConfigs[workoutType].restTime,
+        },
       ]);
     }
   };
@@ -141,6 +189,7 @@ export function WorkoutPersonalize() {
           exerciseIds: selectedExercises,
           name: name || "Entrenamiento Personalizado",
           days,
+          workoutType,
         }),
       });
 
@@ -208,6 +257,36 @@ export function WorkoutPersonalize() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-xs md:text-sm" htmlFor="workout-type">
+                  Tipo de entrenamiento
+                </Label>
+                <Select
+                  value={workoutType}
+                  onValueChange={(value: WorkoutType) => setWorkoutType(value)}
+                >
+                  <SelectTrigger className="w-full text-xs md:text-sm">
+                    <SelectValue placeholder="Selecciona el tipo de entrenamiento" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="hipertrofia">
+                      Hipertrofia (6-12 repeticiones por serie)
+                    </SelectItem>
+                    <SelectItem value="fuerza">
+                      Fuerza (1-6 repeticiones por serie)
+                    </SelectItem>
+                    <SelectItem value="perdida_grasa">
+                      Pérdida de grasa (Rutinas con alta intensidad)
+                    </SelectItem>
+                    <SelectItem value="resistencia">
+                      Resistencia (más de 12 repeticiones)
+                    </SelectItem>
+                    <SelectItem value="movilidad">
+                      Movilidad y flexibilidad
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <Label className="text-xs md:text-sm" htmlFor="day-name">
@@ -417,7 +496,8 @@ export function WorkoutPersonalize() {
                               className="flex items-center gap-2 px-3 py-1.5 border rounded-full text-xs"
                             >
                               <span className="font-medium">
-                                {exercise?.name}
+                                {exercise?.name} ({ex.sets}x{ex.reps} -{" "}
+                                {ex.restTime}s)
                               </span>
                             </div>
                           );
