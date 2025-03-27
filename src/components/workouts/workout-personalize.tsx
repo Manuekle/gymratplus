@@ -49,12 +49,18 @@ type WorkoutType =
   | "fuerza"
   | "perdida_grasa"
   | "resistencia"
-  | "movilidad";
+  | "movilidad"
+  | "estandar";
 
 const workoutConfigs: Record<
   WorkoutType,
   { sets: number; reps: number; restTime: number }
 > = {
+  estandar: {
+    sets: 3,
+    reps: 10,
+    restTime: 180,
+  },
   hipertrofia: {
     sets: 4,
     reps: 12,
@@ -91,7 +97,7 @@ export function WorkoutPersonalize() {
   const [currentDay, setCurrentDay] = useState("");
   const [days, setDays] = useState<string[]>([]);
   const [step, setStep] = useState(1);
-  const [workoutType, setWorkoutType] = useState<WorkoutType>("hipertrofia");
+  const [workoutType, setWorkoutType] = useState<WorkoutType>("estandar");
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -270,6 +276,9 @@ export function WorkoutPersonalize() {
                     <SelectValue placeholder="Selecciona el tipo de entrenamiento" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem className="text-xs md:text-sm" value="estandar">
+                      Estándar (3x10 - 3min descanso)
+                    </SelectItem>
                     <SelectItem
                       className="text-xs md:text-sm"
                       value="hipertrofia"
