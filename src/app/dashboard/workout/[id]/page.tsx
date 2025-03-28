@@ -8,7 +8,7 @@ import { ArrowLeft01Icon, Calendar01Icon } from "hugeicons-react";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent } from "@/components/ui/tabs";
 import StartWorkout from "@/components/workouts/start-workout";
 import { WorkoutNew } from "@/components/workout/workout-new";
 
@@ -99,7 +99,7 @@ export default function WorkouPage() {
 
         <div className="pt-4">
           <Tabs defaultValue={workout.days[0]?.day}>
-            <TabsList className="mb-4 flex flex-wrap h-auto gap-4">
+            {/* <TabsList className="mb-4 flex flex-wrap h-auto gap-4">
               {workout.days.map((day, index) => (
                 <TabsTrigger
                   key={index}
@@ -109,7 +109,7 @@ export default function WorkouPage() {
                   {day.day}
                 </TabsTrigger>
               ))}
-            </TabsList>
+            </TabsList> */}
 
             {workout.days.map((day, dayIndex) => (
               <TabsContent key={dayIndex} value={day.day}>

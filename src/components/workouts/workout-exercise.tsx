@@ -2,7 +2,7 @@
 
 import type React from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,7 @@ interface WorkoutExerciseProps {
   days: string[];
   existingExercises?: { id: string; exerciseId: string }[];
   onExerciseAdded?: () => void; // Callback para notificar al componente padre
+  selectedDay?: string; // Día seleccionado por defecto
 }
 
 export default function WorkoutExercise({
@@ -43,11 +44,12 @@ export default function WorkoutExercise({
   days,
   existingExercises = [],
   onExerciseAdded,
+  selectedDay = "",
 }: WorkoutExerciseProps) {
   const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
-  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [currentDay, setCurrentDay] = useState<string>(selectedDay);
   const [isLoading, setIsLoading] = useState(false);
   const [exerciseData, setExerciseData] = useState({
     sets: 0,
@@ -55,9 +57,20 @@ export default function WorkoutExercise({
     restTime: 0,
   });
 
-  const fetchExercises = async () => {
+  // Actualizar el día seleccionado cuando cambia el prop
+  useEffect(() => {
+    if (selectedDay) {
+      setCurrentDay(selectedDay);
+    }
+  }, [selectedDay]);
+
+  const fetchExercises = useCallback(async () => {
     try {
-      const res = await fetch("/api/exercises");
+      const res = await fetch("/api/exercises", {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setExercises(data);
@@ -69,10 +82,18 @@ export default function WorkoutExercise({
       console.error("Error fetching exercises:", error);
       toast.error("Error al cargar ejercicios");
     }
-  };
-  useEffect(() => {
-    fetchExercises();
   }, []);
+
+  useEffect(() => {
+    if (isOpen) {
+      fetchExercises();
+
+      // Si no hay día seleccionado, establecer el primero por defecto
+      if (!currentDay && days.length > 0) {
+        setCurrentDay(days[0]);
+      }
+    }
+  }, [isOpen, fetchExercises, days, currentDay]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -83,7 +104,7 @@ export default function WorkoutExercise({
       });
       return;
     }
-    if (!selectedDay) {
+    if (!currentDay) {
       toast.error("Selecciona un día", {
         description: "Debes seleccionar un día para continuar",
       });
@@ -96,20 +117,19 @@ export default function WorkoutExercise({
         workoutId,
         exerciseId: selectedExercise,
         ...exerciseData,
-        notes: selectedDay,
+        notes: currentDay,
       });
 
       const res = await fetch(`/api/workouts/${workoutId}/exercises`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Añadir un encabezado para evitar el caché
           "Cache-Control": "no-cache",
         },
         body: JSON.stringify({
           exerciseId: selectedExercise,
           ...exerciseData,
-          notes: selectedDay,
+          notes: currentDay,
         }),
       });
 
@@ -119,35 +139,36 @@ export default function WorkoutExercise({
             "El ejercicio se ha agregado correctamente al entrenamiento",
         });
 
-        // Múltiples estrategias para asegurar la actualización
-        router.refresh(); // Intentar refresh del router
+        // Limpiar el formulario
+        setExerciseData({
+          sets: 0,
+          reps: 0,
+          restTime: 0,
+        });
+        setSelectedExercise(null);
+
+        // Cerrar el diálogo
+        onClose();
 
         // Notificar al componente padre para que actualice los datos
         if (onExerciseAdded) {
           onExerciseAdded();
         }
 
-        // Forzar una recarga de la página actual después de un breve retraso
-        setTimeout(() => {
-          // Usar revalidatePath si está disponible (Next.js 13+)
-          try {
-            fetch(`/api/revalidate?path=/workouts/${workoutId}`, {
-              method: "POST",
-            });
-          } catch (error) {
-            console.error("Error revalidating path:", error);
-          }
-        }, 300);
+        // Forzar la revalidación de la ruta actual
+        router.refresh();
 
-        setExerciseData({
-          sets: 0,
-          reps: 0,
-          restTime: 0,
-        });
-        setSelectedDay("");
-        setSelectedExercise(null);
-        onClose();
-        window.location.reload();
+        // Revalidar la ruta específica a través de la API
+        try {
+          await fetch(`/api/revalidate?path=/workouts/${workoutId}`, {
+            method: "POST",
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          });
+        } catch (error) {
+          console.error("Error revalidating path:", error);
+        }
       } else {
         const errorData = await res.json();
         console.error("Error response:", errorData);
@@ -192,13 +213,12 @@ export default function WorkoutExercise({
                 {days.map((day) => (
                   <Badge
                     key={day}
-                    variant={selectedDay === day ? "default" : "outline"}
+                    variant={currentDay === day ? "default" : "outline"}
                     className={cn(
                       "cursor-pointer px-4 py-1 text-xs transition-colors",
-                      selectedDay === day &&
-                        "bg-primary text-primary-foreground"
+                      currentDay === day && "bg-primary text-primary-foreground"
                     )}
-                    onClick={() => setSelectedDay(day)}
+                    onClick={() => setCurrentDay(day)}
                   >
                     {day}
                   </Badge>
@@ -334,7 +354,7 @@ export default function WorkoutExercise({
               size="sm"
               type="submit"
               className="text-xs"
-              disabled={!selectedExercise || !selectedDay || isLoading}
+              disabled={!selectedExercise || !currentDay || isLoading}
             >
               {isLoading ? (
                 <>
