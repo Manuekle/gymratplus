@@ -82,18 +82,24 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
-    const workoutId = params.id;
-    console.log("Workout ID from params:", workoutId);
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const workoutId = pathParts[pathParts.length - 1];
+
+    // Validate that workoutId is not undefined
+    if (!workoutId) {
+      return NextResponse.json(
+        { error: "ID de entrenamiento no proporcionado" },
+        { status: 400 }
+      );
+    }
 
     // Validate workout exists and belongs to the current user
     const existingWorkout = await prisma.workout.findUnique({
@@ -104,10 +110,6 @@ export async function POST(
     });
 
     if (!existingWorkout) {
-      console.log(
-        "Workout not found or not authorized for user:",
-        session.user.id
-      );
       return NextResponse.json(
         { error: "Workout no encontrado o no autorizado" },
         { status: 404 }
@@ -116,7 +118,6 @@ export async function POST(
 
     const body = await request.json();
     const { exerciseId, sets, reps, restTime, notes } = body;
-    console.log("Request body:", body);
 
     // Validate exercise exists
     const existingExercise = await prisma.exercise.findUnique({
@@ -145,16 +146,19 @@ export async function POST(
 
     const newOrder = lastExercise ? lastExercise.order + 1 : 1;
 
+    // Explicitly type the data object
+    const workoutExerciseData = {
+      workoutId: workoutId, // Ensure it's a non-optional string
+      exerciseId,
+      sets: Number(sets),
+      reps: Number(reps),
+      restTime: restTime ? Number(restTime) : 0,
+      notes: notes || "",
+      order: newOrder,
+    };
+
     const workoutExercise = await prisma.workoutExercise.create({
-      data: {
-        workoutId,
-        exerciseId,
-        sets,
-        reps,
-        restTime: restTime || 0, // Default to 0 if not provided
-        notes,
-        order: newOrder,
-      },
+      data: workoutExerciseData,
       include: {
         exercise: {
           select: {
@@ -171,7 +175,10 @@ export async function POST(
   } catch (error) {
     console.error("Error creando ejercicio:", error);
     return NextResponse.json(
-      { error: "Error creando ejercicio", details: String(error) },
+      {
+        error: "Error creando ejercicio",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 }
     );
   }
