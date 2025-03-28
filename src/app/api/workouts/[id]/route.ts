@@ -191,6 +191,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE(request: NextRequest) {
   const url = new URL(request.url);
   const id = url.pathname.split("/").pop();
+  console.log("aqui es");
 
   if (!id) {
     return NextResponse.json({ error: "ID no proporcionado" }, { status: 400 });
@@ -213,7 +214,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    // Eliminar el workout
+    // Primero eliminar todas las sesiones asociadas
+    await prisma.workoutSession.deleteMany({
+      where: { workoutId: id },
+    });
+
+    // Luego eliminar el workout
     await prisma.workout.delete({
       where: { id },
     });
