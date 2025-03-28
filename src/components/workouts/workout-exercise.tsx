@@ -1,5 +1,7 @@
 "use client";
 
+import type React from "react";
+
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -12,7 +14,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
@@ -46,17 +48,25 @@ export default function WorkoutExercise({
   const [selectedDay, setSelectedDay] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
   const [exerciseData, setExerciseData] = useState({
-    sets: "",
-    reps: "",
-    restTime: "",
+    sets: 0,
+    reps: 0,
+    restTime: 0,
   });
 
   useEffect(() => {
     const fetchExercises = async () => {
-      const res = await fetch("/api/exercises");
-      if (res.ok) {
-        const data = await res.json();
-        setExercises(data);
+      try {
+        const res = await fetch("/api/exercises");
+        if (res.ok) {
+          const data = await res.json();
+          setExercises(data);
+        } else {
+          console.error("Error fetching exercises:", await res.text());
+          toast.error("Error al cargar ejercicios");
+        }
+      } catch (error) {
+        console.error("Error fetching exercises:", error);
+        toast.error("Error al cargar ejercicios");
       }
     };
 
@@ -81,6 +91,13 @@ export default function WorkoutExercise({
 
     setIsLoading(true);
     try {
+      console.log("Enviando datos:", {
+        workoutId,
+        exerciseId: selectedExercise,
+        ...exerciseData,
+        notes: selectedDay,
+      });
+
       const res = await fetch(`/api/workouts/${workoutId}/exercises`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -98,13 +115,20 @@ export default function WorkoutExercise({
         });
         router.refresh();
         setExerciseData({
-          sets: "",
-          reps: "",
-          restTime: "",
+          sets: 0,
+          reps: 0,
+          restTime: 0,
         });
         setSelectedDay("");
         setSelectedExercise(null);
         onClose();
+      } else {
+        const errorData = await res.json();
+        console.error("Error response:", errorData);
+        toast.error(errorData.error || "Error al guardar el ejercicio", {
+          description:
+            errorData.details || "Verifica los datos e intenta nuevamente",
+        });
       }
     } catch (error) {
       console.error("Error al guardar el ejercicio:", error);
@@ -226,11 +250,11 @@ export default function WorkoutExercise({
                       min="1"
                       className="text-xs md:text-sm"
                       placeholder="Sets"
-                      value={exerciseData.sets}
+                      value={exerciseData.sets || ""}
                       onChange={(e) =>
                         setExerciseData({
                           ...exerciseData,
-                          sets: e.target.value,
+                          sets: Number.parseInt(e.target.value) || 0,
                         })
                       }
                       required
@@ -246,11 +270,11 @@ export default function WorkoutExercise({
                       min="1"
                       className="text-xs md:text-sm"
                       placeholder="Reps"
-                      value={exerciseData.reps}
+                      value={exerciseData.reps || ""}
                       onChange={(e) =>
                         setExerciseData({
                           ...exerciseData,
-                          reps: e.target.value,
+                          reps: Number.parseInt(e.target.value) || 0,
                         })
                       }
                       required
@@ -266,11 +290,11 @@ export default function WorkoutExercise({
                       min="0"
                       className="text-xs md:text-sm"
                       placeholder="Descanso"
-                      value={exerciseData.restTime}
+                      value={exerciseData.restTime || ""}
                       onChange={(e) =>
                         setExerciseData({
                           ...exerciseData,
-                          restTime: e.target.value,
+                          restTime: Number.parseInt(e.target.value) || 0,
                         })
                       }
                     />

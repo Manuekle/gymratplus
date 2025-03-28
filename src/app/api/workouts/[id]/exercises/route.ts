@@ -82,19 +82,53 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split("/");
-    const workoutId = pathParts[pathParts.length - 1];
+    const workoutId = params.id;
+    console.log("Workout ID from params:", workoutId);
+
+    // Validate workout exists and belongs to the current user
+    const existingWorkout = await prisma.workout.findUnique({
+      where: {
+        id: workoutId,
+        userId: session.user.id,
+      },
+    });
+
+    if (!existingWorkout) {
+      console.log(
+        "Workout not found or not authorized for user:",
+        session.user.id
+      );
+      return NextResponse.json(
+        { error: "Workout no encontrado o no autorizado" },
+        { status: 404 }
+      );
+    }
 
     const body = await request.json();
     const { exerciseId, sets, reps, restTime, notes } = body;
+    console.log("Request body:", body);
+
+    // Validate exercise exists
+    const existingExercise = await prisma.exercise.findUnique({
+      where: { id: exerciseId },
+    });
+
+    if (!existingExercise) {
+      return NextResponse.json(
+        { error: "Ejercicio no encontrado" },
+        { status: 404 }
+      );
+    }
 
     if (!exerciseId || !sets || !reps) {
       return NextResponse.json(
@@ -103,7 +137,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Obtener el último orden de ejercicio
+    // Obtain the last exercise order
     const lastExercise = await prisma.workoutExercise.findFirst({
       where: { workoutId },
       orderBy: { order: "desc" },
@@ -117,7 +151,7 @@ export async function POST(request: NextRequest) {
         exerciseId,
         sets,
         reps,
-        restTime,
+        restTime: restTime || 0, // Default to 0 if not provided
         notes,
         order: newOrder,
       },
@@ -137,7 +171,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creando ejercicio:", error);
     return NextResponse.json(
-      { error: "Error creando ejercicio" },
+      { error: "Error creando ejercicio", details: String(error) },
       { status: 500 }
     );
   }
