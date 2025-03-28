@@ -34,11 +34,8 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative">
           <Notification02Icon className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge
-              variant={"outline"}
-              className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] min-w-[18px] min-h-[18px] flex items-center justify-center tracking-tighter font-bold"
-            >
-              {unreadCount > 9 ? "9+" : unreadCount}
+            <Badge className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] min-w-[18px] min-h-[18px] flex items-center justify-center tracking-tighter font-bold">
+              {unreadCount > 9 ? "+9" : unreadCount}
             </Badge>
           )}
           <span className="sr-only">Notificaciones</span>
