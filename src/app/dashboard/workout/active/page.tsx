@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -72,13 +71,17 @@ export default function ActiveWorkoutPage() {
     exerciseId: null,
   });
 
+  const [pendingUpdates, setPendingUpdates] = useState<
+    Record<string, Partial<Set>>
+  >({});
+  const [debounceTimers, setDebounceTimers] = useState<
+    Record<string, NodeJS.Timeout>
+  >({});
+
   const [inputValues, setInputValues] = useState<
     Record<string, { weight: string; reps: string }>
   >({});
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
-  const [pendingUpdates, setPendingUpdates] = useState<
-    Record<string, Partial<Set>>
-  >({});
 
   // Cargar la sesión de entrenamiento activa
   useEffect(() => {
@@ -145,13 +148,17 @@ export default function ActiveWorkoutPage() {
   };
 
   // Iniciar temporizador de descanso
-  // const startRestTimer = (exerciseId: string, restTime: number) => {
-  //   setRestTimer({
-  //     active: true,
-  //     timeLeft: restTime,
-  //     exerciseId,
-  //   });
-  // };
+  const startRestTimer = (exerciseId: string, restTime: number) => {
+    // Reproducir sonido al iniciar el descanso
+    const audio = new Audio("/sounds/timer-start.mp3");
+    audio.play().catch((e) => console.log("Error playing sound:", e));
+
+    setRestTimer({
+      active: true,
+      timeLeft: restTime,
+      exerciseId,
+    });
+  };
 
   // Formatear tiempo en formato mm:ss
   const formatTime = (seconds: number) => {
@@ -163,88 +170,167 @@ export default function ActiveWorkoutPage() {
   };
 
   // Actualizar un set
-  // const updateSet = async (setId: string, data: Partial<Set>) => {
-  //   try {
-  //     setIsUpdating((prev) => ({ ...prev, [setId]: true }));
+  const updateSet = async (
+    setId: string,
+    data: Partial<Set>,
+    immediate = false
+  ) => {
+    // Cancelar cualquier temporizador existente para este setId
+    if (debounceTimers[setId]) {
+      clearTimeout(debounceTimers[setId]);
+    }
 
-  //     // Actualizar inmediatamente la UI
-  //     setWorkoutSession((prev) => {
-  //       if (!prev) return prev;
-  //       const updated = { ...prev };
-  //       updated.exercises = updated.exercises.map((ex) => {
-  //         const updatedEx = { ...ex };
-  //         updatedEx.sets = updatedEx.sets.map((set) => {
-  //           if (set.id === setId) {
-  //             return { ...set, ...data };
-  //           }
-  //           return set;
-  //         });
-  //         return updatedEx;
-  //       });
-  //       return updated;
-  //     });
+    // Actualizar inmediatamente la UI para una experiencia más fluida
+    setWorkoutSession((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev };
+      updated.exercises = updated.exercises.map((ex) => {
+        const updatedEx = { ...ex };
+        updatedEx.sets = updatedEx.sets.map((set) => {
+          if (set.id === setId) {
+            return { ...set, ...data };
+          }
+          return set;
+        });
+        return updatedEx;
+      });
+      return updated;
+    });
 
-  //     const response = await fetch("/api/workout-session/set", {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({ setId, ...data }),
-  //     });
+    // Si es una actualización de "completed", enviar inmediatamente
+    if (immediate || data.completed !== undefined) {
+      try {
+        setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
-  //     if (response.ok) {
-  //       // Actualizar los valores de input después de una actualización exitosa
-  //       if (data.weight !== undefined) {
-  //         setInputValues((prev) => ({
-  //           ...prev,
-  //           [setId]: {
-  //             ...prev[setId],
-  //             weight: data.weight?.toString() || "",
-  //           },
-  //         }));
-  //       }
-  //       if (data.reps !== undefined) {
-  //         setInputValues((prev) => ({
-  //           ...prev,
-  //           [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
-  //         }));
-  //       }
-  //     }
-  //   } catch (error) {
-  //     console.error("Error al actualizar set:", error);
-  //     toast.error("Error", {
-  //       description: "No se pudo actualizar el set",
-  //     });
-  //   } finally {
-  //     setIsUpdating((prev) => ({ ...prev, [setId]: false }));
-  //   }
-  // };
+        // Combinar con actualizaciones pendientes
+        const combinedData = {
+          ...pendingUpdates[setId],
+          ...data,
+        };
+
+        // Limpiar actualizaciones pendientes para este set
+        setPendingUpdates((prev) => {
+          const updated = { ...prev };
+          delete updated[setId];
+          return updated;
+        });
+
+        const response = await fetch("/api/workout-session/set", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ setId, ...combinedData }),
+        });
+
+        if (response.ok) {
+          // Actualizar los valores de input después de una actualización exitosa
+          if (data.weight !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                weight: data.weight?.toString() || "",
+              },
+            }));
+          }
+          if (data.reps !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
+            }));
+          }
+
+          // Si se marca como completado, iniciar temporizador de descanso
+          if (data.completed) {
+            const exercise = workoutSession?.exercises.find((ex) =>
+              ex.sets.some((set) => set.id === setId)
+            );
+
+            if (exercise) {
+              const exerciseData = workoutSession!.exercises.find(
+                (ex) => ex.id === exercise.id
+              );
+              const restTime = exerciseData?.exercise?.restTime || 60;
+              startRestTimer(exercise.id, restTime);
+            }
+          }
+        }
+      } catch (error) {
+        console.error("Error al actualizar set:", error);
+        toast.error("Error", {
+          description: "No se pudo actualizar el set",
+        });
+      } finally {
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+      }
+      return;
+    }
+
+    // Almacenar la actualización pendiente
+    setPendingUpdates((prev) => ({
+      ...prev,
+      [setId]: { ...(prev[setId] || {}), ...data },
+    }));
+
+    // Configurar un temporizador para enviar la actualización después de un retraso
+    const timer = setTimeout(async () => {
+      try {
+        setIsUpdating((prev) => ({ ...prev, [setId]: true }));
+        const dataToSend = pendingUpdates[setId];
+        if (!dataToSend) return;
+
+        // Limpiar actualizaciones pendientes para este set
+        setPendingUpdates((prev) => {
+          const updated = { ...prev };
+          delete updated[setId];
+          return updated;
+        });
+
+        const response = await fetch("/api/workout-session/set", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ setId, ...dataToSend }),
+        });
+
+        if (response.ok) {
+          // Actualizar los valores de input después de una actualización exitosa
+          if (dataToSend.weight !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                weight: dataToSend.weight?.toString() || "",
+              },
+            }));
+          }
+          if (dataToSend.reps !== undefined) {
+            setInputValues((prev) => ({
+              ...prev,
+              [setId]: {
+                ...prev[setId],
+                reps: dataToSend.reps?.toString() || "",
+              },
+            }));
+          }
+        }
+      } catch (error) {
+        console.error("Error al actualizar set:", error);
+        toast.error("Error", {
+          description: "No se pudo actualizar el set",
+        });
+      } finally {
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+      }
+    }, 1000);
+
+    setDebounceTimers((prev) => ({
+      ...prev,
+      [setId]: timer,
+    }));
+  };
 
   // Completar un ejercicio
   const completeExercise = async (exerciseSessionId: string) => {
     try {
-      const exercise = workoutSession?.exercises.find(
-        (ex) => ex.id === exerciseSessionId
-      );
-
-      if (!exercise) return;
-
-      // Primero actualizar todos los sets pendientes
-      const updatePromises = exercise.sets
-        .filter((set) => pendingUpdates[set.id])
-        .map((set) =>
-          fetch("/api/workout-session/set", {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              setId: set.id,
-              ...pendingUpdates[set.id],
-            }),
-          })
-        );
-
-      // Esperar a que todas las actualizaciones se completen
-      await Promise.all(updatePromises);
-
-      // Marcar el ejercicio como completado
       const response = await fetch("/api/workout-session/exercise", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -261,20 +347,13 @@ export default function ActiveWorkoutPage() {
               return {
                 ...ex,
                 completed: true,
-                sets: ex.sets.map((set) => ({
-                  ...set,
-                  ...pendingUpdates[set.id],
-                  completed: true,
-                })),
+                sets: ex.sets.map((set) => ({ ...set, completed: true })),
               };
             }
             return ex;
           });
           return updated;
         });
-
-        // Limpiar las actualizaciones pendientes
-        setPendingUpdates({});
 
         toast.success("Ejercicio completado", {
           description: "Se ha marcado el ejercicio como completado",
@@ -313,6 +392,13 @@ export default function ActiveWorkoutPage() {
       setSaving(false);
     }
   };
+
+  useEffect(() => {
+    // Limpiar todos los temporizadores al desmontar el componente
+    return () => {
+      Object.values(debounceTimers).forEach((timer) => clearTimeout(timer));
+    };
+  }, [debounceTimers]);
 
   // En el useEffect inicial, inicializar los valores de input
   useEffect(() => {
@@ -560,14 +646,17 @@ export default function ActiveWorkoutPage() {
                                 ...prev,
                                 [set.id]: { ...prev[set.id], weight: value },
                               }));
-                              // Almacenar la actualización pendiente
-                              setPendingUpdates((prev) => ({
-                                ...prev,
-                                [set.id]: {
-                                  ...prev[set.id],
+                              // Solo actualizamos el estado si el valor es válido
+                              if (value === "" || !isNaN(Number(value))) {
+                                updateSet(set.id, {
                                   weight: value === "" ? null : Number(value),
-                                },
-                              }));
+                                });
+                              }
+                            }}
+                            onBlur={() => {
+                              if (pendingUpdates[set.id]) {
+                                updateSet(set.id, {}, true);
+                              }
                             }}
                             disabled={
                               exercise.completed ||
@@ -589,14 +678,17 @@ export default function ActiveWorkoutPage() {
                                 ...prev,
                                 [set.id]: { ...prev[set.id], reps: value },
                               }));
-                              // Almacenar la actualización pendiente
-                              setPendingUpdates((prev) => ({
-                                ...prev,
-                                [set.id]: {
-                                  ...prev[set.id],
+                              // Solo actualizamos el estado si el valor es válido
+                              if (value === "" || !isNaN(Number(value))) {
+                                updateSet(set.id, {
                                   reps: value === "" ? null : Number(value),
-                                },
-                              }));
+                                });
+                              }
+                            }}
+                            onBlur={() => {
+                              if (pendingUpdates[set.id]) {
+                                updateSet(set.id, {}, true);
+                              }
                             }}
                             disabled={
                               exercise.completed ||
