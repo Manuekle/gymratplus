@@ -82,16 +82,17 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
   }
 
   try {
+    const url = new URL(request.url);
+    const pathParts = url.pathname.split("/");
+    const workoutId = pathParts[pathParts.length - 1];
+
     const body = await request.json();
     const { exerciseId, sets, reps, restTime, notes } = body;
 
@@ -104,7 +105,7 @@ export async function POST(
 
     // Obtener el último orden de ejercicio
     const lastExercise = await prisma.workoutExercise.findFirst({
-      where: { workoutId: params.id },
+      where: { workoutId },
       orderBy: { order: "desc" },
     });
 
@@ -112,7 +113,7 @@ export async function POST(
 
     const workoutExercise = await prisma.workoutExercise.create({
       data: {
-        workoutId: params.id,
+        workoutId,
         exerciseId,
         sets,
         reps,
