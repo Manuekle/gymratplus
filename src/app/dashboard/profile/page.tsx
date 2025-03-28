@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -44,8 +44,23 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   // const { toast } = useToast();
 
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   console.log(session);
+
+  // Cargar datos del localStorage al iniciar
+  useEffect(() => {
+    if (session?.user?._localStorage) {
+      const storedData = session.user._localStorage;
+      setName(storedData.name || "");
+      setPhone(storedData.profile?.phone || "");
+      setBirthdate(storedData.profile?.birthdate?.toString() || "");
+      setExperienceLevel(storedData.experienceLevel || "");
+      setPreferredWorkoutTime(storedData.profile?.preferredWorkoutTime || "");
+      setDailyActivity(storedData.profile?.dailyActivity || "");
+      setGoal(storedData.profile?.goal || "");
+      setDietaryPreference(storedData.profile?.dietaryPreference || "");
+    }
+  }, [session]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -54,11 +69,9 @@ export default function ProfilePage() {
     try {
       setIsUploading(true);
 
-      // Crear objeto FormData
       const formData = new FormData();
       formData.append("file", file);
 
-      // Subir imagen
       const uploadResponse = await fetch("/api/upload", {
         method: "POST",
         body: formData,
@@ -70,29 +83,42 @@ export default function ProfilePage() {
 
       const { url } = await uploadResponse.json();
 
-      // Actualizar el perfil con la nueva URL de la imagen
-      const updateResponse = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
+      // Actualizar la sesión con la nueva imagen
+      const updatedSession = {
+        ...session,
+        user: {
+          ...session?.user,
+          image: url,
+          _localStorage: {
+            ...session?.user?._localStorage,
+            image: url,
+          },
         },
-        body: JSON.stringify({ image: url }),
+      };
+
+      // Actualizar la sesión
+      await update(updatedSession);
+
+      // Forzar actualización de la sesión
+      const sessionResponse = await fetch("/api/auth/session", {
+        method: "GET",
       });
 
-      if (!updateResponse.ok) {
-        throw new Error("No se pudo actualizar la imagen de perfil.");
+      if (!sessionResponse.ok) {
+        throw new Error("Error al actualizar la sesión");
       }
 
-      // TODO: Actualizar el estado global o contexto en lugar de recargar la página
-      // Por ejemplo: updateUserProfile({ image: url });
-
+      // Mostrar mensaje de éxito
       toast.success("¡Imagen actualizada!", {
         description: "Tu foto de perfil ha sido actualizada correctamente.",
       });
-      window.location.reload();
+
+      // Forzar recarga de la página después de un pequeño retraso
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     } catch (error) {
       console.error("Error al subir la imagen:", error);
-
       toast.error("Error", {
         description: error instanceof Error ? error.message : "Algo salió mal.",
       });
@@ -138,64 +164,20 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     try {
       setIsUploading(true);
-      // Get form values
-      // const email =
-      //   (document.getElementById("email") as HTMLInputElement)?.value || "";
-      // const phone =
-      //   (document.getElementById("phone") as HTMLInputElement)?.value || "";
 
-      // const experienceLevel =
-      //   document.querySelector("[data-value]")?.getAttribute("data-value") ||
-      //   "";
-
-      // Update profile
-
-      // verficar que esten lleno si no alert con toast
-      if (!name) {
+      // Validaciones
+      if (
+        !name ||
+        !phone ||
+        !experienceLevel ||
+        !birthdate ||
+        !preferredWorkoutTime ||
+        !dailyActivity ||
+        !goal ||
+        !dietaryPreference
+      ) {
         toast.error("Error", {
-          description: "El nombre es requerido.",
-        });
-        return;
-      }
-      if (!phone) {
-        toast.error("Error", {
-          description: "El teléfono es requerido.",
-        });
-        return;
-      }
-      if (!experienceLevel) {
-        toast.error("Error", {
-          description: "La experiencia es requerida.",
-        });
-        return;
-      }
-      if (!birthdate) {
-        toast.error("Error", {
-          description: "La fecha de nacimiento es requerida.",
-        });
-        return;
-      }
-      if (!preferredWorkoutTime) {
-        toast.error("Error", {
-          description: "El horario preferido es requerido.",
-        });
-        return;
-      }
-      if (!dailyActivity) {
-        toast.error("Error", {
-          description: "La actividad diaria es requerida.",
-        });
-        return;
-      }
-      if (!goal) {
-        toast.error("Error", {
-          description: "El objetivo es requerido.",
-        });
-        return;
-      }
-      if (!dietaryPreference) {
-        toast.error("Error", {
-          description: "La preferencia dietética es requerida.",
+          description: "Todos los campos son requeridos.",
         });
         return;
       }
@@ -206,7 +188,6 @@ export default function ProfilePage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          // email,
           name,
           phone,
           experienceLevel,
@@ -222,15 +203,40 @@ export default function ProfilePage() {
         throw new Error("Failed to update profile");
       }
 
+      const data = await response.json();
+
+      // Actualizar la sesión con los nuevos datos
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          name,
+          experienceLevel,
+          profile: data.profile,
+          _localStorage: {
+            name,
+            email: session?.user?.email || "",
+            experienceLevel,
+            image: session?.user?.image || "",
+            profile: data.profile,
+          },
+        },
+      });
+
+      // Forzar actualización de la sesión
+      await fetch("/api/auth/session", {
+        method: "GET",
+      });
+
+      // Cerrar el modo de edición
       setIsEditing(false);
 
-      // Force refresh to show updated data
-      // window.location.reload();
+      // Forzar recarga de la página
+      window.location.reload();
 
       toast.success("Perfil actualizado", {
         description: "Tu perfil ha sido actualizado correctamente.",
       });
-      window.location.reload();
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Error", {
@@ -247,73 +253,41 @@ export default function ProfilePage() {
         <CardContent className="pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="flex flex-col items-center md:items-start relative">
-              {(session?.user?.image && (
-                <div className="relative group">
-                  <Avatar className="h-24 w-24 border-4 border-background">
-                    <AvatarImage
-                      src={session?.user.image}
-                      alt="Profile picture"
+              <div className="relative group">
+                <Avatar className="h-24 w-24 border-4 border-background">
+                  <AvatarImage
+                    src={session?.user?.image || undefined}
+                    alt="Profile picture"
+                    key={session?.user?.image || Date.now()}
+                  />
+                  <AvatarFallback className="text-2xl">
+                    {session?.user?.name
+                      ?.split(" ")
+                      .map((word) => word[0])
+                      .join("")
+                      .toUpperCase()}
+                  </AvatarFallback>
+                </Avatar>
+                {isEditing && (
+                  <div
+                    className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    onClick={() =>
+                      document.getElementById("profile-image-upload")?.click()
+                    }
+                  >
+                    <span className="text-white font-medium tracking-tighter text-xs">
+                      cambiar
+                    </span>
+                    <input
+                      id="profile-image-upload"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleImageUpload}
                     />
-                    <AvatarFallback className="text-2xl">
-                      {session?.user?.name
-                        ?.split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {isEditing && (
-                    <div
-                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                      onClick={() =>
-                        document.getElementById("profile-image-upload")?.click()
-                      }
-                    >
-                      <span className="text-white font-medium tracking-tighter text-xs">
-                        cambiar
-                      </span>
-                      <input
-                        id="profile-image-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageUpload}
-                      />
-                    </div>
-                  )}
-                </div>
-              )) || (
-                <div className="relative group">
-                  <Avatar className="h-24 w-24 border-4 border-background">
-                    <AvatarFallback className="text-2xl">
-                      {session?.user?.name
-                        ?.split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
-                  </Avatar>
-                  {isEditing && (
-                    <div
-                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                      onClick={() =>
-                        document.getElementById("profile-image-upload")?.click()
-                      }
-                    >
-                      <span className="text-white font-medium tracking-tighter text-xs">
-                        cambiar
-                      </span>
-                      <input
-                        id="profile-image-upload"
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleImageUpload}
-                      />
-                    </div>
-                  )}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
@@ -398,7 +372,7 @@ export default function ProfilePage() {
                 ) : isEditing ? (
                   "Guardar"
                 ) : (
-                  "Editar perfil"
+                  "Editar"
                 )}
               </Button>
               {/* button cancel */}

@@ -19,7 +19,6 @@ import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
 import WorkoutCreator from "@/components/workouts/workout-creator";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-// import { WorkoutGeneratorForm } from "@/components/workout-generator/workout-generator-form";
 import WorkoutHistory from "@/components/workouts/workout-history";
 
 interface UserProfile {
@@ -106,15 +105,6 @@ export default function WorkoutsPage() {
                 </span>
               </div>
               <Progress value={5 * 14.28} className="h-2" />
-              {/* <div className="grid grid-cols-7 gap-2 text-xs text-center pt-2">
-                <div className="bg-primary/20 rounded-sm py-1">L</div>
-                <div className="bg-primary/20 rounded-sm py-1">M</div>
-                <div className="py-1">X</div>
-                <div className="bg-primary/20 rounded-sm py-1">J</div>
-                <div className="bg-primary/20 rounded-sm py-1">V</div>
-                <div className="bg-primary/20 rounded-sm py-1">S</div>
-                <div className="py-1">D</div>
-              </div> */}
             </div>
           </div>
         </CardContent>

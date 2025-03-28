@@ -29,6 +29,9 @@ async function getUserDataWithCache(userId: string) {
     return cached.data;
   }
 
+  // Limpiar la caché en memoria
+  userDataCache.delete(userId);
+
   let userData = (await redis.hgetall(`user:${userId}:data`)) as Record<
     string,
     string | undefined
@@ -42,6 +45,7 @@ async function getUserDataWithCache(userId: string) {
         email: true,
         experienceLevel: true,
         image: true,
+        profile: true,
       },
     });
 
@@ -51,8 +55,13 @@ async function getUserDataWithCache(userId: string) {
         email: userFromDB.email ?? "",
         experienceLevel: userFromDB.experienceLevel ?? "",
         image: userFromDB.image ?? "",
+        profile: userFromDB.profile
+          ? JSON.stringify(userFromDB.profile)
+          : undefined,
       };
 
+      // Limpiar la caché de Redis antes de actualizar
+      await redis.del(`user:${userId}:data`);
       await redis.hmset(`user:${userId}:data`, userData);
       await redis.expire(`user:${userId}:data`, 60 * 60 * 24); // 24 horas
     }
@@ -182,7 +191,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }: { token: JWT; user?: User | AdapterUser }) {
       if (user) {
-        const customUser = user as CustomUser; // Forzar tipo CustomUser
+        const customUser = user as CustomUser;
 
         token.id = customUser.id;
         await redis.hset(`user:${customUser.id}:data`, {
@@ -199,18 +208,28 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = typeof token.id === "string" ? token.id : "";
-        // Registrar actividad para tracking de usuarios activos
-        await redis.set(`user:${token.id}:lastActive`, Date.now().toString(), {
-          ex: 60 * 60 * 24 * 7, // Expira en 7 días
-        });
 
         // Obtener datos básicos usando el sistema de caché
         const userData = await getUserDataWithCache(session.user.id);
 
-        session.user.name = userData?.name ?? "";
-        session.user.email = userData?.email ?? "";
-        session.user.experienceLevel = userData?.experienceLevel ?? "";
-        session.user.image = userData?.image ?? "";
+        // Obtener datos actualizados de la base de datos
+        const userFromDB = await prisma.user.findUnique({
+          where: { id: session.user.id },
+          select: {
+            name: true,
+            email: true,
+            experienceLevel: true,
+            image: true,
+            profile: true,
+          },
+        });
+
+        // Usar datos de la base de datos como fuente principal
+        session.user.name = userFromDB?.name ?? userData?.name ?? "";
+        session.user.email = userFromDB?.email ?? userData?.email ?? "";
+        session.user.experienceLevel =
+          userFromDB?.experienceLevel ?? userData?.experienceLevel ?? "";
+        session.user.image = userFromDB?.image ?? userData?.image ?? "";
 
         // Obtener el perfil del usuario desde Redis o la BD
         let profile: any = await redis.get(`profile:${session.user.id}`);
@@ -228,6 +247,18 @@ export const authOptions: NextAuthOptions = {
         }
 
         (session.user as any).profile = profile || null;
+
+        // Agregar datos para localStorage
+        session.user = {
+          ...session.user,
+          _localStorage: {
+            name: session.user.name,
+            email: session.user.email,
+            experienceLevel: session.user.experienceLevel,
+            image: session.user.image,
+            profile: (session.user as any).profile,
+          },
+        };
       }
       return session;
     },

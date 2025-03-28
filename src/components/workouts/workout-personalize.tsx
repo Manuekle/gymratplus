@@ -20,15 +20,16 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
-import { ScrollArea } from "../ui/scroll-area";
-import { Label } from "../ui/label";
-import { Input } from "../ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   ArrowLeft01Icon,
   ArrowRight01Icon,
   Cancel01Icon,
 } from "hugeicons-react";
+import { useWorkouts } from "@/hooks/use-workouts";
 
 interface Exercise {
   id: string;
@@ -98,6 +99,8 @@ export function WorkoutPersonalize() {
   const [days, setDays] = useState<string[]>([]);
   const [step, setStep] = useState(1);
   const [workoutType, setWorkoutType] = useState<WorkoutType>("estandar");
+  const [open, setOpen] = useState(false);
+  const { refreshWorkouts } = useWorkouts();
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -207,7 +210,8 @@ export function WorkoutPersonalize() {
       }
 
       toast.success("Entrenamiento creado con éxito");
-      window.location.reload();
+      await refreshWorkouts();
+      setOpen(false);
     } catch (error) {
       console.error("Error creating personalized workout:", error);
       toast.error("Error al crear el entrenamiento");
@@ -234,7 +238,7 @@ export function WorkoutPersonalize() {
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button className="text-xs" size="sm" variant="outline">
             Personalizar rutina

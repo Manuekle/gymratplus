@@ -11,6 +11,7 @@ import {
 import { Calendar01Icon } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 import { Workout } from "@/types/workout-types";
 
@@ -19,6 +20,8 @@ interface StepResultsProps {
 }
 
 export function StepResults({ workout }: StepResultsProps) {
+  const router = useRouter();
+
   if (!workout) {
     return (
       <div className="text-center py-12">
@@ -133,7 +136,7 @@ export function StepResults({ workout }: StepResultsProps) {
           <Button
             size="sm"
             className="text-xs"
-            onClick={() => window.location.reload()}
+            onClick={() => router.push("/dashboard/workout")}
           >
             Cerrar
           </Button>

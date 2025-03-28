@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import WorkoutExercise from "../workouts/workout-exercise";
+import { toast } from "sonner";
+import { Delete02Icon } from "hugeicons-react";
 
 interface Exercise {
   id: string;
@@ -17,8 +19,40 @@ interface WorkoutNewProps {
   days: string[];
 }
 
-export function WorkoutNew({ workoutId, exercises, days }: WorkoutNewProps) {
+export function WorkoutNew({
+  workoutId,
+  exercises: initialExercises,
+  days,
+}: WorkoutNewProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
+
+  const handleDelete = async (exerciseId: string) => {
+    try {
+      const res = await fetch(
+        `/api/workouts/${workoutId}/exercises/${exerciseId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      if (res.ok) {
+        setExercises((prevExercises) =>
+          prevExercises.filter((ex) => ex.id !== exerciseId)
+        );
+        toast.success("Ejercicio eliminado", {
+          description: "El ejercicio se ha eliminado correctamente",
+        });
+      } else {
+        throw new Error("Error al eliminar el ejercicio");
+      }
+    } catch (error) {
+      console.error("Error al eliminar el ejercicio:", error);
+      toast.error("Error al eliminar el ejercicio", {
+        description: "Ha ocurrido un error al intentar eliminar el ejercicio",
+      });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -42,6 +76,14 @@ export function WorkoutNew({ workoutId, exercises, days }: WorkoutNewProps) {
                   </p>
                 )}
               </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                onClick={() => handleDelete(exercise.id)}
+              >
+                <Delete02Icon className="h-4 w-4" />
+              </Button>
             </div>
             <div className="p-4 grid grid-cols-3 gap-4 text-center">
               <div>

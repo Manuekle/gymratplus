@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -177,6 +178,7 @@ function MacroCircle({
 }
 
 export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState("foods");
   const [mealType, setMealType] = useState("desayuno");
@@ -281,7 +283,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
       // Crear un array de promesas para enviar cada alimento
       const promises = selectedItems.map(async (selectedItem) => {
-        const item = selectedItem.data;
+        // const item = selectedItem.data;
         const quantity = selectedItem.quantity;
 
         const payload = {
@@ -303,7 +305,8 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         });
 
         if (!response.ok) {
-          throw new Error(`Error al registrar ${item.name}`);
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Error al registrar las comidas");
         }
 
         return response.json();
@@ -314,13 +317,9 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
       setOpen(false);
       resetForm();
+      router.refresh();
 
-      toast.success("Comidas registradas", {
-        description: `Se han registrado ${selectedItems.length} alimentos correctamente`,
-      });
-
-      // Recargar la página para mostrar los nuevos registros
-      window.location.reload();
+      toast.success("Comidas registradas correctamente");
     } catch (error) {
       console.error("Error adding meal logs:", error);
       toast.error("Error", {

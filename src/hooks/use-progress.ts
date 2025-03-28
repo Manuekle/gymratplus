@@ -125,7 +125,6 @@ export const useProgress = () => {
 
         toast.success("Registro guardado correctamente");
         setProgressData((prevProgressData) => [...prevProgressData, newRecord]);
-        window.location.reload();
         return newRecord;
       } catch (error) {
         console.error("Error al crear registro de progreso:", error);
@@ -175,7 +174,11 @@ export const useProgress = () => {
         dataCacheRef.current = {};
 
         toast.success("Registro actualizado correctamente");
-        window.location.reload();
+        setProgressData((prevProgressData) =>
+          prevProgressData.map((record) =>
+            record.id === updatedRecord.id ? updatedRecord : record
+          )
+        );
         return updatedRecord;
       } catch (error) {
         console.error("Error al actualizar registro de progreso:", error);
@@ -215,7 +218,9 @@ export const useProgress = () => {
       dataCacheRef.current = {};
 
       toast.success("Registro eliminado correctamente");
-      window.location.reload();
+      setProgressData((prevProgressData) =>
+        prevProgressData.filter((record) => record.id !== id)
+      );
       return true;
     } catch (error) {
       console.error("Error al eliminar registro de progreso:", error);

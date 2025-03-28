@@ -174,6 +174,9 @@ export async function PUT(request: Request) {
           experienceLevel: data.experienceLevel ?? undefined,
         },
       });
+
+      // Limpiar la caché del usuario
+      await redis.del(`user:${userId}:data`);
     }
 
     // Actualizar o crear el perfil del usuario
@@ -211,12 +214,25 @@ export async function PUT(request: Request) {
       ex: PROFILE_CACHE_TTL,
     });
 
+    // Obtener el usuario actualizado con todos sus datos
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        name: true,
+        email: true,
+        experienceLevel: true,
+        image: true,
+        profile: true,
+      },
+    });
+
     // Refrescar la sesión actualizada
     const updatedSession = await getServerSession(authOptions);
 
     return NextResponse.json({
       success: true,
       profile,
+      user: updatedUser,
       session: updatedSession,
     });
   } catch (error) {

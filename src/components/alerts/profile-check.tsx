@@ -168,9 +168,8 @@ const ProfileCheck = () => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              // window.location.reload();
               className="text-xs"
-              onClick={() => window.location.reload()} // Reload the page
+              onClick={() => router.push("/dashboard/profile")}
             >
               Volver
             </AlertDialogCancel>

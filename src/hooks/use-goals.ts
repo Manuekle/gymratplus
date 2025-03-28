@@ -155,7 +155,7 @@ export function useGoals() {
       dataCacheRef.current = {};
 
       toast.success("Objetivo creado correctamente");
-      window.location.reload();
+      setGoals((prevGoals) => [...prevGoals, newGoal]);
       return newGoal;
     } catch (error) {
       console.error("Error al crear objetivo:", error);
@@ -190,7 +190,11 @@ export function useGoals() {
         dataCacheRef.current = {};
 
         toast.success("Objetivo actualizado correctamente");
-        window.location.reload();
+        setGoals((prevGoals) =>
+          prevGoals.map((goal) =>
+            goal.id === updatedGoal.id ? updatedGoal : goal
+          )
+        );
         return updatedGoal;
       } catch (error) {
         console.error("Error al actualizar objetivo:", error);
@@ -220,7 +224,7 @@ export function useGoals() {
       dataCacheRef.current = {};
 
       toast.success("Objetivo eliminado correctamente");
-      window.location.reload();
+      setGoals((prevGoals) => prevGoals.filter((goal) => goal.id !== id));
       return true;
     } catch (error) {
       console.error("Error al eliminar objetivo:", error);
@@ -257,7 +261,19 @@ export function useGoals() {
         dataCacheRef.current = {};
 
         toast.success("Progreso actualizado correctamente");
-        window.location.reload();
+        setGoals((prevGoals) =>
+          prevGoals.map((goal) =>
+            goal.id === goalId
+              ? {
+                  ...goal,
+                  progressUpdates: [
+                    ...(goal.progressUpdates || []),
+                    newProgressUpdate,
+                  ],
+                }
+              : goal
+          )
+        );
         return newProgressUpdate;
       } catch (error) {
         console.error("Error al añadir actualización de progreso:", error);

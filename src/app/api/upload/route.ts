@@ -3,6 +3,7 @@ import { put } from "@vercel/blob";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redis } from "@/lib/redis";
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -34,15 +35,43 @@ export async function POST(request: Request) {
     // Upload to Vercel Blob
     const blob = await put(filename, file, {
       access: "public",
-      token: process.env.BLOB_READ_WRITE_TOKEN, // Asegúrate de definir esta variable en tu .env
+      token: process.env.BLOB_READ_WRITE_TOKEN,
     });
 
-    const cacheKey = `user:${session.user.id}:data`;
+    // Actualizar la imagen en la base de datos
+    await prisma.user.update({
+      where: { id: userId },
+      data: { image: blob.url },
+    });
 
-    // Actualizar solo la imagen sin perder los otros datos
-    await redis.hset(cacheKey, { image: blob.url });
+    // Limpiar todas las cachés relacionadas con el usuario
+    const cacheKeys = [
+      `user:${userId}:data`,
+      `profile:${userId}`,
+      `session:${userId}`,
+    ];
 
-    return NextResponse.json({ success: true, url: blob.url });
+    // Eliminar todas las cachés
+    await Promise.all(cacheKeys.map((key) => redis.del(key)));
+
+    // Obtener el usuario actualizado
+    const updatedUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        name: true,
+        email: true,
+        experienceLevel: true,
+        image: true,
+        profile: true,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      url: blob.url,
+      user: updatedUser,
+      message: "Imagen actualizada correctamente",
+    });
   } catch (error) {
     console.error("Error uploading file:", error);
     return NextResponse.json(

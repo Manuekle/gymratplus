@@ -1,17 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useState } from "react";
 import {
   DataTable,
   TableSkeleton,
   createSortableColumn,
-  // createDateColumn,
   createActionsColumn,
   createDateColumn,
 } from "@/components/ui/data-table";
-import { toast } from "sonner";
 import { Delete02Icon, EyeIcon } from "hugeicons-react";
 import {
   Dialog,
@@ -24,6 +21,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircleIcon } from "hugeicons-react";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Icons } from "@/components/icons";
+import { useWorkouts } from "@/hooks/use-workouts";
 
 interface Workout {
   id: string;
@@ -32,80 +30,23 @@ interface Workout {
   createdAt: string;
 }
 
-// Datos de ejemplo
-
 export default function WorkoutsTable() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [workoutToDelete, setWorkoutToDelete] = useState<Workout | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const { data: session } = useSession();
   const router = useRouter();
+  const { workouts, isLoading, isDeleting, deleteWorkout } = useWorkouts();
 
-  useEffect(() => {
-    if (!session) return;
-
-    const fetchWorkouts = async () => {
-      const res = await fetch("/api/workouts");
-      if (res.ok) {
-        const data = await res.json();
-        // setWorkouts(data);
-        console.log(data);
-        const timer = setTimeout(() => {
-          setWorkouts(data);
-          setIsLoading(false);
-        }, 1500);
-
-        return () => clearTimeout(timer);
-      }
-    };
-
-    fetchWorkouts();
-  }, [session]);
-
-  // Funciones para manejar acciones
   const handleViewDetails = (workout: Workout) => {
-    console.log(`Ver detalles de ${workout.name}`);
     router.push(`/dashboard/workout/${workout.id}`);
-    // alert(`Navegando a los detalles de la tienda: ${workout.name}`);
   };
 
-  // const handleEdit = (workout: Workout) => {
-  //   console.log(`Editar ${workout.name}`);
-  //   alert(`Editando tienda: ${workout.name}`);
-  // };
-
   const handleDelete = async (workout: Workout) => {
-    setIsDeleting(true);
-    try {
-      const res = await fetch(`/api/workouts/${workout.id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        console.log(data);
-        toast.success("¡Rutina eliminada!", {
-          description: `La rutina "${workout.name}" ha sido eliminada correctamente.`,
-          duration: 3000,
-        });
-        setWorkoutToDelete(null);
-      }
-    } catch (error) {
-      console.error("Error eliminando la rutina:", error);
-      toast.error("Error al eliminar", {
-        description: `No se pudo eliminar la rutina "${workout.name}". Por favor, intenta nuevamente.`,
-        duration: 4000,
-      });
-    } finally {
-      setIsDeleting(false);
-      window.location.reload();
-    }
+    await deleteWorkout(workout.id, workout.name);
+    setWorkoutToDelete(null);
   };
 
   const columns = [
     createDateColumn<Workout>("createdAt", "Fecha", "dd/MM/yyyy"),
     createSortableColumn<Workout>("name", "Nombre"),
-    // createSortableColumn<Workout>("description", "Descripción"),
     createActionsColumn<Workout>("", [
       {
         label: "Ver rutina",

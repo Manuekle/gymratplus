@@ -28,7 +28,7 @@ export type FormData = {
   name: string;
 };
 
-export function WorkoutGeneratorForm() {
+export function WorkoutGenerator() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     goal: "",

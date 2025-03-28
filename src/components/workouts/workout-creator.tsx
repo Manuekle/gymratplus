@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import WorkoutsTable from "../tables/workouts-table";
-import { WorkoutGeneratorForm } from "../workout-generator/workout-generator-form";
+import { WorkoutGenerator } from "../workout-generator/workout-generator";
 // import ExerciseButtons from "../config/add-exercise-button";
 
 export default function WorkoutCreator() {
@@ -24,7 +24,7 @@ export default function WorkoutCreator() {
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          <WorkoutGeneratorForm />
+          <WorkoutGenerator />
           <WorkoutsTable />
         </div>
       </CardContent>
