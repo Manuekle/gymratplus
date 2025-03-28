@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -144,17 +145,13 @@ export default function ActiveWorkoutPage() {
   };
 
   // Iniciar temporizador de descanso
-  const startRestTimer = (exerciseId: string, restTime: number) => {
-    // Reproducir sonido al iniciar el descanso
-    const audio = new Audio("/sounds/timer-start.mp3");
-    audio.play().catch((e) => console.log("Error playing sound:", e));
-
-    setRestTimer({
-      active: true,
-      timeLeft: restTime,
-      exerciseId,
-    });
-  };
+  // const startRestTimer = (exerciseId: string, restTime: number) => {
+  //   setRestTimer({
+  //     active: true,
+  //     timeLeft: restTime,
+  //     exerciseId,
+  //   });
+  // };
 
   // Formatear tiempo en formato mm:ss
   const formatTime = (seconds: number) => {
@@ -166,60 +163,60 @@ export default function ActiveWorkoutPage() {
   };
 
   // Actualizar un set
-  const updateSet = async (setId: string, data: Partial<Set>) => {
-    try {
-      setIsUpdating((prev) => ({ ...prev, [setId]: true }));
+  // const updateSet = async (setId: string, data: Partial<Set>) => {
+  //   try {
+  //     setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
-      // Actualizar inmediatamente la UI
-      setWorkoutSession((prev) => {
-        if (!prev) return prev;
-        const updated = { ...prev };
-        updated.exercises = updated.exercises.map((ex) => {
-          const updatedEx = { ...ex };
-          updatedEx.sets = updatedEx.sets.map((set) => {
-            if (set.id === setId) {
-              return { ...set, ...data };
-            }
-            return set;
-          });
-          return updatedEx;
-        });
-        return updated;
-      });
+  //     // Actualizar inmediatamente la UI
+  //     setWorkoutSession((prev) => {
+  //       if (!prev) return prev;
+  //       const updated = { ...prev };
+  //       updated.exercises = updated.exercises.map((ex) => {
+  //         const updatedEx = { ...ex };
+  //         updatedEx.sets = updatedEx.sets.map((set) => {
+  //           if (set.id === setId) {
+  //             return { ...set, ...data };
+  //           }
+  //           return set;
+  //         });
+  //         return updatedEx;
+  //       });
+  //       return updated;
+  //     });
 
-      const response = await fetch("/api/workout-session/set", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ setId, ...data }),
-      });
+  //     const response = await fetch("/api/workout-session/set", {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({ setId, ...data }),
+  //     });
 
-      if (response.ok) {
-        // Actualizar los valores de input después de una actualización exitosa
-        if (data.weight !== undefined) {
-          setInputValues((prev) => ({
-            ...prev,
-            [setId]: {
-              ...prev[setId],
-              weight: data.weight?.toString() || "",
-            },
-          }));
-        }
-        if (data.reps !== undefined) {
-          setInputValues((prev) => ({
-            ...prev,
-            [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
-          }));
-        }
-      }
-    } catch (error) {
-      console.error("Error al actualizar set:", error);
-      toast.error("Error", {
-        description: "No se pudo actualizar el set",
-      });
-    } finally {
-      setIsUpdating((prev) => ({ ...prev, [setId]: false }));
-    }
-  };
+  //     if (response.ok) {
+  //       // Actualizar los valores de input después de una actualización exitosa
+  //       if (data.weight !== undefined) {
+  //         setInputValues((prev) => ({
+  //           ...prev,
+  //           [setId]: {
+  //             ...prev[setId],
+  //             weight: data.weight?.toString() || "",
+  //           },
+  //         }));
+  //       }
+  //       if (data.reps !== undefined) {
+  //         setInputValues((prev) => ({
+  //           ...prev,
+  //           [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
+  //         }));
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.error("Error al actualizar set:", error);
+  //     toast.error("Error", {
+  //       description: "No se pudo actualizar el set",
+  //     });
+  //   } finally {
+  //     setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+  //   }
+  // };
 
   // Completar un ejercicio
   const completeExercise = async (exerciseSessionId: string) => {
