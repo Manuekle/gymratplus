@@ -98,23 +98,6 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
               </Button>
             </div>
           </div>
-          {/* <div className="flex justify-end space-x-2 pt-2">
-            <Button
-              size="sm"
-              className="text-xs px-4"
-              type="submit"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando
-                </>
-              ) : (
-                "Guardar"
-              )}
-            </Button>
-          </div> */}
         </form>
       </DialogContent>
     </Dialog>
