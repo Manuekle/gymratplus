@@ -157,7 +157,7 @@ export const exercises = [
     description: "Ejercicio compuesto para pecho inferior y tríceps",
   },
   {
-    name: "Máquina de press",
+    name: "Press de pecho en máquina",
     muscleGroup: "pecho",
     equipment: "máquina",
     description: "Ejercicio compuesto para pecho",
@@ -175,7 +175,7 @@ export const exercises = [
     description: "Ejercicio para pecho y dorsal",
   },
   {
-    name: "Press de pecho con mancuernas",
+    name: "Press plano con mancuernas",
     muscleGroup: "pecho",
     equipment: "peso libre",
     description: "Variante más libre del press de banca",
@@ -355,36 +355,66 @@ export const exercises = [
     description: "Ejercicio compuesto para hombros y tríceps",
   },
   {
-    name: "Elevaciones laterales",
-    muscleGroup: "hombros",
-    equipment: "peso libre",
-    description: "Ejercicio de aislamiento para deltoides lateral",
-  },
-  {
-    name: "Elevaciones frontales",
-    muscleGroup: "hombros",
-    equipment: "peso libre",
-    description: "Ejercicio de aislamiento para deltoides anterior",
-  },
-  {
-    name: "Pájaro",
-    muscleGroup: "hombros",
-    equipment: "peso libre",
-    description: "Ejercicio de aislamiento para deltoides posterior",
-  },
-  {
-    name: "Press Arnold",
-    muscleGroup: "hombros",
-    equipment: "peso libre",
-    description: "Ejercicio compuesto para hombros",
-  },
-  {
     name: "Remo al mentón",
     muscleGroup: "hombros",
     equipment: "peso libre",
     description: "Ejercicio compuesto para hombros y trapecios",
   },
-
+  {
+    name: "Elevaciones laterales en polea baja",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Aislamiento del deltoides lateral con resistencia constante",
+  },
+  {
+    name: "Elevaciones frontales en polea baja",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Aislamiento del deltoides anterior con resistencia constante",
+  },
+  {
+    name: "Pájaro en polea",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description:
+      "Aislamiento del deltoides posterior con resistencia constante",
+  },
+  {
+    name: "Face pull",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Ejercicio para deltoides posterior y rotadores externos",
+  },
+  {
+    name: "Press Arnold en polea",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Variante del press Arnold con resistencia constante",
+  },
+  {
+    name: "Rotación externa en polea",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Aislamiento de rotadores externos del hombro",
+  },
+  {
+    name: "Rotación interna en polea",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Aislamiento de rotadores internos del hombro",
+  },
+  {
+    name: "Elevaciones laterales en polea alta",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Variante de elevaciones laterales con ángulo diferente",
+  },
+  {
+    name: "Press militar en polea",
+    muscleGroup: "hombros",
+    equipment: "máquina",
+    description: "Variante del press militar con resistencia constante",
+  },
   // Brazo
   {
     name: "Curl de bíceps con barra",
@@ -490,48 +520,6 @@ export const exercises = [
     description: "Enfocado en antebrazos y braquiorradial",
   },
   {
-    name: "Curl de muñeca giratorio",
-    muscleGroup: "brazos",
-    equipment: "peso libre",
-    description: "Desarrollo completo de antebrazos con rotación",
-  },
-  {
-    name: "Curl predicador en máquina",
-    muscleGroup: "brazos",
-    equipment: "máquina",
-    description: "Aislamiento de bíceps con soporte mecánico",
-  },
-  {
-    name: "Extensiones tras nuca con disco",
-    muscleGroup: "brazos",
-    equipment: "peso libre",
-    description: "Ejercicio unilateral para tríceps largo",
-  },
-  {
-    name: "Curl de martillo en polea baja",
-    muscleGroup: "brazos",
-    equipment: "máquina",
-    description: "Resistencia constante para braquial y antebrazos",
-  },
-  {
-    name: "Farmer's Walk con mancuernas",
-    muscleGroup: "brazos",
-    equipment: "peso libre",
-    description: "Desarrollo de agarre y antebrazos con carga",
-  },
-  {
-    name: "Press de tríceps en máquina",
-    muscleGroup: "brazos",
-    equipment: "máquina",
-    description: "Movimiento guiado para cabeza medial del tríceps",
-  },
-  {
-    name: "Curl de bíceps en máquina Scott",
-    muscleGroup: "brazos",
-    equipment: "máquina",
-    description: "Aislamiento máximo con soporte para bíceps",
-  },
-  {
     name: "Curl de muñeca con barra",
     muscleGroup: "brazos",
     equipment: "peso libre",
@@ -544,16 +532,49 @@ export const exercises = [
     description: "Aislamiento para extensores del antebrazo",
   },
   {
-    name: "Sujeción con agarre",
-    muscleGroup: "brazos",
-    equipment: "peso libre",
-    description: "Ejercicio isométrico para mejorar fuerza de agarre",
-  },
-  {
-    name: "Farmer's Walk",
+    name: "Caminata del Granjero",
     muscleGroup: "brazos",
     equipment: "peso libre",
     description: "Trabajo de antebrazo y agarre cargando pesas al caminar",
+  },
+  {
+    name: "Curl de muñeca con mancuerna",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Aislamiento unilateral para flexores del antebrazo",
+  },
+  {
+    name: "Curl de muñeca inverso con mancuerna",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Aislamiento unilateral para extensores del antebrazo",
+  },
+  {
+    name: "Sujeción con agarre ancho",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description: "Ejercicio isométrico para mejorar fuerza de agarre con barra",
+  },
+  {
+    name: "Curl de muñeca con disco",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description:
+      "Variación del curl de muñeca con disco para mayor rango de movimiento",
+  },
+  {
+    name: "Curl de muñeca inverso con disco",
+    muscleGroup: "brazos",
+    equipment: "peso libre",
+    description:
+      "Variación del curl inverso con disco para mayor rango de movimiento",
+  },
+  {
+    name: "Sujeción con toalla",
+    muscleGroup: "brazos",
+    equipment: "accesorio",
+    description:
+      "Ejercicio isométrico para mejorar fuerza de agarre usando una toalla",
   },
   // Abdomen
   {
