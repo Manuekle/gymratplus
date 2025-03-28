@@ -117,6 +117,7 @@ export default function ProfilePage() {
       // setTimeout(() => {
       //   window.location.reload();
       // }, 1000);
+      setIsEditing(false);
     } catch (error) {
       console.error("Error al subir la imagen:", error);
       toast.error("Error", {
@@ -237,6 +238,9 @@ export default function ProfilePage() {
       toast.success("Perfil actualizado", {
         description: "Tu perfil ha sido actualizado correctamente.",
       });
+
+      // isEditing
+      // setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Error", {
