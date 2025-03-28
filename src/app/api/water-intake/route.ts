@@ -9,6 +9,7 @@ import {
   publishWaterIntake,
 } from "@/lib/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/create-system-notifications";
+import { startOfDay } from "date-fns";
 
 // POST update water intake
 export async function POST(req: NextRequest) {
@@ -20,7 +21,11 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { intake, date = new Date().toISOString().split("T")[0] } = body;
+    const today = new Date();
+    const defaultDate = `${today.getFullYear()}-${String(
+      today.getMonth() + 1
+    ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+    const { intake, date = defaultDate } = body;
 
     // Enhanced validation
     if (intake === undefined || intake === null) {
@@ -46,12 +51,15 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Create a date at start of day in local timezone
+    const intakeDate = startOfDay(new Date(date));
+
     // Update in database
     const updatedIntake = await prisma.dailyWaterIntake.upsert({
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(`${date}T12:00:00`),
+          date: intakeDate,
         },
       },
       update: {
@@ -59,7 +67,7 @@ export async function POST(req: NextRequest) {
       },
       create: {
         userId: session.user.id,
-        date: new Date(`${date}T12:00:00`),
+        date: intakeDate,
         intake: numericIntake,
       },
     });
@@ -116,16 +124,21 @@ export async function GET(req: NextRequest) {
   }
 
   const url = new URL(req.url);
-  const date =
-    url.searchParams.get("date") || new Date().toISOString().split("T")[0];
+  const today = new Date();
+  const defaultDate = `${today.getFullYear()}-${String(
+    today.getMonth() + 1
+  ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  const date = url.searchParams.get("date") || defaultDate;
 
   try {
+    const intakeDate = startOfDay(new Date(date));
+
     // Consultar primero en la base de datos
     const dbIntake = await prisma.dailyWaterIntake.findUnique({
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(`${date}T12:00:00`),
+          date: intakeDate,
         },
       },
     });

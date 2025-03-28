@@ -270,6 +270,12 @@ export const exercises = [
     description: "Ejercicio compuesto para espalda y bíceps",
   },
   {
+    name: "Jalón en polea unilateral",
+    muscleGroup: "espalda",
+    equipment: "máquina",
+    description: "Ejercicio aislado para espalda",
+  },
+  {
     name: "Remo en máquina",
     muscleGroup: "espalda",
     equipment: "máquina",
@@ -365,6 +371,18 @@ export const exercises = [
     muscleGroup: "hombros",
     equipment: "máquina",
     description: "Aislamiento del deltoides lateral con resistencia constante",
+  },
+  {
+    name: "Elevaciones laterales con mancuernas",
+    muscleGroup: "hombros",
+    equipment: "peso libre",
+    description: "Ejercicio compuesto para hombros y trapecios",
+  },
+  {
+    name: "Elevaciones frontales con mancuernas",
+    muscleGroup: "hombros",
+    equipment: "peso libre",
+    description: "Ejercicio compuesto para hombros y trapecios",
   },
   {
     name: "Elevaciones frontales en polea baja",
