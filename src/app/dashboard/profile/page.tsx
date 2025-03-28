@@ -114,9 +114,9 @@ export default function ProfilePage() {
       });
 
       // Forzar recarga de la página después de un pequeño retraso
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      // setTimeout(() => {
+      //   window.location.reload();
+      // }, 1000);
     } catch (error) {
       console.error("Error al subir la imagen:", error);
       toast.error("Error", {
@@ -232,7 +232,7 @@ export default function ProfilePage() {
       setIsEditing(false);
 
       // Forzar recarga de la página
-      window.location.reload();
+      // window.location.reload();
 
       toast.success("Perfil actualizado", {
         description: "Tu perfil ha sido actualizado correctamente.",
