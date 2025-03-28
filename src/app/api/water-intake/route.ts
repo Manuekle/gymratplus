@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(date),
+          date: new Date(`${date}T12:00:00`),
         },
       },
       update: {
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
       },
       create: {
         userId: session.user.id,
-        date: new Date(date),
+        date: new Date(`${date}T12:00:00`),
         intake: numericIntake,
       },
     });
@@ -125,7 +125,7 @@ export async function GET(req: NextRequest) {
       where: {
         userId_date: {
           userId: session.user.id,
-          date: new Date(date),
+          date: new Date(`${date}T12:00:00`),
         },
       },
     });

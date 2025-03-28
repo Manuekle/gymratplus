@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis";
+import { startOfDay } from "date-fns";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -13,7 +14,7 @@ export async function GET() {
 
   try {
     // Obtener datos de la base de datos primero
-    const thirtyDaysAgo = new Date();
+    const thirtyDaysAgo = startOfDay(new Date());
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
     const dbHistory = await prisma.dailyWaterIntake.findMany({
@@ -28,17 +29,21 @@ export async function GET() {
       },
     });
 
-    const formattedHistory = dbHistory.map((entry) => ({
-      date: entry.date.toISOString().split("T")[0],
-      liters: entry.intake,
-    }));
+    const formattedHistory = dbHistory.map((entry) => {
+      // Asegurarnos de que la fecha se maneje en la zona horaria local
+      const localDate = new Date(entry.date);
+      return {
+        date: localDate.toISOString().split("T")[0],
+        liters: entry.intake,
+      };
+    });
 
     // Actualizar Redis en segundo plano
     if (formattedHistory.length > 0) {
       const historyKey = `water:history:${session.user.id}`;
       const promises = formattedHistory.map((entry) =>
         redis.zadd(historyKey, {
-          score: new Date(entry.date).getTime(),
+          score: new Date(`${entry.date}T12:00:00`).getTime(),
           member: `${entry.date}:${entry.liters}`,
         })
       );

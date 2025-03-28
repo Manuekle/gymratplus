@@ -1,7 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
-import { format, subDays, isSameDay, parseISO } from "date-fns";
+import {
+  format,
+  subDays,
+  isSameDay,
+  parseISO,
+  startOfDay,
+  addDays,
+  setHours,
+} from "date-fns";
 import { es } from "date-fns/locale";
 import { useTheme } from "next-themes";
 import {
@@ -26,39 +34,45 @@ export function WaterHistoryChart({
   targetIntake,
   isLoading = false,
 }: WaterHistoryChartProps) {
-  // Generate dates for the last 14 days
+  // Generate dates for the last 7 days
   const generateDates = () => {
     const dates = [];
-    const today = new Date();
+    const now = new Date();
+    const today = startOfDay(now);
 
-    // Obtener el lunes más reciente o el actual si hoy es lunes
-    const lastMonday = subDays(
-      today,
-      today.getDay() === 0 ? 6 : today.getDay() - 1
-    );
+    // Obtener el lunes más reciente
+    const daysToMonday = today.getDay() === 0 ? 6 : today.getDay() - 1;
+    const lastMonday = subDays(today, daysToMonday);
 
+    // Generar los 7 días de la semana
     for (let i = 0; i < 7; i++) {
-      const date = subDays(lastMonday, -i);
+      const date = addDays(lastMonday, i);
+      const formattedDate = format(date, "yyyy-MM-dd");
       dates.push({
-        date: format(date, "yyyy-MM-dd"),
+        date: formattedDate,
         formattedDate: format(date, "dd MMM", { locale: es }),
         dayLabel: format(date, "EEEE", { locale: es }),
         liters: 0,
       });
     }
 
+    // Mapear los datos del historial a las fechas
     return dates.map((item) => {
-      // Encontrar todas las entradas para este día
       const dayEntries = history.filter((h) => {
         try {
-          return isSameDay(parseISO(h.date), parseISO(item.date));
+          // Ajustar la fecha del historial considerando que viene con hora 19:00
+          const historyDate = new Date(h.date);
+          // Restar 5 horas para compensar la zona horaria
+          historyDate.setHours(historyDate.getHours() - 5);
+          const adjustedHistoryDate = format(historyDate, "yyyy-MM-dd");
+
+          return adjustedHistoryDate === item.date;
         } catch (e) {
           console.error("Invalid date in history:", h.date);
           return false;
         }
       });
 
-      // Tomar el último valor de litros del día (el más alto)
       const lastEntry = dayEntries.reduce(
         (last, current) => (current.liters > last.liters ? current : last),
         { date: item.date, liters: 0 }
@@ -71,8 +85,6 @@ export function WaterHistoryChart({
     });
   };
 
-  console.log(history);
-
   const { theme, systemTheme } = useTheme();
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
@@ -82,8 +94,6 @@ export function WaterHistoryChart({
       ...day,
       dayLabel: format(parseISO(day.date), "EEE", { locale: es }), // Días abreviados en español
     })) ?? [];
-
-  console.log(chartData);
 
   if (isLoading) {
     return <div></div>;

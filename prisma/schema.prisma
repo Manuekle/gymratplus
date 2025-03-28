@@ -252,7 +252,7 @@ model MealLog {
 model DailyWaterIntake {
   id        String   @id @default(cuid())
   userId    String
-  date      DateTime @default(now())
+  date      DateTime @default(now()) @db.Date // Usar solo la fecha sin hora
   intake    Float    @default(0) // En litros
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
