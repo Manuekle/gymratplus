@@ -82,6 +82,13 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// Función auxiliar para extraer el ID del workout de la URL
+function extractWorkoutIdFromUrl(url: string): string | null {
+  // La URL será algo como /api/workouts/abc123/exercises
+  const matches = url.match(/\/workouts\/([^/]+)\/exercises/);
+  return matches ? matches[1] : null;
+}
+
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -89,14 +96,19 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const url = new URL(request.url);
-    const pathParts = url.pathname.split("/");
-    const workoutId = pathParts[pathParts.length - 1];
+    // Extraer el ID del workout de la URL usando una función auxiliar
+    const workoutId = extractWorkoutIdFromUrl(request.url);
+
+    console.log("URL completa:", request.url);
+    console.log("Workout ID extraído:", workoutId);
 
     // Validate that workoutId is not undefined
     if (!workoutId) {
       return NextResponse.json(
-        { error: "ID de entrenamiento no proporcionado" },
+        {
+          error:
+            "ID de entrenamiento no proporcionado o formato de URL incorrecto",
+        },
         { status: 400 }
       );
     }
@@ -110,6 +122,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!existingWorkout) {
+      console.log(
+        "Workout not found or not authorized. User ID:",
+        session.user.id
+      );
       return NextResponse.json(
         { error: "Workout no encontrado o no autorizado" },
         { status: 404 }
@@ -118,6 +134,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
     const { exerciseId, sets, reps, restTime, notes } = body;
+    console.log("Request body:", body);
 
     // Validate exercise exists
     const existingExercise = await prisma.exercise.findUnique({

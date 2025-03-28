@@ -33,6 +33,7 @@ interface WorkoutExerciseProps {
   onClose: () => void;
   days: string[];
   existingExercises?: { id: string; exerciseId: string }[];
+  onExerciseAdded?: () => void; // Callback para notificar al componente padre
 }
 
 export default function WorkoutExercise({
@@ -41,6 +42,7 @@ export default function WorkoutExercise({
   onClose,
   days,
   existingExercises = [],
+  onExerciseAdded,
 }: WorkoutExerciseProps) {
   const router = useRouter();
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -53,23 +55,22 @@ export default function WorkoutExercise({
     restTime: 0,
   });
 
-  useEffect(() => {
-    const fetchExercises = async () => {
-      try {
-        const res = await fetch("/api/exercises");
-        if (res.ok) {
-          const data = await res.json();
-          setExercises(data);
-        } else {
-          console.error("Error fetching exercises:", await res.text());
-          toast.error("Error al cargar ejercicios");
-        }
-      } catch (error) {
-        console.error("Error fetching exercises:", error);
+  const fetchExercises = async () => {
+    try {
+      const res = await fetch("/api/exercises");
+      if (res.ok) {
+        const data = await res.json();
+        setExercises(data);
+      } else {
+        console.error("Error fetching exercises:", await res.text());
         toast.error("Error al cargar ejercicios");
       }
-    };
-
+    } catch (error) {
+      console.error("Error fetching exercises:", error);
+      toast.error("Error al cargar ejercicios");
+    }
+  };
+  useEffect(() => {
     fetchExercises();
   }, []);
 
@@ -100,7 +101,11 @@ export default function WorkoutExercise({
 
       const res = await fetch(`/api/workouts/${workoutId}/exercises`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // Añadir un encabezado para evitar el caché
+          "Cache-Control": "no-cache",
+        },
         body: JSON.stringify({
           exerciseId: selectedExercise,
           ...exerciseData,
@@ -113,7 +118,27 @@ export default function WorkoutExercise({
           description:
             "El ejercicio se ha agregado correctamente al entrenamiento",
         });
-        router.refresh();
+
+        // Múltiples estrategias para asegurar la actualización
+        router.refresh(); // Intentar refresh del router
+
+        // Notificar al componente padre para que actualice los datos
+        if (onExerciseAdded) {
+          onExerciseAdded();
+        }
+
+        // Forzar una recarga de la página actual después de un breve retraso
+        setTimeout(() => {
+          // Usar revalidatePath si está disponible (Next.js 13+)
+          try {
+            fetch(`/api/revalidate?path=/workouts/${workoutId}`, {
+              method: "POST",
+            });
+          } catch (error) {
+            console.error("Error revalidating path:", error);
+          }
+        }, 300);
+
         setExerciseData({
           sets: 0,
           reps: 0,
@@ -122,6 +147,7 @@ export default function WorkoutExercise({
         setSelectedDay("");
         setSelectedExercise(null);
         onClose();
+        window.location.reload();
       } else {
         const errorData = await res.json();
         console.error("Error response:", errorData);
