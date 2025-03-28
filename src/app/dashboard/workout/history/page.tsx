@@ -342,9 +342,7 @@ export default function WorkoutHistoryPage() {
                       </p>
                     </div>
                     <div className="text-center p-2 rounded-md border">
-                      <p className="text-xs text-muted-foreground">
-                        Sets completados
-                      </p>
+                      <p className="text-xs text-muted-foreground">Sets</p>
                       <p className="font-semibold tracking-tighter">
                         {session.exercises.reduce(
                           (acc: number, ex: Exercise) =>
@@ -382,57 +380,34 @@ export default function WorkoutHistoryPage() {
                   )}
 
                   {isExpanded && (
-                    <div className="space-y-4 grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6 pt-4">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 pt-3">
                       {session.exercises.map((exercise: Exercise) => (
                         <div
                           key={exercise.id}
-                          className="border rounded-md p-3"
+                          className="border rounded-md p-2 text-sm"
                         >
-                          <div className="flex justify-between items-center mb-2">
-                            <h4 className="font-semibold text-md tracking-tight">
-                              {exercise.exercise.name}
-                            </h4>
-                            {/* <Badge
-                              variant="outline"
-                              className={
-                                exercise.completed
-                                  ? "text-white bg-green-700"
-                                  : "bg-yellow-50 dark:bg-yellow-700"
-                              }
-                            >
-                              {exercise.completed ? "Completado" : "Incompleto"}
-                            </Badge> */}
-                          </div>
+                          <h4 className="font-bold tracking-tight text-xs md:text-sm truncate border-b pb-1 mb-1">
+                            {exercise.exercise.name}
+                          </h4>
 
-                          <div className="grid grid-cols-3 gap-2 text-xs font-medium mb-1 text-muted-foreground">
+                          <div className="grid grid-cols-3 gap-1 text-xs font-medium text-muted-foreground">
                             <div>Set</div>
-                            <div>Peso (kg)</div>
-                            <div>Reps</div>
-                            {/* <div>Estado</div> */}
+                            <div>Kg</div>
+                            <div>Rep</div>
                           </div>
 
-                          {exercise.sets.map((set: Set) => (
-                            <div
-                              key={set.id}
-                              className="grid grid-cols-3 gap-2 text-sm py-1 border-t dark:border-zinc-700"
-                            >
-                              <div>{set.setNumber}</div>
-                              <div>{set.weight || "-"}</div>
-                              <div>{set.reps || "-"}</div>
-                              {/* <div>
-                                {set.completed ? (
-                                  <span className="text-green-600 dark:text-green-400 flex items-center">
-                                    <CheckmarkCircle02Icon className="h-4 w-4 mr-1" />{" "}
-                                    Completado
-                                  </span>
-                                ) : (
-                                  <span className="text-red-600 dark:text-red-400">
-                                    No completado
-                                  </span>
-                                )}
-                              </div> */}
-                            </div>
-                          ))}
+                          <div className="max-h-24 overflow-y-auto">
+                            {exercise.sets.map((set: Set) => (
+                              <div
+                                key={set.id}
+                                className="grid grid-cols-3 gap-1 text-xs py-0.5 border-t dark:border-zinc-800"
+                              >
+                                <div>{set.setNumber}</div>
+                                <div>{set.weight || "-"}</div>
+                                <div>{set.reps || "-"}</div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                       ))}
                     </div>
