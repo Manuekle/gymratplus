@@ -24,9 +24,14 @@ import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { CalorieCalculator } from "@/components/calorie-calculator";
 
 interface UserProfile {
   id: string;
+  gender: string;
+  height: number;
+  currentWeight: number;
+  dailyActivity: string;
   nutrition: {
     calorieTarget: number;
     proteinTarget: number;
@@ -163,6 +168,10 @@ export default function NutritionPage() {
     interface ExtendedSessionUser {
       profile: {
         id: string;
+        gender: string;
+        height: number;
+        currentWeight: number;
+        dailyActivity: string;
         dailyCalorieTarget: number | string;
         dailyProteinTarget: number | string;
         dailyCarbTarget: number | string;
@@ -181,6 +190,10 @@ export default function NutritionPage() {
     // Configurar el usuario solo si hay cambios en la sesión
     setUser({
       id: profile.id,
+      gender: profile.gender,
+      height: Number(profile.height),
+      currentWeight: Number(profile.currentWeight),
+      dailyActivity: profile.dailyActivity,
       nutrition: {
         calorieTarget: Number(profile.dailyCalorieTarget),
         proteinTarget: Number(profile.dailyProteinTarget),
@@ -200,20 +213,25 @@ export default function NutritionPage() {
       dayLabel: formatDayLabel(day.dayOfWeek),
     })) ?? [];
 
-  console.log(user);
+  // console.log(user);
 
   return (
     <>
       <div className="space-y-6">
         <div className="grid gap-6 md:grid-cols-2">
           <Card className="col-span-2 md:col-span-1">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">
-                Calorías Diarias
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Consumo calórico del día actual
-              </CardDescription>
+            <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
+              <span>
+                <CardTitle className="text-2xl font-bold tracking-tight">
+                  Calorías Diarias
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Consumo calórico del día actual
+                </CardDescription>
+              </span>
+              <div className="flex flex-row gap-2 items-center">
+                <CalorieCalculator />
+              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
