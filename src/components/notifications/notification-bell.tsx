@@ -109,7 +109,7 @@ export function NotificationBell() {
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
                 <Notification02Icon className="h-10 w-10 text-muted-foreground opacity-40" />
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-xs md:text-sm text-muted-foreground text-center">
                   No tienes notificaciones sin leer
                 </p>
               </div>
