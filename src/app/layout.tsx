@@ -1,7 +1,8 @@
 "use client";
 
 // import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { GeistSans } from 'geist/font/sans';
+import { GeistMono } from 'geist/font/mono';
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -10,7 +11,7 @@ import RedisInitializer from "@/components/init/redis-initializer";
 import { motion, AnimatePresence } from "framer-motion";
 import { StreakAlertProvider } from "@/providers/streak-alert-provider";
 
-const inter = Inter({ subsets: ["latin"] });
+
 
 // export const metadata: Metadata = {
 //   title: "GymRat+",
@@ -24,7 +25,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" suppressHydrationWarning>
+    <html lang="es"  className={`${GeistSans.variable} ${GeistMono.variable}`} suppressHydrationWarning>
       <head>
         {/* Meta descripción y robots */}
         <meta
@@ -72,7 +73,7 @@ export default function RootLayout({
         <link rel="icon" href="https://gymratplus.vercel.app/favicon.ico" />
       </head>
       <body
-        className={`overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] ${inter.className} antialiased`}
+        className={`overflow-auto [scrollbar-width:none] [-ms-overflow-style:none] antialiased`}
       >
         <style jsx>{`
           div::-webkit-scrollbar {

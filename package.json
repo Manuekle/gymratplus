@@ -65,6 +65,7 @@
     "date-fns": "^3.6.0",
     "embla-carousel-react": "^8.5.2",
     "framer-motion": "^12.6.2",
+    "geist": "^1.4.2",
     "hugeicons-react": "^0.3.0",
     "i18next": "^24.2.3",
     "input-otp": "^1.4.2",
