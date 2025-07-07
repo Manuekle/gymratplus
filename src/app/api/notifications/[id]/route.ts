@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   try {
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
 
     if (!notification) {
       return NextResponse.json(
-        { error: "Notification not found" },
+        { error: "Notificación no encontrada" },
         { status: 404 }
       );
     }
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error("Error fetching notification:", error);
     return NextResponse.json(
-      { error: "Failed to fetch notification" },
+      { error: "Error interno" },
       { status: 500 }
     );
   }
@@ -47,7 +47,7 @@ export async function PATCH(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   try {
@@ -59,7 +59,7 @@ export async function PATCH(request: NextRequest) {
 
     if (!notification) {
       return NextResponse.json(
-        { error: "Notification not found" },
+        { error: "Notificación no encontrada" },
         { status: 404 }
       );
     }
@@ -73,7 +73,7 @@ export async function PATCH(request: NextRequest) {
   } catch (error) {
     console.error("Error marking notification as read:", error);
     return NextResponse.json(
-      { error: "Failed to mark notification as read" },
+      { error: "Error interno" },
       { status: 500 }
     );
   }
@@ -83,7 +83,7 @@ export async function DELETE(request: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
   try {
@@ -95,7 +95,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!notification) {
       return NextResponse.json(
-        { error: "Notification not found" },
+        { error: "Notificación no encontrada" },
         { status: 404 }
       );
     }
@@ -109,7 +109,7 @@ export async function DELETE(request: NextRequest) {
   } catch (error) {
     console.error("Error deleting notification:", error);
     return NextResponse.json(
-      { error: "Failed to delete notification" },
+      { error: "Error interno" },
       { status: 500 }
     );
   }

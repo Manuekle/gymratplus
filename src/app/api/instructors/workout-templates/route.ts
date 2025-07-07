@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
-import * as z from 'zod';
+import { z } from 'zod';
+import { createNotification } from '@/lib/notification-service';
 
 const workoutTemplateExerciseSchema = z.object({
   exerciseName: z.string().min(1, 'El nombre del ejercicio es requerido'),
@@ -23,7 +24,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || !session.user.id || !session.user.isInstructor) {
-      return new NextResponse('No autorizado', { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -31,9 +32,9 @@ export async function POST(req: Request) {
 
     const workoutTemplate = await prisma.workoutTemplate.create({
       data: {
+        instructorId: session.user.id,
         name,
         description,
-        instructorId: session.user.id,
         exercises: {
           create: exercises.map((exercise) => ({
             exerciseName: exercise.exerciseName,
@@ -49,13 +50,21 @@ export async function POST(req: Request) {
       },
     });
 
+    // Crear notificación para el instructor
+    await createNotification({
+      userId: session.user.id,
+      title: "Plantilla creada",
+      message: `Tu plantilla "${name}" ha sido creada exitosamente.`,
+      type: "workout",
+    });
+
     return NextResponse.json(workoutTemplate, { status: 201 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.message, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Error creando plantilla de rutina:', error);
-    return new NextResponse('Error interno del servidor', { status: 500 });
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
 
@@ -64,7 +73,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || !session.user.id || !session.user.isInstructor) {
-      return new NextResponse('No autorizado', { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const workoutTemplates = await prisma.workoutTemplate.findMany({
@@ -82,6 +91,6 @@ export async function GET() {
     return NextResponse.json(workoutTemplates);
   } catch (error) {
     console.error('Error obteniendo plantillas de rutina:', error);
-    return new NextResponse('Error interno del servidor', { status: 500 });
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 } 

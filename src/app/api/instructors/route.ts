@@ -39,6 +39,6 @@ export async function GET(req: Request) {
     return NextResponse.json(filteredInstructors, { status: 200 });
   } catch (error) {
     console.error('[GET_INSTRUCTORS_ERROR]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 } 

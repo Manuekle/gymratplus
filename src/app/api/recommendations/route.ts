@@ -31,9 +31,10 @@ interface PrismaExercise {
 }
 
 interface Macros {
-  protein: number;
-  carbs: number;
-  fat: number;
+  protein: string;
+  carbs: string;
+  fat: string;
+  description: string;
 }
 
 interface FoodRecommendation {
@@ -49,11 +50,14 @@ interface FoodRecommendation {
 
 interface ResponseData {
   success: boolean;
-  workout: {
+  workoutPlan: {
     id: string;
     name: string;
     description: string;
-    exercises: Exercise[];
+    days: Array<{
+      day: string;
+      exercises: Exercise[];
+    }>;
   };
   foodRecommendation: FoodRecommendation;
   recommendations: string[];
@@ -136,9 +140,10 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Create a personalized food recommendation
     const calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
     const macros: Macros = {
-      protein: Math.round(calorieTarget * 0.3 / 4),
-      carbs: Math.round(calorieTarget * 0.5 / 4),
-      fat: Math.round(calorieTarget * 0.2 / 9),
+      protein: Math.round(calorieTarget * 0.3 / 4).toString(),
+      carbs: Math.round(calorieTarget * 0.5 / 4).toString(),
+      fat: Math.round(calorieTarget * 0.2 / 9).toString(),
+      description: `Calorías: ${calorieTarget}`,
     };
 
     const foodRecommendation = await prisma.foodRecommendation.create({
@@ -178,21 +183,53 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     const responseData: ResponseData = {
       success: true,
-      workout: {
+      workoutPlan: {
         id: workout.id,
         name: workout.name,
         description: workout.description,
-        exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
-          id: exerciseData.id,
-          name: exerciseData.exercise.name,
-          sets: exerciseData.sets,
-          reps: exerciseData.reps,
-          restTime: exerciseData.restTime || 0,
-          notes: exerciseData.notes || '',
-        })),
+        days: [
+          {
+            day: "Lunes",
+            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
+              id: exerciseData.id,
+              name: exerciseData.exercise.name,
+              sets: exerciseData.sets,
+              reps: exerciseData.reps,
+              restTime: exerciseData.restTime || 0,
+              notes: exerciseData.notes || '',
+            })),
+          },
+          {
+            day: "Miércoles",
+            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
+              id: exerciseData.id,
+              name: exerciseData.exercise.name,
+              sets: exerciseData.sets,
+              reps: exerciseData.reps,
+              restTime: exerciseData.restTime || 0,
+              notes: exerciseData.notes || '',
+            })),
+          },
+          {
+            day: "Viernes",
+            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
+              id: exerciseData.id,
+              name: exerciseData.exercise.name,
+              sets: exerciseData.sets,
+              reps: exerciseData.reps,
+              restTime: exerciseData.restTime || 0,
+              notes: exerciseData.notes || '',
+            })),
+          },
+        ],
       },
       foodRecommendation: {
-        macros: JSON.parse(foodRecommendation.macros as string),
+        macros: {
+          protein: Math.round(calorieTarget * 0.3 / 4).toString() + "g",
+          carbs: Math.round(calorieTarget * 0.5 / 4).toString() + "g",
+          fat: Math.round(calorieTarget * 0.2 / 9).toString() + "g",
+          description: `Plan nutricional personalizado con ${calorieTarget} calorías diarias. Distribución equilibrada de macronutrientes para ${profileData.goal === 'gain-muscle' ? 'ganar masa muscular' : profileData.goal === 'lose-weight' ? 'perder peso' : 'mantener peso'}.`,
+        },
         meals: JSON.parse(foodRecommendation.meals as string),
         calorieTarget: foodRecommendation.calorieTarget,
       },

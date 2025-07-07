@@ -14,6 +14,8 @@ export const DashboardHeader = () => {
     health: "Salud",
     workout: "Entrenamiento",
     nutrition: "Nutrición",
+    instructors: "Mis Instructores",
+    students: "Mis Alumnos",
   };
 
   const pageTitle = titles[pathname.split("/")[2]] || "Dashboard";
@@ -48,12 +50,12 @@ export const DashboardHeader = () => {
             {/* Mostrar Instructores solo si NO es instructor, y Alumnos solo si es instructor */}
             {!isInstructor && (
               <TabsTrigger value="instructors" asChild>
-                <Link href="/dashboard/instructors/search">Instructores</Link>
+                <Link href="/dashboard/instructors">Instructores</Link>
               </TabsTrigger>
             )}
             {isInstructor && (
               <TabsTrigger value="students" asChild>
-                <Link href="/dashboard/instructors/students">Alumnos</Link>
+                <Link href="/dashboard/students">Alumnos</Link>
               </TabsTrigger>
             )}
           </TabsList>

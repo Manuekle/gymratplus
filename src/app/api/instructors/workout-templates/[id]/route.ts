@@ -27,7 +27,7 @@ export async function PUT(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || !session.user.id || !session.user.isInstructor) {
-      return new NextResponse('No autorizado', { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const templateId = params.id;
@@ -45,7 +45,7 @@ export async function PUT(
     });
 
     if (!existingTemplate || existingTemplate.instructorId !== session.user.id) {
-      return new NextResponse('Plantilla de rutina no encontrada o no autorizado', { status: 404 });
+      return NextResponse.json({ error: 'Plantilla de rutina no encontrada o no autorizado' }, { status: 404 });
     }
 
     // Handle exercises: delete, update, and create
@@ -111,10 +111,10 @@ export async function PUT(
     return NextResponse.json(updatedWorkoutTemplate);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.message, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error('Error actualizando plantilla de rutina:', error);
-    return new NextResponse('Error interno del servidor', { status: 500 });
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 }
 
@@ -126,7 +126,7 @@ export async function DELETE(
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user || !session.user.id || !session.user.isInstructor) {
-      return new NextResponse('No autorizado', { status: 401 });
+      return NextResponse.json({ error: 'No autorizado' }, { status: 401 });
     }
 
     const templateId = params.id;
@@ -142,7 +142,7 @@ export async function DELETE(
     });
 
     if (!existingTemplate || existingTemplate.instructorId !== session.user.id) {
-      return new NextResponse('Plantilla de rutina no encontrada o no autorizado', { status: 404 });
+      return NextResponse.json({ error: 'Plantilla de rutina no encontrada o no autorizado' }, { status: 404 });
     }
 
     // Delete associated exercises first (due to relational integrity)
@@ -160,9 +160,9 @@ export async function DELETE(
       },
     });
 
-    return new NextResponse('Plantilla de rutina eliminada', { status: 200 });
+    return NextResponse.json({ message: 'Plantilla de rutina eliminada' }, { status: 200 });
   } catch (error) {
     console.error('Error eliminando plantilla de rutina:', error);
-    return new NextResponse('Error interno del servidor', { status: 500 });
+    return NextResponse.json({ error: 'Error interno del servidor' }, { status: 500 });
   }
 } 

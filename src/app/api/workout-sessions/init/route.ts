@@ -26,7 +26,7 @@ export async function POST() {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return new NextResponse("No autorizado", { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     // Crear o obtener los ejercicios básicos
@@ -76,6 +76,6 @@ export async function POST() {
     return NextResponse.json(defaultWorkout);
   } catch (error) {
     console.error("[WORKOUT_SESSIONS_INIT]", error);
-    return new NextResponse("Error interno", { status: 500 });
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

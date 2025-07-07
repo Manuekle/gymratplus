@@ -42,24 +42,20 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/onboarding", req.url));
   }
 
-  // Solo instructores pueden acceder a /dashboard/instructors y /dashboard/instructors/students
-  if (
-    token &&
-    isDashboardRoute &&
-    (path.startsWith("/dashboard/instructors") || path.startsWith("/dashboard/instructors/students")) &&
-    !token.isInstructor
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Manejo de rutas de instructores
+  if (token && isDashboardRoute && path.startsWith("/dashboard/students")) {
+    // Solo instructores pueden acceder a /dashboard/students
+    if (!token.isInstructor) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
   }
 
-  // Solo alumnos pueden acceder a /dashboard/instructors/search
-  if (
-    token &&
-    isDashboardRoute &&
-    path.startsWith("/dashboard/instructors/search") &&
-    token.isInstructor
-  ) {
-    return NextResponse.redirect(new URL("/dashboard", req.url));
+  // Manejo de rutas de estudiantes
+  if (token && isDashboardRoute && path.startsWith("/dashboard/instructors")) {
+    // Solo estudiantes pueden acceder a /dashboard/instructors
+    if (token.isInstructor) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
   }
 
   return NextResponse.next();
@@ -72,6 +68,7 @@ export const config = {
     "/dashboard/:path*",
     "/auth/signin",
     "/auth/signup",
+    "/dashboard/students/:path*",
     "/dashboard/instructors/:path*",
   ],
 };

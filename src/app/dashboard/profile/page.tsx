@@ -306,10 +306,15 @@ export default function ProfilePage() {
                     {session?.user?.name}
                   </h2>
                   {isInstructor && (
-                    <Badge variant="outline" className="text-sm">
-                      <span className="inline-block align-middle">Instructor</span>
+                    <Badge variant="outline" className="text-xs">
+                      Instructor
                     </Badge>
-                  )}
+                  )} 
+                  {!isInstructor && (
+                    <Badge variant="outline" className="text-xs">
+                      Alumno
+                    </Badge>
+                  )} 
                 </div>
               </div>
 

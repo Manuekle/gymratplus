@@ -1,168 +1,252 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
-import { ArrowRight01Icon, UserIcon } from "hugeicons-react";
-import Link from "next/link";
-import { format, isToday } from "date-fns";
-import { es } from "date-fns/locale";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { InstructorProfileForm } from "@/components/instructor/instructor-profile-form";
+import { useState, useEffect, useCallback } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
+import { Button } from "@/components/ui/button"
+import { Switch } from "@/components/ui/switch"
+import { Label } from "@/components/ui/label"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { toast } from "sonner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { InstructorProfile, User } from "@prisma/client"
+import { Badge } from "@/components/ui/badge"
+import { Input } from "@/components/ui/input"
+import { CheckCircle2, Loader2 } from "lucide-react"
+import { CountrySelector } from "@/components/country-selector"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useCountries } from "@/hooks/use-countries"
 
-interface StudentData {
-  id: string;
-  name: string | null;
-  email: string | null;
-  image: string | null;
-  agreedPrice: number | null;
-  status: string;
-  lastWorkoutAt: Date | null;
-  currentWorkoutStreak: number;
-  completedWorkoutsLast7Days: number;
+interface InstructorWithProfile extends User {
+  instructorProfile: InstructorProfile | null;
 }
 
-interface PendingRequestData {
-  id: string;
-  studentId: string;
-  instructorProfileId: string;
-  status: string;
-  agreedPrice: number | null;
-  createdAt: Date;
-  student: { // Detalles del estudiante que envió la solicitud
-    id: string;
-    name: string | null;
-    email: string | null;
-    image: string | null;
-  };
-}
+const EXPERIENCE_LEVELS = [
+  { value: "principiante", label: "Principiante" },
+  { value: "intermedio", label: "Intermedio" },
+  { value: "avanzado", label: "Avanzado" },
+];
 
-export default function InstructorDashboardPage() {
-  const { data: session, status } = useSession();
+const SPECIALTIES = [
+  "Fuerza",
+  "HIIT",
+  "Pilates",
+  "Yoga",
+  "Cardio",
+  "Crossfit",
+  "Hipertrofia",
+  "Funcional",
+  "Movilidad",
+  "Rehabilitación",
+  "Nutrición",
+  "Otro",
+];
+
+export default function InstructorSearchPage() {
   const router = useRouter();
-  const [isLoadingProfile, setIsLoadingProfile] = useState(true);
-  const [isInstructor, setIsInstructor] = useState(false);
-  const [students, setStudents] = useState<StudentData[]>([]);
-  const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>([]); // Nuevo estado para solicitudes pendientes
-  const [isLoadingStudents, setIsLoadingStudents] = useState(false);
+  const searchParams = useSearchParams();
+
+  const [country, setCountry] = useState<string>("");
+  const [isRemote, setIsRemote] = useState(searchParams.get('isRemote') === 'true');
+  const [isVerified, setIsVerified] = useState(false);
+  const [maxPrice, setMaxPrice] = useState('');
+  const [experience, setExperience] = useState('');
+  const [instructors, setInstructors] = useState<InstructorWithProfile[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [requestingInstructorId, setRequestingInstructorId] = useState<string | null>(null);
+  const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
+  const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(new Set());
+
+  // Hook para países
+  const { countries } = useCountries();
+
+  const fetchInstructors = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (country) params.append('country', country);
+      if (isRemote) params.append('isRemote', 'true');
+      if (isVerified) params.append('isVerified', 'true');
+      if (maxPrice) params.append('maxPrice', maxPrice);
+      if (experience) params.append('experienceLevel', experience);
+      if (selectedSpecialties.length > 0) params.set('specialty', selectedSpecialties.join(","));
+
+      const response = await fetch(`/api/instructors?${params.toString()}`);
+      if (!response.ok) {
+        throw new Error("Error al obtener instructores.");
+      }
+      const data: InstructorWithProfile[] = await response.json();
+      setInstructors(data);
+    } catch (error: unknown) {
+      let errorMessage = "Hubo un error al cargar los instructores.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      toast.error(errorMessage);
+      console.error("Error fetching instructors:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [country, isRemote, isVerified, maxPrice, experience, selectedSpecialties]);
 
   useEffect(() => {
-    if (status === "loading") return; // Todavía cargando la sesión
+    fetchInstructors();
+  }, [fetchInstructors]);
 
-    if (!session || !session.user) {
-      router.push("/auth/signin"); // Redirigir si no hay sesión
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (country) params.set('country', country);
+    if (isRemote) params.set('isRemote', 'true');
+    if (isVerified) params.set('isVerified', 'true');
+    if (maxPrice) params.set('maxPrice', maxPrice);
+    if (experience) params.set('experienceLevel', experience);
+    if (selectedSpecialties.length > 0) params.set('specialty', selectedSpecialties.join(","));
+    router.push(`?${params.toString()}`);
+    fetchInstructors();
+  };
+
+  const handleRequestInstructor = useCallback(async (instructorProfileId?: string) => {
+    if (!instructorProfileId) {
+      toast.error("Error", { description: "ID de instructor no disponible." });
       return;
     }
 
-    const checkInstructorStatus = async () => {
-      setIsLoadingProfile(true);
-      try {
-        if (session.user.isInstructor) {
-          setIsInstructor(true);
-          // Si es instructor, cargar sus alumnos y solicitudes pendientes
-          fetchStudentsAndRequests();
-        } else {
-          toast.error("Acceso denegado", { description: "Debes ser un instructor para acceder a esta página." });
-          router.push("/dashboard/profile");
-        }
-      } catch (error) {
-        console.error("Error checking instructor status:", error);
-        toast.error("Error", { description: "No se pudo verificar tu rol de instructor." });
-        router.push("/dashboard");
-      } finally {
-        setIsLoadingProfile(false);
-      }
-    };
+    // Verificar si ya hay un instructor solicitado
+    if (requestedInstructors.size > 0 && !requestedInstructors.has(instructorProfileId)) {
+      toast.error("Ya tienes una solicitud pendiente", { 
+        description: "Debes cancelar tu solicitud actual antes de solicitar otro instructor." 
+      });
+      return;
+    }
 
-    checkInstructorStatus();
-  }, [session, status, router]);
+    setRequestingInstructorId(instructorProfileId);
 
-  const fetchStudentsAndRequests = async () => {
-    setIsLoadingStudents(true);
     try {
-      const response = await fetch("/api/instructors/students");
-      if (!response.ok) {
-        throw new Error("Error al cargar los alumnos.");
-      }
-      const data: (StudentData | PendingRequestData)[] = await response.json(); // Tipado más específico
-      
-      const activeStudents = data.filter((item): item is StudentData => item.status === 'active');
-      const pRequests = data.filter((item): item is PendingRequestData => item.status === 'pending');
-      
-      setStudents(activeStudents);
-      setPendingRequests(pRequests);
+      const response = await fetch("/api/student-instructor-requests", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ instructorProfileId }),
+      });
 
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al enviar la solicitud.");
+      }
+
+      // Agregar el instructor a la lista de solicitados
+      setRequestedInstructors(prev => new Set(prev).add(instructorProfileId));
+      
+      toast.success("Solicitud enviada", { 
+        description: "Tu solicitud ha sido enviada al instructor. ¡Pronto se pondrá en contacto contigo!" 
+      });
     } catch (error: unknown) {
-      let errorMessage = "Hubo un error al cargar tus alumnos.";
+      let errorMessage = "Hubo un error al procesar tu solicitud.";
       if (error instanceof Error) {
         errorMessage = error.message;
       } else if (typeof error === 'string') {
         errorMessage = error;
       }
       toast.error(errorMessage);
-      console.error("Error fetching students:", error);
+      console.error("Error requesting instructor:", error);
     } finally {
-      setIsLoadingStudents(false);
+      setRequestingInstructorId(null);
     }
+  }, [requestedInstructors]);
+
+  const handleSpecialtyToggle = (spec: string) => {
+    setSelectedSpecialties((prev) =>
+      prev.includes(spec)
+        ? prev.filter((s) => s !== spec)
+        : [...prev, spec]
+    );
   };
 
-  // Funciones para aceptar/rechazar solicitudes
-  const handleAcceptRequest = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/student-instructor-requests/${requestId}/accept`, {
-        method: "PUT",
-      });
+  return (
+    <div>
+      
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al aceptar la solicitud.");
-      }
-      toast.success("Solicitud aceptada", { description: "El alumno ha sido añadido a tu lista." });
-      fetchStudentsAndRequests(); // Recargar datos
-    } catch (error: unknown) {
-      let errorMessage = "Hubo un error al aceptar la solicitud.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      toast.error(errorMessage);
-      console.error("Error accepting request:", error);
-    }
-  };
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="tracking-heading text-2xl font-semibold">Opciones de Búsqueda</CardTitle>
+          <CardDescription className="text-xs">Encuentra al instructor ideal para ti.</CardDescription>
+        </CardHeader>
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* País con el nuevo selector */}
+          <div className="space-y-2">
+            <CountrySelector
+              value={country}
+              onValueChange={(value) => setCountry(value)}
+              placeholder="Selecciona un país"
+              label="País"
+            />
+          </div>
+          {/* Precio máximo */}
+          <div className="space-y-2">
+            <Label htmlFor="maxPrice">Precio máximo (USD/mes)</Label>
+            <Input
+              id="maxPrice"
+              type="number"
+              min={0}
+              placeholder="Ej: 100"
+              value={maxPrice}
+              onChange={(e) => setMaxPrice(e.target.value)}
+            />
+          </div>
+          {/* Experiencia */}
+          <div className="space-y-2">
+            <Label htmlFor="experience">Nivel de experiencia</Label>
+            <Select value={experience} onValueChange={setExperience}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Todos" />
+              </SelectTrigger>
+              <SelectContent>
+                {EXPERIENCE_LEVELS.map((lvl) => (
+                  <SelectItem key={lvl.value} value={lvl.value}>{lvl.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Switches alineados horizontalmente y compactos */}
+          <div className="flex flex-row flex-wrap gap-4 items-center md:col-span-3 mb-2">
+            <div className="flex items-center gap-2">
+              <Switch id="isVerified" checked={isVerified} onCheckedChange={setIsVerified} />
+              <Label htmlFor="isVerified">Solo verificados</Label>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch id="isRemote" checked={isRemote} onCheckedChange={setIsRemote} />
+              <Label htmlFor="isRemote">Remoto</Label>
+            </div>
+          </div>
+          {/* Especialidad/metodología como badges */}
+          <div className="space-y-2 md:col-span-2 lg:col-span-1">
+            <Label>Especialidad / Metodología</Label>
+            <div className="flex flex-wrap gap-2">
+              {SPECIALTIES.map((spec) => (
+                <Badge
+                  key={spec}
+                  variant={selectedSpecialties.includes(spec) ? "default" : "outline"}
+                  className={`cursor-pointer select-none transition-all ${selectedSpecialties.includes(spec) ? 'bg-primary text-white' : ''}`}
+                  onClick={() => handleSpecialtyToggle(spec)}
+                >
+                  {spec}
+                </Badge>
+              ))}
+            </div>
+          </div>
+          <div className="md:col-span-3">
+            <Button onClick={handleSearch} className="w-full">
+              Buscar
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
 
-  const handleRejectRequest = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/student-instructor-requests/${requestId}/reject`, {
-        method: "PUT",
-      });
+      <h2 className="text-2xl tracking-heading font-semibold mb-4">Resultados ({instructors.length})</h2>
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al rechazar la solicitud.");
-      }
-      toast.success("Solicitud rechazada", { description: "La solicitud ha sido marcada como rechazada." });
-      fetchStudentsAndRequests(); // Recargar datos
-    } catch (error: unknown) {
-      let errorMessage = "Hubo un error al rechazar la solicitud.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
-      }
-      toast.error(errorMessage);
-      console.error("Error rejecting request:", error);
-    }
-  };
-
-  if (isLoadingProfile || status === "loading") {
-    return (
-      <div className="container mx-auto py-8">
-        <Skeleton className="h-10 w-1/2 mb-6" />
+      {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {[1, 2, 3].map((i) => (
             <Card key={i}>
@@ -178,167 +262,140 @@ export default function InstructorDashboardPage() {
             </Card>
           ))}
         </div>
-      </div>
-    );
-  }
-
-  if (!isInstructor) {
-    return null;
-  }
-
-  return (
-    <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-semibold mb-6">Panel del Instructor</h1>
-
-      {/* Solicitudes Pendientes */}
-      <Card className="mb-6">
-        <CardHeader className="flex-row justify-between items-center">
-          <div>
-            <CardTitle>Solicitudes Pendientes</CardTitle>
-            <CardDescription>Revisa las solicitudes de nuevos alumnos.</CardDescription>
-          </div>
-        </CardHeader>
-        <CardContent>
-          {isLoadingStudents ? (
-            <div className="flex justify-center p-8">
-              <Skeleton className="h-24 w-full" />
-            </div>
-          ) : pendingRequests.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-muted-foreground">
-              <UserIcon className="h-16 w-16 mb-4 opacity-40" />
-              <p className="text-center">No hay solicitudes pendientes en este momento.</p>
-            </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {instructors.length === 0 ? (
+            <p className="text-gray-500 md:col-span-3">No se encontraron instructores con los criterios de búsqueda.</p>
           ) : (
-            <div className="space-y-4">
-              {pendingRequests.map((request) => (
-                <div key={request.id} className="flex items-center space-x-4 border-b pb-4 last:border-b-0 last:pb-0">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={request.student.image || "/placeholder-avatar.jpg"} alt={request.student.name || "Alumno"} />
-                    <AvatarFallback>{request.student.name?.charAt(0) || "A"}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="text-md font-semibold">{request.student.name}</p>
-                    <p className="text-sm text-muted-foreground">{request.student.email}</p>
-                    {request.agreedPrice && (
-                      <p className="text-xs text-muted-foreground">Precio sugerido: ${request.agreedPrice}/mes</p>
-                    )}
-                  </div>
-                  <div className="flex gap-2">
+            instructors.map((instructor) => {
+              // Buscar país por código usando countries del hook
+              const countryData = countries.find(c => c.cca2 === instructor.instructorProfile?.country);
+              // Type guard para specialties sin usar 'any'
+              let specialties: string[] | undefined = undefined;
+              if (
+                instructor.instructorProfile &&
+                typeof instructor.instructorProfile === 'object' &&
+                'specialties' in instructor.instructorProfile &&
+                Array.isArray((instructor.instructorProfile as { specialties?: unknown }).specialties)
+              ) {
+                specialties = (instructor.instructorProfile as { specialties: string[] }).specialties;
+              }
+              return (
+                <Card
+                  key={instructor.id}
+                  className="flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-zinc-900 dark:hover:to-zinc-800 bg-white dark:bg-zinc-950 border px-4 py-3 min-h-[220px]"
+                >
+                  <CardHeader className="flex-row items-center space-x-3 pb-1 px-0">
+                    <img
+                      src={instructor.image || "/placeholder-avatar.jpg"} 
+                      alt={instructor.name || "Instructor"} 
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-full object-cover border-0"
+                    />
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <CardTitle className="text-base font-semibold tracking-heading">{instructor.name}</CardTitle>
+                        {instructor.instructorProfile?.isVerified && (
+                          <CheckCircle2 className="text-green-600 w-4 h-4" />
+                        )}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        {countryData && (
+                          <span className="flex items-center gap-1">
+                            <img
+                              src={countryData.flags.svg} 
+                              alt={countryData.name.common} 
+                              className="w-4 h-3 object-cover rounded-sm" 
+                            />
+                            {countryData.name.common}
+                          </span>
+                        )}
+                        {instructor.instructorProfile?.isRemote && (
+                          <Badge variant="outline" className="text-xs">Remoto</Badge>
+                        )}
+                      </div>
+                      {instructor.experienceLevel && (
+                        <Badge variant="secondary" className="text-xs mt-1">
+                          {EXPERIENCE_LEVELS.find(lvl => lvl.value === instructor.experienceLevel)?.label || instructor.experienceLevel}
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="pt-2 flex-grow px-0 space-y-2">
+                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
+                      {instructor.instructorProfile?.bio || "Sin biografía."}
+                    </p>
+                    
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                          Precio: 
+                        </span>
+                        <Badge variant="outline" className="text-xs">
+                          {instructor.instructorProfile?.pricePerMonth 
+                            ? `$${instructor.instructorProfile.pricePerMonth}/mes` 
+                            : 'Consultar'}
+                        </Badge>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                          Especialidades:
+                        </span>
+                        <div className="flex flex-wrap gap-1">
+                          {specialties && specialties.length ? (
+                            specialties.map((specialty, index) => (
+                              <Badge key={index} variant="secondary" className="text-xs">
+                                {specialty}
+                              </Badge>
+                            ))
+                          ) : (
+                            <span className="text-xs text-muted-foreground">No especificadas</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                  <div className="px-0 pb-1 pt-0 mt-auto">
                     <Button 
-                      variant="default" 
-                      size="sm"
-                      onClick={() => handleAcceptRequest(request.id)}
+                      className={`w-full h-8 text-xs ${
+                        requestedInstructors.has(instructor.instructorProfile?.id || '') 
+                          ? 'bg-red-600 hover:bg-red-700' 
+                          : ''
+                      }`}
+                      onClick={() => handleRequestInstructor(instructor.instructorProfile?.id)}
+                      disabled={
+                        requestingInstructorId === instructor.instructorProfile?.id || 
+                        (requestedInstructors.size > 0 && !requestedInstructors.has(instructor.instructorProfile?.id || ''))
+                      }
                     >
-                      Aceptar
+                      {requestingInstructorId === instructor.instructorProfile?.id ? (
+                        <>
+                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          Enviando...
+                        </>
+                      ) : requestedInstructors.has(instructor.instructorProfile?.id || '') ? (
+                        <>
+                          <CheckCircle2 className="mr-2 h-3 w-3" />
+                          Solicitud Enviada
+                        </>
+                      ) : (
+                        "Solicitar Instructor"
+                      )}
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleRejectRequest(request.id)}
-                    >
-                      Rechazar
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
-      
-      {/* Resumen de Alumnos Activos */}
-      <Card className="mb-6">
-        <CardHeader className="flex-row justify-between items-center">
-          <div>
-            <CardTitle>Mis Alumnos Activos</CardTitle>
-            <CardDescription>Visualiza el progreso de tus alumnos activos.</CardDescription>
-          </div>
-          <Link
-            href="/dashboard/instructors/students"
-            className="text-xs text-muted-foreground flex items-center gap-1"
-          >
-            Ver todos <ArrowRight01Icon className="h-4 w-4" />
-          </Link>
-        </CardHeader>
-        <CardContent>
-          {isLoadingStudents ? (
-            <div className="flex justify-center p-8">
-              <Skeleton className="h-24 w-full" />
-            </div>
-          ) : students.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-8 text-muted-foreground">
-              <UserIcon className="h-16 w-16 mb-4 opacity-40" />
-              <p className="text-center">Aún no tienes alumnos activos.</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {students.map((student) => (
-                <div key={student.id} className="flex items-center space-x-4 border-b pb-4 last:border-b-0 last:pb-0">
-                  <Avatar className="h-12 w-12">
-                    <AvatarImage src={student.image || "/placeholder-avatar.jpg"} alt={student.name || "Alumno"} />
-                    <AvatarFallback>{student.name?.charAt(0) || "A"}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="text-md font-semibold">{student.name}</p>
-                    <p className="text-sm text-muted-foreground">{student.email}</p>
-                    {student.agreedPrice && (
-                      <p className="text-xs text-muted-foreground">Precio acordado: ${student.agreedPrice}/mes</p>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-medium">Racha: {student.currentWorkoutStreak} días</p>
-                    <p className="text-sm text-muted-foreground">Entrenos (7 días): {student.completedWorkoutsLast7Days}</p>
-                    {student.lastWorkoutAt ? (
-                      <p className="text-xs text-muted-foreground">
-                        Último entreno: {
-                          isToday(new Date(student.lastWorkoutAt))
-                            ? "Hoy"
-                            : format(new Date(student.lastWorkoutAt), "d MMM yyyy", { locale: es })
-                        }
+                    {requestedInstructors.size > 0 && !requestedInstructors.has(instructor.instructorProfile?.id || '') && (
+                      <p className="text-xs text-red-500 mt-1 text-center">
+                        Debes cancelar tu solicitud actual primero
                       </p>
-                    ) : (
-                      <p className="text-xs text-muted-foreground">Sin entrenamientos recientes</p>
                     )}
                   </div>
-                </div>
-              ))}
-            </div>
+                </Card>
+              );
+            })
           )}
-        </CardContent>
-      </Card>
-
-      {/* Otras secciones del panel (Placeholder) */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Planes de Entrenamiento</CardTitle>
-            <CardDescription>Crea y gestiona rutinas para tus alumnos.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Próximamente...</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Planes de Nutrición</CardTitle>
-            <CardDescription>Diseña dietas personalizadas.</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">Próximamente...</p>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Sección para editar el perfil del instructor */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Mi Perfil de Instructor</CardTitle>
-          <CardDescription>Actualiza tu información de instructor y currículum.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <InstructorProfileForm />
-        </CardContent>
-      </Card>
+        </div>
+      )}
     </div>
   );
 } 

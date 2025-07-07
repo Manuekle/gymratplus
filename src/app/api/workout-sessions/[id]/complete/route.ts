@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return new NextResponse("No autorizado", { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const url = new URL(request.url);
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!workoutSession) {
-      return new NextResponse("Sesión no encontrada", { status: 404 });
+      return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
     }
 
     // Actualizar el peso máximo en WorkoutExercise
@@ -75,6 +75,6 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(updatedSession);
   } catch (error) {
     console.error("[WORKOUT_SESSION_COMPLETE]", error);
-    return new NextResponse("Error interno", { status: 500 });
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

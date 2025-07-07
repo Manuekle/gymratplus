@@ -8,7 +8,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const studentId = session.user.id;
@@ -55,6 +55,6 @@ export async function GET() {
     return NextResponse.json(instructorsData, { status: 200 });
   } catch (error) {
     console.error('[GET_STUDENT_INSTRUCTORS_ERROR]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

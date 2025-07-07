@@ -20,7 +20,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userId = session.user.id;
@@ -30,13 +30,13 @@ export async function GET() {
     });
 
     if (!instructorProfile) {
-      return new NextResponse('Instructor profile not found', { status: 404 });
+      return NextResponse.json({ error: 'Instructor profile not found' }, { status: 404 });
     }
 
     return NextResponse.json(instructorProfile, { status: 200 });
   } catch (error) {
     console.error('[GET_INSTRUCTOR_PROFILE_ERROR]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
@@ -45,7 +45,7 @@ export async function PUT(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const userId = session.user.id;
@@ -58,7 +58,7 @@ export async function PUT(req: Request) {
     });
 
     if (!existingProfile) {
-      return new NextResponse('Instructor profile not found', { status: 404 });
+      return NextResponse.json({ error: 'Instructor profile not found' }, { status: 404 });
     }
 
     // Actualizar el perfil del instructor
@@ -70,10 +70,10 @@ export async function PUT(req: Request) {
     return NextResponse.json(updatedProfile, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.message, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.error('[INSTRUCTOR_PROFILE_UPDATE_ERROR]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

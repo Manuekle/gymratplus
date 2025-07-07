@@ -10,6 +10,13 @@ export interface CreateNotificationParams {
   type: NotificationType
 }
 
+export interface CreateNotificationByEmailParams {
+  userEmail: string
+  title: string
+  message: string
+  type: NotificationType
+}
+
 export async function createNotification({
   userId,
   title,
@@ -19,6 +26,33 @@ export async function createNotification({
   return prisma.notification.create({
     data: {
       userId,
+      title,
+      message,
+      type,
+      read: false,
+    },
+  })
+}
+
+export async function createNotificationByEmail({
+  userEmail,
+  title,
+  message,
+  type,
+}: CreateNotificationByEmailParams): Promise<Notification> {
+  // Buscar el usuario por email
+  const user = await prisma.user.findUnique({
+    where: { email: userEmail },
+    select: { id: true },
+  })
+
+  if (!user) {
+    throw new Error(`Usuario con email ${userEmail} no encontrado`)
+  }
+
+  return prisma.notification.create({
+    data: {
+      userId: user.id,
       title,
       message,
       type,

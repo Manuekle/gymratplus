@@ -8,7 +8,7 @@ export async function GET(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return new NextResponse("No autorizado", { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const { searchParams } = new URL(request.url);
@@ -90,7 +90,7 @@ export async function GET(request: Request) {
     return NextResponse.json(transformedSessions);
   } catch (error) {
     console.error("[WORKOUT_SESSIONS_GET]", error);
-    return new NextResponse("Error interno", { status: 500 });
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }
 
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
-      return new NextResponse("No autorizado", { status: 401 });
+      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
     const body = await request.json();
@@ -111,7 +111,7 @@ export async function POST(request: Request) {
     } = body;
 
     if (!sessionDate || !exerciseData || !workoutId) {
-      return new NextResponse("Datos incompletos", { status: 400 });
+      return NextResponse.json({ error: "Datos incompletos" }, { status: 400 });
     }
 
     // Crear la sesión de entrenamiento
@@ -172,6 +172,6 @@ export async function POST(request: Request) {
     return NextResponse.json(transformedSession);
   } catch (error) {
     console.error("[WORKOUT_SESSIONS_POST]", error);
-    return new NextResponse("Error interno", { status: 500 });
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

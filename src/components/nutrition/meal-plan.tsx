@@ -82,10 +82,22 @@ export function MealPlan({
   isLoading = false,
 }: MealPlanProps) {
   const { t } = useTranslation("common");
-  console.log(foodRecommendation);
 
   if (isLoading) {
     return <MealPlanSkeleton />;
+  }
+
+  // Validar que foodRecommendation y foodRecommendation.macros existan
+  if (!foodRecommendation || !foodRecommendation.macros) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">
+            No se encontró información del plan nutricional
+          </p>
+        </div>
+      </div>
+    );
   }
 
   // const mealTypes = {

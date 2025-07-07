@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { createNotificationByEmail } from '@/lib/notification-service';
 
 // Esquema de validación para la solicitud del instructor
 const requestInstructorSchema = z.object({
@@ -15,24 +16,58 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const studentId = session.user.id;
     const body = await req.json();
     const { instructorProfileId, agreedPrice } = requestInstructorSchema.parse(body);
 
-    // Verificar si ya existe una solicitud pendiente o activa del alumno a este instructor
-    const existingRequest = await prisma.studentInstructor.findFirst({
+    // Verificar si ya existe un registro para este par estudiante-instructor
+    const existingRecord = await prisma.studentInstructor.findFirst({
       where: {
         studentId: studentId,
         instructorProfileId: instructorProfileId,
-        status: { in: ["pending", "active"] }, // Buscar solicitudes pendientes o activas
       },
     });
 
-    if (existingRequest) {
-      return new NextResponse('Ya existe una solicitud pendiente o activa para este instructor.', { status: 409 });
+    // Si ya existe un registro, actualizarlo en lugar de crear uno nuevo
+    if (existingRecord) {
+      // Si ya hay una solicitud pendiente o activa, devolver error
+      if (["pending", "active"].includes(existingRecord.status)) {
+        return NextResponse.json({ error: 'Ya existe una solicitud pendiente o activa para este instructor.' }, { status: 409 });
+      }
+      
+      // Si existe pero está en otro estado (ej: rejected, cancelled), actualizarlo
+      const updatedRequest = await prisma.studentInstructor.update({
+        where: { id: existingRecord.id },
+        data: {
+          status: "pending",
+          agreedPrice,
+        },
+        include: {
+          student: {
+            select: { name: true, email: true },
+          },
+          instructor: {
+            select: {
+              user: {
+                select: { name: true, email: true },
+              },
+            },
+          },
+        },
+      });
+
+      // Crear notificación para el instructor
+      await createNotificationByEmail({
+        userEmail: updatedRequest.instructor.user.email!,
+        title: "Solicitud de alumno actualizada",
+        message: `${updatedRequest.student.name} ha actualizado su solicitud para ser tu alumno.`,
+        type: "system",
+      });
+
+      return NextResponse.json(updatedRequest, { status: 200 });
     }
 
     // Crear la nueva solicitud
@@ -43,15 +78,41 @@ export async function POST(req: Request) {
         agreedPrice,
         status: "pending", // Estado inicial de la solicitud
       },
+      include: {
+        student: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        instructor: {
+          select: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Crear notificación para el instructor
+    await createNotificationByEmail({
+      userEmail: studentInstructorRequest.instructor.user.email!,
+      title: "Nueva solicitud de alumno",
+      message: `${studentInstructorRequest.student.name} ha solicitado ser tu alumno.`,
+      type: "system",
     });
 
     return NextResponse.json(studentInstructorRequest, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.message, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.error('[STUDENT_INSTRUCTOR_REQUEST_ERROR]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 } 

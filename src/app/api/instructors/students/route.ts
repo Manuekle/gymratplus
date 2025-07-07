@@ -8,7 +8,7 @@ export async function GET() {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Verificar si el usuario es un instructor y obtener su perfil de instructor
@@ -17,14 +17,14 @@ export async function GET() {
     });
 
     if (!instructorProfile) {
-      return new NextResponse('Forbidden: User is not an instructor or profile not found.', { status: 403 });
+      return NextResponse.json({ error: 'Forbidden: User is not an instructor or profile not found.' }, { status: 403 });
     }
 
     // Obtener las relaciones activas de alumnos con este instructor
     const studentInstructorRelationships = await prisma.studentInstructor.findMany({
       where: {
         instructorProfileId: instructorProfile.id,
-        status: "active", // Solo alumnos activos
+        status: { in: ["active", "pending"] }, // Trae alumnos activos y solicitudes pendientes
       },
       include: {
         student: {
@@ -56,22 +56,24 @@ export async function GET() {
     });
 
     // Formatear los datos para la respuesta
-    const studentsData = studentInstructorRelationships.map(rel => ({
-      id: rel.student.id,
-      name: rel.student.name,
-      email: rel.student.email,
-      image: rel.student.image,
-      agreedPrice: rel.agreedPrice,
-      status: rel.status,
-      lastWorkoutAt: rel.student.workoutSessions.length > 0 ? rel.student.workoutSessions[0].date : null,
-      currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
-      completedWorkoutsLast7Days: rel.student.workoutSessions.length, // Contar las sesiones completadas en los últimos 7 días
-      // Puedes añadir más métricas o resúmenes de progreso aquí
-    }));
+    const studentsData = studentInstructorRelationships
+      .filter(rel => rel.student)
+      .map(rel => ({
+        id: rel.id,
+        studentId: rel.student.id,
+        name: rel.student.name,
+        email: rel.student.email,
+        image: rel.student.image,
+        agreedPrice: rel.agreedPrice,
+        status: rel.status,
+        lastWorkoutAt: rel.student.workoutSessions.length > 0 ? rel.student.workoutSessions[0].date : null,
+        currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
+        completedWorkoutsLast7Days: rel.student.workoutSessions.length,
+      }));
 
     return NextResponse.json(studentsData, { status: 200 });
   } catch (error) {
     console.error('[GET_INSTRUCTOR_STUDENTS_ERROR]', error);
-    return new NextResponse('Internal Server Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 } 

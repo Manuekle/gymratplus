@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
+import { createNotification } from '@/lib/notification-service';
 
 // Esquema de validación para el registro del instructor
 const instructorRegisterSchema = z.object({
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await req.json();
@@ -61,13 +62,21 @@ export async function POST(req: Request) {
       },
     });
 
+    // Crear notificación de bienvenida para el instructor
+    await createNotification({
+      userId: session.user.id,
+      title: "¡Bienvenido como instructor!",
+      message: "Tu perfil de instructor ha sido creado exitosamente. Ahora puedes recibir solicitudes de alumnos.",
+      type: "system",
+    });
+
     return NextResponse.json({ user, instructorProfile }, { status: 200 });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return new NextResponse(error.message, { status: 400 });
+      return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
     console.error('[INSTRUCTOR_REGISTER_ERROR]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
   }
 } 

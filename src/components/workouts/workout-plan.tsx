@@ -65,6 +65,19 @@ export function WorkoutPlan({
     return <WorkoutPlanSkeleton />;
   }
 
+  // Validar que workoutPlan y workoutPlan.days existan
+  if (!workoutPlan || !workoutPlan.days) {
+    return (
+      <div className="space-y-4">
+        <div className="text-center py-8">
+          <p className="text-muted-foreground">
+            No se encontró información del plan de entrenamiento
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* <div>
