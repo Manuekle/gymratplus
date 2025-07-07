@@ -232,7 +232,7 @@ export default function RecommendationsComponent() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold tracking-tight">
+        <CardTitle className="text-2xl font-semibold  tracking-heading">
           Tu Plan de Fitness Personalizado
         </CardTitle>
         <CardDescription className="text-muted-foreground text-xs">

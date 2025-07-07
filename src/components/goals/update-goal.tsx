@@ -84,7 +84,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold tracking-tight">
+          <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Actualizar progreso
           </DialogTitle>
         </DialogHeader>

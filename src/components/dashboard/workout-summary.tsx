@@ -48,7 +48,7 @@ export default function WorkoutSummary() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center w-full mb-4">
         <div className="flex items-center gap-2 w-full">
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-semibold  tracking-heading">
             Resumen de Entrenamientos
           </h2>
         </div>
@@ -63,9 +63,9 @@ export default function WorkoutSummary() {
 
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-bold">Semana actual</p>
+          <p className="text-sm font-semibold ">Semana actual</p>
           <div className="flex items-end mt-1">
-            <span className="text-xl text-gray-400 font-bold">
+            <span className="text-xl text-gray-400 font-semibold ">
               {currentWeek.completed}
             </span>
             <span className="text-sm text-muted-foreground ml-1">
@@ -75,16 +75,16 @@ export default function WorkoutSummary() {
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-bold">Siguiente entrenamiento</p>
+          <p className="text-sm font-semibold ">Siguiente entrenamiento</p>
           <p className="mt-1 text-sm font-medium text-muted-foreground">
             {currentWeek.nextWorkout}
           </p>
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-bold">Progreso mensual</p>
+          <p className="text-sm font-semibold ">Progreso mensual</p>
           <div className="flex items-center mt-1">
-            <span className="text-xl font-bold text-muted-foreground">85%</span>
+            <span className="text-xl font-semibold  text-muted-foreground">85%</span>
           </div>
         </div>
       </div> */}
@@ -125,7 +125,7 @@ export default function WorkoutSummary() {
           workoutSessions.slice(0, 2).map((session) => (
             <div key={session.id} className="p-3 border rounded-lg">
               <div className="flex justify-between">
-                <h4 className="font-bold tracking-tight text-lg">
+                <h4 className="font-semibold  tracking-heading text-lg">
                   {" "}
                   {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                 </h4>

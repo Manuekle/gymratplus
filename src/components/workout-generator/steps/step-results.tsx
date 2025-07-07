@@ -33,13 +33,13 @@ export function StepResults({ workout }: StepResultsProps) {
   return (
     <div className="space-y-6">
       {/* <div className="text-center mb-6">
-        <h2 className="text-2xl font-bold">¡Tu entrenamiento está listo!</h2>
+        <h2 className="text-2xl font-semibold ">¡Tu entrenamiento está listo!</h2>
         <p className="text-muted-foreground mt-1">
           Aquí tienes tu plan de entrenamiento personalizado
         </p>
       </div> */}
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold tracking-tight">
+        <DialogTitle className="text-2xl font-semibold  tracking-heading">
           ¡Tu entrenamiento está listo!
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

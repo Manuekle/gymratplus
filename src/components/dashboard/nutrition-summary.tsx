@@ -157,7 +157,7 @@ export default function NutritionSummary() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-semibold  tracking-heading">
             Resumen Nutricional
           </h2>
         </div>

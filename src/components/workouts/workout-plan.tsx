@@ -68,7 +68,7 @@ export function WorkoutPlan({
   return (
     <div className="space-y-4">
       {/* <div>
-        <h2 className="text-2xl font-bold">{workoutPlan.name}</h2>
+        <h2 className="text-2xl font-semibold ">{workoutPlan.name}</h2>
         <p className="text-muted-foreground">{workoutPlan.description}</p>
       </div> */}
 

@@ -94,7 +94,7 @@ export default function NotificationsPage() {
       </div>
       <div className="flex md:flex-row flex-col md:items-center items-start md:gap-0 gap-4 justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Notificaciones</h1>
+          <h1 className="text-2xl font-semibold  tracking-heading">Notificaciones</h1>
           <p className="text-sm text-muted-foreground">
             Gestiona tus notificaciones y alertas
           </p>
@@ -173,7 +173,7 @@ export default function NotificationsPage() {
                   {Object.entries(groupedNotifications).map(
                     ([date, notifications]) => (
                       <div key={date}>
-                        <div className="px-4 py-2 text-center text-lg font-bold tracking-tighter border border-b border-t border-l-0 border-r-0">
+                        <div className="px-4 py-2 text-center text-lg font-semibold  tracking-headinger border border-b border-t border-l-0 border-r-0">
                           {formatGroupDate(date)}
                         </div>
                         <div className="divide-y">

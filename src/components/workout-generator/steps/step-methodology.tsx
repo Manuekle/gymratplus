@@ -110,7 +110,7 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold tracking-tight">
+        <DialogTitle className="text-2xl font-semibold  tracking-heading">
           ¿Qué metodología te interesa?
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

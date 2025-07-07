@@ -322,7 +322,7 @@ export default function FoodRecommendations() {
 
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Tu Plan de Alimentación
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">

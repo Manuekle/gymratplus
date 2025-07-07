@@ -69,7 +69,7 @@ export default function WorkoutSummary() {
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center w-full mb-4">
         <span>
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Historial
           </CardTitle>
           <CardDescription className="text-xs">
@@ -105,7 +105,7 @@ export default function WorkoutSummary() {
             ))}
           </div>
         ) : workoutSessions.length === 0 ? (
-          <div className="justify-center py-24 items-center flex flex-col">
+          <div className="justify-center py-32 items-center flex flex-col">
             <h2 className="text-sm font-medium">
               No hay entrenamientos recientes.
             </h2>
@@ -118,7 +118,7 @@ export default function WorkoutSummary() {
             {currentWorkouts.map((session) => (
               <div key={session.id} className="p-3 border rounded-lg">
                 <div className="flex justify-between">
-                  <h4 className="font-bold tracking-tight text-lg">
+                  <h4 className="font-semibold  tracking-heading text-lg">
                     {" "}
                     {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                   </h4>

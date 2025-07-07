@@ -147,7 +147,7 @@ export function MealLogList({
           className="md:p-4 p-0 md:border border-0 rounded-lg"
         >
           <div className="flex items-baseline justify-between">
-            <h3 className="font-bold tracking-tight text-lg">
+            <h3 className="font-semibold  tracking-heading text-lg">
               {getMealTypeLabel(mealType)}
             </h3>
           </div>

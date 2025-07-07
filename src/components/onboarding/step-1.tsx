@@ -285,7 +285,7 @@ export default function StepOnboarding1() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold tracking-tight">
+        <CardTitle className="text-2xl font-semibold  tracking-heading">
           Información de Perfil
         </CardTitle>
         <CardDescription className="text-xs">

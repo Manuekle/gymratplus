@@ -222,7 +222,7 @@ export default function NutritionPage() {
           <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
               <span>
-                <CardTitle className="text-2xl font-bold tracking-tight">
+                <CardTitle className="text-2xl font-semibold  tracking-heading">
                   Calorías Diarias
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -238,13 +238,13 @@ export default function NutritionPage() {
                 <div className="flex justify-between items-end">
                   <div>
                     <div className="text-xs font-medium">Consumidas</div>
-                    <div className="text-3xl font-bold">
+                    <div className="text-3xl font-semibold ">
                       {todayData ? todayData.todayTotals.calories : 0}{" "}
                     </div>
                   </div>
                   <div className="text-right">
                     <div className="text-xs font-medium">Objetivo</div>
-                    <div className="text-3xl font-bold">
+                    <div className="text-3xl font-semibold ">
                       {user?.nutrition.calorieTarget}
                     </div>
                   </div>
@@ -307,7 +307,7 @@ export default function NutritionPage() {
 
           <Card className="col-span-2 md:col-span-1">
             <CardHeader className="pb-2">
-              <CardTitle className="text-2xl font-bold tracking-tight">
+              <CardTitle className="text-2xl font-semibold  tracking-heading">
                 Macronutrientes
               </CardTitle>
               <CardDescription className="text-xs">
@@ -421,7 +421,7 @@ export default function NutritionPage() {
           <Card className="col-span-2">
             <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
               <span>
-                <CardTitle className="text-2xl font-bold tracking-tight">
+                <CardTitle className="text-2xl font-semibold  tracking-heading">
                   Historial de Comidas
                 </CardTitle>
                 <CardDescription className="text-xs">

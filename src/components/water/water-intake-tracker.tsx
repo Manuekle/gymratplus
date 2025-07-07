@@ -43,7 +43,7 @@ export function WaterIntakeTracker() {
       <div className="col-span-1 md:col-span-2 grid md:grid-cols-2 gap-6">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl font-bold tracking-tight">
+            <CardTitle className="text-2xl font-semibold  tracking-heading">
               Consumo de agua
             </CardTitle>
             <CardDescription className="text-xs">
@@ -61,7 +61,7 @@ export function WaterIntakeTracker() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-2xl font-bold tracking-tight">
+            <CardTitle className="text-2xl font-semibold  tracking-heading">
               Historial
             </CardTitle>
             <CardDescription className="text-xs">
@@ -80,7 +80,7 @@ export function WaterIntakeTracker() {
     <div className="col-span-1 md:col-span-2 grid md:grid-cols-2 gap-6">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Consumo de agua
           </CardTitle>
           <CardDescription className="text-xs">
@@ -103,7 +103,7 @@ export function WaterIntakeTracker() {
       </Card>
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Historial
           </CardTitle>
           <CardDescription className="text-xs">

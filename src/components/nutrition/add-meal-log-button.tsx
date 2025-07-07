@@ -169,7 +169,7 @@ function MacroCircle({
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-sm tracking-tight font-bold">{calories}</span>
+          <span className="text-sm tracking-heading font-semibold ">{calories}</span>
           <span className="text-xs text-muted-foreground block">kcal</span>
         </div>
       </div>
@@ -737,7 +737,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               </div>
 
               <div className="flex-1 text-left">
-                <h3 className="font-semibold tracking-tight">{item.name}</h3>
+                <h3 className="font-semibold tracking-heading">{item.name}</h3>
                 <p className="text-xs text-muted-foreground">
                   {activeTab === "foods"
                     ? `${(item as Food).serving}g por porción`
@@ -766,7 +766,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold tracking-tight">
+          <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Registrar Comida
           </DialogTitle>
           <DialogDescription className="text-xs">

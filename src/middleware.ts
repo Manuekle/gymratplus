@@ -1,14 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+/* import { UserRole, User } from "@/types/user"; */
 
 export async function middleware(req: NextRequest) {
   const token = await getToken({ req });
   const path = req.nextUrl.pathname;
 
-  const protectedRoutes = ["/onboarding", "/onboarding/recommendations"];
+  const protectedRoutes = ["/onboarding", "/onboarding/recommendations", "/dashboard/instructors"];
   const isDashboardRoute = path.startsWith("/dashboard");
-  const authRoutes = ["/auth/signin", "/auth/signup"];
 
   // Si el usuario NO está autenticado y quiere acceder a rutas protegidas
   if (!token && (protectedRoutes.includes(path) || isDashboardRoute)) {
@@ -24,9 +24,22 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Si el usuario está autenticado y quiere entrar a /auth/signin o /auth/signup
-  if (token && authRoutes.includes(path)) {
+  // Si el usuario está autenticado y quiere acceder al panel de instructores pero no es instructor
+  /* if (token && isDashboardRoute && path.includes("/dashboard/instructors")) {
+    const user = token?.user as User;
+    if (!user?.role?.includes(UserRole.INSTRUCTOR)) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  } */
+
+  // Si el usuario está autenticado y viene de /auth/signin, redirige al dashboard
+  if (token && path === "/auth/signin") {
     return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Si el usuario está autenticado y viene de /auth/signup, redirige al onboarding
+  if (token && path === "/auth/signup") {
+    return NextResponse.redirect(new URL("/onboarding", req.url));
   }
 
   return NextResponse.next();
@@ -39,5 +52,6 @@ export const config = {
     "/dashboard/:path*",
     "/auth/signin",
     "/auth/signup",
+    "/dashboard/instructors/:path*",
   ],
 };

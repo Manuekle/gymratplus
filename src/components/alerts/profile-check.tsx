@@ -148,7 +148,7 @@ const ProfileCheck = () => {
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
             <Icons.spinner className="h-12 w-12 text-white animate-spin" />
-            <p className="text-md md:text-lg font-bold tracking-tighter text-white">
+            <p className="text-md md:text-lg font-semibold  tracking-headinger text-white">
               Verificando perfil
             </p>
           </div>
@@ -158,10 +158,10 @@ const ProfileCheck = () => {
       <AlertDialog open={showAlert && !isLoading} onOpenChange={setShowAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-bold tracking-tighter">
+            <AlertDialogTitle className="text-2xl font-semibold  tracking-headinger">
               Datos de perfil incompletos
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm tracking-tight">
+            <AlertDialogDescription className="text-sm tracking-heading">
               Para continuar, necesitas completar tu información personal y de
               entrenamiento.
             </AlertDialogDescription>

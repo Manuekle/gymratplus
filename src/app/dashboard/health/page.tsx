@@ -98,7 +98,7 @@ export default function HealthPage() {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Datos Físicos
           </CardTitle>
           <CardDescription className="text-xs">
@@ -109,22 +109,22 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-tighter text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-headinger text-sm text-muted-foreground">
                   <WeightScaleIcon className="mr-1 h-4 w-4" />
                   Peso Actual
                 </div>
-                <div className="text-2xl font-bold">
+                <div className="text-2xl font-semibold ">
                   {/* Modified: access weight.current safely */}
                   {user?.currentWeight} kg
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-tighter text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-headinger text-sm text-muted-foreground">
                   <RulerIcon className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
-                <div className="text-2xl font-bold">{user?.height} cm</div>
+                <div className="text-2xl font-semibold ">{user?.height} cm</div>
               </div>
             </div>
 
@@ -160,7 +160,7 @@ export default function HealthPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Objetivos y Actividad
           </CardTitle>
           <CardDescription className="text-xs">

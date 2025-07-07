@@ -15,7 +15,7 @@ export default function WorkoutCreator() {
   return (
     <Card className="">
       <CardHeader className="pb-2">
-        <CardTitle className="text-2xl font-bold tracking-tight">
+        <CardTitle className="text-2xl font-semibold  tracking-heading">
           Mis Rutinas
         </CardTitle>
         <CardDescription className="text-xs">
@@ -23,7 +23,7 @@ export default function WorkoutCreator() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <div className="">
           <WorkoutGenerator />
           <WorkoutsTable />
         </div>

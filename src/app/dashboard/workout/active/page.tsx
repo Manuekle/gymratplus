@@ -468,7 +468,7 @@ export default function ActiveWorkoutPage() {
   if (!workoutSession) {
     return (
       <div className="text-center p-8">
-        <h2 className="text-xl font-bold mb-4">No hay entrenamiento activo</h2>
+        <h2 className="text-xl font-semibold  mb-4">No hay entrenamiento activo</h2>
         <Button onClick={() => router.push("/dashboard/workout")}>
           Iniciar un entrenamiento
         </Button>
@@ -503,7 +503,7 @@ export default function ActiveWorkoutPage() {
         <div className="border rounded-lg p-4 mt-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
             <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-2xl font-bold tracking-tight">
+              <CardTitle className="text-2xl font-semibold  tracking-heading">
                 {workoutSession.notes}
               </CardTitle>
               <CardDescription className="text-xs">
@@ -539,7 +539,7 @@ export default function ActiveWorkoutPage() {
               <h3 className="text-md  mb-2 text-white dark:text-black">
                 Tiempo de descanso
               </h3>
-              <div className="text-3xl font-bold text-white dark:text-black">
+              <div className="text-3xl font-semibold  text-white dark:text-black">
                 {formatTime(restTimer.timeLeft)}
               </div>
               <Button
@@ -571,7 +571,7 @@ export default function ActiveWorkoutPage() {
                 <CardHeader className="pb-2">
                   <div className="flex flex-col md:flex-row justify-start md:justify-between items-start gap-4 md:gap-0 md:items-center">
                     <div>
-                      <CardTitle className="text-md tracking-tight font-bold">
+                      <CardTitle className="text-md tracking-heading font-semibold ">
                         {exercise.exercise.name}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground">

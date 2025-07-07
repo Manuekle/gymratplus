@@ -17,7 +17,7 @@ export function StepFrequency({ value, onChange }: StepFrequencyProps) {
   return (
     <div className="space-y-8">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold tracking-tight">
+        <DialogTitle className="text-2xl font-semibold  tracking-heading">
           ¿Cuántos días a la semana puedes entrenar?
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

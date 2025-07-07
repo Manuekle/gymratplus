@@ -279,7 +279,7 @@ export default function ProfilePage() {
                       document.getElementById("profile-image-upload")?.click()
                     }
                   >
-                    <span className="text-white font-medium tracking-tighter text-xs">
+                    <span className="text-white font-medium tracking-headinger text-xs">
                       cambiar
                     </span>
                     <input
@@ -297,7 +297,7 @@ export default function ProfilePage() {
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
               <div>
                 <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
-                  <h2 className="text-2xl font-bold tracking-tight">
+                  <h2 className="text-2xl font-semibold  tracking-heading">
                     {session?.user?.name}
                   </h2>
                   {/* <div className="flex gap-2 justify-center md:justify-start">
@@ -445,7 +445,7 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-bold tracking-tight">
+            <CardTitle className="text-2xl font-semibold  tracking-heading">
               Información de contacto
             </CardTitle>
             <CardDescription className="text-xs">
@@ -633,7 +633,7 @@ export default function ProfilePage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-bold tracking-tight">
+            <CardTitle className="text-2xl font-semibold  tracking-heading">
               Preferencias de entrenamiento
             </CardTitle>
             <CardDescription className="text-xs">

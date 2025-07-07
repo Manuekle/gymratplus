@@ -67,7 +67,7 @@ export default function WorkoutsPage() {
     <div className="grid gap-6 md:grid-cols-2">
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Rutina de Entrenamiento
           </CardTitle>
           <CardDescription className="text-xs">
@@ -112,7 +112,7 @@ export default function WorkoutsPage() {
 
       <Card>
         <CardHeader className="pb-2">
-          <CardTitle className="text-2xl font-bold tracking-tight">
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
             Progreso de Ejercicios
           </CardTitle>
           <CardDescription className="text-xs">

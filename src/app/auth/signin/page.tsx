@@ -54,7 +54,7 @@ export default function SignInPage() {
       <div className="relative flex h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-2xl font-bold tracking-tight">
+            <CardTitle className="text-center text-2xl font-semibold  tracking-heading">
               Iniciar Sesión
             </CardTitle>
             <CardDescription className="text-center text-xs">

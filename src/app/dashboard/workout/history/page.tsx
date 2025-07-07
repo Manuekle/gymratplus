@@ -199,7 +199,7 @@ export default function WorkoutHistoryPage() {
           >
             <ArrowLeft01Icon className="h-4 w-4 mr-2" /> Volver a la lista
           </Button>
-          <CardTitle className="text-2xl font-bold tracking-tight pt-4">
+          <CardTitle className="text-2xl font-semibold  tracking-heading pt-4">
             Historial de entrenamientos
           </CardTitle>
         </div>
@@ -214,7 +214,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
-                <p className="text-xl md:text-3xl font-bold tracking-tighter">
+                <p className="text-xl md:text-3xl font-semibold  tracking-headinger">
                   {stats.totalSessions}
                 </p>
               </div>
@@ -232,7 +232,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
-                <p className="text-xl md:text-3xl font-bold">
+                <p className="text-xl md:text-3xl font-semibold ">
                   {stats.totalExercises}
                 </p>
               </div>
@@ -250,7 +250,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
-                <p className="text-xl md:text-3xl font-bold">
+                <p className="text-xl md:text-3xl font-semibold ">
                   {stats.totalSets}
                 </p>
               </div>
@@ -268,7 +268,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
-                <p className="text-xl md:text-3xl font-bold">
+                <p className="text-xl md:text-3xl font-semibold ">
                   {stats.averageDuration} min
                 </p>
               </div>
@@ -309,7 +309,7 @@ export default function WorkoutHistoryPage() {
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">
                     <div>
-                      <CardTitle className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                      <CardTitle className="text-2xl font-semibold  tracking-heading flex items-center gap-2">
                         {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                       </CardTitle>
                       <p className="text-xs text-muted-foreground flex items-center gap-2 pt-1">
@@ -329,7 +329,7 @@ export default function WorkoutHistoryPage() {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Duración</p>
-                      <p className="font-semibold tracking-tighter">
+                      <p className="font-semibold tracking-headinger">
                         {session.duration ? `${session.duration} min` : "N/A"}
                       </p>
                     </div>
@@ -337,13 +337,13 @@ export default function WorkoutHistoryPage() {
                       <p className="text-xs text-muted-foreground">
                         Ejercicios
                       </p>
-                      <p className="font-semibold tracking-tighter">
+                      <p className="font-semibold tracking-headinger">
                         {session.exercises.length}
                       </p>
                     </div>
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Sets</p>
-                      <p className="font-semibold tracking-tighter">
+                      <p className="font-semibold tracking-headinger">
                         {session.exercises.reduce(
                           (acc: number, ex: Exercise) =>
                             acc +
@@ -386,7 +386,7 @@ export default function WorkoutHistoryPage() {
                           key={exercise.id}
                           className="border rounded-md p-2 text-sm"
                         >
-                          <h4 className="font-bold tracking-tight text-xs md:text-sm truncate border-b pb-1 mb-1">
+                          <h4 className="font-semibold  tracking-heading text-xs md:text-sm truncate border-b pb-1 mb-1">
                             {exercise.exercise.name}
                           </h4>
 

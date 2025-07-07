@@ -246,7 +246,7 @@ export function WorkoutPersonalize() {
         </DialogTrigger>
         <DialogContent>
           <DialogHeader className="pt-2">
-            <DialogTitle className="text-2xl font-bold tracking-tight">
+            <DialogTitle className="text-2xl font-semibold  tracking-heading">
               Crea tu rutina personalizada
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -433,7 +433,7 @@ export function WorkoutPersonalize() {
                     }, {} as Record<string, Exercise[]>)
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
-                      <h3 className="text-sm capitalize tracking-tight font-bold text-muted-foreground">
+                      <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
                         {muscleGroup}
                       </h3>
                       <div className="flex flex-wrap gap-2">

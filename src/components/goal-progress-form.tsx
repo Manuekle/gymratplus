@@ -84,7 +84,7 @@ export default function GoalProgressForm({
           <Cancel01Icon size={20} />
         </Button>
 
-        <h2 className="text-xl font-bold mb-4">Actualizar progreso</h2>
+        <h2 className="text-xl font-semibold  mb-4">Actualizar progreso</h2>
         <p className="text-muted-foreground mb-4">{goal.title}</p>
 
         {error && (

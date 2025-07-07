@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Door01Icon } from "hugeicons-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Badge } from "./ui/badge";
 import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
 import { WorkoutStreak } from "./workout/workout-streak";
@@ -43,8 +42,7 @@ export function Navbar() {
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
           <div className="flex flex-row items-center space-x-2">
-            <h1 className="text-2xl font-bold">GymRat+</h1>
-            <Badge variant="outline">Beta</Badge>
+            <h1 className="text-xl font-semibold tracking-heading">GymRat+</h1>
           </div>
           <div className="flex flex-row items-center space-x-4">
             {session?.user?.id && (
@@ -53,6 +51,7 @@ export function Navbar() {
               </div>
             )}
             <NotificationBell />
+            <ThemeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -98,9 +97,7 @@ export function Navbar() {
                 {/* <DropdownMenuItem>
                   <Settings01Icon className="mr-2 h-4 w-4" />
                   <span>Ajustes</span>
-                </DropdownMenuItem> */}
-                <ThemeToggle />
-                <DropdownMenuSeparator />
+                </DropdownMenuItem> */}                
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                 >

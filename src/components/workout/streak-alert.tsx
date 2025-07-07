@@ -64,7 +64,7 @@ export function StreakAlert({ streak, show, onClose }: StreakAlertProps) {
               />
             </motion.div>
             <div>
-              <p className="font-bold text-lg">{streakLevel.label}</p>
+              <p className="font-semibold  text-lg">{streakLevel.label}</p>
               <p className="text-sm text-muted-foreground">
                 ¡{streak} días seguidos entrenando!
               </p>

@@ -118,7 +118,7 @@ export function GoalsDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-2 items-center justify-center">
               {getGoalTypeIcon(goal.type as GoalType)}
-              <CardTitle className="text-sm font-medium tracking-tight capitalize">
+              <CardTitle className="text-sm font-medium tracking-heading capitalize">
                 {goal.title}
               </CardTitle>
             </div>

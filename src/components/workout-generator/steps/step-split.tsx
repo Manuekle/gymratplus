@@ -106,7 +106,7 @@ export function StepSplit({ value, onChange }: StepSplitProps) {
   return (
     <div className="space-y-4">
       <DialogHeader>
-        <DialogTitle className="text-2xl font-bold tracking-tight">
+        <DialogTitle className="text-2xl font-semibold  tracking-heading">
           ¿Qué tipo de rutina prefieres?
         </DialogTitle>
         <DialogDescription className="text-xs text-muted-foreground">

@@ -55,7 +55,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold tracking-tight">
+          <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Eliminar progreso
           </DialogTitle>
         </DialogHeader>

@@ -113,7 +113,7 @@ export function MealPlan({
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle className="font-bold tracking-tight">
+          <CardTitle className="font-semibold  tracking-heading">
             Plan Nutricional
           </CardTitle>
           <CardDescription className="text-xs">

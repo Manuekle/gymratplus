@@ -110,7 +110,7 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold tracking-tight">
+          <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Nuevo registro de progreso
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">

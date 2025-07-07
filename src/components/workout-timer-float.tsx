@@ -175,7 +175,7 @@ export default function WorkoutTimerFloat({
         onClick={isMinimized ? () => setIsMinimized(false) : undefined}
       >
         {isMinimized ? (
-          <div className="text-xl text-white dark:text-black font-bold px-4 w-fit">
+          <div className="text-xl text-white dark:text-black font-semibold  px-4 w-fit">
             {formatTime(elapsedTime)}
           </div>
         ) : (
@@ -201,7 +201,7 @@ export default function WorkoutTimerFloat({
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-bold text-white dark:text-black">
+              <div className="text-2xl font-semibold  text-white dark:text-black">
                 {formatTime(elapsedTime)}
               </div>
             </div>
@@ -236,7 +236,7 @@ export default function WorkoutTimerFloat({
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold tracking-tight">
+            <DialogTitle className="text-2xl font-semibold  tracking-heading">
               ¿Qué deseas hacer con este entrenamiento?
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
@@ -250,7 +250,7 @@ export default function WorkoutTimerFloat({
               <span className="text-xs text-muted-foreground">
                 Tiempo transcurrido
               </span>
-              <div className="text-xl font-bold">{formatTime(elapsedTime)}</div>
+              <div className="text-xl font-semibold ">{formatTime(elapsedTime)}</div>
             </div>
           </div>
 

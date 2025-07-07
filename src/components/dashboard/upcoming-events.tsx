@@ -63,7 +63,7 @@ export default function UpcomingEvents() {
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           {/* <Calendar className="h-5 w-5 text-blue-500" /> */}
-          <h2 className="text-lg font-bold">Eventos Próximos</h2>
+          <h2 className="text-lg font-semibold ">Eventos Próximos</h2>
         </div>
         <Button className="text-xs text-muted-foreground flex items-center gap-1">
           Ver calendario <ArrowRight01Icon className="h-4 w-4" />
@@ -126,7 +126,7 @@ export default function UpcomingEvents() {
                 <p className="text-xs text-muted-foreground">
                   {dayNames[futureDate.getDay()].slice(0, 3)}
                 </p>
-                <p className="text-lg font-bold">{futureDate.getDate()}</p>
+                <p className="text-lg font-semibold ">{futureDate.getDate()}</p>
                 <div className="mt-1 flex justify-center">
                   <div className="w-2 h-2 rounded-full bg-blue-500"></div>
                 </div>

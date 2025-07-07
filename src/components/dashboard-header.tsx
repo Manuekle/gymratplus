@@ -18,7 +18,7 @@ export const DashboardHeader = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold tracking-tight mb-6">{pageTitle}</h1>
+      <h1 className="scroll-m-20 text-4xl font-semibold tracking-heading sm:text-3xl xl:text-3xl mb-6">{pageTitle}</h1>
       <Tabs
         defaultValue="dashboard"
         value={pathname.split("/")[2]}
@@ -41,7 +41,7 @@ export const DashboardHeader = () => {
             </TabsTrigger>
             <TabsTrigger value="nutrition" asChild>
               <Link href="/dashboard/nutrition">Nutrición</Link>
-            </TabsTrigger>
+            </TabsTrigger>           
           </TabsList>
         </div>
       </Tabs>

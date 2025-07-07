@@ -188,7 +188,7 @@ export function CalorieCalculator() {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold tracking-tight">
+          <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Calculadora de Objetivos Calóricos
           </DialogTitle>
           <DialogDescription className="text-xs">
@@ -556,16 +556,16 @@ export function CalorieCalculator() {
                 className="space-y-4"
               >
                 <div className="bg-muted p-4 rounded-lg mb-4 text-center">
-                  <h3 className="text-xs font-medium tracking-tight mb-1">
+                  <h3 className="text-xs font-medium tracking-heading mb-1">
                     Calorías Diarias
                   </h3>
-                  <div className="text-3xl font-bold tracking-tight">
+                  <div className="text-3xl font-semibold  tracking-heading">
                     {calculatedValues.dailyCalorieTarget} kcal
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <h3 className="text-lg font-bold tracking-tight">
+                  <h3 className="text-lg font-semibold  tracking-heading">
                     Macronutrientes
                   </h3>
 

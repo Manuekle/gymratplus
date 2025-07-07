@@ -5,7 +5,7 @@ export default function GoalProgress() {
   return (
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold tracking-tight">
+        <h2 className="text-2xl font-semibold  tracking-heading">
           Progreso de Objetivos
         </h2>
       </div>

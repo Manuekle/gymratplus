@@ -132,13 +132,7 @@ export default function WorkoutsTable() {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h3 className="text-lg font-semibold tracking-tight">Mis Rutinas</h3>
-            <p className="text-sm text-muted-foreground">
-              Gestiona tus entrenamientos
-            </p>
-          </div>
+        <div className="flex items-center justify-between">         
           <div className="hidden lg:flex gap-2">
             <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
             <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
@@ -161,7 +155,7 @@ export default function WorkoutsTable() {
         <div className="mx-auto w-20 h-20 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center mb-4">
           <Dumbbell01Icon className="h-8 w-8 text-muted-foreground" />
         </div>
-        <h3 className="text-lg font-semibold mb-2 tracking-tight">No hay rutinas creadas</h3>
+        <h3 className="text-lg font-semibold mb-2 tracking-heading">No hay rutinas creadas</h3>
         <p className="text-muted-foreground text-sm mb-4">
           Crea tu primera rutina para comenzar
         </p>
@@ -184,14 +178,8 @@ export default function WorkoutsTable() {
   const slides = createSlides();
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h3 className="text-lg font-semibold tracking-tight">Mis Rutinas</h3>
-          <p className="text-sm text-muted-foreground">
-            {sortedWorkouts.length} rutina{sortedWorkouts.length !== 1 ? 's' : ''} creada{sortedWorkouts.length !== 1 ? 's' : ''}
-          </p>
-        </div>
+    <div className="">
+      <div className="flex items-center justify-between">        
         {totalSlides > 1 && (
           <div className="hidden lg:flex gap-2">
             <Button
@@ -218,7 +206,7 @@ export default function WorkoutsTable() {
       <div className="relative">
         <div 
           ref={containerRef}
-          className="overflow-hidden py-4"
+          className=""
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -230,7 +218,7 @@ export default function WorkoutsTable() {
             }}
           >
             {slides.map((slideWorkouts, slideIndex) => (
-              <div key={slideIndex} className="w-full flex-shrink-0 px-2">
+              <div key={slideIndex} className="w-full flex-shrink-0">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {slideWorkouts.map((workout) => (
                     <Card
@@ -241,7 +229,7 @@ export default function WorkoutsTable() {
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0" />
                       
                       <div className="relative h-full flex items-center justify-center z-20">
-                        <CardTitle className="text-xl font-semibold text-center leading-tight tracking-tight px-4">
+                        <CardTitle className="text-xl font-semibold text-center tracking-heading px-4">
                           {workout.name}
                         </CardTitle>
                       </div>

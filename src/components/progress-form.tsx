@@ -111,7 +111,7 @@ export default function ProgressForm({
           <Cancel01Icon size={20} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4">
+        <h2 className="text-xl font-semibold  mb-4">
           {isEditing ? "Editar registro" : "Nuevo registro de progreso"}
         </h2>
 
