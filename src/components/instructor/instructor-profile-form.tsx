@@ -1,0 +1,306 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { useForm } from "react-hook-form"
+import { z } from "zod"
+import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form"
+import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { ReloadIcon } from "@radix-ui/react-icons"
+import { Skeleton } from "@/components/ui/skeleton"
+import { Separator } from "@/components/ui/separator"
+
+const instructorProfileSchema = z.object({
+  bio: z.string().optional(),
+  curriculum: z.string().optional(),
+  pricePerMonth: z.coerce.number().optional().nullable(),
+  contactEmail: z.string().email("Debe ser un email válido.").optional().or(z.literal('')),
+  contactPhone: z.string().optional(),
+  country: z.string().optional(),
+  city: z.string().optional(),
+  isRemote: z.boolean().optional(),
+});
+
+type InstructorProfileValues = z.infer<typeof instructorProfileSchema>;
+
+interface InstructorProfileFormProps {
+  onSuccess?: () => void;
+}
+
+export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps) {
+  const [isLoading, setIsLoading] = useState(true);
+
+  const form = useForm<InstructorProfileValues>({
+    resolver: zodResolver(instructorProfileSchema),
+    defaultValues: {
+      bio: "",
+      curriculum: "",
+      pricePerMonth: undefined,
+      contactEmail: "",
+      contactPhone: "",
+      country: "",
+      city: "",
+      isRemote: false,
+    },
+  });
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      setIsLoading(true);
+      try {
+        const response = await fetch("/api/instructors/profile");
+        if (!response.ok) {
+          if (response.status === 404) {
+            toast.info("No tienes un perfil de instructor creado", { description: "Por favor, regístrate como instructor primero." });
+          } else {
+            throw new Error("Error al cargar el perfil del instructor.");
+          }
+          return;
+        }
+        const data = await response.json();
+        form.reset({
+          bio: data.bio || "",
+          curriculum: data.curriculum || "",
+          pricePerMonth: data.pricePerMonth ?? undefined,
+          contactEmail: data.contactEmail || "",
+          contactPhone: data.contactPhone || "",
+          country: data.country || "",
+          city: data.city || "",
+          isRemote: data.isRemote ?? false,
+        });
+      } catch (error: unknown) {
+        let errorMessage = "Hubo un error al cargar el perfil.";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === 'string') {
+          errorMessage = error;
+        }
+        toast.error(errorMessage);
+        console.error("Error fetching instructor profile:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchProfile();
+  }, [form]);
+
+  async function onSubmit(values: InstructorProfileValues) {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/instructors/profile", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Error al actualizar el perfil.");
+      }
+
+      toast.success("Perfil de instructor actualizado con éxito!");
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error: unknown) {
+      let errorMessage = "Hubo un error al procesar tu solicitud.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === 'string') {
+        errorMessage = error;
+      }
+      toast.error(errorMessage);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-full" />
+        <Skeleton className="h-10 w-1/2" />
+        <Skeleton className="h-10 w-1/3" />
+      </div>
+    );
+  }
+
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="bio"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Biografía</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Cuéntanos sobre tu experiencia y filosofía como instructor."
+                      className="resize-y"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Una breve descripción de tu perfil profesional.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="curriculum"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Currículum / Especialidades</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Detalla tus certificaciones, especialidades o el tipo de entrenamiento que ofreces."
+                      className="resize-y"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Información relevante sobre tus cualificaciones.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+          <div className="space-y-6">
+            <FormField
+              control={form.control}
+              name="pricePerMonth"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Precio por mes (USD)</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="Ej: 50.00" {...field} value={field.value ?? ""} />
+                  </FormControl>
+                  <FormDescription>
+                    Tu tarifa mensual sugerida para los alumnos.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contactEmail"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email de Contacto</FormLabel>
+                  <FormControl>
+                    <Input placeholder="tu@ejemplo.com" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Email donde los alumnos pueden contactarte directamente.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="contactPhone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Teléfono de Contacto</FormLabel>
+                  <FormControl>
+                    <Input placeholder="+1234567890" {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Número de teléfono donde los alumnos pueden contactarte.
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="country"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>País</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: España" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Ciudad</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Ej: Madrid" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="isRemote"
+              render={({ field }) => (
+                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
+                  <div className="space-y-0.5">
+                    <FormLabel>¿Ofreces clases remotas?</FormLabel>
+                    <FormDescription>Permite a alumnos de cualquier lugar contactarte.</FormDescription>
+                  </div>
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+          </div>
+        </div>
+        <Separator />
+        <div className="flex justify-end">
+          <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto">
+            {isLoading ? (
+              <>
+                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              "Guardar Cambios"
+            )}
+          </Button>
+        </div>
+      </form>
+    </Form>
+  );
+} 

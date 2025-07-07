@@ -3,6 +3,15 @@ import { createNotification } from "@/lib/notification-service";
 
 export class WorkoutStreakService {
   async getOrCreateStreak(userId: string) {
+    // First check if user exists
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     let streak = await prisma.workoutStreak.findUnique({
       where: { userId },
     });

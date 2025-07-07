@@ -109,7 +109,7 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-headinger text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
                   <WeightScaleIcon className="mr-1 h-4 w-4" />
                   Peso Actual
                 </div>
@@ -120,7 +120,7 @@ export default function HealthPage() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-headinger text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
                   <RulerIcon className="mr-1 h-4 w-4" />
                   Estatura
                 </div>

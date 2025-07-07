@@ -3,9 +3,11 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export const DashboardHeader = () => {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   const titles: Record<string, string> = {
     profile: "Perfil",
@@ -15,6 +17,7 @@ export const DashboardHeader = () => {
   };
 
   const pageTitle = titles[pathname.split("/")[2]] || "Dashboard";
+  const isInstructor = session?.user?.isInstructor;
 
   return (
     <div>
@@ -41,7 +44,18 @@ export const DashboardHeader = () => {
             </TabsTrigger>
             <TabsTrigger value="nutrition" asChild>
               <Link href="/dashboard/nutrition">Nutrición</Link>
-            </TabsTrigger>           
+            </TabsTrigger>
+            {/* Mostrar Instructores solo si NO es instructor, y Alumnos solo si es instructor */}
+            {!isInstructor && (
+              <TabsTrigger value="instructors" asChild>
+                <Link href="/dashboard/instructors/search">Instructores</Link>
+              </TabsTrigger>
+            )}
+            {isInstructor && (
+              <TabsTrigger value="students" asChild>
+                <Link href="/dashboard/instructors/students">Alumnos</Link>
+              </TabsTrigger>
+            )}
           </TabsList>
         </div>
       </Tabs>

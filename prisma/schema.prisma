@@ -45,6 +45,8 @@ model User {
   emailVerified       DateTime?
   image               String?
   password            String?
+  isInstructor        Boolean              @default(false)
+  instructorProfile   InstructorProfile?
   accounts            Account[]
   sessions            Session[]
   profile             Profile?
@@ -52,7 +54,7 @@ model User {
   workoutSessions     WorkoutSession[]
   notifications       Notification[]
   customFoods         Food[]
-  customRecipes       Recipe[] // Nuevo: relación con recetas personalizadas
+  customRecipes       Recipe[]
   mealLogs            MealLog[]
   weights             Weight[]
   workoutStreak       WorkoutStreak?
@@ -61,6 +63,10 @@ model User {
   Goal                Goal[]
   foodRecommendations FoodRecommendation[]
   foodPlans           FoodPlan[]
+  studentRelationships   StudentInstructor[] @relation("StudentToInstructor")
+  assignedWorkouts      StudentAssignedWorkout[] @relation("StudentAssignedWorkouts")
+  createdWorkoutTemplates WorkoutTemplate[] @relation("InstructorWorkoutTemplates")
+  assignedWorkoutsAsInstructor StudentAssignedWorkout[] @relation("InstructorAssignedWorkouts")
 }
 
 model Profile {
@@ -447,4 +453,77 @@ model WorkoutStreak {
   updatedAt     DateTime @updatedAt
 
   @@index([userId])
+}
+
+model InstructorProfile {
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio              String?           @db.Text
+  curriculum       String?           @db.Text
+  pricePerMonth    Float?
+  contactEmail     String?
+  contactPhone     String?
+  country          String?
+  city             String?
+  isRemote         Boolean           @default(false)
+  isVerified       Boolean           @default(false)
+  isPaid           Boolean           @default(false)
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  students         StudentInstructor[] @relation("InstructorProfileToStudentInstructor")
+}
+
+model StudentInstructor {
+  id            String   @id @default(cuid())
+  studentId     String
+  student       User     @relation("StudentToInstructor", fields: [studentId], references: [id], onDelete: Cascade)
+  instructorProfileId  String
+  instructor    InstructorProfile @relation("InstructorProfileToStudentInstructor", fields: [instructorProfileId], references: [id], onDelete: Cascade)
+  status        String   @default("pending")
+  agreedPrice   Float?
+  startDate     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([studentId, instructorProfileId])
+  @@index([studentId])
+  @@index([instructorProfileId])
+}
+
+model WorkoutTemplate {
+  id                      String                    @id @default(uuid())
+  name                    String
+  description             String?
+  instructorId            String
+  instructor              User                      @relation("InstructorWorkoutTemplates", fields: [instructorId], references: [id])
+  createdAt               DateTime                  @default(now())
+  updatedAt               DateTime                  @updatedAt
+  exercises               WorkoutTemplateExercise[]
+  assignedToStudents      StudentAssignedWorkout[]
+}
+
+model WorkoutTemplateExercise {
+  id                String          @id @default(uuid())
+  workoutTemplateId String
+  workoutTemplate   WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id])
+  exerciseName      String
+  sets              Int
+  reps              String // e.g., "8-12", "To failure"
+  rest              String // e.g., "60s", "90s"
+  notes             String?
+}
+
+model StudentAssignedWorkout {
+  id                String          @id @default(uuid())
+  studentId         String
+  student           User            @relation("StudentAssignedWorkouts", fields: [studentId], references: [id])
+  instructorId      String
+  instructor        User            @relation("InstructorAssignedWorkouts", fields: [instructorId], references: [id])
+  workoutTemplateId String
+  workoutTemplate   WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id])
+  assignedDate      DateTime        @default(now())
+  dueDate           DateTime?
+  status            String          @default("assigned") // e.g., "assigned", "completed", "in_progress", "rejected"
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
 }

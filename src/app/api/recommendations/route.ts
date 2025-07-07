@@ -1,15 +1,85 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 
-export async function POST() {
+interface ProfileData {
+  goal: 'gain-muscle' | 'lose-weight' | 'maintain';
+  experienceLevel: 'beginner' | 'intermediate' | 'advanced';
+  currentWeight: number;
+  height: number;
+}
+
+interface Exercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime: number | null;
+  notes: string | null;
+}
+
+interface PrismaExercise {
+  id: string;
+  exercise: {
+    name: string;
+  };
+  sets: number;
+  reps: number;
+  restTime: number | null;
+  notes: string | null;
+}
+
+interface Macros {
+  protein: number;
+  carbs: number;
+  fat: number;
+}
+
+interface FoodRecommendation {
+  macros: Macros;
+  meals: {
+    breakfast: string[];
+    lunch: string[];
+    dinner: string[];
+    snacks: string[];
+  };
+  calorieTarget: number;
+}
+
+interface ResponseData {
+  success: boolean;
+  workout: {
+    id: string;
+    name: string;
+    description: string;
+    exercises: Exercise[];
+  };
+  foodRecommendation: FoodRecommendation;
+  recommendations: string[];
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
     const userId = (session.user as { id: string }).id;
+
+    // Get the profile data from request body
+    const profileData: ProfileData = await req.json();
+    
+    // Validate required profile fields
+    const requiredFields = ['goal', 'experienceLevel', 'currentWeight', 'height'] as const;
+    const missingFields = requiredFields.filter(field => !profileData[field as keyof ProfileData]);
+    
+    if (missingFields.length > 0) {
+      return NextResponse.json({ 
+        error: `Faltan campos requeridos: ${missingFields.join(', ')}`,
+        status: 400
+      });
+    }
 
     // Get user profile
     const profile = await prisma.profile.findUnique({
@@ -22,6 +92,9 @@ export async function POST() {
 
     // Get exercises
     const exercises = await prisma.exercise.findMany({
+      where: {
+        muscleGroup: profileData.goal === 'gain-muscle' ? 'piernas' : undefined,
+      },
       take: 10,
     });
 
@@ -29,20 +102,20 @@ export async function POST() {
       return NextResponse.json({ error: "No exercises available" }, { status: 500 });
     }
 
-    // Create a simple workout plan
+    // Create a personalized workout plan based on profile
     const workout = await prisma.workout.create({
       data: {
-        name: "Plan de Entrenamiento Personalizado",
-        description: "Plan de entrenamiento basado en tu perfil",
+        name: `Plan de Entrenamiento ${profileData.goal === 'gain-muscle' ? 'Muscular' : 'Cardio'}`,
+        description: `Plan personalizado basado en tu objetivo: ${profileData.goal}`,
         userId: userId,
         exercises: {
           create: exercises.slice(0, 5).map((exercise, index) => ({
             exerciseId: exercise.id,
-            sets: 3,
-            reps: 10,
-            restTime: 60,
+            sets: profileData.experienceLevel === 'beginner' ? 2 : 3,
+            reps: profileData.experienceLevel === 'beginner' ? 8 : 12,
+            restTime: profileData.experienceLevel === 'beginner' ? 90 : 60,
             order: index,
-            notes: "Ejercicio recomendado",
+            notes: `Ejercicio recomendado para ${profileData.goal}`,
           })),
         },
       },
@@ -53,24 +126,38 @@ export async function POST() {
           },
         },
       },
-    });
+    }) as {
+      id: string;
+      name: string;
+      description: string;
+      exercises: PrismaExercise[];
+    };
 
-    // Create a simple food recommendation
+    // Create a personalized food recommendation
+    const calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
+    const macros: Macros = {
+      protein: Math.round(calorieTarget * 0.3 / 4),
+      carbs: Math.round(calorieTarget * 0.5 / 4),
+      fat: Math.round(calorieTarget * 0.2 / 9),
+    };
+
     const foodRecommendation = await prisma.foodRecommendation.create({
       data: {
         userId: userId,
-        macros: {
-          protein: 150,
-          carbs: 200,
-          fat: 60,
-        },
-        meals: {
-          breakfast: ["Avena con frutas", "Huevos revueltos"],
-          lunch: ["Pechuga de pollo", "Arroz integral", "Ensalada"],
-          dinner: ["Salmón", "Quinoa", "Vegetales"],
-          snacks: ["Yogur griego", "Nueces"],
-        },
-        calorieTarget: 2000,
+        macros: JSON.stringify(macros),
+        meals: JSON.stringify({
+          breakfast: profileData.goal === 'gain-muscle' ? 
+            ['Batido de proteínas', 'Avena con frutos secos'] : 
+            ['Yogur natural', 'Fruta fresca'],
+          lunch: profileData.goal === 'gain-muscle' ? 
+            ['Pechuga de pollo', 'Arroz integral', 'Batata'] : 
+            ['Pescado blanco', 'Verduras', 'Ensalada'],
+          dinner: profileData.goal === 'gain-muscle' ? 
+            ['Salmón', 'Quinoa', 'Verduras'] : 
+            ['Huevo revuelto', 'Verduras'],
+          snacks: ['Yogur griego', 'Frutos secos'],
+        }),
+        calorieTarget,
       },
     });
 
@@ -79,44 +166,46 @@ export async function POST() {
       where: { userId },
     });
 
-    if (!existingWeight && profile.currentWeight) {
+    if (!existingWeight && profileData.currentWeight) {
       await prisma.weight.create({
         data: {
           userId,
-          weight: Number(profile.currentWeight),
+          weight: profileData.currentWeight,
           date: new Date(),
         },
       });
     }
 
-    return NextResponse.json({
+    const responseData: ResponseData = {
       success: true,
       workout: {
         id: workout.id,
         name: workout.name,
         description: workout.description,
-        exercises: workout.exercises.map(we => ({
-            id: we.id,
-          name: we.exercise.name,
-          sets: we.sets,
-          reps: we.reps,
-          restTime: we.restTime,
-          notes: we.notes,
+        exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
+          id: exerciseData.id,
+          name: exerciseData.exercise.name,
+          sets: exerciseData.sets,
+          reps: exerciseData.reps,
+          restTime: exerciseData.restTime || 0,
+          notes: exerciseData.notes || '',
         })),
       },
       foodRecommendation: {
-        id: foodRecommendation.id,
-        macros: foodRecommendation.macros,
-        meals: foodRecommendation.meals,
+        macros: JSON.parse(foodRecommendation.macros as string),
+        meals: JSON.parse(foodRecommendation.meals as string),
         calorieTarget: foodRecommendation.calorieTarget,
       },
       recommendations: [
-        "Mantén una rutina consistente de entrenamiento",
-        "Consume proteína de alta calidad después del entrenamiento",
-        "Descansa lo suficiente entre sesiones",
-        "Mantén una hidratación adecuada",
+        `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === 'gain-muscle' ? 'de fuerza' : 'cardio'}`,
+        `Consume proteína de alta calidad después del entrenamiento`,
+        `Descansa lo suficiente entre sesiones`,
+        `Mantén una hidratación adecuada`,
+        `Ajusta las calorías según ${profileData.goal === 'gain-muscle' ? 'ganar masa muscular' : 'perder grasa'}`,
       ],
-    });
+    };
+
+    return NextResponse.json(responseData);
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json(

@@ -151,17 +151,11 @@ export default function WorkoutsTable() {
 
   if (sortedWorkouts.length === 0) {
     return (
-      <div className="text-center py-12">
-        <div className="mx-auto w-20 h-20 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center mb-4">
-          <Dumbbell01Icon className="h-8 w-8 text-muted-foreground" />
-        </div>
-        <h3 className="text-lg font-semibold mb-2 tracking-heading">No hay rutinas creadas</h3>
-        <p className="text-muted-foreground text-sm mb-4">
-          Crea tu primera rutina para comenzar
-        </p>
-        <Button onClick={() => router.push("/dashboard/workout")} size="sm">
-          Crear rutina
-        </Button>
+      <div className="justify-center py-16 items-center flex flex-col">        
+        <h3 className="text-sm font-medium">No hay rutinas creadas.</h3>
+        <p className="text-muted-foreground text-xs">
+          Crea tu primera rutina para comenzar.
+        </p>        
       </div>
     );
   }

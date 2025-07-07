@@ -22,8 +22,16 @@ export async function GET(request: Request) {
     const stats = await streakService.getStreakStats(userId);
 
     return NextResponse.json(stats);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error en GET /api/workout-streak:", error);
+    
+    if (error instanceof Error && error.message === "User not found") {
+      return NextResponse.json(
+        { error: "Usuario no encontrado" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Error interno del servidor" },
       { status: 500 }

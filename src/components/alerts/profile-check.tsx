@@ -148,7 +148,7 @@ const ProfileCheck = () => {
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
             <Icons.spinner className="h-12 w-12 text-white animate-spin" />
-            <p className="text-md md:text-lg font-semibold  tracking-headinger text-white">
+            <p className="text-md md:text-lg font-semibold tracking-heading text-white">
               Verificando perfil
             </p>
           </div>
@@ -158,22 +158,22 @@ const ProfileCheck = () => {
       <AlertDialog open={showAlert && !isLoading} onOpenChange={setShowAlert}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-2xl font-semibold  tracking-headinger">
+            <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               Datos de perfil incompletos
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm tracking-heading">
+            <AlertDialogDescription className="text-sm font-normal">
               Para continuar, necesitas completar tu información personal y de
               entrenamiento.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel
-              className="text-xs"
+              className="text-xs font-normal"
               onClick={() => router.push("/dashboard/profile")}
             >
               Volver
             </AlertDialogCancel>
-            <AlertDialogAction className="text-xs" onClick={handleRedirect}>
+            <AlertDialogAction className="text-xs font-normal" onClick={handleRedirect}>
               Completar datos ahora
             </AlertDialogAction>
           </AlertDialogFooter>

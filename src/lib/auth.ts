@@ -9,8 +9,6 @@ import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
 import { redis } from "@/lib/redis";
 
-const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
-
 // Cache en memoria para datos de usuario
 const userDataCache = new Map<
   string,
@@ -75,12 +73,6 @@ async function getUserDataWithCache(userId: string) {
   }
 
   return userData;
-}
-
-async function getUserIdFromSession() {
-  // Esta función es un placeholder. Implementa la lógica adecuada
-  // para obtener el userId de la sesión actual en el contexto de servidor.
-  return null;
 }
 
 // Definir un tipo de usuario extendido para incluir la contraseña
@@ -192,8 +184,13 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }: { token: JWT; user?: User | AdapterUser }) {
       if (user) {
         const customUser = user as CustomUser;
-
         token.id = customUser.id;
+        // Obtener isInstructor de la base de datos
+        const dbUser = await prisma.user.findUnique({
+          where: { id: customUser.id },
+          select: { isInstructor: true },
+        });
+        token.isInstructor = dbUser?.isInstructor ?? false;
         await redis.hset(`user:${customUser.id}:data`, {
           id: customUser.id,
           email: customUser.email ?? "",
@@ -208,10 +205,9 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       if (session.user) {
         session.user.id = typeof token.id === "string" ? token.id : "";
-
+        session.user.isInstructor = token.isInstructor as boolean;
         // Obtener datos básicos usando el sistema de caché
         const userData = await getUserDataWithCache(session.user.id);
-
         // Obtener datos actualizados de la base de datos
         const userFromDB = await prisma.user.findUnique({
           where: { id: session.user.id },
@@ -223,31 +219,24 @@ export const authOptions: NextAuthOptions = {
             profile: true,
           },
         });
-
-        // Usar datos de la base de datos como fuente principal
         session.user.name = userFromDB?.name ?? userData?.name ?? "";
         session.user.email = userFromDB?.email ?? userData?.email ?? "";
         session.user.experienceLevel =
           userFromDB?.experienceLevel ?? userData?.experienceLevel ?? "";
         session.user.image = userFromDB?.image ?? userData?.image ?? "";
-
         // Obtener el perfil del usuario desde Redis o la BD
         let profile: any = await redis.get(`profile:${session.user.id}`);
-
         if (!profile) {
           profile = await prisma.profile.findUnique({
             where: { userId: session.user.id },
           });
-
           if (profile) {
             await redis.set(`profile:${token.id}`, profile, {
               ex: 60 * 60 * 24, // 24 horas
             });
           }
         }
-
         (session.user as any).profile = profile || null;
-
         // Agregar datos para localStorage
         session.user = {
           ...session.user,
@@ -263,32 +252,15 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async redirect({ url, baseUrl }) {
-      // Redireccionar a onboarding si el usuario no tiene un perfil completo
+      // Si viene de un login, siempre manda al dashboard
+      if (url === baseUrl || url === `${baseUrl}/`) {
+        return `${baseUrl}/dashboard`;
+      }
+      // Si hay un callbackUrl válido, úsalo
       if (url.startsWith(baseUrl)) {
-        // Verificar si necesita completar onboarding
-        const userId = await getUserIdFromSession();
-        if (userId) {
-          // Intentar obtener el perfil desde caché primero
-          const profileCacheKey = `profile:${userId}`;
-          let profile = await redis.get(profileCacheKey);
-
-          if (!profile) {
-            // Si no está en caché, consultar base de datos
-            profile = await prisma.profile.findUnique({
-              where: { userId },
-            });
-
-            // Almacenar en caché para futuras consultas
-            if (profile) {
-              await redis.set(profileCacheKey, profile, {
-                ex: PROFILE_CACHE_TTL,
-              });
-            }
-          }
-        }
         return url;
       }
-      return baseUrl;
+      return `${baseUrl}/dashboard`;
     },
   },
   pages: {

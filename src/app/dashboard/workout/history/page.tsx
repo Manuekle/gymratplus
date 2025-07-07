@@ -214,7 +214,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
-                <p className="text-xl md:text-3xl font-semibold  tracking-headinger">
+                <p className="text-xl md:text-3xl font-semibold  tracking-heading">
                   {stats.totalSessions}
                 </p>
               </div>
@@ -329,7 +329,7 @@ export default function WorkoutHistoryPage() {
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Duración</p>
-                      <p className="font-semibold tracking-headinger">
+                      <p className="font-semibold tracking-heading">
                         {session.duration ? `${session.duration} min` : "N/A"}
                       </p>
                     </div>
@@ -337,13 +337,13 @@ export default function WorkoutHistoryPage() {
                       <p className="text-xs text-muted-foreground">
                         Ejercicios
                       </p>
-                      <p className="font-semibold tracking-headinger">
+                      <p className="font-semibold tracking-heading">
                         {session.exercises.length}
                       </p>
                     </div>
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Sets</p>
-                      <p className="font-semibold tracking-headinger">
+                      <p className="font-semibold tracking-heading">
                         {session.exercises.reduce(
                           (acc: number, ex: Exercise) =>
                             acc +

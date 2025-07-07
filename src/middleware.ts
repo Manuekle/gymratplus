@@ -42,6 +42,26 @@ export async function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/onboarding", req.url));
   }
 
+  // Solo instructores pueden acceder a /dashboard/instructors y /dashboard/instructors/students
+  if (
+    token &&
+    isDashboardRoute &&
+    (path.startsWith("/dashboard/instructors") || path.startsWith("/dashboard/instructors/students")) &&
+    !token.isInstructor
+  ) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
+  // Solo alumnos pueden acceder a /dashboard/instructors/search
+  if (
+    token &&
+    isDashboardRoute &&
+    path.startsWith("/dashboard/instructors/search") &&
+    token.isInstructor
+  ) {
+    return NextResponse.redirect(new URL("/dashboard", req.url));
+  }
+
   return NextResponse.next();
 }
 

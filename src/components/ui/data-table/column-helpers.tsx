@@ -14,7 +14,7 @@ export function createSortableColumn<T>(
       return (
         <Button
           variant="ghost"
-          className="text-xs md:text-sm tracking-headinger font-semibold"
+          className="text-xs md:text-sm tracking-heading font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}
@@ -154,7 +154,7 @@ export function createDateColumn<T>(
       return (
         <Button
           variant="ghost"
-          className="text-xs md:text-sm tracking-headinger font-semibold"
+          className="text-xs md:text-sm tracking-heading font-semibold"
           onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
         >
           {header}

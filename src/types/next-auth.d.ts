@@ -1,4 +1,4 @@
-import type { DefaultSession } from "next-auth";
+import type { DefaultSession, DefaultUser } from "next-auth";
 
 declare module "next-auth/jwt" {
   interface JWT {
@@ -14,6 +14,7 @@ declare module "next-auth/jwt" {
       goal?: string;
       // Add other profile fields as needed
     };
+    isInstructor?: boolean;
   }
 }
 
@@ -43,6 +44,7 @@ declare module "next-auth" {
           dietaryPreference?: string;
         };
       };
+      isInstructor?: boolean;
     } & DefaultSession["user"];
     profile?: {
       gender?: string;
@@ -55,5 +57,9 @@ declare module "next-auth" {
       goal?: string;
       // Add other profile fields as needed
     };
+  }
+
+  interface User extends DefaultUser {
+    isInstructor?: boolean;
   }
 }

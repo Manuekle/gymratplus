@@ -16,12 +16,16 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Obtener directamente de la base de datos
-    const profile = await prisma.profile.findUnique({
-      where: { userId },
+    // Obtener el usuario y su perfil
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        isInstructor: true,
+        profile: true,
+      },
     });
 
-    if (!profile) {
+    if (!user || !user.profile) {
       return NextResponse.json(
         { error: "Perfil no encontrado" },
         { status: 404 }
@@ -31,14 +35,14 @@ export async function GET() {
     // Actualizar Redis en segundo plano sin esperar la respuesta
     const cacheKey = `profile:${userId}`;
     redis
-      .set(cacheKey, JSON.stringify(profile), {
+      .set(cacheKey, JSON.stringify(user.profile), {
         ex: PROFILE_CACHE_TTL,
       })
       .catch((error) => {
         console.error("Error actualizando cache Redis:", error);
       });
 
-    return NextResponse.json(profile);
+    return NextResponse.json({ ...user.profile, isInstructor: user.isInstructor });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(
