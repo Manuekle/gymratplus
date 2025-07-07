@@ -1,27 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import {
-  DataTable,
-  TableSkeleton,
-  createSortableColumn,
-  createActionsColumn,
-  createDateColumn,
-} from "@/components/ui/data-table";
-import { Delete02Icon, EyeIcon } from "hugeicons-react";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { AlertCircleIcon } from "hugeicons-react";
-import { AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Icons } from "@/components/icons";
+import { useState, useRef, useEffect } from "react";
+import { ArrowLeft01Icon, ArrowRight01Icon, Dumbbell01Icon } from "hugeicons-react";
 import { useWorkouts } from "@/hooks/use-workouts";
+import { Card, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 interface Workout {
   id: string;
@@ -31,107 +15,246 @@ interface Workout {
 }
 
 export default function WorkoutsTable() {
-  const [workoutToDelete, setWorkoutToDelete] = useState<Workout | null>(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [currentX, setCurrentX] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { workouts, isLoading, isDeleting, deleteWorkout } = useWorkouts();
+  const { workouts, isLoading } = useWorkouts();
+
+  // Configuración responsiva del carousel
+  const getCardsPerView = () => {
+    if (typeof window === 'undefined') return 3;
+    if (window.innerWidth >= 1024) return 3; // lg - 3 cards
+    if (window.innerWidth >= 768) return 2;  // md - 2 cards
+    return 1; // mobile - 1 card
+  };
+
+  const [cardsPerView, setCardsPerView] = useState(getCardsPerView());
+
+  useEffect(() => {
+    const handleResize = () => {
+      setCardsPerView(getCardsPerView());
+      setCurrentSlide(0); // Reset to first slide on resize
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  // Ordenar workouts por fecha de creación (más recientes primero)
+  const sortedWorkouts = workouts.sort((a, b) => 
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+
+  const totalSlides = Math.ceil(sortedWorkouts.length / cardsPerView);
 
   const handleViewDetails = (workout: Workout) => {
     router.push(`/dashboard/workout/${workout.id}`);
   };
 
-  const handleDelete = async (workout: Workout) => {
-    await deleteWorkout(workout.id, workout.name);
-    setWorkoutToDelete(null);
+  const handlePrevious = () => {
+    if (currentSlide === 0) {
+      // Scroll infinito: ir al último slide
+      setCurrentSlide(totalSlides - 1);
+    } else {
+      setCurrentSlide((prev) => prev - 1);
+    }
   };
 
-  const columns = [
-    createDateColumn<Workout>("createdAt", "Fecha", "dd/MM/yyyy"),
-    createSortableColumn<Workout>("name", "Nombre"),
-    createActionsColumn<Workout>("", [
-      {
-        label: "Ver rutina",
-        icon: EyeIcon,
-        onClick: handleViewDetails,
-      },
-      {
-        label: "Eliminar",
-        icon: Delete02Icon,
-        onClick: (workout) => setWorkoutToDelete(workout),
-      },
-    ]),
-  ];
+  const handleNext = () => {
+    if (currentSlide === totalSlides - 1) {
+      // Scroll infinito: ir al primer slide
+      setCurrentSlide(0);
+    } else {
+      setCurrentSlide((prev) => prev + 1);
+    }
+  };
+
+
+
+  // Touch handlers for mobile
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setIsDragging(true);
+    setStartX(e.touches[0].clientX);
+    setCurrentX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    setCurrentX(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    
+    const deltaX = startX - currentX;
+    const threshold = 50; // Minimum swipe distance
+
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        // Swipe left - next (con scroll infinito)
+        if (currentSlide === totalSlides - 1) {
+          setCurrentSlide(0);
+        } else {
+          setCurrentSlide(prev => prev + 1);
+        }
+      } else {
+        // Swipe right - previous (con scroll infinito)
+        if (currentSlide === 0) {
+          setCurrentSlide(totalSlides - 1);
+        } else {
+          setCurrentSlide(prev => prev - 1);
+        }
+      }
+    }
+
+    setIsDragging(false);
+    setStartX(0);
+    setCurrentX(0);
+  };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        handlePrevious();
+      } else if (e.key === 'ArrowRight') {
+        handleNext();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentSlide, totalSlides]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold tracking-tight">Mis Rutinas</h3>
+            <p className="text-sm text-muted-foreground">
+              Gestiona tus entrenamientos
+            </p>
+          </div>
+          <div className="hidden lg:flex gap-2">
+            <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
+            <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 3 }).map((_, index) => (
+            <div key={index} className="h-40 rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm border animate-pulse flex items-center justify-center">
+              <div className="w-32 h-6 bg-muted/60 rounded animate-pulse" />
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (sortedWorkouts.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <div className="mx-auto w-20 h-20 rounded-full bg-muted/50 backdrop-blur-sm flex items-center justify-center mb-4">
+          <Dumbbell01Icon className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-lg font-semibold mb-2 tracking-tight">No hay rutinas creadas</h3>
+        <p className="text-muted-foreground text-sm mb-4">
+          Crea tu primera rutina para comenzar
+        </p>
+        <Button onClick={() => router.push("/dashboard/workout")} size="sm">
+          Crear rutina
+        </Button>
+      </div>
+    );
+  }
+
+  // Crear grupos de cards para cada slide
+  const createSlides = () => {
+    const slides = [];
+    for (let i = 0; i < sortedWorkouts.length; i += cardsPerView) {
+      slides.push(sortedWorkouts.slice(i, i + cardsPerView));
+    }
+    return slides;
+  };
+
+  const slides = createSlides();
 
   return (
-    <div>
-      {isLoading ? (
-        <TableSkeleton columns={5} rows={5} />
-      ) : (
-        <>
-          <DataTable
-            columns={columns}
-            data={workouts}
-            filterColumn="name"
-            defaultPageSize={10}
-          />
-          <Dialog
-            open={!!workoutToDelete}
-            onOpenChange={(open) => !open && setWorkoutToDelete(null)}
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h3 className="text-lg font-semibold tracking-tight">Mis Rutinas</h3>
+          <p className="text-sm text-muted-foreground">
+            {sortedWorkouts.length} rutina{sortedWorkouts.length !== 1 ? 's' : ''} creada{sortedWorkouts.length !== 1 ? 's' : ''}
+          </p>
+        </div>
+        {totalSlides > 1 && (
+          <div className="hidden lg:flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePrevious}
+              className="h-8 w-8 p-0 rounded-lg"
+            >
+              <ArrowLeft01Icon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNext}
+              className="h-8 w-8 p-0 rounded-lg"
+            >
+              <ArrowRight01Icon className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+      </div>
+
+      {/* Carousel Container */}
+      <div className="relative">
+        <div 
+          ref={containerRef}
+          className="overflow-hidden py-4"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div 
+            className="flex transition-transform duration-300 ease-out"
+            style={{
+              transform: `translateX(-${currentSlide * 100}%)`,
+            }}
           >
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle className="text-2xl font-bold tracking-tight">
-                  Eliminar rutina
-                </DialogTitle>
-              </DialogHeader>
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (workoutToDelete) {
-                    handleDelete(workoutToDelete);
-                  }
-                }}
-                className="space-y-4"
-              >
-                <div className="mb-4 w-full border rounded-lg p-4 flex flex-col bg-destructive/5">
-                  <span className="flex items-center gap-2 pb-1 text-destructive">
-                    <AlertCircleIcon size={16} />
-                    <AlertTitle className="text-sm font-semibold">
-                      ¡Cuidado!
-                    </AlertTitle>
-                  </span>
-                  <AlertDescription className="text-sm text-destructive mt-2">
-                    ¿Estás seguro de que deseas eliminar la rutina "
-                    {workoutToDelete?.name}"? Esta acción no se puede deshacer.
-                  </AlertDescription>
-                  <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
-                    <DialogClose asChild>
-                      <Button variant="outline" size="sm" className="text-xs">
-                        Cancelar
-                      </Button>
-                    </DialogClose>
-                    <Button
-                      size="sm"
-                      className="text-xs px-4"
-                      type="submit"
-                      variant="destructive"
-                      disabled={isDeleting}
+            {slides.map((slideWorkouts, slideIndex) => (
+              <div key={slideIndex} className="w-full flex-shrink-0 px-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {slideWorkouts.map((workout) => (
+                    <Card
+                      key={workout.id}
+                      className="h-40 relative overflow-hidden transition-all duration-300 hover:scale-[1.02] hover:shadow-lg bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm border border-border/50 hover:border-border cursor-pointer group z-10"
+                      onClick={() => handleViewDetails(workout)}
                     >
-                      {isDeleting ? (
-                        <>
-                          <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                          Eliminando
-                        </>
-                      ) : (
-                        "Eliminar"
-                      )}
-                    </Button>
-                  </div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-0" />
+                      
+                      <div className="relative h-full flex items-center justify-center z-20">
+                        <CardTitle className="text-xl font-semibold text-center leading-tight tracking-tight px-4">
+                          {workout.name}
+                        </CardTitle>
+                      </div>
+                    </Card>
+                  ))}
                 </div>
-              </form>
-            </DialogContent>
-          </Dialog>
-        </>
-      )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+
     </div>
   );
 }

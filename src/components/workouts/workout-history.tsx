@@ -4,12 +4,16 @@ import { useState, useEffect } from "react";
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowRight01Icon, Clock01Icon } from "hugeicons-react";
+import { ArrowRight01Icon, Clock01Icon, ArrowLeft01Icon } from "hugeicons-react";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
+import { Button } from "../ui/button";
 
 export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = 4;
+
   interface Exercise {
     // Define exercise properties as needed (example property below)
     name: string;
@@ -42,27 +46,25 @@ export default function WorkoutSummary() {
 
     fetchWorkoutHistory();
   }, []);
-  console.log(workoutSessions);
-  // if (loading) {
-  //   return (
-  //     <div className="flex justify-center items-center h-64">
-  //       <Icons.spinner className="h-8 w-8 animate-spin" />
-  //     </div>
-  //   );
-  // }
 
-  // if (workoutSessions.length === 0) {
-  //   return (
-  //     <div className="text-center p-8">
-  //       <h2 className="text-xl font-bold mb-4">
-  //         No hay entrenamientos completados
-  //       </h2>
-  //       <Button onClick={() => router.push("/workouts")}>
-  //         Iniciar un entrenamiento
-  //       </Button>
-  //     </div>
-  //   );
-  // }
+  // Calcular el total de páginas
+  const totalPages = Math.ceil(workoutSessions.length / itemsPerPage);
+  
+  // Obtener los entrenamientos para la página actual
+  const startIndex = currentPage * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentWorkouts = workoutSessions.slice(startIndex, endIndex);
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(0, prev - 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
+  };
+
+  console.log(workoutSessions);
+
   return (
     <div className="p-6 rounded-lg shadow-sm border">
       <div className="flex justify-between items-center w-full mb-4">
@@ -82,11 +84,10 @@ export default function WorkoutSummary() {
         </Link>
       </div>
 
-      {/* <h3 className="text-sm font-medium mb-2">Entrenamientos recientes</h3> */}
       <div className="space-y-4">
         {loading ? (
           <div className="flex flex-col gap-2">
-            {Array.from({ length: 6 }).map((_, index) => (
+            {Array.from({ length: 4 }).map((_, index) => (
               <div key={index} className="p-3 border rounded-lg">
                 <div className="flex justify-between">
                   <Skeleton className="h-4 w-56" />
@@ -113,33 +114,67 @@ export default function WorkoutSummary() {
             </p>
           </div>
         ) : (
-          workoutSessions.map((session) => (
-            <div key={session.id} className="p-3 border rounded-lg">
-              <div className="flex justify-between">
-                <h4 className="font-bold tracking-tight text-lg">
-                  {" "}
-                  {session.notes?.replace("Día: ", "") || "Entrenamiento"}
-                </h4>
-                <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(session.date), {
-                    addSuffix: true,
-                    locale: es,
-                  })}
-                </span>
-              </div>
-              <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
-                <div className="flex items-center">
-                  <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
-                  <span>
-                    {session.duration ? `${session.duration} min` : "N/A"}
+          <>
+            {currentWorkouts.map((session) => (
+              <div key={session.id} className="p-3 border rounded-lg">
+                <div className="flex justify-between">
+                  <h4 className="font-bold tracking-tight text-lg">
+                    {" "}
+                    {session.notes?.replace("Día: ", "") || "Entrenamiento"}
+                  </h4>
+                  <span className="text-xs text-muted-foreground">
+                    {formatDistanceToNow(new Date(session.date), {
+                      addSuffix: true,
+                      locale: es,
+                    })}
                   </span>
                 </div>
-                <div>
-                  <span>{session.exercises.length} ejercicios</span>
+                <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
+                  <div className="flex items-center">
+                    <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
+                    <span>
+                      {session.duration ? `${session.duration} min` : "N/A"}
+                    </span>
+                  </div>
+                  <div>
+                    <span>{session.exercises.length} ejercicios</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
+            ))}
+            
+            {/* Paginación */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div className="text-xs text-muted-foreground">
+                  Mostrando {startIndex + 1}-{Math.min(endIndex, workoutSessions.length)} de {workoutSessions.length} entrenamientos
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviousPage}
+                    disabled={currentPage === 0}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ArrowLeft01Icon className="h-4 w-4" />
+                  </Button>
+                  <span className="text-xs text-muted-foreground">
+                    {currentPage + 1} de {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages - 1}
+                    className="h-8 w-8 p-0"
+                  >
+                    <ArrowRight01Icon className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
