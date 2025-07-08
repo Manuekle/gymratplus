@@ -3,44 +3,117 @@ import { useSession } from "next-auth/react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 
-interface Workout {
+export interface Workout {
   id: string;
   name: string;
   description?: string;
   createdAt: string;
+  updatedAt: string;
+  userId: string;
+  instructorId?: string;
+  assignedToId?: string;
+  status?: 'draft' | 'published' | 'archived';
+  isTemplate?: boolean;
+  exercises: WorkoutExercise[];
 }
 
-// Estado global para los workouts
-let globalWorkouts: Workout[] = [];
+export interface WorkoutExercise {
+  id: string;
+  exerciseId: string;
+  exercise: Exercise;
+  sets: number;
+  reps: number;
+  weight?: number;
+  restTime?: number;
+  order: number;
+  notes?: string;
+}
+
+export interface Exercise {
+  id: string;
+  name: string;
+  description?: string;
+  muscleGroup: string;
+  equipment?: string;
+  videoUrl?: string;
+  imageUrl?: string;
+}
+
+// Estado global para los workouts personales
+let globalPersonalWorkouts: Workout[] = [];
 let globalSubscribers: ((workouts: Workout[]) => void)[] = [];
 
 const notifySubscribers = () => {
-  globalSubscribers.forEach((callback) => callback(globalWorkouts));
+  globalSubscribers.forEach((callback) => callback(globalPersonalWorkouts));
 };
 
 export function useWorkouts() {
   const [isLoading, setIsLoading] = useState(true);
-  const [workouts, setWorkouts] = useState<Workout[]>(globalWorkouts);
+  const [workouts, setWorkouts] = useState<Workout[]>(globalPersonalWorkouts);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const { data: session } = useSession();
   const pathname = usePathname();
 
+  // Obtener las rutinas personales del usuario
   const fetchWorkouts = useCallback(async () => {
     try {
       const res = await fetch("/api/workouts");
       if (res.ok) {
         const data = await res.json();
-        globalWorkouts = data;
-        setWorkouts(data);
+        // Filtrar solo las rutinas que son del usuario y no están asignadas
+        const personalWorkouts = data.filter(
+          (workout: Workout) => 
+            workout.userId === session?.user?.id && 
+            !workout.assignedToId &&
+            workout.status !== 'archived'
+        );
+        globalPersonalWorkouts = personalWorkouts;
+        setWorkouts(personalWorkouts);
         notifySubscribers();
       } else {
-        throw new Error("Error al obtener los entrenamientos");
+        throw new Error("Error al obtener tus rutinas personales");
       }
     } catch (error) {
-      console.error("Error fetching workouts:", error);
-      toast.error("Error al cargar los entrenamientos");
+      console.error("Error fetching personal workouts:", error);
+      toast.error("Error al cargar tus rutinas personales");
     } finally {
       setIsLoading(false);
+    }
+  }, [session?.user?.id]);
+  
+  // Crear una nueva rutina personal
+  const createWorkout = useCallback(async (workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'exercises'>, exercises: Omit<WorkoutExercise, 'id' | 'workoutId' | 'exercise'>[]) => {
+    setIsSaving(true);
+    try {
+      const res = await fetch("/api/workouts", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...workoutData,
+          exercises,
+        }),
+      });
+
+      if (res.ok) {
+        const newWorkout = await res.json();
+        globalPersonalWorkouts = [...globalPersonalWorkouts, newWorkout];
+        setWorkouts(globalPersonalWorkouts);
+        notifySubscribers();
+        toast.success("Rutina creada correctamente");
+        return newWorkout;
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error al crear la rutina");
+      }
+    } catch (error) {
+      console.error("Error creating workout:", error);
+      toast.error(error instanceof Error ? error.message : "Error al crear la rutina");
+      throw error;
+    } finally {
+      setIsSaving(false);
     }
   }, []);
 
@@ -57,8 +130,8 @@ export function useWorkouts() {
             description: `La rutina "${workoutName}" ha sido eliminada correctamente.`,
             duration: 3000,
           });
-          globalWorkouts = globalWorkouts.filter((w) => w.id !== workoutId);
-          setWorkouts(globalWorkouts);
+          globalPersonalWorkouts = globalPersonalWorkouts.filter((workout: Workout) => workout.id !== workoutId);
+          setWorkouts(globalPersonalWorkouts);
           notifySubscribers();
         } else {
           throw new Error("Error al eliminar el entrenamiento");
@@ -87,7 +160,44 @@ export function useWorkouts() {
     };
   }, []);
 
-  // Cargar entrenamientos cuando cambie la sesión
+  // Actualizar una rutina existente
+  const updateWorkout = useCallback(async (workoutId: string, updates: Partial<Workout>, exercises?: Omit<WorkoutExercise, 'id' | 'workoutId' | 'exercise'>[]) => {
+    setIsSaving(true);
+    try {
+      const res = await fetch(`/api/workouts/${workoutId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...updates,
+          ...(exercises && { exercises }),
+        }),
+      });
+
+      if (res.ok) {
+        const updatedWorkout = await res.json();
+        globalPersonalWorkouts = globalPersonalWorkouts.map(workout => 
+          workout.id === workoutId ? updatedWorkout : workout
+        );
+        setWorkouts(globalPersonalWorkouts);
+        notifySubscribers();
+        toast.success("Rutina actualizada correctamente");
+        return updatedWorkout;
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Error al actualizar la rutina");
+      }
+    } catch (error) {
+      console.error("Error updating workout:", error);
+      toast.error(error instanceof Error ? error.message : "Error al actualizar la rutina");
+      throw error;
+    } finally {
+      setIsSaving(false);
+    }
+  }, []);
+
+  // Cargar rutinas cuando cambie la sesión
   useEffect(() => {
     if (!session) return;
     fetchWorkouts();
@@ -95,13 +205,23 @@ export function useWorkouts() {
 
   // Actualizar los datos cuando cambie la ruta
   useEffect(() => {
-    fetchWorkouts();
-  }, [pathname, fetchWorkouts]);
+    if (session) {
+      fetchWorkouts();
+    }
+  }, [pathname, session, fetchWorkouts]);
 
   return {
+    // Datos
     workouts,
+    
+    // Estados de carga
     isLoading,
     isDeleting,
+    isSaving,
+    
+    // Métodos
+    createWorkout,
+    updateWorkout,
     deleteWorkout,
     refreshWorkouts: fetchWorkouts,
   };

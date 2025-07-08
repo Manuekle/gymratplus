@@ -19,8 +19,7 @@ export async function GET() {
     // Obtener el usuario y su perfil
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        isInstructor: true,
+      include: {
         profile: true,
       },
     });
@@ -42,7 +41,11 @@ export async function GET() {
         console.error("Error actualizando cache Redis:", error);
       });
 
-    return NextResponse.json({ ...user.profile, isInstructor: user.isInstructor });
+    return NextResponse.json({ 
+      ...user.profile, 
+      isInstructor: user.isInstructor,
+      experienceLevel: user.experienceLevel 
+    });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(

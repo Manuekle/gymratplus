@@ -175,7 +175,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       await prisma.weight.create({
         data: {
           userId,
-          weight: profileData.currentWeight,
+          weight: Number(profileData.currentWeight), // Convert to number
           date: new Date(),
         },
       });

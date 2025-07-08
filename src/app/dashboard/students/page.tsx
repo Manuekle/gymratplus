@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { toast } from "sonner"
-import { ArrowRight, Users, Utensils, Dumbbell, CheckCircle, XCircle, TrendingUp } from "lucide-react"
+import { ArrowRight, Users, CheckCircle, Target, Flame, DollarSign } from "lucide-react"
 import Link from "next/link"
 import { format, isToday } from "date-fns"
 import { es } from "date-fns/locale"
@@ -26,6 +26,8 @@ interface StudentData {
   lastWorkoutAt: Date | null
   currentWorkoutStreak: number
   completedWorkoutsLast7Days: number
+  hasActiveWorkoutPlan?: boolean
+  hasActiveMealPlan?: boolean
 }
 
 interface PendingRequestData {
@@ -44,45 +46,19 @@ export default function InstructorDashboardPage() {
   const { data: session, status } = useSession()
   const router = useRouter()
   const [isLoadingProfile, setIsLoadingProfile] = useState(true)
-  const [isInstructor, setIsInstructor] = useState(false)
   const [students, setStudents] = useState<StudentData[]>([])
   const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>([])
   const [isLoadingStudents, setIsLoadingStudents] = useState(false)
+  const [stats, setStats] = useState<{
+    totalStudents: number;
+    activeToday: number;
+    avgStreak: number;
+    studentsWithWorkoutPlans: number;
+    studentsWithMealPlans: number;
+    totalRevenue: number;
+  } | null>(null)
 
-  useEffect(() => {
-    if (status === "loading") return
-    if (!session || !session.user) {
-      router.push("/auth/signin")
-      return
-    }
-
-    const checkInstructorStatus = async () => {
-      setIsLoadingProfile(true)
-      try {
-        if (session.user.isInstructor) {
-          setIsInstructor(true)
-          fetchStudentsAndRequests()
-        } else {
-          toast.error("Acceso denegado", {
-            description: "Debes ser un instructor para acceder a esta página.",
-          })
-          router.push("/dashboard/profile")
-        }
-      } catch (error) {
-        console.error("Error checking instructor status:", error)
-        toast.error("Error", {
-          description: "No se pudo verificar tu rol de instructor.",
-        })
-        router.push("/dashboard")
-      } finally {
-        setIsLoadingProfile(false)
-      }
-    }
-
-    checkInstructorStatus()
-  }, [session, status, router])
-
-  const fetchStudentsAndRequests = async () => {
+  const fetchStudents = async () => {
     setIsLoadingStudents(true)
     try {
       const response = await fetch("/api/instructors/students")
@@ -91,7 +67,7 @@ export default function InstructorDashboardPage() {
       }
       const data: (StudentData | PendingRequestData)[] = await response.json()
 
-      const activeStudents = data.filter((item): item is StudentData => item.status === "active")
+      const activeStudents = data.filter((item): item is StudentData => item.status === "accepted")
       const pRequests = data.filter((item): item is PendingRequestData => item.status === "pending")
 
       setStudents(activeStudents)
@@ -110,94 +86,98 @@ export default function InstructorDashboardPage() {
     }
   }
 
+  const fetchStats = async () => {
+    try {
+      const response = await fetch("/api/instructors/students/stats")
+      if (!response.ok) {
+        throw new Error("Error al cargar estadísticas")
+      }
+      const data = await response.json()
+      setStats(data)
+    } catch (error) {
+      console.error("Error fetching stats:", error)
+    }
+  }
+
+  useEffect(() => {
+    if (status === "loading") return
+    if (!session || !session.user) {
+      router.push("/auth/signin")
+      return
+    }
+    if (!session.user.isInstructor) {
+      toast.error("Acceso denegado", {
+        description: "Debes ser un instructor para acceder a esta página.",
+      })
+      router.push("/dashboard/profile")
+      return
+    }
+
+    // Si es instructor, establecer el estado y cargar datos
+    setIsLoadingProfile(false)
+    fetchStudents()
+    fetchStats()
+  }, [session, status, router])
+
   const handleAcceptRequest = async (requestId: string) => {
     try {
-      const response = await fetch(`/api/student-instructor-requests/${requestId}/accept`, {
-        method: "PUT",
-      })
+      const response = await fetch(`/api/instructors/students/${requestId}/accept`, {
+        method: "POST",
+      });
       if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Error al aceptar la solicitud.")
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al aceptar la solicitud.");
       }
       toast.success("Solicitud aceptada", {
         description: "El alumno ha sido añadido a tu lista.",
-      })
-      fetchStudentsAndRequests()
+      });
+      fetchStudents();
     } catch (error: unknown) {
-      let errorMessage = "Hubo un error al aceptar la solicitud."
+      let errorMessage = "Hubo un error al aceptar la solicitud.";
       if (error instanceof Error) {
-        errorMessage = error.message
+        errorMessage = error.message;
       } else if (typeof error === "string") {
-        errorMessage = error
+        errorMessage = error;
       }
-      toast.error(errorMessage)
-      console.error("Error accepting request:", error)
+      toast.error(errorMessage);
+      console.error("Error accepting request:", error);
     }
-  }
-
-  const handleRejectRequest = async (requestId: string) => {
-    try {
-      const response = await fetch(`/api/student-instructor-requests/${requestId}/reject`, {
-        method: "PUT",
-      })
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Error al rechazar la solicitud.")
-      }
-      toast.success("Solicitud rechazada", {
-        description: "La solicitud ha sido marcada como rechazada.",
-      })
-      fetchStudentsAndRequests()
-    } catch (error: unknown) {
-      let errorMessage = "Hubo un error al rechazar la solicitud."
-      if (error instanceof Error) {
-        errorMessage = error.message
-      } else if (typeof error === "string") {
-        errorMessage = error
-      }
-      toast.error(errorMessage)
-      console.error("Error rejecting request:", error)
-    }
-  }
+  };
 
   if (isLoadingProfile || status === "loading") {
     return (
-      <div className="container mx-auto p-6 max-w-7xl">
-        <div className="space-y-6">
-          <div className="space-y-2">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-96" />
-          </div>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <Card key={i}>
-                <CardHeader className="space-y-2">
-                  <Skeleton className="h-5 w-32" />
-                  <Skeleton className="h-4 w-48" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-16 w-full" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-64" />
+          <Skeleton className="h-4 w-96" />
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i}>
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-4 w-48" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-16 w-full" />
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     )
   }
 
-  if (!isInstructor) {
+  // Si no es instructor, no mostrar nada (ya se redirigió)
+  if (!session?.user?.isInstructor) {
     return null
   }
 
-  const totalStudents = students.length
-  const activeToday = students.filter((s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt))).length
-  const avgStreak =
-    totalStudents > 0 ? Math.round(students.reduce((acc, s) => acc + s.currentWorkoutStreak, 0) / totalStudents) : 0
+
 
   return (
       <div className="space-y-8">       
-        {/* Stats Overview */}
+        {/* Stats Cards */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -205,20 +185,24 @@ export default function InstructorDashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl sont-semibold">{totalStudents}</div>
-              <p className="text-xs text-muted-foreground">{pendingRequests.length} solicitudes pendientes</p>
+              <div className="text-2xl font-bold">{stats?.totalStudents || 0}</div>
+              <p className="text-xs text-muted-foreground">
+                {stats?.activeToday || 0} activos hoy
+              </p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Activos Hoy</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium">Planes Activos</CardTitle>
+              <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl sont-semibold">{activeToday}</div>
+              <div className="text-2xl font-bold">
+                {stats?.studentsWithWorkoutPlans || 0} entrenamiento
+              </div>
               <p className="text-xs text-muted-foreground">
-                {totalStudents > 0 ? Math.round((activeToday / totalStudents) * 100) : 0}% del total
+                {stats?.studentsWithMealPlans || 0} nutrición
               </p>
             </CardContent>
           </Card>
@@ -226,22 +210,22 @@ export default function InstructorDashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Racha Promedio</CardTitle>
-              <Dumbbell className="h-4 w-4 text-muted-foreground" />
+              <Flame className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl sont-semibold">{avgStreak}</div>
+              <div className="text-2xl font-bold">{stats?.avgStreak || 0}</div>
               <p className="text-xs text-muted-foreground">días consecutivos</p>
             </CardContent>
           </Card>
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Solicitudes</CardTitle>
-              <Badge variant={pendingRequests.length > 0 ? "default" : "secondary"}>{pendingRequests.length}</Badge>
+              <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
+              <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl sont-semibold">{pendingRequests.length}</div>
-              <p className="text-xs text-muted-foreground">pendientes de revisión</p>
+              <div className="text-2xl font-bold">${stats?.totalRevenue || 0}</div>
+              <p className="text-xs text-muted-foreground">mensuales</p>
             </CardContent>
           </Card>
         </div>
@@ -285,15 +269,6 @@ export default function InstructorDashboardPage() {
                         <Button size="sm" onClick={() => handleAcceptRequest(request.id)} className="h-8">
                           <CheckCircle className="h-4 w-4 mr-1" />
                           Aceptar
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleRejectRequest(request.id)}
-                          className="h-8"
-                        >
-                          <XCircle className="h-4 w-4 mr-1" />
-                          Rechazar
                         </Button>
                       </div>
                     </div>
@@ -365,6 +340,17 @@ export default function InstructorDashboardPage() {
                           {student.agreedPrice && (
                             <p className="text-xs text-muted-foreground">${student.agreedPrice}/mes</p>
                           )}
+                          <div className="flex gap-2 mt-1">
+                            {student.hasActiveWorkoutPlan && (
+                              <Badge variant="default" className="text-xs bg-green-600/90">Plan de entrenamiento</Badge>
+                            )}
+                            {student.hasActiveMealPlan && (
+                              <Badge variant="default" className="text-xs bg-blue-600/90">Plan de nutrición</Badge>
+                            )}
+                            {!student.hasActiveWorkoutPlan && !student.hasActiveMealPlan && (
+                              <Badge variant="outline" className="text-xs">Sin planes activos</Badge>
+                            )}
+                          </div>
                         </div>
                       </div>
                       <div className="text-right space-y-1">
@@ -407,88 +393,7 @@ export default function InstructorDashboardPage() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <div className="grid gap-6 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Dumbbell className="h-5 w-5" />
-                Planes de Entrenamiento
-              </CardTitle>
-              <CardDescription>Crea y gestiona rutinas personalizadas para tus alumnos</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Templates Creados</p>
-                    <p className="text-xs text-muted-foreground">Rutinas reutilizables</p>
-                  </div>
-                  <Badge variant="outline">0</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Planes Activos</p>
-                    <p className="text-xs text-muted-foreground">Alumnos con rutinas asignadas</p>
-                  </div>
-                  <Badge variant="outline">0</Badge>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" className="flex-1" asChild>
-                    <Link href="/dashboard/instructors/workout-templates">
-                      Crear Template
-                    </Link>
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex-1" asChild>
-                    <Link href="/dashboard/students/workout-plans">
-                      Gestionar Planes
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Utensils className="h-5 w-5" />
-                Planes de Nutrición
-              </CardTitle>
-              <CardDescription>Diseña dietas y planes nutricionales personalizados</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Planes Creados</p>
-                    <p className="text-xs text-muted-foreground">Dietas personalizadas</p>
-                  </div>
-                  <Badge variant="outline">0</Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium">Alumnos con Plan</p>
-                    <p className="text-xs text-muted-foreground">Siguiendo nutrición</p>
-                  </div>
-                  <Badge variant="outline">0</Badge>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" className="flex-1" asChild>
-                    <Link href="/dashboard/students/nutrition-plans">
-                      Crear Plan
-                    </Link>
-                  </Button>
-                  <Button size="sm" variant="outline" className="flex-1" asChild>
-                    <Link href="/dashboard/students/nutrition-analytics">
-                      Ver Analytics
-                    </Link>
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        
 
         {/* Instructor Profile */}
         <Card>

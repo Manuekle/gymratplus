@@ -20,11 +20,11 @@ export async function GET() {
       return NextResponse.json({ error: 'Forbidden: User is not an instructor or profile not found.' }, { status: 403 });
     }
 
-    // Obtener las relaciones activas de alumnos con este instructor
+    // Devuelve relaciones aceptadas y pendientes
     const studentInstructorRelationships = await prisma.studentInstructor.findMany({
       where: {
         instructorProfileId: instructorProfile.id,
-        status: { in: ["active", "pending"] }, // Trae alumnos activos y solicitudes pendientes
+        status: { in: ['accepted', 'pending'] },
       },
       include: {
         student: {
@@ -50,6 +50,19 @@ export async function GET() {
                 date: "desc",
               },
             },
+            workouts: {
+              where: { assignedToId: { not: null } },
+              select: { id: true },
+            },
+            foodPlans: {
+              where: { isActive: true },
+              select: { id: true },
+            },
+            mealLogs: {
+              orderBy: { createdAt: "desc" },
+              take: 1,
+              select: { createdAt: true },
+            },
           },
         },
       },
@@ -58,23 +71,33 @@ export async function GET() {
     // Formatear los datos para la respuesta
     const studentsData = studentInstructorRelationships
       .filter(rel => rel.student)
-      .map(rel => ({
-        id: rel.id,
-        studentId: rel.student.id,
-        name: rel.student.name,
-        email: rel.student.email,
-        image: rel.student.image,
-        agreedPrice: rel.agreedPrice,
-        status: rel.status,
-        lastWorkoutAt: rel.student.workoutSessions.length > 0 ? rel.student.workoutSessions[0].date : null,
-        currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
-        completedWorkoutsLast7Days: rel.student.workoutSessions.length,
-        totalWorkouts: rel.student.workoutSessions.length, // Simplificado por ahora
-        averageWorkoutsPerWeek: 0, // Placeholder
-        lastNutritionLog: null, // Placeholder
-        hasActiveMealPlan: false, // Placeholder
-        hasActiveWorkoutPlan: false, // Placeholder
-      }));
+      .map(rel => {
+        const totalWorkouts = rel.student.workoutSessions.length;
+        let weeks = 1;
+        if (totalWorkouts > 0) {
+          const first = rel.student.workoutSessions[totalWorkouts - 1].date;
+          const last = rel.student.workoutSessions[0].date;
+          const diff = (new Date(last).getTime() - new Date(first).getTime()) / (1000 * 60 * 60 * 24 * 7);
+          weeks = Math.max(1, Math.round(diff));
+        }
+        return {
+          id: rel.id,
+          studentId: rel.student.id,
+          name: rel.student.name,
+          email: rel.student.email,
+          image: rel.student.image,
+          agreedPrice: rel.agreedPrice,
+          status: rel.status,
+          lastWorkoutAt: rel.student.workoutSessions.length > 0 ? rel.student.workoutSessions[0].date : null,
+          currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
+          completedWorkoutsLast7Days: rel.student.workoutSessions.length,
+          totalWorkouts,
+          averageWorkoutsPerWeek: totalWorkouts > 0 ? Math.round(totalWorkouts / weeks) : 0,
+          lastNutritionLog: rel.student.mealLogs[0]?.createdAt || null,
+          hasActiveMealPlan: rel.student.foodPlans.length > 0,
+          hasActiveWorkoutPlan: rel.student.workouts.length > 0,
+        };
+      });
 
     return NextResponse.json(studentsData, { status: 200 });
   } catch (error) {

@@ -50,7 +50,8 @@ model User {
   accounts            Account[]
   sessions            Session[]
   profile             Profile?
-  workouts            Workout[]
+  workouts            Workout[]            @relation("WorkoutOwner")
+  workoutsAsInstructor Workout[]           @relation("WorkoutInstructor")
   workoutSessions     WorkoutSession[]
   notifications       Notification[]
   customFoods         Food[]
@@ -64,9 +65,7 @@ model User {
   foodRecommendations FoodRecommendation[]
   foodPlans           FoodPlan[]
   studentRelationships   StudentInstructor[] @relation("StudentToInstructor")
-  assignedWorkouts      StudentAssignedWorkout[] @relation("StudentAssignedWorkouts")
-  createdWorkoutTemplates WorkoutTemplate[] @relation("InstructorWorkoutTemplates")
-  assignedWorkoutsAsInstructor StudentAssignedWorkout[] @relation("InstructorAssignedWorkouts")
+  assignedWorkouts       Workout[]           @relation("AssignedWorkouts")
 }
 
 model Profile {
@@ -117,11 +116,22 @@ model Workout {
   name            String
   description     String?           @db.Text
   userId          String
-  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user            User              @relation("WorkoutOwner", fields: [userId], references: [id], onDelete: Cascade)
+  instructorId    String?           // ID del instructor que creó la rutina
+  instructor      User?             @relation("WorkoutInstructor", fields: [instructorId], references: [id])
+  assignedToId    String?           // ID del estudiante al que se asigna la rutina
+  assignedTo      User?             @relation("AssignedWorkouts", fields: [assignedToId], references: [id])
+  assignedDate    DateTime?         // Fecha de asignación
+  dueDate         DateTime?         // Fecha límite para completar la rutina
+  status          String?           @default("assigned") // "assigned", "in_progress", "completed", "skipped"
+  notes           String?           // Notas adicionales del instructor
   exercises       WorkoutExercise[]
-  workoutSessions WorkoutSession[] // Relación con WorkoutSession
+  workoutSessions WorkoutSession[]  // Relación con WorkoutSession
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
+
+  @@index([instructorId])
+  @@index([assignedToId])
 }
 
 model WorkoutExercise {
@@ -490,40 +500,4 @@ model StudentInstructor {
   @@index([instructorProfileId])
 }
 
-model WorkoutTemplate {
-  id                      String                    @id @default(uuid())
-  name                    String
-  description             String?
-  instructorId            String
-  instructor              User                      @relation("InstructorWorkoutTemplates", fields: [instructorId], references: [id])
-  createdAt               DateTime                  @default(now())
-  updatedAt               DateTime                  @updatedAt
-  exercises               WorkoutTemplateExercise[]
-  assignedToStudents      StudentAssignedWorkout[]
-}
 
-model WorkoutTemplateExercise {
-  id                String          @id @default(uuid())
-  workoutTemplateId String
-  workoutTemplate   WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id])
-  exerciseName      String
-  sets              Int
-  reps              String // e.g., "8-12", "To failure"
-  rest              String // e.g., "60s", "90s"
-  notes             String?
-}
-
-model StudentAssignedWorkout {
-  id                String          @id @default(uuid())
-  studentId         String
-  student           User            @relation("StudentAssignedWorkouts", fields: [studentId], references: [id])
-  instructorId      String
-  instructor        User            @relation("InstructorAssignedWorkouts", fields: [instructorId], references: [id])
-  workoutTemplateId String
-  workoutTemplate   WorkoutTemplate @relation(fields: [workoutTemplateId], references: [id])
-  assignedDate      DateTime        @default(now())
-  dueDate           DateTime?
-  status            String          @default("assigned") // e.g., "assigned", "completed", "in_progress", "rejected"
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-}

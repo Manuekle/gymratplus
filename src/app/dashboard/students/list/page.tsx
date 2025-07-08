@@ -1,5 +1,6 @@
 "use client"
 
+import React from "react"
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useSession } from "next-auth/react"
@@ -13,10 +14,8 @@ import {
   Users,
   Search,
   MoreHorizontal,
-  Calendar,
   Target,
   Activity,
-  MessageSquare,
   Eye,
   TrendingUp,
   Filter,
@@ -30,6 +29,7 @@ import { es } from "date-fns/locale"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -42,6 +42,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 interface StudentData {
   id: string
+  studentId: string
   name: string | null
   email: string | null
   image: string | null
@@ -66,6 +67,8 @@ export default function StudentsListPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [activityFilter, setActivityFilter] = useState<string>("all")
+  const [selectedStudent, setSelectedStudent] = useState<{id: string, studentId: string, name: string} | null>(null)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [stats, setStats] = useState<{
     totalStudents: number
     activeToday: number
@@ -260,23 +263,22 @@ export default function StudentsListPage() {
   }
 
   return (
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/dashboard/students">
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Volver
-              </Link>
-            </Button>
-            
-          </div>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button variant="ghost" size="sm" asChild>
+            <Link href="/dashboard/students">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Volver
+            </Link>
+          </Button>
         </div>
+      </div>
 
-        {/* Stats Overview */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
+      {/* Stats Overview */}
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
               <Users className="h-4 w-4 text-muted-foreground" />
@@ -320,8 +322,8 @@ export default function StudentsListPage() {
               <div className="text-2xl sont-semibold">${stats?.totalRevenue || totalRevenue}</div>
               <p className="text-xs text-muted-foreground">total estimado</p>
             </CardContent>
-          </Card>
-        </div>
+        </Card>
+      </div>
 
         {/* Filters */}
         <Card>
@@ -424,6 +426,23 @@ export default function StudentsListPage() {
                           {student.agreedPrice && (
                             <p className="text-xs text-muted-foreground font-medium">${student.agreedPrice}/mes</p>
                           )}
+                          <div className="flex gap-2 mt-1">
+                            {student.hasActiveWorkoutPlan && (
+                              <Badge variant="secondary" className="text-xs justify-center">
+                                <Target className="h-3 w-3 mr-1" />
+                                Entrenamiento
+                              </Badge>
+                            )}
+                            {student.hasActiveMealPlan && (
+                              <Badge variant="secondary" className="text-xs justify-center">
+                                <Activity className="h-3 w-3 mr-1" />
+                                Nutrición
+                              </Badge>
+                            )}
+                            {!student.hasActiveWorkoutPlan && !student.hasActiveMealPlan && (
+                              <span className="text-xs text-muted-foreground">Sin planes</span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -455,25 +474,6 @@ export default function StudentsListPage() {
                           </p>
                         </div>
 
-                        {/* Plans Status */}
-                        <div className="flex flex-col gap-1">
-                          {student.hasActiveWorkoutPlan && (
-                            <Badge variant="secondary" className="text-xs justify-center">
-                              <Target className="h-3 w-3 mr-1" />
-                              Entrenamiento
-                            </Badge>
-                          )}
-                          {student.hasActiveMealPlan && (
-                            <Badge variant="secondary" className="text-xs justify-center">
-                              <Activity className="h-3 w-3 mr-1" />
-                              Nutrición
-                            </Badge>
-                          )}
-                          {!student.hasActiveWorkoutPlan && !student.hasActiveMealPlan && (
-                            <span className="text-xs text-muted-foreground">Sin planes</span>
-                          )}
-                        </div>
-
                         {/* Actions */}
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -485,26 +485,31 @@ export default function StudentsListPage() {
                           <DropdownMenuContent align="end" className="w-48">
                             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
                             <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => {
+                                setSelectedStudent({ id: student.id, studentId: student.studentId, name: student.name || 'Estudiante' });
+                                setIsDialogOpen(true);
+                              }}
+                              className="cursor-pointer"
+                            >
+                              <Target className="h-4 w-4 mr-2" />
+                              Asignar Rutina
+                            </DropdownMenuItem>
+                            {/* Elimino el render del modal aquí */}
                             <DropdownMenuItem asChild>
-                              <Link href={`/dashboard/students/${student.id}`}>
+                              <Link href={`/dashboard/students/list/${student.id}`} className="w-full flex items-center">
                                 <Eye className="h-4 w-4 mr-2" />
                                 Ver perfil completo
                               </Link>
                             </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <MessageSquare className="h-4 w-4 mr-2" />
-                              Enviar mensaje
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Calendar className="h-4 w-4 mr-2" />
-                              Ver progreso
-                            </DropdownMenuItem>
-                            <DropdownMenuItem>
-                              <Target className="h-4 w-4 mr-2" />
-                              Asignar plan
-                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
-                            <DropdownMenuItem className="text-destructive">
+                            <DropdownMenuItem 
+                              className="text-destructive"
+                              onClick={() => {
+                                // TODO: Implementar lógica para remover alumno
+                                toast.info("Funcionalidad en desarrollo")
+                              }}
+                            >
                               <Users className="h-4 w-4 mr-2" />
                               Remover alumno
                             </DropdownMenuItem>
@@ -536,6 +541,15 @@ export default function StudentsListPage() {
             </CardContent>
           </Card>
         )}
-      </div>
-  )
+        {/* Diálogo para asignar rutina */}
+        {selectedStudent && (
+          <WorkoutAssignmentDialog
+            open={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            studentId={selectedStudent.studentId}
+            studentName={selectedStudent.name}
+          />
+        )}
+    </div>
+  );
 }

@@ -151,13 +151,18 @@ export class WorkoutStreakService {
   }
 
   async getStreakStats(userId: string) {
-    const streak = await this.getOrCreateStreak(userId);
-    return {
-      currentStreak: streak.currentStreak,
-      longestStreak: streak.longestStreak,
-      lastWorkoutAt: streak.lastWorkoutAt,
-      lastRestDayAt: streak.lastRestDayAt,
-    };
+    try {
+      const streak = await this.getOrCreateStreak(userId);
+      return {
+        currentStreak: streak.currentStreak,
+        longestStreak: streak.longestStreak,
+        lastWorkoutAt: streak.lastWorkoutAt?.toISOString() || null,
+        lastRestDayAt: streak.lastRestDayAt?.toISOString() || null,
+      };
+    } catch (error) {
+      console.error('Error en getStreakStats:', error);
+      throw error;
+    }
   }
 
   async checkAndSendWorkoutReminder(userId: string) {
