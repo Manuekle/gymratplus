@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
+import { calculateExperienceLevel } from "@/lib/workout-utils";
 
 interface ProfileData {
   goal: 'gain-muscle' | 'lose-weight' | 'maintain';
@@ -74,10 +75,30 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Get the profile data from request body
     const profileData: ProfileData = await req.json();
     
-    // Validate required profile fields
-    const requiredFields = ['goal', 'experienceLevel', 'currentWeight', 'height'] as const;
+    // Si no viene experienceLevel en el body, obtenerlo del usuario
+    let experienceLevel = profileData.experienceLevel;
+    if (!experienceLevel) {
+      const user = await prisma.user.findUnique({ where: { id: userId } });
+      experienceLevel = user?.experienceLevel as ProfileData['experienceLevel'];
+    }
+    if (!experienceLevel) {
+      // Obtener datos del perfil
+      const profile = await prisma.profile.findUnique({ where: { userId } });
+      if (profile) {
+        experienceLevel = calculateExperienceLevel({
+          trainingFrequency: profile.trainingFrequency ? Number(profile.trainingFrequency) : undefined,
+          monthsTraining: profile.monthsTraining ? Number(profile.monthsTraining) : undefined,
+        }) as ProfileData['experienceLevel'];
+      }
+    }
+    if (!experienceLevel) {
+      return NextResponse.json({ error: "No se pudo calcular tu nivel de experiencia. Por favor, completa tu perfil con tu frecuencia de entrenamiento y meses entrenando." }, { status: 400 });
+    }
+    profileData.experienceLevel = experienceLevel;
+
+    // Validar los otros campos requeridos
+    const requiredFields = ['goal', 'currentWeight', 'height'] as const;
     const missingFields = requiredFields.filter(field => !profileData[field as keyof ProfileData]);
-    
     if (missingFields.length > 0) {
       return NextResponse.json({ 
         error: `Faltan campos requeridos: ${missingFields.join(', ')}`,
@@ -111,7 +132,8 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       data: {
         name: `Plan de Entrenamiento ${profileData.goal === 'gain-muscle' ? 'Muscular' : 'Cardio'}`,
         description: `Plan personalizado basado en tu objetivo: ${profileData.goal}`,
-        userId: userId,
+        createdById: userId,
+        type: 'personal',
         exercises: {
           create: exercises.slice(0, 5).map((exercise, index) => ({
             exerciseId: exercise.id,

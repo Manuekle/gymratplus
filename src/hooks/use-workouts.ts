@@ -15,6 +15,8 @@ export interface Workout {
   status?: 'draft' | 'published' | 'archived';
   isTemplate?: boolean;
   exercises: WorkoutExercise[];
+  createdById: string;
+  type: 'personal' | 'template';
 }
 
 export interface WorkoutExercise {
@@ -61,11 +63,11 @@ export function useWorkouts() {
       const res = await fetch("/api/workouts");
       if (res.ok) {
         const data = await res.json();
-        // Filtrar solo las rutinas que son del usuario y no están asignadas
+        // Filtrar solo las rutinas personales creadas por el usuario
         const personalWorkouts = data.filter(
           (workout: Workout) => 
-            workout.userId === session?.user?.id && 
-            !workout.assignedToId &&
+            workout.createdById === session?.user?.id && 
+            workout.type === 'personal' &&
             workout.status !== 'archived'
         );
         globalPersonalWorkouts = personalWorkouts;
@@ -83,7 +85,7 @@ export function useWorkouts() {
   }, [session?.user?.id]);
   
   // Crear una nueva rutina personal
-  const createWorkout = useCallback(async (workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt' | 'userId' | 'exercises'>, exercises: Omit<WorkoutExercise, 'id' | 'workoutId' | 'exercise'>[]) => {
+  const createWorkout = useCallback(async (workoutData: Omit<Workout, 'id' | 'createdAt' | 'updatedAt' | 'createdById' | 'exercises'>, exercises: Omit<WorkoutExercise, 'id' | 'workoutId' | 'exercise'>[]) => {
     setIsSaving(true);
     try {
       const res = await fetch("/api/workouts", {
@@ -94,6 +96,7 @@ export function useWorkouts() {
         body: JSON.stringify({
           ...workoutData,
           exercises,
+          type: 'personal',
         }),
       });
 

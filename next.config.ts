@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
 
+// Configuración dinámica de la base de datos para Prisma
+if (process.env.NODE_ENV === 'production') {
+  process.env.DATABASE_URL = process.env.DATABASE_URL_PRO;
+} else {
+  process.env.DATABASE_URL = process.env.DATABASE_URL_DEV;
+}
+
 const nextConfig: NextConfig = {
   images: {
     domains: ['lh3.googleusercontent.com', 'lh4.googleusercontent.com', 'lh5.googleusercontent.com', 'lh6.googleusercontent.com'],

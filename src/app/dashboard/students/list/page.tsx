@@ -267,7 +267,7 @@ export default function StudentsListPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
+          <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/students">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Volver
@@ -329,10 +329,9 @@ export default function StudentsListPage() {
         <Card>
           <CardHeader className="pb-4">
             <div className="flex items-center gap-2">
-              <Filter className="h-4 w-4" />
-              <CardTitle className="text-lg">Filtros</CardTitle>
+              <CardTitle className="text-lg tracking-heading font-semibold">Filtros</CardTitle>
             </div>
-            <CardDescription>Filtra y busca entre tus alumnos</CardDescription>
+            <CardDescription className="text-xs">Filtra y busca entre tus alumnos</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-4 md:flex-row">
@@ -376,9 +375,9 @@ export default function StudentsListPage() {
           {filteredStudents.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <Users className="h-16 w-16 text-muted-foreground/40 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">No se encontraron alumnos</h3>
-                <p className="text-muted-foreground max-w-md">
+                
+                <h3 className="text-xs font-medium mb-2">No se encontraron alumnos</h3>
+                <p className="text-muted-foreground text-xs max-w-md">
                   {searchTerm || statusFilter !== "all" || activityFilter !== "all"
                     ? "Intenta ajustar los filtros de búsqueda para encontrar a tus alumnos."
                     : "No tienes alumnos activos en este momento. Cuando aceptes solicitudes, aparecerán aquí."}

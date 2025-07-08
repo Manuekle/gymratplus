@@ -15,7 +15,7 @@ import { Separator } from "@/components/ui/separator"
 import { Loader2, X, Plus } from "lucide-react"
 import { PaymentSimulationModal } from "./payment-simulation-modal"
 import { CountrySelector } from "@/components/country-selector"
-import { signIn } from "next-auth/react"
+import { useSession } from "next-auth/react";
 
 const instructorFormSchema = z.object({
   bio: z.string().min(50, "Mínimo 50 caracteres").max(500, "Máximo 500 caracteres"),
@@ -44,6 +44,7 @@ export function InstructorRegistrationForm({ onSuccess }: InstructorRegistration
   const [isLoading, setIsLoading] = useState(false)
   const [showPayment, setShowPayment] = useState(false)
   const [pendingValues, setPendingValues] = useState<InstructorFormValues | null>(null)
+  const { update } = useSession();
 
   const form = useForm<InstructorFormValues>({
     resolver: zodResolver(instructorFormSchema),
@@ -115,9 +116,9 @@ export function InstructorRegistrationForm({ onSuccess }: InstructorRegistration
       }
 
       await response.json()
+      // Fuerza la actualización de la sesión para reflejar isInstructor
+      await update();
       toast.success("¡Registro exitoso!")
-
-      await signIn(undefined, { redirect: false })
 
       if (onSuccess) {
         onSuccess()

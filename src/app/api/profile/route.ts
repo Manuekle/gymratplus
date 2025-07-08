@@ -115,6 +115,7 @@ export async function POST(req: Request) {
         dailyCarbTarget,
         dailyFatTarget,
         waterIntake,
+        monthsTraining: data.monthsTraining ?? undefined,
       },
       create: {
         userId,
@@ -137,6 +138,7 @@ export async function POST(req: Request) {
         dailyCarbTarget,
         dailyFatTarget,
         waterIntake,
+        monthsTraining: data.monthsTraining ?? undefined,
       },
     });
 
@@ -145,6 +147,14 @@ export async function POST(req: Request) {
     await redis.set(cacheKey, JSON.stringify(profile), {
       ex: PROFILE_CACHE_TTL,
     });
+
+    // Guardar experienceLevel en User si viene en el body
+    if (data.experienceLevel) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { experienceLevel: data.experienceLevel }
+      });
+    }
 
     // Simular un pequeño retraso para mostrar el estado de carga
     await new Promise((resolve) => setTimeout(resolve, 500));
@@ -197,6 +207,7 @@ export async function PUT(request: Request) {
         goal: data.goal ?? undefined,
         dietaryPreference: data.dietaryPreference ?? undefined,
         waterIntake: data.waterIntake ?? undefined,
+        monthsTraining: data.monthsTraining ?? undefined,
       },
       create: {
         userId,
@@ -207,6 +218,7 @@ export async function PUT(request: Request) {
         goal: data.goal ?? undefined,
         dietaryPreference: data.dietaryPreference ?? undefined,
         waterIntake: data.waterIntake ?? undefined,
+        monthsTraining: data.monthsTraining ?? undefined,
       },
     });
 

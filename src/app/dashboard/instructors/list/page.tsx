@@ -206,11 +206,10 @@ export default function MyInstructorsPage() {
       {instructors.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <Users className="h-16 w-16 text-muted-foreground/40 mb-4" />
-            <h3 className="text-xl font-semibold mb-2">
+            <h3 className="text-sm font-medium mb-2">
               No tienes instructores asignados
             </h3>
-            <p className="text-muted-foreground max-w-md mb-6">
+            <p className="text-muted-foreground text-xs max-w-md mb-6">
               Cuando te asignen instructores o solicites uno, aparecerán aquí
               para que puedas gestionar tu entrenamiento y mantenerte en
               contacto.

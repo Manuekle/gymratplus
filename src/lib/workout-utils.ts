@@ -1462,3 +1462,11 @@ export async function createCoreWorkout(
     )
   );
 }
+
+// Calcula el nivel de experiencia del usuario basado en su perfil
+export function calculateExperienceLevel(profile: { trainingFrequency?: number; monthsTraining?: number; }) {
+  if (!profile.trainingFrequency || !profile.monthsTraining) return "beginner";
+  if (profile.trainingFrequency <= 2 || profile.monthsTraining < 6) return "beginner";
+  if (profile.trainingFrequency <= 4 || profile.monthsTraining < 18) return "intermediate";
+  return "advanced";
+}

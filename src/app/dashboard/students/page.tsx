@@ -185,7 +185,7 @@ export default function InstructorDashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.totalStudents || 0}</div>
+              <div className="text-2xl font-semibold">{stats?.totalStudents || 0}</div>
               <p className="text-xs text-muted-foreground">
                 {stats?.activeToday || 0} activos hoy
               </p>
@@ -198,7 +198,7 @@ export default function InstructorDashboardPage() {
               <Target className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-semibold">
                 {stats?.studentsWithWorkoutPlans || 0} entrenamiento
               </div>
               <p className="text-xs text-muted-foreground">
@@ -213,7 +213,7 @@ export default function InstructorDashboardPage() {
               <Flame className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats?.avgStreak || 0}</div>
+              <div className="text-2xl font-semibold">{stats?.avgStreak || 0}</div>
               <p className="text-xs text-muted-foreground">días consecutivos</p>
             </CardContent>
           </Card>
@@ -224,7 +224,7 @@ export default function InstructorDashboardPage() {
               <DollarSign className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">${stats?.totalRevenue || 0}</div>
+              <div className="text-2xl font-semibold">${stats?.totalRevenue || 0}</div>
               <p className="text-xs text-muted-foreground">mensuales</p>
             </CardContent>
           </Card>
@@ -285,10 +285,10 @@ export default function InstructorDashboardPage() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="space-y-1">
-                <CardTitle>Alumnos Activos</CardTitle>
-                <CardDescription>Supervisa el progreso de tus alumnos</CardDescription>
+                <CardTitle className="text-2xl tracking-heading font-semibold">Alumnos Activos</CardTitle>
+                <CardDescription className="text-xs">Supervisa el progreso de tus alumnos</CardDescription>
               </div>
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="outline" size="sm" asChild>
                 <Link href="/dashboard/students/list">
                   Ver todos
                   <ArrowRight className="h-4 w-4 ml-1" />
@@ -314,10 +314,9 @@ export default function InstructorDashboardPage() {
                 ))}
               </div>
             ) : students.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Users className="h-12 w-12 text-muted-foreground/40 mb-4" />
-                <h3 className="text-lg font-medium mb-2">No tienes alumnos activos</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
+              <div className="flex flex-col items-center justify-center py-12 text-center">                
+                <h3 className="text-sm font-medium mb-2">No tienes alumnos activos</h3>
+                <p className="text-xs text-muted-foreground max-w-sm">
                   Cuando aceptes solicitudes de alumnos, aparecerán aquí para que puedas supervisar su progreso.
                 </p>
               </div>
@@ -398,8 +397,8 @@ export default function InstructorDashboardPage() {
         {/* Instructor Profile */}
         <Card>
           <CardHeader>
-            <CardTitle>Mi Perfil de Instructor</CardTitle>
-            <CardDescription>Actualiza tu información profesional y currículum</CardDescription>
+            <CardTitle className="text-2xl tracking-heading font-semibold">Mi Perfil de Instructor</CardTitle>
+            <CardDescription className="text-xs">Actualiza tu información profesional y currículum</CardDescription>
           </CardHeader>
           <CardContent>
             <InstructorProfileForm />

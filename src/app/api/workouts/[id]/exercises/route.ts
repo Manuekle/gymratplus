@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const workout = (await prisma.workout.findUnique({
-      where: { id: id, userId: session.user.id },
+      where: { id: id, createdById: session.user.id, type: 'personal' },
       include: {
         exercises: {
           select: {
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       },
     })) as {
       id: string;
-      userId: string;
+      createdById: string;
       name: string;
       createdAt: Date;
       updatedAt: Date;
@@ -284,7 +284,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const workout = await prisma.workout.update({
-      where: { id: id, userId: session.user.id },
+      where: { id: id, createdById: session.user.id, type: 'personal' },
       data: {
         name,
         description,
@@ -331,7 +331,7 @@ export async function DELETE(request: NextRequest) {
 
   try {
     await prisma.workout.delete({
-      where: { id: id, userId: session.user.id },
+      where: { id: id, createdById: session.user.id, type: 'personal' },
     });
     return NextResponse.json({ message: "Workout eliminado" });
   } catch (error) {

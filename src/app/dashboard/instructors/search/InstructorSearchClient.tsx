@@ -5,7 +5,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InstructorProfile, User } from "@prisma/client";
@@ -13,9 +19,15 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { CountrySelector } from "@/components/country-selector";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCountries } from "@/hooks/use-countries";
-import Image from "next/image";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
@@ -47,15 +59,21 @@ export default function InstructorSearchClient() {
   const searchParams = useSearchParams();
 
   const [country, setCountry] = useState<string>("");
-  const [isRemote, setIsRemote] = useState(searchParams.get('isRemote') === 'true');
+  const [isRemote, setIsRemote] = useState(
+    searchParams.get("isRemote") === "true"
+  );
   const [isVerified, setIsVerified] = useState(false);
-  const [maxPrice, setMaxPrice] = useState('');
-  const [experience, setExperience] = useState('');
+  const [maxPrice, setMaxPrice] = useState("");
+  const [experience, setExperience] = useState("");
   const [instructors, setInstructors] = useState<InstructorWithProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [requestingInstructorId, setRequestingInstructorId] = useState<string | null>(null);
+  const [requestingInstructorId, setRequestingInstructorId] = useState<
+    string | null
+  >(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
-  const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(new Set());
+  const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
+    new Set()
+  );
 
   // Hook para países
   const { countries } = useCountries();
@@ -64,12 +82,13 @@ export default function InstructorSearchClient() {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
-      if (country) params.append('country', country);
-      if (isRemote) params.append('isRemote', 'true');
-      if (isVerified) params.append('isVerified', 'true');
-      if (maxPrice) params.append('maxPrice', maxPrice);
-      if (experience) params.append('experienceLevel', experience);
-      if (selectedSpecialties.length > 0) params.set('specialty', selectedSpecialties.join(","));
+      if (country) params.append("country", country);
+      if (isRemote) params.append("isRemote", "true");
+      if (isVerified) params.append("isVerified", "true");
+      if (maxPrice) params.append("maxPrice", maxPrice);
+      if (experience) params.append("experienceLevel", experience);
+      if (selectedSpecialties.length > 0)
+        params.set("specialty", selectedSpecialties.join(","));
 
       const response = await fetch(`/api/instructors?${params.toString()}`);
       if (!response.ok) {
@@ -81,7 +100,7 @@ export default function InstructorSearchClient() {
       let errorMessage = "Hubo un error al cargar los instructores.";
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         errorMessage = error;
       }
       toast.error(errorMessage);
@@ -89,7 +108,14 @@ export default function InstructorSearchClient() {
     } finally {
       setIsLoading(false);
     }
-  }, [country, isRemote, isVerified, maxPrice, experience, selectedSpecialties]);
+  }, [
+    country,
+    isRemote,
+    isVerified,
+    maxPrice,
+    experience,
+    selectedSpecialties,
+  ]);
 
   useEffect(() => {
     fetchInstructors();
@@ -97,71 +123,82 @@ export default function InstructorSearchClient() {
 
   const handleSearch = () => {
     const params = new URLSearchParams();
-    if (country) params.set('country', country);
-    if (isRemote) params.set('isRemote', 'true');
-    if (isVerified) params.set('isVerified', 'true');
-    if (maxPrice) params.set('maxPrice', maxPrice);
-    if (experience) params.set('experienceLevel', experience);
-    if (selectedSpecialties.length > 0) params.set('specialty', selectedSpecialties.join(","));
+    if (country) params.set("country", country);
+    if (isRemote) params.set("isRemote", "true");
+    if (isVerified) params.set("isVerified", "true");
+    if (maxPrice) params.set("maxPrice", maxPrice);
+    if (experience) params.set("experienceLevel", experience);
+    if (selectedSpecialties.length > 0)
+      params.set("specialty", selectedSpecialties.join(","));
     router.push(`?${params.toString()}`);
     fetchInstructors();
   };
 
-  const handleRequestInstructor = useCallback(async (instructorProfileId?: string) => {
-    if (!instructorProfileId) {
-      toast.error("Error", { description: "ID de instructor no disponible." });
-      return;
-    }
-
-    // Verificar si ya hay un instructor solicitado
-    if (requestedInstructors.size > 0 && !requestedInstructors.has(instructorProfileId)) {
-      toast.error("Ya tienes una solicitud pendiente", { 
-        description: "Debes cancelar tu solicitud actual antes de solicitar otro instructor." 
-      });
-      return;
-    }
-
-    setRequestingInstructorId(instructorProfileId);
-
-    try {
-      const response = await fetch("/api/student-instructor-requests", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ instructorProfileId }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Error al enviar la solicitud.");
+  const handleRequestInstructor = useCallback(
+    async (instructorProfileId?: string) => {
+      if (!instructorProfileId) {
+        toast.error("Error", {
+          description: "ID de instructor no disponible.",
+        });
+        return;
       }
 
-      // Agregar el instructor a la lista de solicitados
-      setRequestedInstructors(prev => new Set(prev).add(instructorProfileId));
-      
-      toast.success("Solicitud enviada", { 
-        description: "Tu solicitud ha sido enviada al instructor. ¡Pronto se pondrá en contacto contigo!" 
-      });
-    } catch (error: unknown) {
-      let errorMessage = "Hubo un error al procesar tu solicitud.";
-      if (error instanceof Error) {
-        errorMessage = error.message;
-      } else if (typeof error === 'string') {
-        errorMessage = error;
+      // Verificar si ya hay un instructor solicitado
+      if (
+        requestedInstructors.size > 0 &&
+        !requestedInstructors.has(instructorProfileId)
+      ) {
+        toast.error("Ya tienes una solicitud pendiente", {
+          description:
+            "Debes cancelar tu solicitud actual antes de solicitar otro instructor.",
+        });
+        return;
       }
-      toast.error(errorMessage);
-      console.error("Error requesting instructor:", error);
-    } finally {
-      setRequestingInstructorId(null);
-    }
-  }, [requestedInstructors]);
+
+      setRequestingInstructorId(instructorProfileId);
+
+      try {
+        const response = await fetch("/api/student-instructor-requests", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ instructorProfileId }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || "Error al enviar la solicitud.");
+        }
+
+        // Agregar el instructor a la lista de solicitados
+        setRequestedInstructors((prev) =>
+          new Set(prev).add(instructorProfileId)
+        );
+
+        toast.success("Solicitud enviada", {
+          description:
+            "Tu solicitud ha sido enviada al instructor. ¡Pronto se pondrá en contacto contigo!",
+        });
+      } catch (error: unknown) {
+        let errorMessage = "Hubo un error al procesar tu solicitud.";
+        if (error instanceof Error) {
+          errorMessage = error.message;
+        } else if (typeof error === "string") {
+          errorMessage = error;
+        }
+        toast.error(errorMessage);
+        console.error("Error requesting instructor:", error);
+      } finally {
+        setRequestingInstructorId(null);
+      }
+    },
+    [requestedInstructors]
+  );
 
   const handleSpecialtyToggle = (spec: string) => {
     setSelectedSpecialties((prev) =>
-      prev.includes(spec)
-        ? prev.filter((s) => s !== spec)
-        : [...prev, spec]
+      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec]
     );
   };
 
@@ -169,8 +206,12 @@ export default function InstructorSearchClient() {
     <div>
       <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="tracking-heading text-2xl font-semibold">Opciones de Búsqueda</CardTitle>
-          <CardDescription className="text-xs">Encuentra al instructor ideal para ti.</CardDescription>
+          <CardTitle className="tracking-heading text-2xl font-semibold">
+            Opciones de Búsqueda
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Encuentra al instructor ideal para ti.
+          </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* País con el nuevo selector */}
@@ -203,7 +244,9 @@ export default function InstructorSearchClient() {
               </SelectTrigger>
               <SelectContent>
                 {EXPERIENCE_LEVELS.map((lvl) => (
-                  <SelectItem key={lvl.value} value={lvl.value}>{lvl.label}</SelectItem>
+                  <SelectItem key={lvl.value} value={lvl.value}>
+                    {lvl.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -211,11 +254,19 @@ export default function InstructorSearchClient() {
           {/* Switches alineados horizontalmente y compactos */}
           <div className="flex flex-row flex-wrap gap-4 items-center md:col-span-3 mb-2">
             <div className="flex items-center gap-2">
-              <Switch id="isVerified" checked={isVerified} onCheckedChange={setIsVerified} />
+              <Switch
+                id="isVerified"
+                checked={isVerified}
+                onCheckedChange={setIsVerified}
+              />
               <Label htmlFor="isVerified">Solo verificados</Label>
             </div>
             <div className="flex items-center gap-2">
-              <Switch id="isRemote" checked={isRemote} onCheckedChange={setIsRemote} />
+              <Switch
+                id="isRemote"
+                checked={isRemote}
+                onCheckedChange={setIsRemote}
+              />
               <Label htmlFor="isRemote">Remoto</Label>
             </div>
           </div>
@@ -226,8 +277,14 @@ export default function InstructorSearchClient() {
               {SPECIALTIES.map((spec) => (
                 <Badge
                   key={spec}
-                  variant={selectedSpecialties.includes(spec) ? "default" : "outline"}
-                  className={`cursor-pointer select-none transition-all ${selectedSpecialties.includes(spec) ? 'bg-primary text-white' : ''}`}
+                  variant={
+                    selectedSpecialties.includes(spec) ? "default" : "outline"
+                  }
+                  className={`cursor-pointer select-none transition-all ${
+                    selectedSpecialties.includes(spec)
+                      ? "bg-primary text-white"
+                      : ""
+                  }`}
                   onClick={() => handleSpecialtyToggle(spec)}
                 >
                   {spec}
@@ -243,7 +300,9 @@ export default function InstructorSearchClient() {
         </CardContent>
       </Card>
 
-      <h2 className="text-2xl tracking-heading font-semibold mb-4">Resultados ({instructors.length})</h2>
+      <h2 className="text-2xl tracking-heading font-semibold mb-4">
+        Resultados ({instructors.length})
+      </h2>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,20 +323,29 @@ export default function InstructorSearchClient() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {instructors.length === 0 ? (
-            <p className="text-gray-500 md:col-span-3">No se encontraron instructores con los criterios de búsqueda.</p>
+            <p className="text-gray-500 md:col-span-3 text-xs">
+              No se encontraron instructores con los criterios de búsqueda.
+            </p>
           ) : (
             instructors.map((instructor) => {
               // Buscar país por código usando countries del hook
-              const countryData = countries.find(c => c.cca2 === instructor.instructorProfile?.country);
+              const countryData = countries.find(
+                (c) => c.cca2 === instructor.instructorProfile?.country
+              );
               // Type guard para specialties sin usar 'any'
               let specialties: string[] | undefined = undefined;
               if (
                 instructor.instructorProfile &&
-                typeof instructor.instructorProfile === 'object' &&
-                'specialties' in instructor.instructorProfile &&
-                Array.isArray((instructor.instructorProfile as { specialties?: unknown }).specialties)
+                typeof instructor.instructorProfile === "object" &&
+                "specialties" in instructor.instructorProfile &&
+                Array.isArray(
+                  (instructor.instructorProfile as { specialties?: unknown })
+                    .specialties
+                )
               ) {
-                specialties = (instructor.instructorProfile as { specialties: string[] }).specialties;
+                specialties = (
+                  instructor.instructorProfile as { specialties: string[] }
+                ).specialties;
               }
               return (
                 <Card
@@ -285,16 +353,20 @@ export default function InstructorSearchClient() {
                   className="flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-zinc-900 dark:hover:to-zinc-800 bg-white dark:bg-zinc-950 border px-4 py-3 min-h-[220px]"
                 >
                   <CardHeader className="flex-row items-center space-x-3 pb-1 px-0">
-                    <Image
-                      src={instructor.image || "/placeholder-avatar.jpg"} 
-                      alt={instructor.name || "Instructor"} 
-                      width={48}
-                      height={48}
-                      className="w-12 h-12 rounded-full object-cover border-0"
-                    />
+                    <Avatar className="h-12 w-12">
+                      <AvatarImage
+                        src={instructor.image || "/placeholder-avatar.jpg"}
+                        alt={instructor.name || "Instructor"}
+                      />
+                      <AvatarFallback>
+                        {instructor.name?.charAt(0).toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-base font-semibold tracking-heading">{instructor.name}</CardTitle>
+                        <CardTitle className="text-base font-semibold tracking-heading">
+                          {instructor.name}
+                        </CardTitle>
                         {instructor.instructorProfile?.isVerified && (
                           <CheckCircle2 className="text-green-600 w-4 h-4" />
                         )}
@@ -303,20 +375,24 @@ export default function InstructorSearchClient() {
                         {countryData && (
                           <span className="flex items-center gap-1">
                             <Image
-                              src={countryData.flags.svg} 
-                              alt={countryData.name.common} 
-                              className="w-4 h-3 object-cover rounded-sm" 
+                              src={countryData.flags.svg}
+                              alt={countryData.name.common}
+                              className="w-4 h-3 object-cover rounded-sm"
                             />
                             {countryData.name.common}
                           </span>
                         )}
                         {instructor.instructorProfile?.isRemote && (
-                          <Badge variant="outline" className="text-xs">Remoto</Badge>
+                          <Badge variant="outline" className="text-xs">
+                            Remoto
+                          </Badge>
                         )}
                       </div>
                       {instructor.experienceLevel && (
                         <Badge variant="secondary" className="text-xs mt-1">
-                          {EXPERIENCE_LEVELS.find(lvl => lvl.value === instructor.experienceLevel)?.label || instructor.experienceLevel}
+                          {EXPERIENCE_LEVELS.find(
+                            (lvl) => lvl.value === instructor.experienceLevel
+                          )?.label || instructor.experienceLevel}
                         </Badge>
                       )}
                     </div>
@@ -325,19 +401,19 @@ export default function InstructorSearchClient() {
                     <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
                       {instructor.instructorProfile?.bio || "Sin biografía."}
                     </p>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                          Precio: 
+                          Precio:
                         </span>
                         <Badge variant="outline" className="text-xs">
-                          {instructor.instructorProfile?.pricePerMonth 
-                            ? `$${instructor.instructorProfile.pricePerMonth}/mes` 
-                            : 'Consultar'}
+                          {instructor.instructorProfile?.pricePerMonth
+                            ? `$${instructor.instructorProfile.pricePerMonth}/mes`
+                            : "Consultar"}
                         </Badge>
                       </div>
-                      
+
                       <div className="space-y-1">
                         <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
                           Especialidades:
@@ -345,36 +421,55 @@ export default function InstructorSearchClient() {
                         <div className="flex flex-wrap gap-1">
                           {specialties && specialties.length ? (
                             specialties.map((specialty, index) => (
-                              <Badge key={index} variant="secondary" className="text-xs">
+                              <Badge
+                                key={index}
+                                variant="secondary"
+                                className="text-xs"
+                              >
                                 {specialty}
                               </Badge>
                             ))
                           ) : (
-                            <span className="text-xs text-muted-foreground">No especificadas</span>
+                            <span className="text-xs text-muted-foreground">
+                              No especificadas
+                            </span>
                           )}
                         </div>
                       </div>
                     </div>
                   </CardContent>
                   <div className="px-0 pb-1 pt-0 mt-auto">
-                    <Button 
+                    <Button
                       className={`w-full h-8 text-xs ${
-                        requestedInstructors.has(instructor.instructorProfile?.id || '') 
-                          ? 'bg-red-600 hover:bg-red-700' 
-                          : ''
+                        requestedInstructors.has(
+                          instructor.instructorProfile?.id || ""
+                        )
+                          ? "bg-red-600 hover:bg-red-700"
+                          : ""
                       }`}
-                      onClick={() => handleRequestInstructor(instructor.instructorProfile?.id)}
+                      onClick={() =>
+                        handleRequestInstructor(
+                          instructor.instructorProfile?.id
+                        )
+                      }
                       disabled={
-                        requestingInstructorId === instructor.instructorProfile?.id || 
-                        (requestedInstructors.size > 0 && !requestedInstructors.has(instructor.instructorProfile?.id || ''))
+                        requestingInstructorId ===
+                          instructor.instructorProfile?.id ||
+                        (requestedInstructors.size > 0 &&
+                          !requestedInstructors.has(
+                            instructor.instructorProfile?.id || ""
+                          ))
                       }
                     >
-                      {requestingInstructorId === instructor.instructorProfile?.id ? (
+                      {requestingInstructorId ===
+                      instructor.instructorProfile?.id ? (
                         <>
                           <Loader2 className="mr-2 h-3 w-3 animate-spin" />
                           Enviando...
                         </>
-                      ) : requestedInstructors.has(instructor.instructorProfile?.id || '') ? (
+                      ) : requestedInstructors.has(
+                          instructor.instructorProfile?.id || ""
+                        ) ? (
                         <>
                           <CheckCircle2 className="mr-2 h-3 w-3" />
                           Solicitud Enviada
@@ -383,11 +478,14 @@ export default function InstructorSearchClient() {
                         "Solicitar Instructor"
                       )}
                     </Button>
-                    {requestedInstructors.size > 0 && !requestedInstructors.has(instructor.instructorProfile?.id || '') && (
-                      <p className="text-xs text-red-500 mt-1 text-center">
-                        Debes cancelar tu solicitud actual primero
-                      </p>
-                    )}
+                    {requestedInstructors.size > 0 &&
+                      !requestedInstructors.has(
+                        instructor.instructorProfile?.id || ""
+                      ) && (
+                        <p className="text-xs text-red-500 mt-1 text-center">
+                          Debes cancelar tu solicitud actual primero
+                        </p>
+                      )}
                   </div>
                 </Card>
               );
@@ -397,4 +495,4 @@ export default function InstructorSearchClient() {
       )}
     </div>
   );
-} 
+}

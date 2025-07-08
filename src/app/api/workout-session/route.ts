@@ -27,12 +27,20 @@ export async function POST(req: NextRequest) {
     console.log("Día recibido:", day);
     console.log("Ejercicios recibidos:", exercises);
 
-    // Buscar el workout del usuario (asumiendo que tiene uno activo)
-    // Si necesitas un workoutId específico, deberías incluirlo en la solicitud
-    const userWorkout = await prisma.workout.findFirst({
-      where: { userId: session.user.id },
+    // Buscar el workout del usuario (personal o asignado)
+    // Primero intentamos encontrar una rutina personal activa
+    let userWorkout = await prisma.workout.findFirst({
+      where: { createdById: session.user.id, type: 'personal' },
       orderBy: { createdAt: "desc" },
     });
+
+    // Si no hay rutina personal, buscar una asignada
+    if (!userWorkout) {
+      userWorkout = await prisma.workout.findFirst({
+        where: { assignedToId: session.user.id, type: 'assigned' },
+        orderBy: { createdAt: "desc" },
+      });
+    }
 
     if (!userWorkout) {
       return NextResponse.json(

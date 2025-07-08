@@ -60,7 +60,9 @@ export async function POST(request: Request) {
       data: {
         name,
         description: `Entrenamiento personalizado - ${workoutType}`,
-        userId,
+        createdById: userId,
+        instructorId: userId,
+        type: 'assigned',
       },
     });
 

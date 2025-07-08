@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const workout = await prisma.workout.findUnique({
-      where: { id: id, userId: session.user.id },
+      where: { id: id, createdById: session.user.id, type: 'personal' },
       include: {
         exercises: {
           select: {
@@ -159,7 +159,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const workout = await prisma.workout.update({
-      where: { id: id, userId: session.user.id },
+      where: { id: id, createdById: session.user.id, type: 'personal' },
       data: {
         name,
         description,
@@ -204,7 +204,7 @@ export async function DELETE(request: NextRequest) {
   try {
     // Verificar que el workout existe y pertenece al usuario
     const workout = await prisma.workout.findUnique({
-      where: { id, userId: session.user.id },
+      where: { id, createdById: session.user.id, type: 'personal' },
     });
 
     if (!workout) {
@@ -221,7 +221,7 @@ export async function DELETE(request: NextRequest) {
 
     // Luego eliminar el workout
     await prisma.workout.delete({
-      where: { id },
+      where: { id, createdById: session.user.id, type: 'personal' },
     });
 
     return NextResponse.json({ message: "Workout eliminado correctamente" });

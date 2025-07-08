@@ -18,7 +18,7 @@ export async function GET() {
 
   try {
     const workouts = await prisma.workout.findMany({
-      where: { userId: session.user.id },
+      where: { createdById: session.user.id, type: 'personal' },
       include: { exercises: true },
     });
     return NextResponse.json(workouts);
@@ -50,7 +50,8 @@ export async function POST(req: Request) {
       data: {
         name,
         description,
-        userId: session.user.id,
+        createdById: session.user.id,
+        type: 'personal',
       },
     });
 

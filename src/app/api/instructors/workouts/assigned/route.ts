@@ -60,6 +60,7 @@ export async function GET() {
       where: {
         instructorId: session.user.id,
         assignedToId: { not: null },
+        type: 'assigned',
         status: { not: 'deleted' }
       }
     });
@@ -77,6 +78,7 @@ export async function GET() {
       where: {
         instructorId: session.user.id,
         assignedToId: { not: null },
+        type: 'assigned',
         status: { not: 'deleted' }
       },
       include: {

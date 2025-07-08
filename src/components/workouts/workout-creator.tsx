@@ -23,7 +23,7 @@ export default function WorkoutCreator() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="">
+        <div>
           <WorkoutGenerator />
           <WorkoutsTable />
         </div>

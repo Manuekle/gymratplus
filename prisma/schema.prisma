@@ -50,8 +50,12 @@ model User {
   accounts            Account[]
   sessions            Session[]
   profile             Profile?
-  workouts            Workout[]            @relation("WorkoutOwner")
-  workoutsAsInstructor Workout[]           @relation("WorkoutInstructor")
+  // Rutinas creadas por este usuario (alumno o instructor)
+  createdWorkouts     Workout[]            @relation("WorkoutCreator")
+  // Rutinas creadas como instructor
+  instructorWorkouts  Workout[]            @relation("WorkoutInstructor")
+  // Rutinas asignadas a este usuario (como alumno)
+  assignedWorkouts    Workout[]            @relation("AssignedWorkouts")
   workoutSessions     WorkoutSession[]
   notifications       Notification[]
   customFoods         Food[]
@@ -65,7 +69,6 @@ model User {
   foodRecommendations FoodRecommendation[]
   foodPlans           FoodPlan[]
   studentRelationships   StudentInstructor[] @relation("StudentToInstructor")
-  assignedWorkouts       Workout[]           @relation("AssignedWorkouts")
 }
 
 model Profile {
@@ -85,6 +88,7 @@ model Profile {
   metabolicRate        Int? // tasa metabólica basal en kcal
   dailyActivity        String? // actividad diaria (Ej: trabajo de oficina, trabajo físico)
   trainingFrequency    Int? // cantidad de entrenamientos por semana
+  monthsTraining       Int? // Nuevo campo: meses entrenando
   preferredWorkoutTime String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
   dietaryPreference    String? // preferencias dietéticas (Ej: vegetariano, keto, etc.)
   dailyCalorieTarget   Int? // calorías objetivo diarias (se calcula automáticamente)
@@ -115,21 +119,34 @@ model Workout {
   id              String            @id @default(cuid())
   name            String
   description     String?           @db.Text
-  userId          String
-  user            User              @relation("WorkoutOwner", fields: [userId], references: [id], onDelete: Cascade)
-  instructorId    String?           // ID del instructor que creó la rutina
+
+  // CREADOR de la rutina (puede ser alumno o instructor)
+  createdById     String
+  createdBy       User              @relation("WorkoutCreator", fields: [createdById], references: [id], onDelete: Cascade)
+
+  // INSTRUCTOR que creó/supervisó la rutina (solo si fue creada por instructor)
+  instructorId    String?
   instructor      User?             @relation("WorkoutInstructor", fields: [instructorId], references: [id])
-  assignedToId    String?           // ID del estudiante al que se asigna la rutina
+
+  // ALUMNO al que se asigna la rutina
+  assignedToId    String?
   assignedTo      User?             @relation("AssignedWorkouts", fields: [assignedToId], references: [id])
-  assignedDate    DateTime?         // Fecha de asignación
-  dueDate         DateTime?         // Fecha límite para completar la rutina
-  status          String?           @default("assigned") // "assigned", "in_progress", "completed", "skipped"
-  notes           String?           // Notas adicionales del instructor
+
+  // Campos de asignación
+  assignedDate    DateTime?
+  dueDate         DateTime?
+  status          String?           @default("draft") // "draft", "assigned", "in_progress", "completed", "skipped"
+  notes           String?
+
+  // Tipo de rutina para mayor claridad
+  type            String            @default("personal") // "personal", "assigned"
+
   exercises       WorkoutExercise[]
-  workoutSessions WorkoutSession[]  // Relación con WorkoutSession
+  workoutSessions WorkoutSession[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 
+  @@index([createdById])
   @@index([instructorId])
   @@index([assignedToId])
 }

@@ -63,6 +63,7 @@ export default function ProfilePage() {
       setDailyActivity(storedData.profile?.dailyActivity || "");
       setGoal(storedData.profile?.goal || "");
       setDietaryPreference(storedData.profile?.dietaryPreference || "");
+      setMonthsTraining(storedData.profile?.monthsTraining || 0);
     }
   }, [session]);
 
@@ -166,6 +167,12 @@ export default function ProfilePage() {
       ?.dietaryPreference || ""
   );
 
+  // Estado para monthsTraining
+  const [monthsTraining, setMonthsTraining] = useState(
+    (session?.user as { profile?: { monthsTraining?: number } })?.profile
+      ?.monthsTraining || 0
+  );
+
   const handleSaveProfile = async () => {
     try {
       setIsUploading(true);
@@ -179,7 +186,8 @@ export default function ProfilePage() {
         !preferredWorkoutTime ||
         !dailyActivity ||
         !goal ||
-        !dietaryPreference
+        !dietaryPreference ||
+        monthsTraining <= 0
       ) {
         toast.error("Error", {
           description: "Todos los campos son requeridos.",
@@ -201,6 +209,7 @@ export default function ProfilePage() {
           dailyActivity,
           goal,
           dietaryPreference,
+          monthsTraining,
         }),
       });
 
@@ -268,7 +277,7 @@ export default function ProfilePage() {
                     alt="Profile picture"
                     key={session?.user?.image || Date.now()}
                   />
-                  
+
                   <AvatarFallback className="text-2xl">
                     {session?.user?.name
                       ?.split(" ")
@@ -309,12 +318,12 @@ export default function ProfilePage() {
                     <Badge variant="outline" className="text-xs">
                       Instructor
                     </Badge>
-                  )} 
+                  )}
                   {!isInstructor && (
                     <Badge variant="outline" className="text-xs">
                       Alumno
                     </Badge>
-                  )} 
+                  )}
                 </div>
               </div>
 
@@ -538,10 +547,32 @@ export default function ProfilePage() {
                 </div>
                 <Separator />
 
-                <BirthDatePicker
-                  value={birthdate}
-                  onValueChange={setBirthdate}
-                />
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
+                  <div className="space-y-2">
+                    <BirthDatePicker
+                      value={birthdate}
+                      onValueChange={setBirthdate}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label
+                      className="text-xs md:text-sm"
+                      htmlFor="monthsTraining"
+                    >
+                      Meses entrenando
+                    </Label>
+                    <Input
+                      className="text-xs md:text-sm"
+                      id="monthsTraining"
+                      type="number"
+                      min={0}
+                      value={monthsTraining}
+                      onChange={(e) =>
+                        setMonthsTraining(Number(e.target.value))
+                      }
+                    />
+                  </div>
+                </div>
               </>
             ) : (
               <>
@@ -624,12 +655,34 @@ export default function ProfilePage() {
 
                 <Separator />
 
-                <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                  <StarIcon className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <div className="font-medium text-sm">Experiencia</div>
-                    <div className="text-muted-foreground text-xs capitalize">
-                      {session?.user?.experienceLevel || "No especificado"}
+                <div className="grid grid-cols-1 md:grid-cols-2">
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <StarIcon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">Experiencia</div>
+                      <div className="text-muted-foreground text-xs capitalize">
+                        {session?.user?.experienceLevel || "No especificado"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* <Separator /> */}
+                  <div className="md:hidden block py-4">
+                    <Separator />
+                  </div>
+                  <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
+                    <StarIcon className="h-5 w-5 text-muted-foreground" />
+                    <div>
+                      <div className="font-medium text-sm">
+                        Meses entrenando
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {(
+                          session?.user as {
+                            profile?: { monthsTraining?: number };
+                          }
+                        )?.profile?.monthsTraining ?? monthsTraining}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -964,9 +1017,7 @@ export default function ProfilePage() {
             </div>
 
             {/* Formulario solo si el switch está activado */}
-            {isInstructorMode && (
-              <InstructorRegistrationForm />
-            )}
+            {isInstructorMode && <InstructorRegistrationForm />}
           </CardContent>
         </Card>
       )}

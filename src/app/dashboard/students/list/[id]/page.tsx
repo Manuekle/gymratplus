@@ -144,11 +144,11 @@ export default function StudentDetailPage() {
         <CardContent className="flex flex-col items-center py-8">
           <Avatar className="h-32 w-32 mb-4">
             <AvatarImage src={student.image || "/placeholder-avatar.jpg"} alt={student.name || "Alumno"} />
-            <AvatarFallback className="text-4xl font-bold">
+            <AvatarFallback className="text-4xl font-semibold">
               {student.name?.charAt(0).toUpperCase() || "A"}
             </AvatarFallback>
           </Avatar>
-          <h2 className="text-2xl font-bold mb-1">{student.name}</h2>
+          <h2 className="text-2xl font-semibold mb-1">{student.name}</h2>
           <p className="text-muted-foreground mb-2">{student.email}</p>
           <div className="flex gap-2 mb-2">
             <Badge variant={student.status === "active" ? "default" : "secondary"}>

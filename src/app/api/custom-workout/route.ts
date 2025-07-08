@@ -109,7 +109,8 @@ export async function POST(request: Request) {
         } con metodología ${
           translations[methodology as keyof typeof translations]
         } para ${translations[goal as keyof typeof translations]}`,
-        userId,
+        createdById: userId,
+        type: 'personal',
       },
     });
 

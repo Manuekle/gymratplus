@@ -206,7 +206,7 @@ export function WorkoutNew({
                 </div>
                 <div>
                   <p className="text-xs text-muted-foreground mb-1">
-                    Repeticiones
+                    Reps
                   </p>
                   <p className="font-semibold">{exercise.reps}</p>
                 </div>

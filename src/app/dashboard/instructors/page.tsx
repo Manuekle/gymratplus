@@ -39,8 +39,8 @@ export default function InstructorsPage() {
     <div className="max-w-2xl mx-auto py-10 space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle>Instructores disponibles</CardTitle>
-          <CardDescription>Elige un instructor para ver su perfil o solicitar ser su alumno.</CardDescription>
+          <CardTitle className="text-2xl font-semibold tracking-heading">Instructores disponibles</CardTitle>
+          <CardDescription className="text-xs">Elige un instructor para ver su perfil o solicitar ser su alumno.</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -57,7 +57,7 @@ export default function InstructorsPage() {
               ))}
             </div>
           ) : instructors.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
+            <div className="text-center text-sm text-muted-foreground py-8">
               No hay instructores disponibles en este momento.
             </div>
           ) : (
@@ -70,10 +70,10 @@ export default function InstructorsPage() {
                       <AvatarFallback>{inst.name.charAt(0).toUpperCase()}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold text-lg">{inst.name}</p>
+                      <p className="font-semibold tracking-heading text-lg">{inst.name}</p>
                       {/* No specialty, solo nombre */}
                     </div>
-                    <Button asChild size="sm" variant="outline">
+                    <Button asChild size="sm" variant="outline" className="text-xs">
                       <Link href={`/dashboard/instructors/${inst.id}`}>Ver perfil</Link>
                     </Button>
                   </CardContent>
@@ -85,8 +85,8 @@ export default function InstructorsPage() {
       </Card>
       {/* Enlaces a otras páginas de instructores */}
       <div className="flex flex-col md:flex-row gap-4 pt-6">
-        <Button asChild variant="secondary" className="flex-1">
-          <Link href="/dashboard/instructors/list">Ver todos los instructores</Link>
+        <Button asChild variant="default" className="flex-1">
+          <Link href="/dashboard/instructors/list">Ver todos mis instructores</Link>
         </Button>
         <Button asChild variant="outline" className="flex-1">
           <Link href="/dashboard/instructors/search">Buscar instructores</Link>

@@ -51,7 +51,8 @@ export async function POST() {
       data: {
         name: "Entrenamiento por defecto",
         description: "Entrenamiento para seguimiento de progreso",
-        userId: session.user.id,
+        createdById: session.user.id,
+        type: 'personal',
         exercises: {
           create: exercises.map((exercise, index) => ({
             exerciseId: exercise.id,
