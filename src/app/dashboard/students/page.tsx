@@ -205,7 +205,7 @@ export default function InstructorDashboardPage() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{totalStudents}</div>
+              <div className="text-2xl sont-semibold">{totalStudents}</div>
               <p className="text-xs text-muted-foreground">{pendingRequests.length} solicitudes pendientes</p>
             </CardContent>
           </Card>
@@ -216,7 +216,7 @@ export default function InstructorDashboardPage() {
               <TrendingUp className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{activeToday}</div>
+              <div className="text-2xl sont-semibold">{activeToday}</div>
               <p className="text-xs text-muted-foreground">
                 {totalStudents > 0 ? Math.round((activeToday / totalStudents) * 100) : 0}% del total
               </p>
@@ -229,7 +229,7 @@ export default function InstructorDashboardPage() {
               <Dumbbell className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{avgStreak}</div>
+              <div className="text-2xl sont-semibold">{avgStreak}</div>
               <p className="text-xs text-muted-foreground">días consecutivos</p>
             </CardContent>
           </Card>
@@ -240,7 +240,7 @@ export default function InstructorDashboardPage() {
               <Badge variant={pendingRequests.length > 0 ? "default" : "secondary"}>{pendingRequests.length}</Badge>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{pendingRequests.length}</div>
+              <div className="text-2xl sont-semibold">{pendingRequests.length}</div>
               <p className="text-xs text-muted-foreground">pendientes de revisión</p>
             </CardContent>
           </Card>
@@ -418,11 +418,33 @@ export default function InstructorDashboardPage() {
               <CardDescription>Crea y gestiona rutinas personalizadas para tus alumnos</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">Funcionalidad en desarrollo</p>
-                <Button variant="outline" size="sm" disabled>
-                  Próximamente
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Templates Creados</p>
+                    <p className="text-xs text-muted-foreground">Rutinas reutilizables</p>
+                  </div>
+                  <Badge variant="outline">0</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Planes Activos</p>
+                    <p className="text-xs text-muted-foreground">Alumnos con rutinas asignadas</p>
+                  </div>
+                  <Badge variant="outline">0</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="flex-1" asChild>
+                    <Link href="/dashboard/instructors/workout-templates">
+                      Crear Template
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1" asChild>
+                    <Link href="/dashboard/students/workout-plans">
+                      Gestionar Planes
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -436,11 +458,33 @@ export default function InstructorDashboardPage() {
               <CardDescription>Diseña dietas y planes nutricionales personalizados</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-muted-foreground">Funcionalidad en desarrollo</p>
-                <Button variant="outline" size="sm" disabled>
-                  Próximamente
-                </Button>
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Planes Creados</p>
+                    <p className="text-xs text-muted-foreground">Dietas personalizadas</p>
+                  </div>
+                  <Badge variant="outline">0</Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium">Alumnos con Plan</p>
+                    <p className="text-xs text-muted-foreground">Siguiendo nutrición</p>
+                  </div>
+                  <Badge variant="outline">0</Badge>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" className="flex-1" asChild>
+                    <Link href="/dashboard/students/nutrition-plans">
+                      Crear Plan
+                    </Link>
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex-1" asChild>
+                    <Link href="/dashboard/students/nutrition-analytics">
+                      Ver Analytics
+                    </Link>
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

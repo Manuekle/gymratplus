@@ -69,6 +69,11 @@ export async function GET() {
         lastWorkoutAt: rel.student.workoutSessions.length > 0 ? rel.student.workoutSessions[0].date : null,
         currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
         completedWorkoutsLast7Days: rel.student.workoutSessions.length,
+        totalWorkouts: rel.student.workoutSessions.length, // Simplificado por ahora
+        averageWorkoutsPerWeek: 0, // Placeholder
+        lastNutritionLog: null, // Placeholder
+        hasActiveMealPlan: false, // Placeholder
+        hasActiveWorkoutPlan: false, // Placeholder
       }));
 
     return NextResponse.json(studentsData, { status: 200 });

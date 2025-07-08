@@ -163,7 +163,7 @@ export default function MyInstructorsPage() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{instructors.length}</div>
+            <div className="text-2xl sont-semibold">{instructors.length}</div>
             <p className="text-xs text-muted-foreground">
               {instructors.filter((i) => i.status === "active").length} activos
             </p>
@@ -176,7 +176,7 @@ export default function MyInstructorsPage() {
             <Globe className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl sont-semibold">
               {instructors.filter((i) => i.isRemote).length}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -193,7 +193,7 @@ export default function MyInstructorsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-2xl sont-semibold">
               ${instructors.reduce((sum, i) => sum + (i.pricePerMonth || 0), 0)}
             </div>
             <p className="text-xs text-muted-foreground">total por mes</p>
