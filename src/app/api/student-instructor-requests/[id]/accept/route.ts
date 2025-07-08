@@ -4,7 +4,7 @@ import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { createNotificationByEmail } from '@/lib/notification-service';
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -12,7 +12,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const requestId = params.id;
+    const url = new URL(req.url);
+    const requestId = url.pathname.split("/").pop();
+    if (!requestId) {
+      return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+    }
 
     // Verificar si el usuario es un instructor y si la solicitud le pertenece
     const instructorProfile = await prisma.instructorProfile.findUnique({
