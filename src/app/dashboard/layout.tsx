@@ -1,4 +1,8 @@
-"use client";
+import { Navbar } from "@/components/navbar";
+import { CustomSonner } from "@/components/custom-sonner";
+import ProfileCheck from "@/components/alerts/profile-check";
+import { DashboardHeader } from "@/components/dashboard-header";
+
 export const metadata = {
   title: "Entrenamiento - Dashboard - GymRat+",
   description:
@@ -6,10 +10,6 @@ export const metadata = {
   keywords:
     "entrenamiento, ejercicio, rutinas, fitness, progreso físico, workout",
 };
-import { Navbar } from "@/components/navbar";
-import { CustomSonner } from "@/components/custom-sonner";
-import ProfileCheck from "@/components/alerts/profile-check";
-import { DashboardHeader } from "@/components/dashboard-header";
 
 export default function DashboardLayout({
   children,
