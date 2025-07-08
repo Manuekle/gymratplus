@@ -3,13 +3,7 @@ import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 
-type RouteParams = {
-  params: {
-    id: string;
-  };
-};
-
-export async function PATCH(request: Request, { params }: RouteParams) {
+export async function PATCH(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -20,7 +14,11 @@ export async function PATCH(request: Request, { params }: RouteParams) {
       );
     }
 
-    const { id: workoutId } = params;
+    const url = new URL(request.url);
+    const workoutId = url.pathname.split("/").pop();
+    if (!workoutId) {
+      return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+    }
     const { status, notes, dueDate } = await request.json();
 
     // Verificar que la rutina existe y pertenece al instructor
@@ -85,10 +83,7 @@ export async function PATCH(request: Request, { params }: RouteParams) {
   }
 }
 
-export async function DELETE(
-  _request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: Request) {
   try {
     const session = await getServerSession(authOptions);
     
@@ -99,7 +94,11 @@ export async function DELETE(
       );
     }
 
-    const { id: workoutId } = params;
+    const url = new URL(request.url);
+    const workoutId = url.pathname.split("/").pop();
+    if (!workoutId) {
+      return NextResponse.json({ error: 'ID no proporcionado' }, { status: 400 });
+    }
 
     // Verificar que la rutina existe y pertenece al instructor
     const workout = await prisma.workout.findUnique({
