@@ -1,142 +1,188 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { useState } from "react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
+import { CreditCard, Loader2, Ticket } from "lucide-react"
 
 interface PaymentSimulationModalProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
-  onConfirm: () => void;
-  isLoading: boolean;
+  open: boolean
+  onOpenChange: (open: boolean) => void
+  onConfirm: () => void
+  isLoading: boolean
 }
 
-export function PaymentSimulationModal({
-  open,
-  onOpenChange,
-  onConfirm,
-  isLoading,
-}: PaymentSimulationModalProps) {
+export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoading }: PaymentSimulationModalProps) {
+  const [isAnnual, setIsAnnual] = useState(true);
+  
+  const planDetails = {
+    monthly: {
+      price: '5.99',
+      nextPayment: 'el 22 de cada mes',
+      savings: ''
+    },
+    annual: {
+      price: '50.00',
+      nextPayment: '22 de junio, 2025',
+      savings: 'Ahorra 2 meses'
+    }
+  };
+
+  const currentPlan = isAnnual ? planDetails.annual : planDetails.monthly;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md rounded-2xl p-0 overflow-hidden">
+      <DialogContent className="max-w-md p-0">
         <form
-          onSubmit={e => {
-            e.preventDefault();
-            onConfirm();
+          onSubmit={(e) => {
+            e.preventDefault()
+            onConfirm()
           }}
         >
-          <div className="px-8 pt-8 pb-2">
-            <DialogHeader className="mb-2">
-              <DialogTitle className="text-lg font-semibold">Findex Plus</DialogTitle>
-            </DialogHeader>
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-gray-700">Yearly plan</span>
-                <span className="text-xs text-gray-400">due today</span>
+          <DialogHeader className="px-6 pt-6 pb-4">
+            <DialogTitle className="text-2xl tracking-heading font-semibold text-center">
+              Elige tu plan
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="px-6 pb-6 space-y-6">
+            {/* Plan Toggle */}
+            <div className="flex items-center justify-center gap-4">
+              <span className={`text-sm font-medium ${!isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
+                Mensual
+              </span>
+              <Switch
+                checked={isAnnual}
+                onCheckedChange={setIsAnnual}
+                className="data-[state=checked]:bg-primary"
+              />
+              <div className="flex flex-col">
+                <span className={`text-sm font-medium ${isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
+                  Anual
+                </span>
+                {isAnnual && (
+                  <span className="text-xs text-emerald-600 font-medium">{planDetails.annual.savings}</span>
+                )}
               </div>
-              <div className="text-4xl font-bold mb-1">$49.00</div>
-              <div className="text-xs text-gray-500 mb-2">Next payment on June 22, 2025</div>
-              <div className="border-b border-gray-200 my-4" />
             </div>
-            <div className="space-y-3">
-              <label className="block text-xs font-medium text-gray-700 mb-1">Credit or Debit Cards*</label>
-              <div className="relative flex items-center">
-                <input
-                  type="text"
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 pr-20 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  placeholder="1234 1234 1234 1234"
-                  disabled={isLoading}
-                />
-                <div className="absolute right-3 flex gap-1">
-                  {/* Puedes reemplazar estos SVG por imágenes locales si tienes los íconos */}
-                  <img src="/icons/visa.svg" alt="Visa" className="h-5" />
-                  <img src="/icons/mastercard.svg" alt="Mastercard" className="h-5" />
-                  <img src="/icons/discover.svg" alt="Discover" className="h-5" />
+
+            {/* Plan Details */}
+            <div className="space-y-3 text-center">
+              <div className="space-y-1">
+                <div className="text-3xl font-semibold tracking-heading">
+                  ${currentPlan.price}
+                  <span className="text-xl font-semibold tracking-heading text-muted-foreground">
+                    {isAnnual ? '/año' : '/mes'}
+                  </span>
                 </div>
+                <p className="text-sm text-muted-foreground">
+                  Próximo pago {currentPlan.nextPayment}
+                </p>
               </div>
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">Expiry*</label>
-                  <input
+            </div>
+
+            <Separator />
+
+            {/* Payment Form */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="card-number" className="text-sm font-medium">
+                  Tarjeta de crédito o débito
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="card-number"
                     type="text"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                    placeholder="MM / YY"
+                    placeholder="1234 1234 1234 1234"
                     disabled={isLoading}
+                    className="pr-16"
                   />
-                </div>
-                <div className="flex-1">
-                  <label className="block text-xs font-medium text-gray-700 mb-1">CVC*</label>
-                  <input
-                    type="text"
-                    className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                    placeholder="123"
-                    disabled={isLoading}
-                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                  </div>
                 </div>
               </div>
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-1">Country*</label>
-                <select
-                  className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-black"
-                  disabled={isLoading}
-                  defaultValue="United States"
-                >
-                  <option>United States</option>
-                  <option>Mexico</option>
-                  <option>Spain</option>
-                  <option>Argentina</option>
-                  <option>Colombia</option>
-                  <option>Chile</option>
-                  <option>Peru</option>
-                  <option>Other</option>
-                </select>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label htmlFor="expiry" className="text-sm font-medium">
+                    Vencimiento
+                  </Label>
+                  <Input id="expiry" type="text" placeholder="MM / YY" disabled={isLoading} />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cvc" className="text-sm font-medium">
+                    CVC
+                  </Label>
+                  <Input id="cvc" type="text" placeholder="123" disabled={isLoading} />
+                </div>
               </div>
-              <div className="mt-1 mb-2">
-                <button
-                  type="button"
-                  className="text-xs text-primary underline flex items-center gap-1 hover:text-black"
-                  tabIndex={-1}
-                  disabled={isLoading}
-                >
-                  <span className="i-lucide-ticket w-4 h-4" />
-                  Coupon code
-                </button>
+
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">País</Label>
+                <Select defaultValue="us" disabled={isLoading}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="us">Estados Unidos</SelectItem>
+                    <SelectItem value="mx">Mexico</SelectItem>
+                    <SelectItem value="es">España</SelectItem>
+                    <SelectItem value="ar">Argentina</SelectItem>
+                    <SelectItem value="co">Colombia</SelectItem>
+                    <SelectItem value="cl">Chile</SelectItem>
+                    <SelectItem value="pe">Peru</SelectItem>
+                    <SelectItem value="other">Otros</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-              <div className="text-[11px] text-gray-400 mb-2">
-                By providing your card information, you allow Vertex to charge your card for future payments in accordance with their terms.
-              </div>
+
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                className="h-auto p-0 text-xs font-normal text-muted-foreground hover:text-foreground"
+                disabled={isLoading}
+              >
+                <Ticket className="mr-1 h-3 w-3" />
+                Agregar código de descuento
+              </Button>
+
+              <p className="text-xs text-muted-foreground leading-relaxed">
+                Al proporcionar tu información de tarjeta, permites a Vertex cobrar tu tarjeta por pagos futuros en
+                acuerdo con sus términos.
+              </p>
             </div>
           </div>
-          <DialogFooter className="bg-gray-50 px-8 py-4 flex flex-col gap-2 rounded-b-2xl">
+
+          <DialogFooter className="flex flex-row gap-2 px-6 py-4 bg-muted/30">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
-              className="w-full"
+              className=""
               disabled={isLoading}
             >
-              Cancel
+              Cancelar
             </Button>
-            <Button type="submit" className="w-full bg-black text-white hover:bg-gray-900" disabled={isLoading}>
+            <Button type="submit" className="" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Confirming...
+                  Confirmando...
                 </>
               ) : (
-                "Confirm"
+                "Confirmar pago"
               )}
             </Button>
           </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>
-  );
+  )
 }

@@ -64,7 +64,7 @@ export async function POST(request: Request) {
       select: { 
         id: true, 
         instructorId: true,
-        userId: true
+        createdById: true
       }
     });
 
