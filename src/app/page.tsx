@@ -105,7 +105,7 @@ export default function GymRatLanding() {
                 Aplicación móvil
               </span>
             </Badge>
-            <h2 className="text-3xl font-semibold  mb-3">
+            <h2 className="text-3xl tracking-heading font-semibold  mb-3">
               Diseñado para atletas
             </h2>
             <p className="text-muted-foreground text-sm">
@@ -284,7 +284,7 @@ export default function GymRatLanding() {
                 Precios
               </span>
             </Badge>
-            <h2 className="text-3xl font-semibold  mb-3">Precios simples</h2>
+            <h2 className="text-3xl font-semibold tracking-heading mb-3">Precios simples</h2>
             <p className="text-muted-foreground text-sm">Elige el plan que se adapte a ti</p>
           </div>
 

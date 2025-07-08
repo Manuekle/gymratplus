@@ -76,7 +76,7 @@ export async function POST(request: Request) {
     }
 
     // Verificar que el usuario sea el propietario de la rutina o un instructor con permisos
-    if (workout.userId !== session.user.id && workout.instructorId !== session.user.id) {
+    if (workout.createdById !== session.user.id && workout.instructorId !== session.user.id) {
       return NextResponse.json(
         { error: 'No tienes permiso para asignar esta rutina' },
         { status: 403 }
