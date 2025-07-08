@@ -148,7 +148,7 @@ export default function NotificationsPage() {
         <TabsContent value="all">
           <Card>
             <CardHeader className="px-4 border-b">
-              <CardTitle className="text-sm">
+              <CardTitle className="text-2xl tracking-heading font-semibold">
                 Todas las notificaciones
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground">
@@ -197,7 +197,7 @@ export default function NotificationsPage() {
         <TabsContent value="unread" className="mt-4">
           <Card>
             <CardHeader className="p-4 border-b">
-              <CardTitle className="text-lg">
+              <CardTitle className="text-2xl tracking-heading font-semibold">
                 Notificaciones no leídas
               </CardTitle>
               <CardDescription>
