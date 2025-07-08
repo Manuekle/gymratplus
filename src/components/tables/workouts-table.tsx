@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
-import { ArrowLeft01Icon, ArrowRight01Icon, Dumbbell01Icon } from "hugeicons-react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "hugeicons-react";
 import { useWorkouts } from "@/hooks/use-workouts";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";

@@ -63,7 +63,7 @@ export function ExpiredDatePicker({
     if (dateValue) {
       setCalendarDate(new Date(dateValue));
     }
-  }, [value]); // Depend on value, not dateValue
+  }, [value, dateValue]); // Depend on value and dateValue
 
   // Solo años desde el actual hasta 20 años en el futuro
   const currentYear = new Date().getFullYear();

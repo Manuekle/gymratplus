@@ -24,6 +24,7 @@ import {
   Calendar,
   Globe,
 } from "lucide-react";
+import Image from "next/image";
 
 interface InstructorData {
   id: string;
@@ -247,12 +248,14 @@ export default function MyInstructorsPage() {
                             {instructor.city}, {instructor.country}
                             {instructor.country &&
                               countryFlags[instructor.country] && (
-                                <img
+                                <Image
                                   src={
                                     countryFlags[instructor.country] ||
                                     "/placeholder.svg"
                                   }
                                   alt={`Bandera de ${instructor.country}`}
+                                  width={48}
+                                  height={48}
                                   className="w-4 h-3 object-cover rounded-sm shadow-sm"
                                 />
                               )}

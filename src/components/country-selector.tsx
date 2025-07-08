@@ -12,6 +12,7 @@ import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useCountries } from "@/hooks/use-countries"
+import Image from "next/image";
 
 interface CountrySelectorProps {
   value?: string
@@ -101,9 +102,11 @@ export function CountrySelector({
               }}
               className="flex items-center gap-2"
             >
-              <img
+              <Image
                 src={country.flags.svg || "/placeholder.svg"}
                 alt={`${country.name.common} flag`}
+                width={20}
+                height={14}
                 className="w-5 h-4 object-cover rounded-sm"
                 crossOrigin="anonymous"
               />
@@ -132,9 +135,11 @@ export function CountrySelector({
               <div className="flex items-center gap-2">
                 {selectedCountry ? (
                   <>
-                    <img
+                    <Image
                       src={selectedCountry.flags.svg || "/placeholder.svg"}
                       alt={`${selectedCountry.name.common} flag`}
+                      width={20}
+                      height={14}
                       className="w-5 h-4 object-cover rounded-sm"
                       crossOrigin="anonymous"
                     />
@@ -167,9 +172,11 @@ export function CountrySelector({
             <div className="flex items-center gap-2">
               {selectedCountry ? (
                 <>
-                  <img
+                  <Image
                     src={selectedCountry.flags.svg || "/placeholder.svg"}
                     alt={`${selectedCountry.name.common} flag`}
+                    width={20}
+                    height={14}
                     className="w-5 h-4 object-cover rounded-sm"
                     crossOrigin="anonymous"
                   />

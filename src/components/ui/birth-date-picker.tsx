@@ -63,7 +63,7 @@ export function BirthDatePicker({
     if (dateValue) {
       setCalendarDate(new Date(dateValue));
     }
-  }, [value]); // Depend on value, not dateValue
+  }, [value, dateValue]); // Depend on value and dateValue
 
   // Generate years for dropdown (100 years back from current year)
   const currentYear = new Date().getFullYear();

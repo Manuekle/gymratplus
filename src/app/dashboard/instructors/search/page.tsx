@@ -15,6 +15,7 @@ import { CheckCircle2, Loader2 } from "lucide-react"
 import { CountrySelector } from "@/components/country-selector"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useCountries } from "@/hooks/use-countries"
+import Image from "next/image";
 
 interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
@@ -286,7 +287,7 @@ export default function InstructorSearchPage() {
                   className="flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-zinc-900 dark:hover:to-zinc-800 bg-white dark:bg-zinc-950 border px-4 py-3 min-h-[220px]"
                 >
                   <CardHeader className="flex-row items-center space-x-3 pb-1 px-0">
-                    <img
+                    <Image
                       src={instructor.image || "/placeholder-avatar.jpg"} 
                       alt={instructor.name || "Instructor"} 
                       width={48}
@@ -303,7 +304,7 @@ export default function InstructorSearchPage() {
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
                         {countryData && (
                           <span className="flex items-center gap-1">
-                            <img
+                            <Image
                               src={countryData.flags.svg} 
                               alt={countryData.name.common} 
                               className="w-4 h-3 object-cover rounded-sm" 
