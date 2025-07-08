@@ -41,6 +41,7 @@ interface AssignedWorkout {
   status: string;
   notes?: string;
   exercises: AssignedWorkoutExercise[];
+  assignedToId?: string;
 }
 
 // Tipos para ejercicios asignados
@@ -94,7 +95,7 @@ export default function StudentDetailPage() {
         if (!res.ok) throw new Error("No se pudieron cargar las rutinas");
         const data = await res.json();
         if (student && student.studentId) {
-          setWorkouts(data.filter((w: any) => w.assignedTo?.id === student.studentId));
+          setWorkouts(data.filter((w: AssignedWorkout) => w.assignedToId === student.studentId));
         } else {
           setWorkouts([]);
         }
@@ -224,7 +225,7 @@ export default function StudentDetailPage() {
                       </div>
                       <div className="flex flex-col gap-1 items-end">
                         <span className="text-xs text-muted-foreground">{w.exercises.length} ejercicios</span>
-                        <Button size="sm" variant="outline" className="text-xs mt-2" onClick={(e: React.MouseEvent<HTMLButtonElement>) => { e.stopPropagation(); setSelectedWorkout(w); setIsModalOpen(true); }}>
+                        <Button size="sm" variant="outline" className="text-xs mt-2" onClick={() => { setSelectedWorkout(w); setIsModalOpen(true); }}>
                           Ver detalle
                         </Button>
                       </div>
