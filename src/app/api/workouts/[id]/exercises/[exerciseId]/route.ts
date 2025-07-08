@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
         id: exerciseId,
         workoutId: workoutId,
         workout: {
-          userId: session.user.id,
+          createdById: session.user.id,
         },
       },
       include: {
@@ -72,7 +72,7 @@ export async function PUT(request: NextRequest) {
         id: exerciseId,
         workoutId: workoutId,
         workout: {
-          userId: session.user.id,
+          createdById: session.user.id,
         },
       },
       data: {
@@ -120,7 +120,7 @@ export async function DELETE(request: NextRequest) {
         id: exerciseId,
         workoutId: workoutId,
         workout: {
-          userId: session.user.id,
+          createdById: session.user.id,
         },
       },
     });
