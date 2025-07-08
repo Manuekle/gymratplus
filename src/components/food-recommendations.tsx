@@ -331,7 +331,7 @@ export default function FoodRecommendations() {
           <div className="flex justify-between items-center">
             {recommendations.length > 1 && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">View:</span>
+                <span className="text-sm text-muted-foreground">Historial:</span>
                 <select
                   className="text-sm border rounded p-1"
                   value={selectedRecommendation.id}

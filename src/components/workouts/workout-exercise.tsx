@@ -197,7 +197,7 @@ export default function WorkoutExercise({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold  tracking-heading">
+          <DialogTitle className="text-2xl font-semibold tracking-heading">
             Añadir Nuevo Ejercicio
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">

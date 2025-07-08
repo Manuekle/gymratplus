@@ -169,7 +169,9 @@ function MacroCircle({
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-sm tracking-heading font-semibold ">{calories}</span>
+          <span className="text-sm tracking-heading font-semibold ">
+            {calories}
+          </span>
           <span className="text-xs text-muted-foreground block">kcal</span>
         </div>
       </div>
@@ -684,13 +686,9 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               : "No hay recetas disponibles para este tipo de comida"}
           </p>
           {!searchQuery && (
-            <p className="text-sm mt-2">
-              <Link
-                href="/nutrition/admin"
-                className="text-primary hover:underline"
-              >
-                Ir a administración para inicializar datos
-              </Link>
+            <p className="text-sm mt-2 text-muted-foreground">
+              Esta funcionalidad solo esta disponible para los usuarios con un
+              plan instructor
             </p>
           )}
         </div>

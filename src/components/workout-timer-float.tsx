@@ -236,7 +236,7 @@ export default function WorkoutTimerFloat({
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold  tracking-heading">
+            <DialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Qué deseas hacer con este entrenamiento?
             </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">

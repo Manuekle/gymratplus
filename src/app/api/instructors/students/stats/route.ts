@@ -49,7 +49,7 @@ export async function GET() {
                 isActive: true,
               },
             },
-            workouts: {
+            assignedWorkouts: {
               take: 1,
             },
           },
@@ -79,7 +79,7 @@ export async function GET() {
     const totalRevenue = studentRelationships.reduce((acc, rel) => acc + (rel.agreedPrice || 0), 0);
 
     // Calcular estudiantes con planes activos
-    const studentsWithWorkoutPlans = studentRelationships.filter(rel => rel.student.workouts.length > 0).length;
+    const studentsWithWorkoutPlans = studentRelationships.filter(rel => rel.student.assignedWorkouts.length > 0).length;
     const studentsWithMealPlans = studentRelationships.filter(rel => rel.student.foodPlans.length > 0).length;
 
     const stats = {
