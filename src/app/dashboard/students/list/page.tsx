@@ -15,19 +15,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import {
-  ArrowLeft,
-  Users,
-  Search,
-  MoreHorizontal,
-  Target,
-  Activity,
-  Eye,
-  TrendingUp,
-  Flame,
-  Clock,
-  DollarSign,
-} from "lucide-react";
 import Link from "next/link";
 import { format, isToday, isYesterday, isThisWeek } from "date-fns";
 import { es } from "date-fns/locale";
@@ -50,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, More01Icon, Search01Icon, Target01Icon, Target02Icon, UserGroupIcon } from "hugeicons-react";
 
 interface StudentData {
   id: string;
@@ -323,7 +311,7 @@ export default function StudentsListPage() {
         <div className="flex items-center gap-4">
           <Button variant="outline" size="sm" asChild>
             <Link href="/dashboard/students">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft02Icon className="h-4 w-4 mr-2" />
               Volver
             </Link>
           </Button>
@@ -335,7 +323,7 @@ export default function StudentsListPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <UserGroupIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -348,7 +336,7 @@ export default function StudentsListPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Activos Hoy</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <ArrangeByLettersAZIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -370,7 +358,7 @@ export default function StudentsListPage() {
             <CardTitle className="text-sm font-medium">
               Racha Promedio
             </CardTitle>
-            <Flame className="h-4 w-4 text-muted-foreground" />
+            <FireIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -385,7 +373,7 @@ export default function StudentsListPage() {
             <CardTitle className="text-sm font-medium">
               Ingresos Mensuales
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <Dollar02Icon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -411,7 +399,7 @@ export default function StudentsListPage() {
         <CardContent>
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search01Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar por nombre o email..."
                 value={searchTerm}
@@ -526,7 +514,7 @@ export default function StudentsListPage() {
                               variant="secondary"
                               className="text-xs justify-center"
                             >
-                              <Target className="h-3 w-3 mr-1" />
+                              <Target01Icon className="h-3 w-3 mr-1" />
                               Entrenamiento
                             </Badge>
                           )}
@@ -535,7 +523,7 @@ export default function StudentsListPage() {
                               variant="secondary"
                               className="text-xs justify-center"
                             >
-                              <Activity className="h-3 w-3 mr-1" />
+                              <Activity01Icon className="h-3 w-3 mr-1" />
                               Nutrición
                             </Badge>
                           )}
@@ -554,7 +542,7 @@ export default function StudentsListPage() {
                       <div className="text-right space-y-1">
                         <div className="flex items-center gap-2">
                           <Badge variant={streakVariant} className="gap-1">
-                            <Flame className="h-3 w-3" />
+                            <FireIcon className="h-3 w-3" />
                             {student.currentWorkoutStreak}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
@@ -564,8 +552,8 @@ export default function StudentsListPage() {
                         <p className="text-xs text-muted-foreground">
                           {student.lastWorkoutAt ? (
                             isToday(new Date(student.lastWorkoutAt)) ? (
-                              <span className="text-green-600 font-medium flex items-center gap-1">
-                                <Clock className="h-3 w-3" />
+                              <span className="text-emerald-600 font-medium flex items-center gap-1">
+                                <Clock01Icon className="h-3 w-3" />
                                 Entrenó hoy
                               </span>
                             ) : (
@@ -585,7 +573,7 @@ export default function StudentsListPage() {
                             size="sm"
                             className="h-8 w-8 p-0"
                           >
-                            <MoreHorizontal className="h-4 w-4" />
+                            <More01Icon className="h-4 w-4" />
                             <span className="sr-only">Abrir menú</span>
                           </Button>
                         </DropdownMenuTrigger>
@@ -603,7 +591,7 @@ export default function StudentsListPage() {
                             }}
                             className="cursor-pointer"
                           >
-                            <Target className="h-4 w-4 mr-2" />
+                            <Target02Icon className="h-4 w-4 mr-2" />
                             Asignar Rutina
                           </DropdownMenuItem>
                           {/* Elimino el render del modal aquí */}
@@ -612,7 +600,7 @@ export default function StudentsListPage() {
                               href={`/dashboard/students/list/${student.id}`}
                               className="w-full flex items-center"
                             >
-                              <Eye className="h-4 w-4 mr-2" />
+                              <EyeIcon className="h-4 w-4 mr-2" />
                               Ver perfil completo
                             </Link>
                           </DropdownMenuItem>
@@ -624,7 +612,7 @@ export default function StudentsListPage() {
                               toast.info("Funcionalidad en desarrollo");
                             }}
                           >
-                            <Users className="h-4 w-4 mr-2" />
+                            <UserGroupIcon className="h-4 w-4 mr-2" />
                             Remover alumno
                           </DropdownMenuItem>
                         </DropdownMenuContent>
