@@ -171,7 +171,7 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
               <label className="text-sm font-medium">Objetivo</label>
-              <Select disabled value={user?.goal}>
+              <Select disabled value={user?.goal ?? ""}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu objetivo" />
                 </SelectTrigger>
@@ -202,7 +202,7 @@ export default function HealthPage() {
               <label className="text-sm font-medium">
                 Nivel de actividad física
               </label>
-              <Select value={user?.dailyActivity} disabled>
+              <Select value={user?.dailyActivity ?? ""} disabled>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu nivel de actividad" />
                 </SelectTrigger>
