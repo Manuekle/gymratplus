@@ -7,7 +7,7 @@ export async function publishGoalNotification(
   userId: string,
   action: "created" | "updated" | "completed" | "progress" | "achieved",
   goalTitle: string,
-  progress?: number
+  progress?: number,
 ): Promise<void> {
   // Add to Redis list for polling
   await publishNotification(userId, {
@@ -19,7 +19,7 @@ export async function publishGoalNotification(
 
 export async function createGoalCreatedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -32,13 +32,13 @@ export async function createGoalCreatedNotification(
 export async function createGoalProgressUpdatedNotification(
   userId: string,
   goalTitle: string,
-  progress: number
+  progress: number,
 ): Promise<void> {
   await createNotification({
     userId,
     title: "Progreso actualizado",
     message: `Has actualizado tu progreso en el objetivo "${goalTitle}" a ${progress.toFixed(
-      1
+      1,
     )}%`,
     type: "goal",
   });
@@ -46,7 +46,7 @@ export async function createGoalProgressUpdatedNotification(
 
 export async function createGoalAchievedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -58,7 +58,7 @@ export async function createGoalAchievedNotification(
 
 export async function createGoalCompletedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -89,7 +89,7 @@ function getNotificationTitle(action: string): string {
 function getNotificationMessage(
   action: string,
   goalTitle: string,
-  progress?: number
+  progress?: number,
 ): string {
   switch (action) {
     case "created":
@@ -100,7 +100,7 @@ function getNotificationMessage(
       return `Has marcado como completado tu objetivo: ${goalTitle}`;
     case "progress":
       return `Has actualizado tu progreso en el objetivo "${goalTitle}" a ${progress?.toFixed(
-        1
+        1,
       )}%`;
     case "achieved":
       return `¡Felicidades! Has alcanzado tu objetivo: ${goalTitle}`;

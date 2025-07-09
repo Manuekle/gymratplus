@@ -123,7 +123,7 @@ export function ExpiredDatePicker({
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal text-xs md:text-sm",
-                !value && "text-muted-foreground"
+                !value && "text-muted-foreground",
               )}
               aria-haspopup="dialog"
               aria-expanded={isCalendarOpen}
@@ -137,7 +137,12 @@ export function ExpiredDatePicker({
               )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start" role="dialog" aria-modal="true">
+          <PopoverContent
+            className="w-auto p-0"
+            align="start"
+            role="dialog"
+            aria-modal="true"
+          >
             <div className="p-3 border-b">
               <div className="flex justify-between items-center mb-2 gap-2">
                 <Select

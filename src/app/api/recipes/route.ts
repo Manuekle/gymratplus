@@ -85,7 +85,7 @@ export async function GET(req: NextRequest) {
                 "Garbanzos",
                 "Frijoles negros",
                 "Edamame",
-              ].includes(ing.food.name)
+              ].includes(ing.food.name),
           );
         }
         if (dietaryPreference === "vegan") {
@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
                 "Mantequilla",
                 "Ghee (mantequilla clarificada)",
                 "Huevos",
-              ].includes(ing.food.name)
+              ].includes(ing.food.name),
           );
         }
         // Add more dietary preferences as needed
@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching recipes:", error);
     return NextResponse.json(
       { error: "Failed to fetch recipes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -147,7 +147,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
 
     // Get all foods for the ingredients
     const foodIds = data.ingredients.map(
-      (ing: { foodId: string }) => ing.foodId
+      (ing: { foodId: string }) => ing.foodId,
     );
     const foods = await prisma.food.findMany({
       where: {
@@ -209,7 +209,7 @@ export async function POST(req: NextRequest) {
               foodId: ing.foodId,
               quantity: ing.quantity,
               unit: ing.unit || null,
-            })
+            }),
           ),
         },
       },
@@ -227,7 +227,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating recipe:", error);
     return NextResponse.json(
       { error: "Failed to create recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -303,7 +303,7 @@ export async function PUT() {
     console.error("Error seeding recipes:", error);
     return NextResponse.json(
       { error: "Failed to seed recipes" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

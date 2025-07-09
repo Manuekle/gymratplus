@@ -35,7 +35,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!workoutSession) {
-      return NextResponse.json({ error: "Sesión no encontrada" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Sesión no encontrada" },
+        { status: 404 },
+      );
     }
 
     // Actualizar el peso máximo en WorkoutExercise
@@ -43,12 +46,12 @@ export async function POST(request: NextRequest) {
       async (exerciseSession) => {
         // Encontrar el peso máximo de los sets
         const maxWeight = Math.max(
-          ...exerciseSession.sets.map((set) => set.weight || 0)
+          ...exerciseSession.sets.map((set) => set.weight || 0),
         );
 
         // Encontrar el ejercicio correspondiente en el workout
         const workoutExercise = workoutSession.workout.exercises.find(
-          (we) => we.exerciseId === exerciseSession.exerciseId
+          (we) => we.exerciseId === exerciseSession.exerciseId,
         );
 
         if (workoutExercise && maxWeight > 0) {
@@ -60,7 +63,7 @@ export async function POST(request: NextRequest) {
             });
           }
         }
-      }
+      },
     );
 
     // Esperar a que todas las actualizaciones se completen

@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const today = new Date();
     const defaultDate = `${today.getFullYear()}-${String(
-      today.getMonth() + 1
+      today.getMonth() + 1,
     ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
     const { intake, date = defaultDate } = body;
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
     if (intake === undefined || intake === null) {
       return NextResponse.json(
         { error: "Valor de consumo requerido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -40,14 +40,14 @@ export async function POST(req: NextRequest) {
     if (isNaN(numericIntake)) {
       return NextResponse.json(
         { error: "Valor de consumo debe ser un número" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (numericIntake < 0) {
       return NextResponse.json(
         { error: "Valor de consumo no puede ser negativo" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
       await publishWaterIntake(
         session.user.id,
         numericIntake,
-        userProfile.waterIntake
+        userProfile.waterIntake,
       );
     }
 
@@ -110,7 +110,7 @@ export async function POST(req: NextRequest) {
     console.error("Error updating water intake:", error);
     return NextResponse.json(
       { error: "Error al actualizar el consumo de agua" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url);
   const today = new Date();
   const defaultDate = `${today.getFullYear()}-${String(
-    today.getMonth() + 1
+    today.getMonth() + 1,
   ).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
   const date = url.searchParams.get("date") || defaultDate;
 
@@ -148,7 +148,7 @@ export async function GET(req: NextRequest) {
       storeWaterIntake(session.user.id, date, dbIntake.intake).catch(
         (error) => {
           console.error("Error actualizando cache Redis:", error);
-        }
+        },
       );
       return NextResponse.json({ intake: dbIntake.intake });
     }
@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching water intake:", error);
     return NextResponse.json(
       { error: "Error al obtener el consumo de agua" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

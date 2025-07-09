@@ -160,7 +160,7 @@ export class WorkoutStreakService {
         lastRestDayAt: streak.lastRestDayAt?.toISOString() || null,
       };
     } catch (error) {
-      console.error('Error en getStreakStats:', error);
+      console.error("Error en getStreakStats:", error);
       throw error;
     }
   }

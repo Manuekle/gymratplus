@@ -1,20 +1,26 @@
-import { prisma } from "@/lib/prisma"
-import type { Notification } from "@prisma/client"
+import { prisma } from "@/lib/prisma";
+import type { Notification } from "@prisma/client";
 
-export type NotificationType = "workout" | "meal" | "water" | "weight" | "goal" | "system"
+export type NotificationType =
+  | "workout"
+  | "meal"
+  | "water"
+  | "weight"
+  | "goal"
+  | "system";
 
 export interface CreateNotificationParams {
-  userId: string
-  title: string
-  message: string
-  type: NotificationType
+  userId: string;
+  title: string;
+  message: string;
+  type: NotificationType;
 }
 
 export interface CreateNotificationByEmailParams {
-  userEmail: string
-  title: string
-  message: string
-  type: NotificationType
+  userEmail: string;
+  title: string;
+  message: string;
+  type: NotificationType;
 }
 
 export async function createNotification({
@@ -31,7 +37,7 @@ export async function createNotification({
       type,
       read: false,
     },
-  })
+  });
 }
 
 export async function createNotificationByEmail({
@@ -44,10 +50,10 @@ export async function createNotificationByEmail({
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
     select: { id: true },
-  })
+  });
 
   if (!user) {
-    throw new Error(`Usuario con email ${userEmail} no encontrado`)
+    throw new Error(`Usuario con email ${userEmail} no encontrado`);
   }
 
   return prisma.notification.create({
@@ -58,10 +64,12 @@ export async function createNotificationByEmail({
       type,
       read: false,
     },
-  })
+  });
 }
 
-export async function getUserNotifications(userId: string): Promise<Notification[]> {
+export async function getUserNotifications(
+  userId: string,
+): Promise<Notification[]> {
   return prisma.notification.findMany({
     where: {
       userId,
@@ -69,19 +77,23 @@ export async function getUserNotifications(userId: string): Promise<Notification
     orderBy: {
       createdAt: "desc",
     },
-  })
+  });
 }
 
-export async function getUnreadNotificationsCount(userId: string): Promise<number> {
+export async function getUnreadNotificationsCount(
+  userId: string,
+): Promise<number> {
   return prisma.notification.count({
     where: {
       userId,
       read: false,
     },
-  })
+  });
 }
 
-export async function markNotificationAsRead(id: string): Promise<Notification> {
+export async function markNotificationAsRead(
+  id: string,
+): Promise<Notification> {
   return prisma.notification.update({
     where: {
       id,
@@ -89,10 +101,12 @@ export async function markNotificationAsRead(id: string): Promise<Notification> 
     data: {
       read: true,
     },
-  })
+  });
 }
 
-export async function markAllNotificationsAsRead(userId: string): Promise<{ count: number }> {
+export async function markAllNotificationsAsRead(
+  userId: string,
+): Promise<{ count: number }> {
   const result = await prisma.notification.updateMany({
     where: {
       userId,
@@ -101,9 +115,9 @@ export async function markAllNotificationsAsRead(userId: string): Promise<{ coun
     data: {
       read: true,
     },
-  })
+  });
 
-  return { count: result.count }
+  return { count: result.count };
 }
 
 export async function deleteNotification(id: string): Promise<Notification> {
@@ -111,16 +125,17 @@ export async function deleteNotification(id: string): Promise<Notification> {
     where: {
       id,
     },
-  })
+  });
 }
 
-export async function deleteAllNotifications(userId: string): Promise<{ count: number }> {
+export async function deleteAllNotifications(
+  userId: string,
+): Promise<{ count: number }> {
   const result = await prisma.notification.deleteMany({
     where: {
       userId,
     },
-  })
+  });
 
-  return { count: result.count }
+  return { count: result.count };
 }
-

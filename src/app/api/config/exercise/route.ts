@@ -6,7 +6,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 import { exercises } from "@/data/exercises";
 
-export async function POST(_req: Request) {
+export async function POST(_req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -17,7 +17,7 @@ export async function POST(_req: Request) {
     // Filtrar ejercicios únicos por nombre
     const uniqueExercises = exercises.filter(
       (exercise, index, self) =>
-        index === self.findIndex((e) => e.name === exercise.name)
+        index === self.findIndex((e) => e.name === exercise.name),
     );
 
     const newExercises = await prisma.exercise.createMany({
@@ -30,7 +30,7 @@ export async function POST(_req: Request) {
     console.error("Error adding exercises:", error);
     return NextResponse.json(
       { error: "Failed to add exercises" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +73,7 @@ export async function DELETE(_req: NextRequest) {
     console.error("Error eliminando duplicados:", error);
     return NextResponse.json(
       { error: "Error eliminando duplicados" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

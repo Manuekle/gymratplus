@@ -77,7 +77,7 @@ export function useGoals() {
             .json()
             .catch(() => ({ error: `Error HTTP: ${response.status}` }));
           throw new Error(
-            errorData.error || `Error al obtener objetivos: ${response.status}`
+            errorData.error || `Error al obtener objetivos: ${response.status}`,
           );
         }
 
@@ -99,7 +99,7 @@ export function useGoals() {
         console.error("Error al cargar objetivos:", error);
         toast.error(
           "No se pudieron cargar los objetivos: " +
-            (error instanceof Error ? error.message : "Error desconocido")
+            (error instanceof Error ? error.message : "Error desconocido"),
         );
         setGoals([]);
         return [];
@@ -107,7 +107,7 @@ export function useGoals() {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Obtener un objetivo específico
@@ -192,8 +192,8 @@ export function useGoals() {
         toast.success("Objetivo actualizado correctamente");
         setGoals((prevGoals) =>
           prevGoals.map((goal) =>
-            goal.id === updatedGoal.id ? updatedGoal : goal
-          )
+            goal.id === updatedGoal.id ? updatedGoal : goal,
+          ),
         );
         return updatedGoal;
       } catch (error) {
@@ -204,7 +204,7 @@ export function useGoals() {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Eliminar un objetivo
@@ -251,7 +251,7 @@ export function useGoals() {
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al añadir actualización de progreso"
+            errorData.error || "Error al añadir actualización de progreso",
           );
         }
 
@@ -271,8 +271,8 @@ export function useGoals() {
                     newProgressUpdate,
                   ],
                 }
-              : goal
-          )
+              : goal,
+          ),
         );
         return newProgressUpdate;
       } catch (error) {
@@ -283,7 +283,7 @@ export function useGoals() {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Obtener actualizaciones de progreso de un objetivo
@@ -295,7 +295,7 @@ export function useGoals() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || "Error al obtener actualizaciones de progreso"
+          errorData.error || "Error al obtener actualizaciones de progreso",
         );
       }
 

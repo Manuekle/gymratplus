@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
@@ -11,7 +11,7 @@ interface DayExercise {
   restTime: number;
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         { error: "Exercise IDs and days are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     ) {
       return NextResponse.json(
         { error: "One or more exercise IDs are invalid" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -62,7 +62,7 @@ export async function POST(request: Request) {
         description: `Entrenamiento personalizado - ${workoutType}`,
         createdById: userId,
         instructorId: userId,
-        type: 'assigned',
+        type: "assigned",
       },
     });
 
@@ -79,8 +79,8 @@ export async function POST(request: Request) {
             notes: exercise.day,
             order: index,
           },
-        })
-      )
+        }),
+      ),
     );
 
     let workoutExercisesWithNames = await prisma.workoutExercise
@@ -123,7 +123,7 @@ export async function POST(request: Request) {
         error: "Error al crear el entrenamiento personalizado",
         details: (error as Error).message,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -136,7 +136,7 @@ function formatWorkoutPlan(
     reps: number;
     restTime: number;
     notes: string;
-  }[]
+  }[],
 ): { day: string; exercises: typeof workoutExercises }[] {
   if (!Array.isArray(workoutExercises)) {
     return [];

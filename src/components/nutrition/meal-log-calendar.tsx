@@ -61,7 +61,7 @@ export function MealLogCalendar() {
       const endDate = format(endOfMonth(date), "yyyy-MM-dd");
 
       const response = await fetch(
-        `/api/meal-logs?startDate=${startDate}&endDate=${endDate}`
+        `/api/meal-logs?startDate=${startDate}&endDate=${endDate}`,
       );
       if (!response.ok) {
         throw new Error("Error al cargar los registros de comidas");
@@ -79,9 +79,9 @@ export function MealLogCalendar() {
             return new Date(
               logDate.getFullYear(),
               logDate.getMonth(),
-              logDate.getDate()
+              logDate.getDate(),
             );
-          })
+          }),
         ),
       ];
 
@@ -156,13 +156,13 @@ export function MealLogCalendar() {
     // Check if we need to update the calendar
     const remainingLogsForDate = mealLogs.filter(
       (log) =>
-        log.id !== id && isSameDay(new Date(log.consumedAt), selectedDate)
+        log.id !== id && isSameDay(new Date(log.consumedAt), selectedDate),
     );
 
     if (remainingLogsForDate.length === 0) {
       // No more logs for this date, update the calendar
       setDatesWithMeals(
-        datesWithMeals.filter((date) => !isSameDay(date, selectedDate))
+        datesWithMeals.filter((date) => !isSameDay(date, selectedDate)),
       );
     }
   };

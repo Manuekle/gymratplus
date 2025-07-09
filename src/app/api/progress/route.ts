@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
     console.error("Error al obtener datos de progreso:", error);
     return NextResponse.json(
       { error: "Error al obtener datos de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -123,14 +123,14 @@ export async function POST(req: NextRequest) {
           error:
             "Debe proporcionar al menos un valor de peso, grasa corporal o masa muscular",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!date) {
       return NextResponse.json(
         { error: "La fecha es requerida" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -167,7 +167,7 @@ export async function POST(req: NextRequest) {
     console.error("Error al crear registro de progreso:", error);
     return NextResponse.json(
       { error: "Error al crear registro de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

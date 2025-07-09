@@ -1,25 +1,36 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Check, ChevronsUpDown, Globe } from "lucide-react"
-import { useMediaQuery } from "@/hooks/use-media-query"
+import * as React from "react";
+import { Check, ChevronsUpDown, Globe } from "lucide-react";
+import { useMediaQuery } from "@/hooks/use-media-query";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
-import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer"
-import { Label } from "@/components/ui/label"
-import { Skeleton } from "@/components/ui/skeleton"
-import { useCountries } from "@/hooks/use-countries"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
+import { Label } from "@/components/ui/label";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useCountries } from "@/hooks/use-countries";
 import Image from "next/image";
 
 interface CountrySelectorProps {
-  value?: string
-  onValueChange?: (value: string) => void
-  placeholder?: string
-  label?: string
-  className?: string
+  value?: string;
+  onValueChange?: (value: string) => void;
+  placeholder?: string;
+  label?: string;
+  className?: string;
 }
 
 export function CountrySelector({
@@ -29,34 +40,35 @@ export function CountrySelector({
   label,
   className,
 }: CountrySelectorProps) {
-  const [open, setOpen] = React.useState(false)
-  const [searchValue, setSearchValue] = React.useState("")
-  const isDesktop = useMediaQuery("(min-width: 768px)")
+  const [open, setOpen] = React.useState(false);
+  const [searchValue, setSearchValue] = React.useState("");
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
-  const { countries, loading, error } = useCountries()
+  const { countries, loading, error } = useCountries();
 
-  const selectedCountry = countries.find((country) => country.cca2 === value)
+  const selectedCountry = countries.find((country) => country.cca2 === value);
 
   // Filtrar países basado en la búsqueda
   const filteredCountries = React.useMemo(() => {
-    if (!searchValue) return countries
+    if (!searchValue) return countries;
 
     return countries.filter((country) => {
-      const searchLower = searchValue.toLowerCase()
+      const searchLower = searchValue.toLowerCase();
       return (
         country.name.common.toLowerCase().includes(searchLower) ||
         country.name.official.toLowerCase().includes(searchLower) ||
         country.region.toLowerCase().includes(searchLower) ||
-        (country.capital && country.capital[0]?.toLowerCase().includes(searchLower))
-      )
-    })
-  }, [countries, searchValue])
+        (country.capital &&
+          country.capital[0]?.toLowerCase().includes(searchLower))
+      );
+    });
+  }, [countries, searchValue]);
 
   React.useEffect(() => {
     if (open) {
-      setSearchValue("")
+      setSearchValue("");
     }
-  }, [open])
+  }, [open]);
 
   if (loading) {
     return (
@@ -64,19 +76,23 @@ export function CountrySelector({
         {label && <Label>{label}</Label>}
         <Skeleton className="h-10 w-full" />
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className={cn("space-y-2", className)}>
         {label && <Label>{label}</Label>}
-        <Button variant="outline" className="w-full justify-between font-normal bg-transparent" disabled>
+        <Button
+          variant="outline"
+          className="w-full justify-between font-normal bg-transparent"
+          disabled
+        >
           <span className="text-muted-foreground">Error cargando países</span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </div>
-    )
+    );
   }
 
   const CountryList = ({ setOpen }: { setOpen: (open: boolean) => void }) => (
@@ -96,8 +112,8 @@ export function CountrySelector({
               key={country.cca2}
               value={country.cca2}
               onSelect={() => {
-                onValueChange?.(country.cca2)
-                setOpen(false)
+                onValueChange?.(country.cca2);
+                setOpen(false);
                 // Remover esta línea: setSearchValue("")
               }}
               className="flex items-center gap-2"
@@ -111,13 +127,18 @@ export function CountrySelector({
                 crossOrigin="anonymous"
               />
               <span className="flex-1">{country.name.common}</span>
-              <Check className={cn("ml-auto h-4 w-4", value === country.cca2 ? "opacity-100" : "opacity-0")} />
+              <Check
+                className={cn(
+                  "ml-auto h-4 w-4",
+                  value === country.cca2 ? "opacity-100" : "opacity-0",
+                )}
+              />
             </CommandItem>
           ))}
         </CommandGroup>
       </CommandList>
     </Command>
-  )
+  );
 
   if (isDesktop) {
     return (
@@ -155,12 +176,15 @@ export function CountrySelector({
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+          <PopoverContent
+            className="w-[--radix-popover-trigger-width] p-0"
+            align="start"
+          >
             <CountryList setOpen={setOpen} />
           </PopoverContent>
         </Popover>
       </div>
-    )
+    );
   }
 
   return (
@@ -168,7 +192,11 @@ export function CountrySelector({
       {label && <Label htmlFor="country-selector">{label}</Label>}
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerTrigger asChild>
-          <Button id="country-selector" variant="outline" className="w-full justify-between font-normal bg-transparent">
+          <Button
+            id="country-selector"
+            variant="outline"
+            className="w-full justify-between font-normal bg-transparent"
+          >
             <div className="flex items-center gap-2">
               {selectedCountry ? (
                 <>
@@ -199,5 +227,5 @@ export function CountrySelector({
         </DrawerContent>
       </Drawer>
     </div>
-  )
+  );
 }

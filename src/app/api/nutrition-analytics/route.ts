@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
                 fat: acc.fat + log.fat,
               };
             },
-            { calories: 0, protein: 0, carbs: 0, fat: 0 }
+            { calories: 0, protein: 0, carbs: 0, fat: 0 },
           );
 
           return {
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
             isToday: format(date, "yyyy-MM-dd") === format(today, "yyyy-MM-dd"),
             ...totals,
           };
-        })
+        }),
       );
 
       responseData = {
@@ -86,7 +86,7 @@ export async function GET(req: NextRequest) {
               fat: acc.fat + day.fat,
             };
           },
-          { calories: 0, protein: 0, carbs: 0, fat: 0 }
+          { calories: 0, protein: 0, carbs: 0, fat: 0 },
         ),
       };
     } else if (type === "today") {
@@ -122,7 +122,7 @@ export async function GET(req: NextRequest) {
             fat: acc.fat + log.fat,
           };
         },
-        { calories: 0, protein: 0, carbs: 0, fat: 0 }
+        { calories: 0, protein: 0, carbs: 0, fat: 0 },
       );
 
       // Group by meal type
@@ -156,7 +156,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching nutrition analytics:", error);
     return NextResponse.json(
       { error: "Failed to fetch nutrition analytics" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

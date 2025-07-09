@@ -89,7 +89,7 @@ export default function FoodSelector({
   const fetchSuggestions = useCallback(async () => {
     try {
       const response = await fetch(
-        `/api/food/suggestions?mealType=${mealType}`
+        `/api/food/suggestions?mealType=${mealType}`,
       );
       if (!response.ok) throw new Error("Failed to fetch suggestions");
 
@@ -114,7 +114,7 @@ export default function FoodSelector({
 
   const toggleFoodSelection = (food: Food) => {
     const existingIndex = selectedFoods.findIndex(
-      (entry) => entry.foodId === food.id
+      (entry) => entry.foodId === food.id,
     );
 
     if (existingIndex >= 0) {
@@ -146,7 +146,7 @@ export default function FoodSelector({
           return { ...entry, quantity };
         }
         return entry;
-      })
+      }),
     );
   };
 
@@ -309,7 +309,7 @@ export default function FoodSelector({
                         e.stopPropagation();
                         const newQuantity = Math.max(
                           1,
-                          (entry.quantity || 1) - 1
+                          (entry.quantity || 1) - 1,
                         );
                         updateQuantity(entry.foodId, newQuantity);
                       }}

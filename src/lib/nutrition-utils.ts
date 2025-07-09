@@ -16,14 +16,14 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
           !food.name.toLowerCase().includes("pollo") &&
           !food.name.toLowerCase().includes("carne") &&
           !food.name.toLowerCase().includes("pescado") &&
-          !food.name.toLowerCase().includes("salmón")
+          !food.name.toLowerCase().includes("salmón"),
       );
     } else if (dietaryPreference === "keto") {
       return foods.filter(
         (food) =>
           food.carbs < 10 ||
           food.category === "proteína" ||
-          food.category === "grasa"
+          food.category === "grasa",
       );
     }
 
@@ -35,7 +35,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 
   if (foodCount === 0) {
     const createdFoods = await prisma.$transaction(
-      foodsToCreate.map((food) => prisma.food.create({ data: food }))
+      foodsToCreate.map((food) => prisma.food.create({ data: food })),
     );
 
     // Filtrar alimentos según la preferencia dietética
@@ -45,21 +45,21 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
           !food.name.toLowerCase().includes("pollo") &&
           !food.name.toLowerCase().includes("carne") &&
           !food.name.toLowerCase().includes("pescado") &&
-          !food.name.toLowerCase().includes("salmón")
+          !food.name.toLowerCase().includes("salmón"),
       );
     } else if (dietaryPreference === "keto") {
       return createdFoods.filter(
         (food) =>
           food.carbs < 10 ||
           food.category === "proteína" ||
-          food.category === "grasa"
+          food.category === "grasa",
       );
     }
 
     return createdFoods;
   } else {
     console.log(
-      "La tabla food ya tiene registros. No se creó ningún nuevo alimento."
+      "La tabla food ya tiene registros. No se creó ningún nuevo alimento.",
     );
     return []; // O manejarlo según la lógica que necesites
   }
@@ -106,7 +106,7 @@ interface NutritionPlan {
 }
 
 export async function createNutritionPlan(
-  profile: NutritionProfile
+  profile: NutritionProfile,
 ): Promise<NutritionPlan> {
   const { userId, goal, dietaryPreference } = profile; // Removed dailyCalorieTarget
 
@@ -119,7 +119,7 @@ export async function createNutritionPlan(
     "breakfast",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const lunch: MealLog = await createMealLog(
@@ -127,7 +127,7 @@ export async function createNutritionPlan(
     "lunch",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const dinner: MealLog = await createMealLog(
@@ -135,7 +135,7 @@ export async function createNutritionPlan(
     "dinner",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const snacks: MealLog = await createMealLog(
@@ -143,7 +143,7 @@ export async function createNutritionPlan(
     "snack",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const translationDictionary: Record<string, string> = {
@@ -199,20 +199,20 @@ export async function createNutritionPlan(
       protein: `${profile.dailyProteinTarget ?? 0}g (${Math.round(
         (((profile.dailyProteinTarget ?? 0) * 4) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       carbs: `${profile.dailyCarbTarget ?? 0}g (${Math.round(
         (((profile.dailyCarbTarget ?? 0) * 4) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       fat: `${profile.dailyFatTarget ?? 0}g (${Math.round(
         (((profile.dailyFatTarget ?? 0) * 9) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       description: `Basado en tu objetivo de ${translate(
-        goal
+        goal,
       )} y un objetivo diario de ${
         profile.dailyCalorieTarget ?? 2000
       } calorías`,
@@ -232,7 +232,7 @@ async function createMealLog(
   mealType: string,
   foods: Food[],
   goal: string,
-  dietaryPreference: string = "no-preference"
+  dietaryPreference: string = "no-preference",
 ) {
   // Select appropriate foods based on meal type and dietary preference
   let selectedFoods: Food[] = [];
@@ -243,13 +243,13 @@ async function createMealLog(
     const proteinFoods = foods.filter(
       (f) =>
         f.category === "proteína" &&
-        (f.name === "Huevos" || f.name === "Yogur griego")
+        (f.name === "Huevos" || f.name === "Yogur griego"),
     );
 
     const carbFoods = foods.filter(
       (f) =>
         f.category === "carbohidrato" &&
-        (f.name === "Avena" || f.name === "Pan integral")
+        (f.name === "Avena" || f.name === "Pan integral"),
     );
 
     const fruitFoods = foods.filter((f) => f.category === "fruta");
@@ -257,7 +257,7 @@ async function createMealLog(
     const fatFoods = foods.filter(
       (f) =>
         f.category === "grasa" &&
-        (f.name === "Aguacate" || f.name === "Almendras")
+        (f.name === "Aguacate" || f.name === "Almendras"),
     );
 
     // Select foods based on dietary preference
@@ -280,13 +280,13 @@ async function createMealLog(
     const proteinFoods = foods.filter((f) => f.category === "proteína");
 
     const carbFoods = foods.filter(
-      (f) => f.category === "carbohidrato" && f.name !== "Avena"
+      (f) => f.category === "carbohidrato" && f.name !== "Avena",
     );
 
     const vegFoods = foods.filter((f) => f.category === "verdura");
 
     const fatFoods = foods.filter(
-      (f) => f.category === "grasa" && f.name === "Aceite de oliva"
+      (f) => f.category === "grasa" && f.name === "Aceite de oliva",
     );
 
     // Select foods based on dietary preference
@@ -317,7 +317,7 @@ async function createMealLog(
       dietaryPreference === "keto"
         ? []
         : foods.filter(
-            (f) => f.category === "carbohidrato" && f.name !== "Avena"
+            (f) => f.category === "carbohidrato" && f.name !== "Avena",
           );
 
     // Select foods based on dietary preference
@@ -333,7 +333,7 @@ async function createMealLog(
     const proteinFoods = foods.filter(
       (f) =>
         f.category === "proteína" &&
-        (f.name === "Yogur griego" || f.name === "Huevos")
+        (f.name === "Yogur griego" || f.name === "Huevos"),
     );
 
     const fruitFoods =
@@ -344,7 +344,7 @@ async function createMealLog(
     const nutFoods = foods.filter(
       (f) =>
         f.category === "grasa" &&
-        (f.name === "Almendras" || f.name === "Semillas de chía")
+        (f.name === "Almendras" || f.name === "Semillas de chía"),
     );
 
     // Select foods based on dietary preference

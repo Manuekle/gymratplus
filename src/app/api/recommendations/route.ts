@@ -5,8 +5,8 @@ import { getServerSession } from "next-auth/next";
 import { calculateExperienceLevel } from "@/lib/workout-utils";
 
 interface ProfileData {
-  goal: 'gain-muscle' | 'lose-weight' | 'maintain';
-  experienceLevel: 'beginner' | 'intermediate' | 'advanced';
+  goal: "gain-muscle" | "lose-weight" | "maintain";
+  experienceLevel: "beginner" | "intermediate" | "advanced";
   currentWeight: number;
   height: number;
 }
@@ -74,35 +74,47 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     // Get the profile data from request body
     const profileData: ProfileData = await req.json();
-    
+
     // Si no viene experienceLevel en el body, obtenerlo del usuario
     let experienceLevel = profileData.experienceLevel;
     if (!experienceLevel) {
       const user = await prisma.user.findUnique({ where: { id: userId } });
-      experienceLevel = user?.experienceLevel as ProfileData['experienceLevel'];
+      experienceLevel = user?.experienceLevel as ProfileData["experienceLevel"];
     }
     if (!experienceLevel) {
       // Obtener datos del perfil
       const profile = await prisma.profile.findUnique({ where: { userId } });
       if (profile) {
         experienceLevel = calculateExperienceLevel({
-          trainingFrequency: profile.trainingFrequency ? Number(profile.trainingFrequency) : undefined,
-          monthsTraining: profile.monthsTraining ? Number(profile.monthsTraining) : undefined,
-        }) as ProfileData['experienceLevel'];
+          trainingFrequency: profile.trainingFrequency
+            ? Number(profile.trainingFrequency)
+            : undefined,
+          monthsTraining: profile.monthsTraining
+            ? Number(profile.monthsTraining)
+            : undefined,
+        }) as ProfileData["experienceLevel"];
       }
     }
     if (!experienceLevel) {
-      return NextResponse.json({ error: "No se pudo calcular tu nivel de experiencia. Por favor, completa tu perfil con tu frecuencia de entrenamiento y meses entrenando." }, { status: 400 });
+      return NextResponse.json(
+        {
+          error:
+            "No se pudo calcular tu nivel de experiencia. Por favor, completa tu perfil con tu frecuencia de entrenamiento y meses entrenando.",
+        },
+        { status: 400 },
+      );
     }
     profileData.experienceLevel = experienceLevel;
 
     // Validar los otros campos requeridos
-    const requiredFields = ['goal', 'currentWeight', 'height'] as const;
-    const missingFields = requiredFields.filter(field => !profileData[field as keyof ProfileData]);
+    const requiredFields = ["goal", "currentWeight", "height"] as const;
+    const missingFields = requiredFields.filter(
+      (field) => !profileData[field as keyof ProfileData],
+    );
     if (missingFields.length > 0) {
-      return NextResponse.json({ 
-        error: `Faltan campos requeridos: ${missingFields.join(', ')}`,
-        status: 400
+      return NextResponse.json({
+        error: `Faltan campos requeridos: ${missingFields.join(", ")}`,
+        status: 400,
       });
     }
 
@@ -118,28 +130,31 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Get exercises
     const exercises = await prisma.exercise.findMany({
       where: {
-        muscleGroup: profileData.goal === 'gain-muscle' ? 'piernas' : undefined,
+        muscleGroup: profileData.goal === "gain-muscle" ? "piernas" : undefined,
       },
       take: 10,
     });
 
     if (exercises.length === 0) {
-      return NextResponse.json({ error: "No exercises available" }, { status: 500 });
+      return NextResponse.json(
+        { error: "No exercises available" },
+        { status: 500 },
+      );
     }
 
     // Create a personalized workout plan based on profile
-    const workout = await prisma.workout.create({
+    const workout = (await prisma.workout.create({
       data: {
-        name: `Plan de Entrenamiento ${profileData.goal === 'gain-muscle' ? 'Muscular' : 'Cardio'}`,
+        name: `Plan de Entrenamiento ${profileData.goal === "gain-muscle" ? "Muscular" : "Cardio"}`,
         description: `Plan personalizado basado en tu objetivo: ${profileData.goal}`,
         createdById: userId,
-        type: 'personal',
+        type: "personal",
         exercises: {
           create: exercises.slice(0, 5).map((exercise, index) => ({
             exerciseId: exercise.id,
-            sets: profileData.experienceLevel === 'beginner' ? 2 : 3,
-            reps: profileData.experienceLevel === 'beginner' ? 8 : 12,
-            restTime: profileData.experienceLevel === 'beginner' ? 90 : 60,
+            sets: profileData.experienceLevel === "beginner" ? 2 : 3,
+            reps: profileData.experienceLevel === "beginner" ? 8 : 12,
+            restTime: profileData.experienceLevel === "beginner" ? 90 : 60,
             order: index,
             notes: `Ejercicio recomendado para ${profileData.goal}`,
           })),
@@ -152,7 +167,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
           },
         },
       },
-    }) as {
+    })) as {
       id: string;
       name: string;
       description: string;
@@ -162,9 +177,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     // Create a personalized food recommendation
     const calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
     const macros: Macros = {
-      protein: Math.round(calorieTarget * 0.3 / 4).toString(),
-      carbs: Math.round(calorieTarget * 0.5 / 4).toString(),
-      fat: Math.round(calorieTarget * 0.2 / 9).toString(),
+      protein: Math.round((calorieTarget * 0.3) / 4).toString(),
+      carbs: Math.round((calorieTarget * 0.5) / 4).toString(),
+      fat: Math.round((calorieTarget * 0.2) / 9).toString(),
       description: `Calorías: ${calorieTarget}`,
     };
 
@@ -173,16 +188,19 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         userId: userId,
         macros: JSON.stringify(macros),
         meals: JSON.stringify({
-          breakfast: profileData.goal === 'gain-muscle' ? 
-            ['Batido de proteínas', 'Avena con frutos secos'] : 
-            ['Yogur natural', 'Fruta fresca'],
-          lunch: profileData.goal === 'gain-muscle' ? 
-            ['Pechuga de pollo', 'Arroz integral', 'Batata'] : 
-            ['Pescado blanco', 'Verduras', 'Ensalada'],
-          dinner: profileData.goal === 'gain-muscle' ? 
-            ['Salmón', 'Quinoa', 'Verduras'] : 
-            ['Huevo revuelto', 'Verduras'],
-          snacks: ['Yogur griego', 'Frutos secos'],
+          breakfast:
+            profileData.goal === "gain-muscle"
+              ? ["Batido de proteínas", "Avena con frutos secos"]
+              : ["Yogur natural", "Fruta fresca"],
+          lunch:
+            profileData.goal === "gain-muscle"
+              ? ["Pechuga de pollo", "Arroz integral", "Batata"]
+              : ["Pescado blanco", "Verduras", "Ensalada"],
+          dinner:
+            profileData.goal === "gain-muscle"
+              ? ["Salmón", "Quinoa", "Verduras"]
+              : ["Huevo revuelto", "Verduras"],
+          snacks: ["Yogur griego", "Frutos secos"],
         }),
         calorieTarget,
       },
@@ -212,55 +230,61 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
         days: [
           {
             day: "Lunes",
-            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
-              id: exerciseData.id,
-              name: exerciseData.exercise.name,
-              sets: exerciseData.sets,
-              reps: exerciseData.reps,
-              restTime: exerciseData.restTime || 0,
-              notes: exerciseData.notes || '',
-            })),
+            exercises: workout.exercises.map(
+              (exerciseData: PrismaExercise) => ({
+                id: exerciseData.id,
+                name: exerciseData.exercise.name,
+                sets: exerciseData.sets,
+                reps: exerciseData.reps,
+                restTime: exerciseData.restTime || 0,
+                notes: exerciseData.notes || "",
+              }),
+            ),
           },
           {
             day: "Miércoles",
-            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
-              id: exerciseData.id,
-              name: exerciseData.exercise.name,
-              sets: exerciseData.sets,
-              reps: exerciseData.reps,
-              restTime: exerciseData.restTime || 0,
-              notes: exerciseData.notes || '',
-            })),
+            exercises: workout.exercises.map(
+              (exerciseData: PrismaExercise) => ({
+                id: exerciseData.id,
+                name: exerciseData.exercise.name,
+                sets: exerciseData.sets,
+                reps: exerciseData.reps,
+                restTime: exerciseData.restTime || 0,
+                notes: exerciseData.notes || "",
+              }),
+            ),
           },
           {
             day: "Viernes",
-            exercises: workout.exercises.map((exerciseData: PrismaExercise) => ({
-              id: exerciseData.id,
-              name: exerciseData.exercise.name,
-              sets: exerciseData.sets,
-              reps: exerciseData.reps,
-              restTime: exerciseData.restTime || 0,
-              notes: exerciseData.notes || '',
-            })),
+            exercises: workout.exercises.map(
+              (exerciseData: PrismaExercise) => ({
+                id: exerciseData.id,
+                name: exerciseData.exercise.name,
+                sets: exerciseData.sets,
+                reps: exerciseData.reps,
+                restTime: exerciseData.restTime || 0,
+                notes: exerciseData.notes || "",
+              }),
+            ),
           },
         ],
       },
       foodRecommendation: {
         macros: {
-          protein: Math.round(calorieTarget * 0.3 / 4).toString() + "g",
-          carbs: Math.round(calorieTarget * 0.5 / 4).toString() + "g",
-          fat: Math.round(calorieTarget * 0.2 / 9).toString() + "g",
-          description: `Plan nutricional personalizado con ${calorieTarget} calorías diarias. Distribución equilibrada de macronutrientes para ${profileData.goal === 'gain-muscle' ? 'ganar masa muscular' : profileData.goal === 'lose-weight' ? 'perder peso' : 'mantener peso'}.`,
+          protein: Math.round((calorieTarget * 0.3) / 4).toString() + "g",
+          carbs: Math.round((calorieTarget * 0.5) / 4).toString() + "g",
+          fat: Math.round((calorieTarget * 0.2) / 9).toString() + "g",
+          description: `Plan nutricional personalizado con ${calorieTarget} calorías diarias. Distribución equilibrada de macronutrientes para ${profileData.goal === "gain-muscle" ? "ganar masa muscular" : profileData.goal === "lose-weight" ? "perder peso" : "mantener peso"}.`,
         },
         meals: JSON.parse(foodRecommendation.meals as string),
         calorieTarget: foodRecommendation.calorieTarget,
       },
       recommendations: [
-        `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === 'gain-muscle' ? 'de fuerza' : 'cardio'}`,
+        `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === "gain-muscle" ? "de fuerza" : "cardio"}`,
         `Consume proteína de alta calidad después del entrenamiento`,
         `Descansa lo suficiente entre sesiones`,
         `Mantén una hidratación adecuada`,
-        `Ajusta las calorías según ${profileData.goal === 'gain-muscle' ? 'ganar masa muscular' : 'perder grasa'}`,
+        `Ajusta las calorías según ${profileData.goal === "gain-muscle" ? "ganar masa muscular" : "perder grasa"}`,
       ],
     };
 
@@ -268,11 +292,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   } catch (error) {
     console.error("Error generating recommendations:", error);
     return NextResponse.json(
-      { 
-        error: "Error generating recommendations", 
-        details: error instanceof Error ? error.message : String(error)
+      {
+        error: "Error generating recommendations",
+        details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

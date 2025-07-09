@@ -26,7 +26,7 @@ export class ReminderService {
       await Promise.all(
         activeUsers.map(async (user) => {
           await this.workoutStreakService.checkAndSendWorkoutReminder(user.id);
-        })
+        }),
       );
     } catch (error) {
       console.error("Error checking workout reminders:", error);

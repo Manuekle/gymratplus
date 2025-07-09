@@ -26,9 +26,9 @@ export default function WorkoutsTable() {
 
   // Configuración responsiva del carousel
   const getCardsPerView = useCallback(() => {
-    if (typeof window === 'undefined') return 3;
+    if (typeof window === "undefined") return 3;
     if (window.innerWidth >= 1024) return 3; // lg - 3 cards
-    if (window.innerWidth >= 768) return 2;  // md - 2 cards
+    if (window.innerWidth >= 768) return 2; // md - 2 cards
     return 1; // mobile - 1 card
   }, []);
 
@@ -38,19 +38,19 @@ export default function WorkoutsTable() {
     const handleResize = () => {
       const newCardsPerView = getCardsPerView();
       setCardsPerView(newCardsPerView);
-      
+
       // Ajustar el slide actual para que no se salga del rango
       const newTotalSlides = Math.ceil(workouts.length / newCardsPerView);
-      setCurrentSlide(prev => Math.min(prev, newTotalSlides - 1));
+      setCurrentSlide((prev) => Math.min(prev, newTotalSlides - 1));
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [getCardsPerView, workouts.length]);
 
   // Ordenar workouts por fecha de creación (más recientes primero)
-  const sortedWorkouts = workouts.sort((a, b) => 
-    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  const sortedWorkouts = workouts.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const totalSlides = Math.ceil(sortedWorkouts.length / cardsPerView);
@@ -59,26 +59,29 @@ export default function WorkoutsTable() {
     router.push(`/dashboard/workout/${workout.id}`);
   };
 
-  const goToSlide = useCallback((slideIndex: number) => {
-    if (isTransitioning) return;
-    
-    setIsTransitioning(true);
-    setCurrentSlide(slideIndex);
-    
-    // Reset transition flag after animation
-    setTimeout(() => setIsTransitioning(false), 300);
-  }, [isTransitioning]);
+  const goToSlide = useCallback(
+    (slideIndex: number) => {
+      if (isTransitioning) return;
+
+      setIsTransitioning(true);
+      setCurrentSlide(slideIndex);
+
+      // Reset transition flag after animation
+      setTimeout(() => setIsTransitioning(false), 300);
+    },
+    [isTransitioning],
+  );
 
   const handlePrevious = useCallback(() => {
     if (totalSlides <= 1) return;
-    
+
     const newSlide = currentSlide === 0 ? totalSlides - 1 : currentSlide - 1;
     goToSlide(newSlide);
   }, [currentSlide, totalSlides, goToSlide]);
 
   const handleNext = useCallback(() => {
     if (totalSlides <= 1) return;
-    
+
     const newSlide = currentSlide === totalSlides - 1 ? 0 : currentSlide + 1;
     goToSlide(newSlide);
   }, [currentSlide, totalSlides, goToSlide]);
@@ -86,7 +89,7 @@ export default function WorkoutsTable() {
   // Touch handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     if (totalSlides <= 1) return;
-    
+
     setIsDragging(true);
     setStartX(e.touches[0].clientX);
     setCurrentX(e.touches[0].clientX);
@@ -94,13 +97,13 @@ export default function WorkoutsTable() {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || totalSlides <= 1) return;
-    
+
     setCurrentX(e.touches[0].clientX);
   };
 
   const handleTouchEnd = useCallback(() => {
     if (!isDragging || totalSlides <= 1) return;
-    
+
     const deltaX = startX - currentX;
     const threshold = 50; // Minimum swipe distance
     const velocity = Math.abs(deltaX);
@@ -123,7 +126,7 @@ export default function WorkoutsTable() {
   // Mouse handlers for desktop
   const handleMouseDown = (e: React.MouseEvent) => {
     if (totalSlides <= 1) return;
-    
+
     setIsDragging(true);
     setStartX(e.clientX);
     setCurrentX(e.clientX);
@@ -131,14 +134,14 @@ export default function WorkoutsTable() {
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging || totalSlides <= 1) return;
-    
+
     e.preventDefault();
     setCurrentX(e.clientX);
   };
 
   const handleMouseUp = useCallback(() => {
     if (!isDragging || totalSlides <= 1) return;
-    
+
     const deltaX = startX - currentX;
     const threshold = 50;
     const velocity = Math.abs(deltaX);
@@ -160,26 +163,24 @@ export default function WorkoutsTable() {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (totalSlides <= 1) return;
-      
-      if (e.key === 'ArrowLeft') {
+
+      if (e.key === "ArrowLeft") {
         e.preventDefault();
         handlePrevious();
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         e.preventDefault();
         handleNext();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handlePrevious, handleNext, totalSlides]);
-
-
 
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex items-center justify-between">         
+        <div className="flex items-center justify-between">
           <div className="hidden lg:flex gap-2">
             <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
             <div className="h-8 w-8 rounded-lg bg-muted animate-pulse" />
@@ -187,7 +188,10 @@ export default function WorkoutsTable() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 3 }).map((_, index) => (
-            <div key={index} className="h-40 rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm border animate-pulse flex items-center justify-center">
+            <div
+              key={index}
+              className="h-40 rounded-lg bg-gradient-to-br from-muted/50 to-muted/30 backdrop-blur-sm border animate-pulse flex items-center justify-center"
+            >
               <div className="w-32 h-6 bg-muted/60 rounded animate-pulse" />
             </div>
           ))}
@@ -198,11 +202,11 @@ export default function WorkoutsTable() {
 
   if (sortedWorkouts.length === 0) {
     return (
-      <div className="justify-center py-16 items-center flex flex-col">        
+      <div className="justify-center py-16 items-center flex flex-col">
         <h3 className="text-sm font-medium">No hay rutinas creadas.</h3>
         <p className="text-muted-foreground text-xs">
           Crea tu primera rutina para comenzar.
-        </p>        
+        </p>
       </div>
     );
   }
@@ -219,12 +223,15 @@ export default function WorkoutsTable() {
   const slides = createSlides();
 
   // Calcular el offset del drag para feedback visual (solo en desktop)
-  const dragOffset = isDragging && window.innerWidth >= 768 ? ((currentX - startX) / containerRef.current?.clientWidth || 0) * 100 : 0;
+  const dragOffset =
+    isDragging && window.innerWidth >= 768
+      ? ((currentX - startX) / containerRef.current?.clientWidth || 0) * 100
+      : 0;
 
   return (
     <div className="space-y-4">
       {/* Navigation Controls - Only on desktop */}
-      <div className="flex items-center justify-between">        
+      <div className="flex items-center justify-between">
         {totalSlides > 1 && (
           <div className="hidden md:flex gap-2">
             <Button
@@ -251,7 +258,7 @@ export default function WorkoutsTable() {
 
       {/* Carousel Container */}
       <div className="relative overflow-hidden -mx-2 pt-4 pb-6">
-        <div 
+        <div
           ref={containerRef}
           className="md:cursor-grab md:active:cursor-grabbing"
           onTouchStart={handleTouchStart}
@@ -262,11 +269,11 @@ export default function WorkoutsTable() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <div 
+          <div
             className="flex transition-transform duration-300 ease-out"
             style={{
               transform: `translateX(-${currentSlide * 100 + dragOffset}%)`,
-              transitionDuration: isDragging ? '0ms' : '300ms',
+              transitionDuration: isDragging ? "0ms" : "300ms",
             }}
           >
             {slides.map((slideWorkouts, slideIndex) => (
@@ -279,7 +286,7 @@ export default function WorkoutsTable() {
                       onClick={() => handleViewDetails(workout)}
                     >
                       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
-                      
+
                       <div className="relative h-full flex items-center justify-center">
                         <CardTitle className="text-xl font-semibold text-center tracking-heading px-4">
                           {workout.name}
@@ -304,8 +311,8 @@ export default function WorkoutsTable() {
               disabled={isTransitioning}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 index === currentSlide
-                  ? 'bg-primary w-4'
-                  : 'bg-muted-foreground/30 hover:bg-muted-foreground/50'
+                  ? "bg-primary w-4"
+                  : "bg-muted-foreground/30 hover:bg-muted-foreground/50"
               }`}
               aria-label={`Ir a slide ${index + 1}`}
             />

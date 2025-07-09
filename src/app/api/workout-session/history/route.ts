@@ -45,7 +45,7 @@ export async function GET() {
     console.error("Error al obtener historial de entrenamientos:", error);
     return NextResponse.json(
       { error: "Error al obtener historial de entrenamientos" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

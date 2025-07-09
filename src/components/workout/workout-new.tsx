@@ -56,7 +56,7 @@ export function WorkoutNew({
 
         // Buscar el día actual en los datos
         const dayData = data.days.find(
-          (day: WorkoutDay) => day.day === currentDay
+          (day: WorkoutDay) => day.day === currentDay,
         );
 
         // Si encontramos el día, establecer sus ejercicios
@@ -100,12 +100,12 @@ export function WorkoutNew({
         `/api/workouts/${workoutId}/exercises/${exerciseId}`,
         {
           method: "DELETE",
-        }
+        },
       );
 
       if (res.ok) {
         setExercises((prevExercises) =>
-          prevExercises.filter((ex) => ex.id !== exerciseId)
+          prevExercises.filter((ex) => ex.id !== exerciseId),
         );
         toast.success("Ejercicio eliminado", {
           description: "El ejercicio se ha eliminado correctamente",
@@ -205,9 +205,7 @@ export function WorkoutNew({
                   <p className="font-semibold">{exercise.sets}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-muted-foreground mb-1">
-                    Reps
-                  </p>
+                  <p className="text-xs text-muted-foreground mb-1">Reps</p>
                   <p className="font-semibold">{exercise.reps}</p>
                 </div>
                 <div>

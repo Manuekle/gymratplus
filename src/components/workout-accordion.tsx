@@ -36,7 +36,7 @@ export function WorkoutAccordion({
     setOpenItems((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 

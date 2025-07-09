@@ -42,16 +42,16 @@ interface ProgressProps {
 export function NewProgress({ onSuccess, initialData }: ProgressProps) {
   const isEditing = !!initialData?.id;
   const [date, setDate] = useState<Date | undefined>(
-    initialData?.date || new Date()
+    initialData?.date || new Date(),
   );
   const [weight, setWeight] = useState<string>(
-    initialData?.weight?.toString() || ""
+    initialData?.weight?.toString() || "",
   );
   const [bodyFat, setBodyFat] = useState<string>(
-    initialData?.bodyFatPercentage?.toString() || ""
+    initialData?.bodyFatPercentage?.toString() || "",
   );
   const [muscleMass, setMuscleMass] = useState<string>(
-    initialData?.muscleMassPercentage?.toString() || ""
+    initialData?.muscleMassPercentage?.toString() || "",
   );
   const [notes, setNotes] = useState<string>(initialData?.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -128,7 +128,7 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal text-xs md:text-sm",
-                    !date && "text-muted-foreground"
+                    !date && "text-muted-foreground",
                   )}
                 >
                   <Calendar02Icon className="mr-2 h-4 w-4" />

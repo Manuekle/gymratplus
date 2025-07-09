@@ -29,20 +29,17 @@ export async function GET(req: NextRequest) {
 
     // Build the where clause with proper Prisma types
     const where: Prisma.FoodWhereInput = {};
-    
+
     // Handle custom vs system foods
     if (onlyCustom) {
       where.userId = userId;
     } else {
-      where.OR = [
-        { userId: null },
-        { userId: userId }
-      ];
+      where.OR = [{ userId: null }, { userId: userId }];
     }
 
     // Apply search filter if provided
     if (searchQuery) {
-      where.name = { contains: searchQuery, mode: 'insensitive' };
+      where.name = { contains: searchQuery, mode: "insensitive" };
     }
 
     // Apply category filter if provided
@@ -72,7 +69,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching foods:", error);
     return NextResponse.json(
       { error: "Failed to fetch foods" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -101,7 +98,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -129,7 +126,7 @@ export async function POST(req: NextRequest) {
     console.error("Error creating food:", error);
     return NextResponse.json(
       { error: "Failed to create food" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -164,13 +161,13 @@ export async function PUT() {
               food.category === "proteína" || food.category === "carbohidrato"
                 ? ["desayuno", "almuerzo", "cena"]
                 : food.category === "fruta"
-                ? ["desayuno", "snack"]
-                : food.category === "verdura"
-                ? ["almuerzo", "cena"]
-                : ["desayuno", "almuerzo", "cena", "snack"],
+                  ? ["desayuno", "snack"]
+                  : food.category === "verdura"
+                    ? ["almuerzo", "cena"]
+                    : ["desayuno", "almuerzo", "cena", "snack"],
           },
-        })
-      )
+        }),
+      ),
     );
 
     return NextResponse.json({ message: `Seeded ${foods.length} foods` });
@@ -178,7 +175,7 @@ export async function PUT() {
     console.error("Error seeding foods:", error);
     return NextResponse.json(
       { error: "Failed to seed foods" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

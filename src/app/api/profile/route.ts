@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
@@ -27,7 +27,7 @@ export async function GET() {
     if (!user || !user.profile) {
       return NextResponse.json(
         { error: "Perfil no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -41,22 +41,22 @@ export async function GET() {
         console.error("Error actualizando cache Redis:", error);
       });
 
-    return NextResponse.json({ 
-      ...user.profile, 
+    return NextResponse.json({
+      ...user.profile,
       isInstructor: user.isInstructor,
-      experienceLevel: user.experienceLevel 
+      experienceLevel: user.experienceLevel,
     });
   } catch (error) {
     console.error("Error fetching profile:", error);
     return NextResponse.json(
       { error: "Error al obtener el perfil" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 // Existing POST and PUT routes remain the same...
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
@@ -152,7 +152,7 @@ export async function POST(req: Request) {
     if (data.experienceLevel) {
       await prisma.user.update({
         where: { id: userId },
-        data: { experienceLevel: data.experienceLevel }
+        data: { experienceLevel: data.experienceLevel },
       });
     }
 
@@ -164,12 +164,12 @@ export async function POST(req: Request) {
     console.error("Error in profile API:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -258,7 +258,7 @@ export async function PUT(request: Request) {
     console.error("Error updating profile:", error);
     return NextResponse.json(
       { error: "Failed to update profile" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -342,7 +342,7 @@ function calculateDailyCalories(data: {
 
 function calculateMacros(
   calories: number,
-  data: { goal: string }
+  data: { goal: string },
 ): {
   dailyProteinTarget: number;
   dailyCarbTarget: number;

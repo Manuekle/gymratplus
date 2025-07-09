@@ -21,7 +21,7 @@ export function useNotifications() {
       const data = await response.json();
       setNotifications(data);
       setUnreadCount(
-        data.filter((notification: Notification) => !notification.read).length
+        data.filter((notification: Notification) => !notification.read).length,
       );
       setError(null);
     } catch (err) {
@@ -46,7 +46,7 @@ export function useNotifications() {
         }
 
         setNotifications((prev) =>
-          prev.map((notification) => ({ ...notification, read: true }))
+          prev.map((notification) => ({ ...notification, read: true })),
         );
         setUnreadCount(0);
       } else {
@@ -62,8 +62,8 @@ export function useNotifications() {
           prev.map((notification) =>
             notification.id === id
               ? { ...notification, read: true }
-              : notification
-          )
+              : notification,
+          ),
         );
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
@@ -86,7 +86,7 @@ export function useNotifications() {
 
       const deletedNotification = await response.json();
       setNotifications((prev) =>
-        prev.filter((notification) => notification.id !== id)
+        prev.filter((notification) => notification.id !== id),
       );
 
       if (!deletedNotification.read) {

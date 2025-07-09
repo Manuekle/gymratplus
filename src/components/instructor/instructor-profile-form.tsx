@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { useEffect, useState } from "react"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { toast } from "sonner"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -15,18 +15,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { ReloadIcon } from "@radix-ui/react-icons"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Separator } from "@/components/ui/separator"
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { ReloadIcon } from "@radix-ui/react-icons";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
 
 const instructorProfileSchema = z.object({
   bio: z.string().optional(),
   curriculum: z.string().optional(),
   pricePerMonth: z.coerce.number().optional().nullable(),
-  contactEmail: z.string().email("Debe ser un email válido.").optional().or(z.literal('')),
+  contactEmail: z
+    .string()
+    .email("Debe ser un email válido.")
+    .optional()
+    .or(z.literal("")),
   contactPhone: z.string().optional(),
   country: z.string().optional(),
   city: z.string().optional(),
@@ -39,7 +43,9 @@ interface InstructorProfileFormProps {
   onSuccess?: () => void;
 }
 
-export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps) {
+export function InstructorProfileForm({
+  onSuccess,
+}: InstructorProfileFormProps) {
   const [isLoading, setIsLoading] = useState(true);
 
   const form = useForm<InstructorProfileValues>({
@@ -63,7 +69,9 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
         const response = await fetch("/api/instructors/profile");
         if (!response.ok) {
           if (response.status === 404) {
-            toast.info("No tienes un perfil de instructor creado", { description: "Por favor, regístrate como instructor primero." });
+            toast.info("No tienes un perfil de instructor creado", {
+              description: "Por favor, regístrate como instructor primero.",
+            });
           } else {
             throw new Error("Error al cargar el perfil del instructor.");
           }
@@ -84,7 +92,7 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
         let errorMessage = "Hubo un error al cargar el perfil.";
         if (error instanceof Error) {
           errorMessage = error.message;
-        } else if (typeof error === 'string') {
+        } else if (typeof error === "string") {
           errorMessage = error;
         }
         toast.error(errorMessage);
@@ -120,7 +128,7 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
       let errorMessage = "Hubo un error al procesar tu solicitud.";
       if (error instanceof Error) {
         errorMessage = error.message;
-      } else if (typeof error === 'string') {
+      } else if (typeof error === "string") {
         errorMessage = error;
       }
       toast.error(errorMessage);
@@ -197,7 +205,12 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
                 <FormItem>
                   <FormLabel>Precio por mes (USD)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Ej: 50.00" {...field} value={field.value ?? ""} />
+                    <Input
+                      type="number"
+                      placeholder="Ej: 50.00"
+                      {...field}
+                      value={field.value ?? ""}
+                    />
                   </FormControl>
                   <FormDescription>
                     Tu tarifa mensual sugerida para los alumnos.
@@ -277,10 +290,15 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
                   <div className="space-y-0.5">
                     <FormLabel>¿Ofreces clases remotas?</FormLabel>
-                    <FormDescription>Permite a alumnos de cualquier lugar contactarte.</FormDescription>
+                    <FormDescription>
+                      Permite a alumnos de cualquier lugar contactarte.
+                    </FormDescription>
                   </div>
                   <FormControl>
-                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
                   </FormControl>
                 </FormItem>
               )}
@@ -289,7 +307,12 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
         </div>
         <Separator />
         <div className="flex justify-end">
-          <Button type="submit" disabled={isLoading} size="lg" className="w-full md:w-auto">
+          <Button
+            type="submit"
+            disabled={isLoading}
+            size="lg"
+            className="w-full md:w-auto"
+          >
             {isLoading ? (
               <>
                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
@@ -303,4 +326,4 @@ export function InstructorProfileForm({ onSuccess }: InstructorProfileFormProps)
       </form>
     </Form>
   );
-} 
+}

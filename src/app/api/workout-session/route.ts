@@ -20,7 +20,7 @@ export async function POST(req: NextRequest) {
     if (!day || !exercises || !exercises.length) {
       return NextResponse.json(
         { error: "Datos inválidos proporcionados" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,14 +30,14 @@ export async function POST(req: NextRequest) {
     // Buscar el workout del usuario (personal o asignado)
     // Primero intentamos encontrar una rutina personal activa
     let userWorkout = await prisma.workout.findFirst({
-      where: { createdById: session.user.id, type: 'personal' },
+      where: { createdById: session.user.id, type: "personal" },
       orderBy: { createdAt: "desc" },
     });
 
     // Si no hay rutina personal, buscar una asignada
     if (!userWorkout) {
       userWorkout = await prisma.workout.findFirst({
-        where: { assignedToId: session.user.id, type: 'assigned' },
+        where: { assignedToId: session.user.id, type: "assigned" },
         orderBy: { createdAt: "desc" },
       });
     }
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
     if (!userWorkout) {
       return NextResponse.json(
         { error: "No se encontró un entrenamiento activo para el usuario" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -89,12 +89,12 @@ export async function POST(req: NextRequest) {
                           exercise.notes?.toLowerCase().includes("drop set") ||
                           false,
                         completed: false,
-                      })
+                      }),
                     ),
                   },
                 };
-              }
-            )
+              },
+            ),
           ),
         },
       },
@@ -122,7 +122,7 @@ export async function POST(req: NextRequest) {
         await createWorkoutStartedNotification(
           session.user.id,
           userWorkout.name,
-          day
+          day,
         );
 
         // Add to Redis list for polling
@@ -131,7 +131,7 @@ export async function POST(req: NextRequest) {
           workoutSession.id,
           "started",
           userWorkout.name,
-          day
+          day,
         );
       }
     } catch (notificationError) {
@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
     console.error("Error al crear sesión de entrenamiento:", error);
     return NextResponse.json(
       { error: "Error al crear sesión de entrenamiento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

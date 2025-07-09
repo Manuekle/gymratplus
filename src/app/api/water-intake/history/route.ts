@@ -45,7 +45,7 @@ export async function GET() {
         redis.zadd(historyKey, {
           score: new Date(`${entry.date}T12:00:00`).getTime(),
           member: `${entry.date}:${entry.liters}`,
-        })
+        }),
       );
 
       Promise.all(promises).catch((error) => {
@@ -63,7 +63,7 @@ export async function GET() {
     console.error("Error fetching water intake history:", error);
     return NextResponse.json(
       { error: "Error al obtener el historial de consumo de agua" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

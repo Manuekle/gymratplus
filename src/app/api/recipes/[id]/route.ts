@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching recipe:", error);
     return NextResponse.json(
       { error: "Failed to fetch recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -215,7 +215,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating recipe:", error);
     return NextResponse.json(
       { error: "Failed to update recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -250,7 +250,7 @@ export async function DELETE(request: NextRequest) {
     if (recipe.userId === null) {
       return NextResponse.json(
         { error: "Cannot delete system recipes" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -270,7 +270,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting recipe:", error);
     return NextResponse.json(
       { error: "Failed to delete recipe" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

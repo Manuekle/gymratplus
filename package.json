@@ -7,8 +7,15 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
+    "format": "prettier --write .",
+    "prepare": "npm run build",
+    "check-routes": "tsx scripts/check-routes.ts || (echo '❌ Route check failed' && exit 1)",
+    "pre-deploy": "npm run check-routes && npm run build",
+    "type-check": "tsc --noEmit",
+    "type-check:routes": "tsc --noEmit --skipLibCheck --include 'app/**/*.ts' 'pages/api/**/*.ts'",
     "postbuild": "next-sitemap",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "resolutions": {
     "@types/react": "18.0.28",
@@ -94,7 +101,7 @@
     "@eslint/eslintrc": "3",
     "@tailwindcss/postcss": "4",
     "@types/next-auth": "^3.13.0",
-    "@types/node": "^20.17.19",
+    "@types/node": "^20.19.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "autoprefixer": "10.4.20",
@@ -102,9 +109,11 @@
     "eslint-config-next": "15.2.0",
     "eslint-config-prettier": "^10.1.1",
     "postcss": "8.5.3",
+    "prettier": "^3.6.2",
     "prisma": "^6.11.1",
     "tailwindcss": "4.0.9",
     "ts-prune": "^0.10.3",
-    "typescript": "^5.7.3"
+    "tsx": "^4.20.3",
+    "typescript": "^5.8.3"
   }
 }

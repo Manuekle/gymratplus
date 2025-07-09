@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -39,8 +45,12 @@ export default function InstructorsPage() {
     <div className="max-w-2xl mx-auto py-10 space-y-8">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold tracking-heading">Instructores disponibles</CardTitle>
-          <CardDescription className="text-xs">Elige un instructor para ver su perfil o solicitar ser su alumno.</CardDescription>
+          <CardTitle className="text-2xl font-semibold tracking-heading">
+            Instructores disponibles
+          </CardTitle>
+          <CardDescription className="text-xs">
+            Elige un instructor para ver su perfil o solicitar ser su alumno.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -63,18 +73,35 @@ export default function InstructorsPage() {
           ) : (
             <div className="space-y-4">
               {instructors.map((inst) => (
-                <Card key={inst.id} className="border border-muted-foreground/10">
+                <Card
+                  key={inst.id}
+                  className="border border-muted-foreground/10"
+                >
                   <CardContent className="py-4 flex items-center gap-4">
                     <Avatar className="h-12 w-12">
-                      <AvatarImage src={inst.image || "/placeholder-avatar.jpg"} alt={inst.name} />
-                      <AvatarFallback>{inst.name.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarImage
+                        src={inst.image || "/placeholder-avatar.jpg"}
+                        alt={inst.name}
+                      />
+                      <AvatarFallback>
+                        {inst.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <p className="font-semibold tracking-heading text-lg">{inst.name}</p>
+                      <p className="font-semibold tracking-heading text-lg">
+                        {inst.name}
+                      </p>
                       {/* No specialty, solo nombre */}
                     </div>
-                    <Button asChild size="sm" variant="outline" className="text-xs">
-                      <Link href={`/dashboard/instructors/${inst.id}`}>Ver perfil</Link>
+                    <Button
+                      asChild
+                      size="sm"
+                      variant="outline"
+                      className="text-xs"
+                    >
+                      <Link href={`/dashboard/instructors/${inst.id}`}>
+                        Ver perfil
+                      </Link>
                     </Button>
                   </CardContent>
                 </Card>
@@ -86,7 +113,9 @@ export default function InstructorsPage() {
       {/* Enlaces a otras páginas de instructores */}
       <div className="flex flex-col md:flex-row gap-4 pt-6">
         <Button asChild variant="default" className="flex-1">
-          <Link href="/dashboard/instructors/list">Ver todos mis instructores</Link>
+          <Link href="/dashboard/instructors/list">
+            Ver todos mis instructores
+          </Link>
         </Button>
         <Button asChild variant="outline" className="flex-1">
           <Link href="/dashboard/instructors/search">Buscar instructores</Link>

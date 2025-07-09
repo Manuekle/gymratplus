@@ -18,7 +18,7 @@ export async function POST(req: NextRequest) {
     if (!weight || typeof weight !== "number") {
       return NextResponse.json(
         { error: "El peso es requerido y debe ser un número" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     console.error("Error al actualizar peso en perfil:", error);
     return NextResponse.json(
       { error: "Error al actualizar peso en perfil" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -18,7 +18,7 @@ export const WORKOUT_CHANNEL = "workout";
 export async function storeWaterIntake(
   userId: string,
   date: string,
-  liters: number
+  liters: number,
 ): Promise<void> {
   const key = WATER_INTAKE_KEY(userId, date);
   await redis.set(key, liters.toString());
@@ -39,7 +39,7 @@ export async function storeWaterIntake(
 // Get water intake for a specific day
 export async function getWaterIntake(
   userId: string,
-  date: string
+  date: string,
 ): Promise<number> {
   const key = WATER_INTAKE_KEY(userId, date);
   const intake = await redis.get<string>(key);
@@ -48,7 +48,7 @@ export async function getWaterIntake(
 
 // Get water intake history for the last 30 days
 export async function getWaterIntakeHistory(
-  userId: string
+  userId: string,
 ): Promise<{ date: string; liters: number }[]> {
   try {
     const historyKey = WATER_HISTORY_KEY(userId);
@@ -82,14 +82,14 @@ export async function getWaterIntakeHistory(
 // Add to notification list instead of publishing
 export async function publishNotification(
   userId: string,
-  notification: any
+  notification: any,
 ): Promise<void> {
   await redis.lpush(
     NOTIFICATION_CHANNEL,
     JSON.stringify({
       userId,
       notification,
-    })
+    }),
   );
 }
 
@@ -97,7 +97,7 @@ export async function publishNotification(
 export async function publishWaterIntake(
   userId: string,
   intake: number,
-  targetIntake: number
+  targetIntake: number,
 ): Promise<void> {
   await redis.lpush(
     WATER_INTAKE_CHANNEL,
@@ -105,7 +105,7 @@ export async function publishWaterIntake(
       userId,
       intake,
       targetIntake,
-    })
+    }),
   );
 }
 
@@ -115,7 +115,7 @@ export async function publishWorkout(
   workoutSessionId: string,
   action: string,
   workoutName: string,
-  day?: string
+  day?: string,
 ): Promise<void> {
   await redis.lpush(
     WORKOUT_CHANNEL,
@@ -125,6 +125,6 @@ export async function publishWorkout(
       action,
       workoutName,
       day,
-    })
+    }),
   );
 }

@@ -12,7 +12,7 @@ interface StreakAlertContextType {
 }
 
 const StreakAlertContext = createContext<StreakAlertContextType | undefined>(
-  undefined
+  undefined,
 );
 
 interface StreakAlertProviderProps {

@@ -13,7 +13,7 @@ export async function POST(request: Request) {
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email y contraseña son requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
     if (attempts > 10) {
       return NextResponse.json(
         { error: "Demasiados intentos. Intente más tarde." },
-        { status: 429 }
+        { status: 429 },
       );
     }
 
@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     if (existingUser) {
       return NextResponse.json(
         { error: "El email ya está registrado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
         user: userWithoutPassword,
         message: "Usuario registrado exitosamente",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error: unknown) {
     console.error("Error en registro:", error);
@@ -81,7 +81,7 @@ export async function POST(request: Request) {
     }
     return NextResponse.json(
       { error: "Error al registrar usuario: " + message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -13,7 +13,7 @@ export interface AssignedWorkout extends WorkoutBase {
   };
   assignedDate: string;
   dueDate?: string;
-  status: 'assigned' | 'in_progress' | 'completed' | 'skipped';
+  status: "assigned" | "in_progress" | "completed" | "skipped";
   notes?: string;
 }
 
@@ -60,12 +60,20 @@ interface AssignWorkoutData {
     order: number;
     restTime?: number;
   }>;
-  workoutType?: 'estandar' | 'hipertrofia' | 'fuerza' | 'perdida_grasa' | 'resistencia' | 'movilidad';
+  workoutType?:
+    | "estandar"
+    | "hipertrofia"
+    | "fuerza"
+    | "perdida_grasa"
+    | "resistencia"
+    | "movilidad";
 }
 
 export function useInstructorWorkouts() {
   const [isLoading, setIsLoading] = useState(true);
-  const [assignedWorkouts, setAssignedWorkouts] = useState<AssignedWorkout[]>(globalAssignedWorkouts);
+  const [assignedWorkouts, setAssignedWorkouts] = useState<AssignedWorkout[]>(
+    globalAssignedWorkouts,
+  );
   const [students, setStudents] = useState<Student[]>([]);
   const [isAssigning, setIsAssigning] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -75,145 +83,164 @@ export function useInstructorWorkouts() {
   // Obtener los estudiantes del instructor
   const fetchStudents = useCallback(async () => {
     try {
-      const res = await fetch('/api/instructors/students');
+      const res = await fetch("/api/instructors/students");
       if (res.ok) {
         const data = await res.json();
         setStudents(data);
       } else {
-        throw new Error('Error al cargar los estudiantes');
+        throw new Error("Error al cargar los estudiantes");
       }
     } catch (error) {
-      console.error('Error fetching students:', error);
-      toast.error('Error al cargar los estudiantes');
+      console.error("Error fetching students:", error);
+      toast.error("Error al cargar los estudiantes");
     }
   }, []);
 
   // Obtener las rutinas asignadas por el instructor
   const fetchAssignedWorkouts = useCallback(async () => {
     try {
-      const res = await fetch('/api/instructors/workouts/assigned');
+      const res = await fetch("/api/instructors/workouts/assigned");
       if (res.ok) {
         const data = await res.json();
         globalAssignedWorkouts = data;
         setAssignedWorkouts(data);
         notifySubscribers();
       } else {
-        throw new Error('Error al cargar las rutinas asignadas');
+        throw new Error("Error al cargar las rutinas asignadas");
       }
     } catch (error) {
-      console.error('Error fetching assigned workouts:', error);
-      toast.error('Error al cargar las rutinas asignadas');
+      console.error("Error fetching assigned workouts:", error);
+      toast.error("Error al cargar las rutinas asignadas");
     } finally {
       setIsLoading(false);
     }
   }, []);
 
   // Asignar una rutina a un estudiante
-  const assignWorkout = useCallback(
-    async (data: AssignWorkoutData) => {
-      setIsAssigning(true);
-      try {
-        const res = await fetch('/api/instructors/workouts/assign', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            workoutId: data.workoutId,
-            studentId: data.studentId,
-            dueDate: data.dueDate,
-            notes: data.notes,
-          }),
-        });
+  const assignWorkout = useCallback(async (data: AssignWorkoutData) => {
+    setIsAssigning(true);
+    try {
+      const res = await fetch("/api/instructors/workouts/assign", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          workoutId: data.workoutId,
+          studentId: data.studentId,
+          dueDate: data.dueDate,
+          notes: data.notes,
+        }),
+      });
 
-        if (!res.ok) {
-          const error = await res.json();
-          throw new Error(error.error || 'Error al asignar la rutina');
-        }
-
-        const newAssignedWorkout = await res.json();
-        
-        // Actualizar la lista de rutinas asignadas usando el callback para evitar dependencia
-        setAssignedWorkouts(prevWorkouts => {
-          const updatedWorkouts = [...prevWorkouts, newAssignedWorkout];
-          globalAssignedWorkouts = updatedWorkouts;
-          notifySubscribers();
-          return updatedWorkouts;
-        });
-        
-        toast.success('Rutina asignada correctamente');
-        return { success: true, workout: newAssignedWorkout };
-      } catch (error) {
-        console.error('Error assigning workout:', error);
-        toast.error(error instanceof Error ? error.message : 'Error al asignar la rutina');
-        return { 
-          success: false, 
-          error: error instanceof Error ? error.message : 'Error al asignar la rutina' 
-        };
-      } finally {
-        setIsAssigning(false);
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Error al asignar la rutina");
       }
-    },
-    []
-  );
+
+      const newAssignedWorkout = await res.json();
+
+      // Actualizar la lista de rutinas asignadas usando el callback para evitar dependencia
+      setAssignedWorkouts((prevWorkouts) => {
+        const updatedWorkouts = [...prevWorkouts, newAssignedWorkout];
+        globalAssignedWorkouts = updatedWorkouts;
+        notifySubscribers();
+        return updatedWorkouts;
+      });
+
+      toast.success("Rutina asignada correctamente");
+      return { success: true, workout: newAssignedWorkout };
+    } catch (error) {
+      console.error("Error assigning workout:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Error al asignar la rutina",
+      );
+      return {
+        success: false,
+        error:
+          error instanceof Error ? error.message : "Error al asignar la rutina",
+      };
+    } finally {
+      setIsAssigning(false);
+    }
+  }, []);
 
   // Actualizar el estado de una rutina asignada
   const updateAssignedWorkout = useCallback(
-    async (assignmentId: string, updates: { status?: string; notes?: string; dueDate?: Date }) => {
+    async (
+      assignmentId: string,
+      updates: { status?: string; notes?: string; dueDate?: Date },
+    ) => {
       setIsUpdating(true);
       try {
-        const res = await fetch(`/api/instructors/workouts/assigned/${assignmentId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
+        const res = await fetch(
+          `/api/instructors/workouts/assigned/${assignmentId}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(updates),
           },
-          body: JSON.stringify(updates),
-        });
+        );
 
         if (res.ok) {
           const updatedWorkout = await res.json();
           globalAssignedWorkouts = globalAssignedWorkouts.map((workout) =>
-            workout.id === assignmentId ? updatedWorkout : workout
+            workout.id === assignmentId ? updatedWorkout : workout,
           );
           setAssignedWorkouts(globalAssignedWorkouts);
           notifySubscribers();
-          toast.success('Rutina actualizada correctamente');
+          toast.success("Rutina actualizada correctamente");
           return updatedWorkout;
         } else {
           const errorData = await res.json();
-          throw new Error(errorData.message || 'Error al actualizar la rutina');
+          throw new Error(errorData.message || "Error al actualizar la rutina");
         }
       } catch (error) {
-        console.error('Error updating assigned workout:', error);
-        toast.error(error instanceof Error ? error.message : 'Error al actualizar la rutina');
+        console.error("Error updating assigned workout:", error);
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Error al actualizar la rutina",
+        );
         throw error;
       } finally {
         setIsUpdating(false);
       }
     },
-    []
+    [],
   );
 
   // Eliminar una asignación de rutina
   const deleteAssignedWorkout = useCallback(async (assignmentId: string) => {
     try {
-      const res = await fetch(`/api/instructor/workouts/assigned/${assignmentId}`, {
-        method: 'DELETE',
-      });
+      const res = await fetch(
+        `/api/instructor/workouts/assigned/${assignmentId}`,
+        {
+          method: "DELETE",
+        },
+      );
 
       if (res.ok) {
-        globalAssignedWorkouts = globalAssignedWorkouts.filter((workout) => workout.id !== assignmentId);
+        globalAssignedWorkouts = globalAssignedWorkouts.filter(
+          (workout) => workout.id !== assignmentId,
+        );
         setAssignedWorkouts(globalAssignedWorkouts);
         notifySubscribers();
-        toast.success('Asignación de rutina eliminada');
+        toast.success("Asignación de rutina eliminada");
         return true;
       } else {
         const errorData = await res.json();
-        throw new Error(errorData.message || 'Error al eliminar la asignación');
+        throw new Error(errorData.message || "Error al eliminar la asignación");
       }
     } catch (error) {
-      console.error('Error deleting assigned workout:', error);
-      toast.error(error instanceof Error ? error.message : 'Error al eliminar la asignación');
+      console.error("Error deleting assigned workout:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar la asignación",
+      );
       throw error;
     }
   }, []);
@@ -245,12 +272,12 @@ export function useInstructorWorkouts() {
     // Datos
     assignedWorkouts,
     students,
-    
+
     // Estados de carga
     isLoading,
     isAssigning,
     isUpdating,
-    
+
     // Métodos
     assignWorkout,
     updateAssignedWorkout,

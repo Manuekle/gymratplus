@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (!goal) {
       return NextResponse.json(
         { error: "Objetivo no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -52,14 +52,14 @@ export async function POST(request: NextRequest) {
     if (value === undefined) {
       return NextResponse.json(
         { error: "El valor es obligatorio" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!date) {
       return NextResponse.json(
         { error: "La fecha es obligatoria" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -171,7 +171,7 @@ export async function POST(request: NextRequest) {
           await publishGoalNotification(user.id, "achieved", goalTitle);
 
           console.log(
-            `Goal achievement notification created for user ${user.id}`
+            `Goal achievement notification created for user ${user.id}`,
           );
         } else if (
           progress >= 50 &&
@@ -182,7 +182,7 @@ export async function POST(request: NextRequest) {
           await createGoalProgressUpdatedNotification(
             user.id,
             goalTitle,
-            progress
+            progress,
           );
 
           // Add to Redis list for polling
@@ -190,7 +190,7 @@ export async function POST(request: NextRequest) {
             user.id,
             "progress",
             goalTitle,
-            progress
+            progress,
           );
 
           console.log(`Goal progress notification created for user ${user.id}`);
@@ -200,7 +200,7 @@ export async function POST(request: NextRequest) {
       // Log but don't fail the request if notification creation fails
       console.error(
         "Error creating goal progress notification:",
-        notificationError
+        notificationError,
       );
     }
 
@@ -209,7 +209,7 @@ export async function POST(request: NextRequest) {
     console.error("Error al añadir actualización de progreso:", error);
     return NextResponse.json(
       { error: "Error al añadir actualización de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

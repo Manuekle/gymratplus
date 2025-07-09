@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching food:", error);
     return NextResponse.json(
       { error: "Failed to fetch food" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -118,7 +118,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error updating food:", error);
     return NextResponse.json(
       { error: "Failed to update food" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -153,7 +153,7 @@ export async function DELETE(request: NextRequest) {
     if (food.userId === null) {
       return NextResponse.json(
         { error: "Cannot delete system foods" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -173,7 +173,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting food:", error);
     return NextResponse.json(
       { error: "Failed to delete food" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

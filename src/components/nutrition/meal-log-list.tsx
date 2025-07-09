@@ -136,7 +136,7 @@ export function MealLogList({
   // Sort meal types in a specific order
   const mealTypeOrder = ["desayuno", "almuerzo", "cena", "snack"];
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => mealTypeOrder.indexOf(a) - mealTypeOrder.indexOf(b)
+    (a, b) => mealTypeOrder.indexOf(a) - mealTypeOrder.indexOf(b),
   );
 
   return (

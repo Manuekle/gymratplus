@@ -1,27 +1,30 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
-import { createNotificationByEmail } from '@/lib/notification-service';
+import { NextResponse, NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+import { createNotificationByEmail } from "@/lib/notification-service";
 
 // Esquema de validación para la solicitud del instructor
 const requestInstructorSchema = z.object({
-  instructorProfileId: z.string().nonempty("El ID del perfil del instructor es requerido."),
+  instructorProfileId: z
+    .string()
+    .nonempty("El ID del perfil del instructor es requerido."),
   agreedPrice: z.number().optional(),
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const studentId = session.user.id;
     const body = await req.json();
-    const { instructorProfileId, agreedPrice } = requestInstructorSchema.parse(body);
+    const { instructorProfileId, agreedPrice } =
+      requestInstructorSchema.parse(body);
 
     // Verificar si ya existe un registro para este par estudiante-instructor
     const existingRecord = await prisma.studentInstructor.findFirst({
@@ -35,9 +38,15 @@ export async function POST(req: Request) {
     if (existingRecord) {
       // Si ya hay una solicitud pendiente o activa, devolver error
       if (["pending", "active"].includes(existingRecord.status)) {
-        return NextResponse.json({ error: 'Ya existe una solicitud pendiente o activa para este instructor.' }, { status: 409 });
+        return NextResponse.json(
+          {
+            error:
+              "Ya existe una solicitud pendiente o activa para este instructor.",
+          },
+          { status: 409 },
+        );
       }
-      
+
       // Si existe pero está en otro estado (ej: rejected, cancelled), actualizarlo
       const updatedRequest = await prisma.studentInstructor.update({
         where: { id: existingRecord.id },
@@ -112,7 +121,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.error('[STUDENT_INSTRUCTOR_REQUEST_ERROR]', error);
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    console.error("[STUDENT_INSTRUCTOR_REQUEST_ERROR]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
-} 
+}

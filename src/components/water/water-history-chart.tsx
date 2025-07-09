@@ -67,7 +67,7 @@ export function WaterHistoryChart({
 
       const lastEntry = dayEntries.reduce(
         (last, current) => (current.liters > last.liters ? current : last),
-        { date: item.date, liters: 0 }
+        { date: item.date, liters: 0 },
       );
 
       return {

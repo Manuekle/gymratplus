@@ -105,7 +105,7 @@ const ProfileCheck = () => {
               !profile[field] ||
               profile[field] === "" ||
               (typeof profile[field] === "number" &&
-                isNaN(profile[field] as number))
+                isNaN(profile[field] as number)),
           );
         }
 
@@ -173,7 +173,10 @@ const ProfileCheck = () => {
             >
               Volver
             </AlertDialogCancel>
-            <AlertDialogAction className="text-xs font-normal" onClick={handleRedirect}>
+            <AlertDialogAction
+              className="text-xs font-normal"
+              onClick={handleRedirect}
+            >
               Completar datos ahora
             </AlertDialogAction>
           </AlertDialogFooter>

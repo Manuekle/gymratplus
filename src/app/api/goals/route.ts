@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
     console.error("Error al obtener objetivos:", error);
     return NextResponse.json(
       { error: "Error al obtener objetivos" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
     if (!type || !title) {
       return NextResponse.json(
         { error: "El tipo y título son obligatorios" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -174,7 +174,7 @@ export async function POST(req: NextRequest) {
         await publishGoalNotification(session.user.id, "created", title);
 
         console.log(
-          `Goal creation notification created for user ${session.user.id}`
+          `Goal creation notification created for user ${session.user.id}`,
         );
       }
     } catch (notificationError) {
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
     console.error("Error al crear objetivo:", error);
     return NextResponse.json(
       { error: "Error al crear objetivo" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

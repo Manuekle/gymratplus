@@ -40,7 +40,7 @@ export type ExerciseProgressRecord = {
 export const useExerciseProgress = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progressData, setProgressData] = useState<ExerciseProgressRecord[]>(
-    []
+    [],
   );
 
   // Usar useRef para el caché para evitar recreaciones
@@ -81,7 +81,7 @@ export const useExerciseProgress = () => {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
@@ -89,7 +89,7 @@ export const useExerciseProgress = () => {
           const errorData = await response.json();
           throw new Error(
             errorData.error ||
-              "Error al obtener datos de progreso de ejercicios"
+              "Error al obtener datos de progreso de ejercicios",
           );
         }
 
@@ -108,17 +108,17 @@ export const useExerciseProgress = () => {
       } catch (error) {
         console.error(
           "Error al cargar datos de progreso de ejercicios:",
-          error
+          error,
         );
         toast.error(
-          "No se pudieron cargar los datos de progreso de ejercicios"
+          "No se pudieron cargar los datos de progreso de ejercicios",
         );
         return [];
       } finally {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Crear nuevo registro de progreso
@@ -139,7 +139,7 @@ export const useExerciseProgress = () => {
 
         // Transformar los datos al formato esperado por la API
         const exercises: WorkoutExercise[] = Object.entries(
-          recordData.exercises
+          recordData.exercises,
         ).map(([name, data]) => ({
           name,
           sets: [{ reps: data.reps, weight: data.weight }],
@@ -166,7 +166,7 @@ export const useExerciseProgress = () => {
           const text = await createResponse.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
@@ -174,7 +174,7 @@ export const useExerciseProgress = () => {
           const errorData = await createResponse.json();
           throw new Error(
             errorData.error ||
-              "Error al crear registro de progreso de ejercicios"
+              "Error al crear registro de progreso de ejercicios",
           );
         }
 
@@ -188,7 +188,7 @@ export const useExerciseProgress = () => {
       } catch (error) {
         console.error(
           "Error al crear registro de progreso de ejercicios:",
-          error
+          error,
         );
         toast.error("No se pudo guardar el registro");
         return null;
@@ -196,7 +196,7 @@ export const useExerciseProgress = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Actualizar registro de progreso
@@ -206,7 +206,7 @@ export const useExerciseProgress = () => {
       try {
         // Transformar los datos al formato esperado por la API
         const exercises: WorkoutExercise[] = Object.entries(
-          recordData.exercises
+          recordData.exercises,
         ).map(([name, data]) => ({
           name,
           sets: [{ reps: data.reps, weight: data.weight }],
@@ -231,7 +231,7 @@ export const useExerciseProgress = () => {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
@@ -239,7 +239,7 @@ export const useExerciseProgress = () => {
           const errorData = await response.json();
           throw new Error(
             errorData.error ||
-              "Error al actualizar registro de progreso de ejercicios"
+              "Error al actualizar registro de progreso de ejercicios",
           );
         }
 
@@ -253,7 +253,7 @@ export const useExerciseProgress = () => {
       } catch (error) {
         console.error(
           "Error al actualizar registro de progreso de ejercicios:",
-          error
+          error,
         );
         toast.error("No se pudo actualizar el registro");
         return null;
@@ -261,7 +261,7 @@ export const useExerciseProgress = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Eliminar registro de progreso
@@ -279,7 +279,7 @@ export const useExerciseProgress = () => {
           const errorData = await response.json();
           throw new Error(
             errorData.error ||
-              "Error al eliminar registro de progreso de ejercicios"
+              "Error al eliminar registro de progreso de ejercicios",
           );
         } else {
           const text = await response.text();
@@ -296,7 +296,7 @@ export const useExerciseProgress = () => {
     } catch (error) {
       console.error(
         "Error al eliminar registro de progreso de ejercicios:",
-        error
+        error,
       );
       toast.error("No se pudo eliminar el registro");
       return false;
@@ -332,7 +332,7 @@ export const useExerciseProgress = () => {
         lastReps: last.reps,
       };
     },
-    [progressData]
+    [progressData],
   );
 
   return {

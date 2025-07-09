@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 // Función para crear una columna de texto simple con ordenación
 export function createSortableColumn<T>(
   accessorKey: keyof T,
-  header: string
+  header: string,
 ): ColumnDef<T> {
   return {
     accessorKey: accessorKey as string,
@@ -35,7 +35,7 @@ export function createNumberColumn<T>(
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   },
-  locale = "es-ES"
+  locale = "es-ES",
 ): ColumnDef<T> {
   return {
     accessorKey: accessorKey as string,
@@ -67,8 +67,8 @@ export function createBadgeColumn<T>(
   accessorKey: keyof T,
   header: string,
   variantFn: (
-    value: string
-  ) => "default" | "secondary" | "destructive" | "outline" = () => "default"
+    value: string,
+  ) => "default" | "secondary" | "destructive" | "outline" = () => "default",
 ): ColumnDef<T> {
   return {
     accessorKey: accessorKey as string,
@@ -94,7 +94,7 @@ export function createBadgeColumn<T>(
 export function createStatusColumn<T>(
   accessorKey: keyof T,
   header: string,
-  statusColorFn: (value: string) => string
+  statusColorFn: (value: string) => string,
 ): ColumnDef<T> {
   return {
     accessorKey: accessorKey as string,
@@ -146,7 +146,7 @@ export function createDateColumn<T>(
   accessorKey: keyof T,
   header: string,
   formatString = "dd/MM/yyyy", // Cambio de formato a "28/03/2025"
-  locale = es
+  locale = es,
 ): ColumnDef<T> {
   return {
     accessorKey: accessorKey as string,
@@ -171,8 +171,8 @@ export function createDateColumn<T>(
         typeof value === "string"
           ? parseISO(value)
           : value instanceof Date
-          ? value
-          : new Date(value as string | number | Date);
+            ? value
+            : new Date(value as string | number | Date);
 
       const formatted = format(date, formatString, { locale });
 
@@ -194,7 +194,7 @@ export function createActionsColumn<T>(
     icon?: React.ComponentType<{ className?: string }>;
     onClick: (row: T) => void;
     className?: string;
-  }>
+  }>,
 ): ColumnDef<T> {
   return {
     id: "actions",
@@ -247,7 +247,7 @@ export function createButtonsColumn<T>(
       | "link";
     className?: string;
     showLabel?: boolean;
-  }>
+  }>,
 ): ColumnDef<T> {
   return {
     id: "buttons",

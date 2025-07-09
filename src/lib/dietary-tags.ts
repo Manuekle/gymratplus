@@ -95,7 +95,7 @@ export function getDietaryTags(food: {
       ].includes(food.name)) ||
     (food.category === "grasa" &&
       ["Aceite de oliva", "Nueces", "Almendras", "Aguacate"].includes(
-        food.name
+        food.name,
       ))
   ) {
     tags.push("paleo");

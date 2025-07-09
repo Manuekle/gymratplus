@@ -1,36 +1,53 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Separator } from "@/components/ui/separator"
-import { Switch } from "@/components/ui/switch"
-import { CreditCard, Loader2, Ticket } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
+import { CreditCard, Loader2, Ticket } from "lucide-react";
 
 interface PaymentSimulationModalProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  onConfirm: () => void
-  isLoading: boolean
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onConfirm: () => void;
+  isLoading: boolean;
 }
 
-export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoading }: PaymentSimulationModalProps) {
+export function PaymentSimulationModal({
+  open,
+  onOpenChange,
+  onConfirm,
+  isLoading,
+}: PaymentSimulationModalProps) {
   const [isAnnual, setIsAnnual] = useState(true);
-  
+
   const planDetails = {
     monthly: {
-      price: '5.99',
-      nextPayment: 'el 22 de cada mes',
-      savings: ''
+      price: "5.99",
+      nextPayment: "el 22 de cada mes",
+      savings: "",
     },
     annual: {
-      price: '50.00',
-      nextPayment: '22 de junio, 2025',
-      savings: 'Ahorra 2 meses'
-    }
+      price: "50.00",
+      nextPayment: "22 de junio, 2025",
+      savings: "Ahorra 2 meses",
+    },
   };
 
   const currentPlan = isAnnual ? planDetails.annual : planDetails.monthly;
@@ -40,8 +57,8 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
       <DialogContent className="max-w-md p-0">
         <form
           onSubmit={(e) => {
-            e.preventDefault()
-            onConfirm()
+            e.preventDefault();
+            onConfirm();
           }}
         >
           <DialogHeader className="px-6 pt-6 pb-4">
@@ -53,7 +70,9 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
           <div className="px-6 pb-6 space-y-6">
             {/* Plan Toggle */}
             <div className="flex items-center justify-center gap-4">
-              <span className={`text-sm font-medium ${!isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
+              <span
+                className={`text-sm font-medium ${!isAnnual ? "text-primary" : "text-muted-foreground"}`}
+              >
                 Mensual
               </span>
               <Switch
@@ -62,11 +81,15 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
                 className="data-[state=checked]:bg-primary"
               />
               <div className="flex flex-col">
-                <span className={`text-sm font-medium ${isAnnual ? 'text-primary' : 'text-muted-foreground'}`}>
+                <span
+                  className={`text-sm font-medium ${isAnnual ? "text-primary" : "text-muted-foreground"}`}
+                >
                   Anual
                 </span>
                 {isAnnual && (
-                  <span className="text-xs text-emerald-600 font-medium">{planDetails.annual.savings}</span>
+                  <span className="text-xs text-emerald-600 font-medium">
+                    {planDetails.annual.savings}
+                  </span>
                 )}
               </div>
             </div>
@@ -77,7 +100,7 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
                 <div className="text-3xl font-semibold tracking-heading">
                   ${currentPlan.price}
                   <span className="text-xl font-semibold tracking-heading text-muted-foreground">
-                    {isAnnual ? '/año' : '/mes'}
+                    {isAnnual ? "/año" : "/mes"}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground">
@@ -113,13 +136,23 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
                   <Label htmlFor="expiry" className="text-sm font-medium">
                     Vencimiento
                   </Label>
-                  <Input id="expiry" type="text" placeholder="MM / YY" disabled={isLoading} />
+                  <Input
+                    id="expiry"
+                    type="text"
+                    placeholder="MM / YY"
+                    disabled={isLoading}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="cvc" className="text-sm font-medium">
                     CVC
                   </Label>
-                  <Input id="cvc" type="text" placeholder="123" disabled={isLoading} />
+                  <Input
+                    id="cvc"
+                    type="text"
+                    placeholder="123"
+                    disabled={isLoading}
+                  />
                 </div>
               </div>
 
@@ -154,8 +187,8 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
               </Button>
 
               <p className="text-xs text-muted-foreground leading-relaxed">
-                Al proporcionar tu información de tarjeta, permites a Vertex cobrar tu tarjeta por pagos futuros en
-                acuerdo con sus términos.
+                Al proporcionar tu información de tarjeta, permites a Vertex
+                cobrar tu tarjeta por pagos futuros en acuerdo con sus términos.
               </p>
             </div>
           </div>
@@ -184,5 +217,5 @@ export function PaymentSimulationModal({ open, onOpenChange, onConfirm, isLoadin
         </form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

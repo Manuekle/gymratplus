@@ -1,101 +1,100 @@
-
 /** @type {import('tailwindcss').Config} */
 import tailwindcssAnimate from "tailwindcss-animate";
 
 declare interface configType {
-	static darkMode: any[];
+  darkMode: any[];
 
-	static content: any[];
+  content: any[];
 
-	static theme: {
-	static container: {
-		static center: boolean;
+  theme: {
+    container: {
+      center: boolean;
 
-		static padding: string;
+      padding: string;
 
-		static screens: {		};
-	};
+      screens: {};
+    };
 
-	static extend: {
-		static colors: {
-			static border: string;
+    extend: {
+      colors: {
+        border: string;
 
-			static input: string;
+        input: string;
 
-			static ring: string;
+        ring: string;
 
-			static background: string;
+        background: string;
 
-			static foreground: string;
+        foreground: string;
 
-			static primary: {
-				static DEFAULT: string;
+        primary: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static secondary: {
-				static DEFAULT: string;
+        secondary: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static destructive: {
-				static DEFAULT: string;
+        destructive: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static muted: {
-				static DEFAULT: string;
+        muted: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static accent: {
-				static DEFAULT: string;
+        accent: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static popover: {
-				static DEFAULT: string;
+        popover: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static card: {
-				static DEFAULT: string;
+        card: {
+          DEFAULT: string;
 
-				static foreground: string;
-			};
+          foreground: string;
+        };
 
-			static fitness: {
-				static primary: string;
+        fitness: {
+          primary: string;
 
-				static secondary: string;
+          secondary: string;
 
-				static accent: string;
+          accent: string;
 
-				static light: string;
+          light: string;
 
-				static dark: string;
-			};
-		};
+          dark: string;
+        };
+      };
 
-		static borderRadius: {
-			static lg: string;
+      borderRadius: {
+        lg: string;
 
-			static md: string;
+        md: string;
 
-			static sm: string;
-		};
+        sm: string;
+      };
 
-		static keyframes: {		};
+      keyframes: {};
 
-		static animation: {		};
-	};
-	};
+      animation: {};
+    };
+  };
 
-	static plugins: any[];
+  plugins: any[];
 }

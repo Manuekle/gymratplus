@@ -19,7 +19,7 @@ export async function POST() {
     console.error("Error en POST /api/workout-streak/rest-day:", error);
     return NextResponse.json(
       { error: "Error interno del servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

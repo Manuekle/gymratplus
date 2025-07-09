@@ -45,7 +45,7 @@ export default function NotificationsPage() {
 
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
     );
   };
 
@@ -94,7 +94,9 @@ export default function NotificationsPage() {
       </div>
       <div className="flex md:flex-row flex-col md:items-center items-start md:gap-0 gap-4 justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-semibold  tracking-heading">Notificaciones</h1>
+          <h1 className="text-2xl font-semibold  tracking-heading">
+            Notificaciones
+          </h1>
           <p className="text-sm text-muted-foreground">
             Gestiona tus notificaciones y alertas
           </p>
@@ -186,7 +188,7 @@ export default function NotificationsPage() {
                           ))}
                         </div>
                       </div>
-                    )
+                    ),
                   )}
                 </div>
               )}

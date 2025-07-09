@@ -20,7 +20,7 @@ export async function initNotificationSubscriber() {
         const notifications = await subscriberClient.lrange(
           NOTIFICATION_CHANNEL,
           0,
-          -1
+          -1,
         );
 
         // Process each notification
@@ -38,7 +38,7 @@ export async function initNotificationSubscriber() {
               });
 
               console.log(
-                `Notification created for user ${userId}: ${notification.title}`
+                `Notification created for user ${userId}: ${notification.title}`,
               );
             }
           } catch (error) {
@@ -51,7 +51,7 @@ export async function initNotificationSubscriber() {
           await subscriberClient.ltrim(
             NOTIFICATION_CHANNEL,
             notifications.length,
-            -1
+            -1,
           );
         }
       } catch (error) {
@@ -65,7 +65,7 @@ export async function initNotificationSubscriber() {
         const intakeUpdates = await subscriberClient.lrange(
           WATER_INTAKE_CHANNEL,
           0,
-          -1
+          -1,
         );
 
         for (const message of intakeUpdates) {
@@ -84,7 +84,7 @@ export async function initNotificationSubscriber() {
                 });
 
                 console.log(
-                  `Water goal notification created for user ${userId}`
+                  `Water goal notification created for user ${userId}`,
                 );
               }
             }
@@ -97,7 +97,7 @@ export async function initNotificationSubscriber() {
           await subscriberClient.ltrim(
             WATER_INTAKE_CHANNEL,
             intakeUpdates.length,
-            -1
+            -1,
           );
         }
       } catch (error) {
@@ -111,7 +111,7 @@ export async function initNotificationSubscriber() {
         const workoutUpdates = await subscriberClient.lrange(
           WORKOUT_CHANNEL,
           0,
-          -1
+          -1,
         );
 
         for (const message of workoutUpdates) {
@@ -155,13 +155,13 @@ export async function initNotificationSubscriber() {
               });
 
               console.log(
-                `Workout notification created for user ${userId}: ${title}`
+                `Workout notification created for user ${userId}: ${title}`,
               );
             }
           } catch (error) {
             console.error(
               "Error processing workout notification message:",
-              error
+              error,
             );
           }
         }
@@ -170,7 +170,7 @@ export async function initNotificationSubscriber() {
           await subscriberClient.ltrim(
             WORKOUT_CHANNEL,
             workoutUpdates.length,
-            -1
+            -1,
           );
         }
       } catch (error) {
@@ -182,12 +182,12 @@ export async function initNotificationSubscriber() {
     const POLLING_INTERVAL = 15000; // 15 segundos
     const notificationInterval = setInterval(
       checkForNotifications,
-      POLLING_INTERVAL
+      POLLING_INTERVAL,
     );
     const waterIntakeInterval = setInterval(checkWaterIntake, POLLING_INTERVAL);
     const workoutInterval = setInterval(
       checkWorkoutNotifications,
-      POLLING_INTERVAL
+      POLLING_INTERVAL,
     );
 
     console.log("Redis polling initialized with 15-second intervals");

@@ -8,7 +8,7 @@ export async function publishWorkoutNotification(
   workoutSessionId: string,
   action: WorkoutAction,
   workoutName: string,
-  day?: string
+  day?: string,
 ): Promise<void> {
   // Add to Redis list for polling
   await publishWorkout(userId, workoutSessionId, action, workoutName, day);
@@ -17,7 +17,7 @@ export async function publishWorkoutNotification(
 export async function createWorkoutStartedNotification(
   userId: string,
   workoutName: string,
-  day: string
+  day: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -29,7 +29,7 @@ export async function createWorkoutStartedNotification(
 
 export async function createWorkoutCompletedNotification(
   userId: string,
-  workoutName: string
+  workoutName: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -41,7 +41,7 @@ export async function createWorkoutCompletedNotification(
 
 export async function createWorkoutCancelledNotification(
   userId: string,
-  workoutName: string
+  workoutName: string,
 ): Promise<void> {
   await createNotification({
     userId,
@@ -54,7 +54,7 @@ export async function createWorkoutCancelledNotification(
 export async function createWorkoutProgressNotification(
   userId: string,
   workoutName: string,
-  progressPercentage: number
+  progressPercentage: number,
 ): Promise<void> {
   await createNotification({
     userId,

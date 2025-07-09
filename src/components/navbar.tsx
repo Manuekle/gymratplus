@@ -97,7 +97,7 @@ export function Navbar() {
                 {/* <DropdownMenuItem>
                   <Settings01Icon className="mr-2 h-4 w-4" />
                   <span>Ajustes</span>
-                </DropdownMenuItem> */}                
+                </DropdownMenuItem> */}
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                 >

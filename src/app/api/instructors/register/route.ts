@@ -1,9 +1,9 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { z } from 'zod';
-import { createNotification } from '@/lib/notification-service';
+import { NextResponse, NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { z } from "zod";
+import { createNotification } from "@/lib/notification-service";
 
 // Esquema de validación para el registro del instructor
 const instructorRegisterSchema = z.object({
@@ -17,16 +17,25 @@ const instructorRegisterSchema = z.object({
   isRemote: z.boolean().optional().default(false),
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const body = await req.json();
-    const { bio, curriculum, pricePerMonth, contactEmail, contactPhone, country, city, isRemote } = instructorRegisterSchema.parse(body);
+    const {
+      bio,
+      curriculum,
+      pricePerMonth,
+      contactEmail,
+      contactPhone,
+      country,
+      city,
+      isRemote,
+    } = instructorRegisterSchema.parse(body);
 
     // Actualizar el usuario para marcarlo como instructor
     const user = await prisma.user.update({
@@ -66,7 +75,8 @@ export async function POST(req: Request) {
     await createNotification({
       userId: session.user.id,
       title: "¡Bienvenido como instructor!",
-      message: "Tu perfil de instructor ha sido creado exitosamente. Ahora puedes recibir solicitudes de alumnos.",
+      message:
+        "Tu perfil de instructor ha sido creado exitosamente. Ahora puedes recibir solicitudes de alumnos.",
       type: "system",
     });
 
@@ -76,7 +86,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.error('[INSTRUCTOR_REGISTER_ERROR]', error);
-    return NextResponse.json({ error: 'Internal Error' }, { status: 500 });
+    console.error("[INSTRUCTOR_REGISTER_ERROR]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
-} 
+}

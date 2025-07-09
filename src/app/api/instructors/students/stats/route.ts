@@ -1,14 +1,14 @@
-import { NextResponse } from 'next/server';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
+import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user?.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // Verificar si el usuario es un instructor
@@ -17,7 +17,10 @@ export async function GET() {
     });
 
     if (!instructorProfile) {
-      return NextResponse.json({ error: 'Forbidden: User is not an instructor.' }, { status: 403 });
+      return NextResponse.json(
+        { error: "Forbidden: User is not an instructor." },
+        { status: 403 },
+      );
     }
 
     // Obtener todos los estudiantes activos del instructor
@@ -59,12 +62,15 @@ export async function GET() {
 
     // Calcular estadísticas
     const totalStudents = studentRelationships.length;
-    const activeToday = studentRelationships.filter(rel => {
+    const activeToday = studentRelationships.filter((rel) => {
       const lastWorkout = rel.student.workoutSessions[0];
-      return lastWorkout && new Date(lastWorkout.date).toDateString() === new Date().toDateString();
+      return (
+        lastWorkout &&
+        new Date(lastWorkout.date).toDateString() === new Date().toDateString()
+      );
     }).length;
 
-    const activeThisWeek = studentRelationships.filter(rel => {
+    const activeThisWeek = studentRelationships.filter((rel) => {
       const lastWorkout = rel.student.workoutSessions[0];
       if (!lastWorkout) return false;
       const weekAgo = new Date();
@@ -72,15 +78,29 @@ export async function GET() {
       return new Date(lastWorkout.date) >= weekAgo;
     }).length;
 
-    const avgStreak = totalStudents > 0 
-      ? Math.round(studentRelationships.reduce((acc, rel) => acc + (rel.student.workoutStreak?.currentStreak || 0), 0) / totalStudents)
-      : 0;
+    const avgStreak =
+      totalStudents > 0
+        ? Math.round(
+            studentRelationships.reduce(
+              (acc, rel) =>
+                acc + (rel.student.workoutStreak?.currentStreak || 0),
+              0,
+            ) / totalStudents,
+          )
+        : 0;
 
-    const totalRevenue = studentRelationships.reduce((acc, rel) => acc + (rel.agreedPrice || 0), 0);
+    const totalRevenue = studentRelationships.reduce(
+      (acc, rel) => acc + (rel.agreedPrice || 0),
+      0,
+    );
 
     // Calcular estudiantes con planes activos
-    const studentsWithWorkoutPlans = studentRelationships.filter(rel => rel.student.assignedWorkouts.length > 0).length;
-    const studentsWithMealPlans = studentRelationships.filter(rel => rel.student.foodPlans.length > 0).length;
+    const studentsWithWorkoutPlans = studentRelationships.filter(
+      (rel) => rel.student.assignedWorkouts.length > 0,
+    ).length;
+    const studentsWithMealPlans = studentRelationships.filter(
+      (rel) => rel.student.foodPlans.length > 0,
+    ).length;
 
     const stats = {
       totalStudents,
@@ -90,13 +110,20 @@ export async function GET() {
       totalRevenue,
       studentsWithWorkoutPlans,
       studentsWithMealPlans,
-      activePercentage: totalStudents > 0 ? Math.round((activeToday / totalStudents) * 100) : 0,
-      weeklyActivePercentage: totalStudents > 0 ? Math.round((activeThisWeek / totalStudents) * 100) : 0,
+      activePercentage:
+        totalStudents > 0 ? Math.round((activeToday / totalStudents) * 100) : 0,
+      weeklyActivePercentage:
+        totalStudents > 0
+          ? Math.round((activeThisWeek / totalStudents) * 100)
+          : 0,
     };
 
     return NextResponse.json(stats, { status: 200 });
   } catch (error) {
-    console.error('[GET_INSTRUCTOR_STUDENTS_STATS_ERROR]', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error("[GET_INSTRUCTOR_STUDENTS_STATS_ERROR]", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
   }
-} 
+}

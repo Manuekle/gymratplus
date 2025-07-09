@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
@@ -18,19 +18,19 @@ export async function GET() {
 
   try {
     const workouts = await prisma.workout.findMany({
-      where: { createdById: session.user.id, type: 'personal' },
+      where: { createdById: session.user.id, type: "personal" },
       include: { exercises: true },
     });
     return NextResponse.json(workouts);
   } catch {
     return NextResponse.json(
       { error: "Error obteniendo workouts" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
     if (!name || exercises?.length === 0 || !type) {
       return NextResponse.json(
         { error: "Nombre, ejercicios y tipo de rutina requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -51,7 +51,7 @@ export async function POST(req: Request) {
         name,
         description,
         createdById: session.user.id,
-        type: 'personal',
+        type: "personal",
       },
     });
 
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
       default:
         return NextResponse.json(
           { error: "Tipo de rutina no válido" },
-          { status: 400 }
+          { status: 400 },
         );
     }
 
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
   } catch {
     return NextResponse.json(
       { error: "Error creando workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

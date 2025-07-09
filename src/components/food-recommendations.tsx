@@ -331,13 +331,15 @@ export default function FoodRecommendations() {
           <div className="flex justify-between items-center">
             {recommendations.length > 1 && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">Historial:</span>
+                <span className="text-sm text-muted-foreground">
+                  Historial:
+                </span>
                 <select
                   className="text-sm border rounded p-1"
                   value={selectedRecommendation.id}
                   onChange={(e) => {
                     const selected = recommendations.find(
-                      (r) => r.id === e.target.value
+                      (r) => r.id === e.target.value,
                     );
                     if (selected) {
                       setSelectedRecommendation(selected);

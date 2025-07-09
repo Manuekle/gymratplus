@@ -7,7 +7,11 @@ export async function middleware(req: NextRequest) {
   const token = await getToken({ req });
   const path = req.nextUrl.pathname;
 
-  const protectedRoutes = ["/onboarding", "/onboarding/recommendations", "/dashboard/instructors"];
+  const protectedRoutes = [
+    "/onboarding",
+    "/onboarding/recommendations",
+    "/dashboard/instructors",
+  ];
   const isDashboardRoute = path.startsWith("/dashboard");
 
   // Si el usuario NO está autenticado y quiere acceder a rutas protegidas

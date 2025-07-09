@@ -21,7 +21,7 @@ export async function PUT(req: NextRequest) {
     if (!workoutSessionId) {
       return NextResponse.json(
         { error: "ID de la sesión de entrenamiento no proporcionado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,14 +38,14 @@ export async function PUT(req: NextRequest) {
     if (!workoutSession) {
       return NextResponse.json(
         { error: "Sesión de entrenamiento no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (workoutSession.userId !== session.user.id) {
       return NextResponse.json(
         { error: "No autorizado para modificar esta sesión de entrenamiento" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -114,18 +114,18 @@ export async function PUT(req: NextRequest) {
           session.user.id,
           workoutSessionId,
           "completed",
-          workoutName
+          workoutName,
         );
 
         console.log(
-          `Workout completion notification created for user ${session.user.id}`
+          `Workout completion notification created for user ${session.user.id}`,
         );
       }
     } catch (notificationError) {
       // Log but don't fail the request if notification creation fails
       console.error(
         "Error creating workout completion notification:",
-        notificationError
+        notificationError,
       );
     }
 
@@ -134,7 +134,7 @@ export async function PUT(req: NextRequest) {
     console.error("Error al completar sesión de entrenamiento:", error);
     return NextResponse.json(
       { error: "Error al completar sesión de entrenamiento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

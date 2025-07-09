@@ -1,6 +1,7 @@
 🏗️ Checklist de desarrollo
 
 1. Definición de funcionalidades
+
 - ✅ Calendario para organizar el día (eventos, recordatorios, entrenamientos).
 - ✅ Rutinas de gimnasio personalizadas con planificación semanal.
 - ✅ Registro de alimentación con conteo de calorías y macronutrientes.
@@ -16,6 +17,7 @@
 - Base de datos: Almacenamiento de usuarios, rutinas, dietas y estadísticas.
 
 3. Diseño de la interfaz
+
 - ✅ Dashboard con vista general del progreso.
 - ✅ Sección de rutinas de ejercicio con animaciones o descripciones.
 - ✅ Sección de alimentación con opciones de comidas recomendadas.

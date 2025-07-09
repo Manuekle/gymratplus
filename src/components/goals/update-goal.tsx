@@ -35,7 +35,7 @@ interface GoalProps {
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [value, setValue] = useState<string>(
-    goal.currentValue?.toString() || ""
+    goal.currentValue?.toString() || "",
   );
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -99,7 +99,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal text-xs md:text-sm",
-                    !date && "text-muted-foreground"
+                    !date && "text-muted-foreground",
                   )}
                 >
                   <Calendar01Icon className="mr-2 h-4 w-4" />

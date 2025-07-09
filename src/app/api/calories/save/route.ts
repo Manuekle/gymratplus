@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No estás autenticado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Faltan datos requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
     console.error("Error al guardar objetivos calóricos:", error);
     return NextResponse.json(
       { error: "Error al guardar objetivos calóricos" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -16,7 +16,7 @@ export default function ExerciseButtons() {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
 
       const data = await response.json();
@@ -24,7 +24,7 @@ export default function ExerciseButtons() {
         setMessage(
           method === "POST"
             ? "Ejercicios agregados correctamente!"
-            : "Ejercicios duplicados eliminados!"
+            : "Ejercicios duplicados eliminados!",
         );
       } else {
         setMessage(data.error || "Error en la operación");

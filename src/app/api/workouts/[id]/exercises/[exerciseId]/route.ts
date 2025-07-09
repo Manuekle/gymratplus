@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     if (!workoutExercise) {
       return NextResponse.json(
         { error: "Ejercicio no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
     console.error("Error obteniendo ejercicio:", error);
     return NextResponse.json(
       { error: "Error en el servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -98,7 +98,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error actualizando ejercicio:", error);
     return NextResponse.json(
       { error: "Error actualizando ejercicio" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -130,7 +130,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error eliminando ejercicio:", error);
     return NextResponse.json(
       { error: "Error eliminando ejercicio" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

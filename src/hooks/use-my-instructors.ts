@@ -29,7 +29,8 @@ const notifySubscribers = () => {
 
 export function useMyInstructors() {
   const [isLoading, setIsLoading] = useState(true);
-  const [instructors, setInstructors] = useState<Instructor[]>(globalInstructors);
+  const [instructors, setInstructors] =
+    useState<Instructor[]>(globalInstructors);
   const { data: session } = useSession();
 
   const fetchInstructors = useCallback(async () => {
@@ -74,4 +75,4 @@ export function useMyInstructors() {
     isLoading,
     refreshInstructors: fetchInstructors,
   };
-} 
+}

@@ -89,7 +89,7 @@ export default function ProgressChart() {
         );
       });
     },
-    []
+    [],
   );
 
   const loadData = useCallback(async () => {
@@ -114,7 +114,7 @@ export default function ProgressChart() {
         // Ordenar por fecha
         const sortedData: ProgressRecord[] = formattedData.sort(
           (a: ProgressRecord, b: ProgressRecord) =>
-            a.originalDate.getTime() - b.originalDate.getTime()
+            a.originalDate.getTime() - b.originalDate.getTime(),
         );
 
         setChartData(sortedData);
@@ -138,8 +138,8 @@ export default function ProgressChart() {
             dataType === "weight"
               ? "weight"
               : dataType === "bodyFat"
-              ? "bodyFat"
-              : "muscle"
+                ? "bodyFat"
+                : "muscle",
           );
 
           setProgressStats(stats);
@@ -158,7 +158,7 @@ export default function ProgressChart() {
       setError(
         error instanceof Error
           ? error.message
-          : "Error desconocido al cargar datos"
+          : "Error desconocido al cargar datos",
       );
     } finally {
       setIsLoading(false);
@@ -220,22 +220,22 @@ export default function ProgressChart() {
         change < 0
           ? `Has perdido ${Math.abs(change).toFixed(1)}kg en este período`
           : change > 0
-          ? `Has ganado ${change.toFixed(1)}kg en este período`
-          : "Tu peso se ha mantenido estable";
+            ? `Has ganado ${change.toFixed(1)}kg en este período`
+            : "Tu peso se ha mantenido estable";
     } else if (dataType === "bodyFat") {
       message =
         change < 0
           ? `Has reducido un ${Math.abs(change).toFixed(1)}% de grasa corporal`
           : change > 0
-          ? `Ha aumentado un ${change.toFixed(1)}% tu grasa corporal`
-          : "Tu porcentaje de grasa corporal se ha mantenido estable";
+            ? `Ha aumentado un ${change.toFixed(1)}% tu grasa corporal`
+            : "Tu porcentaje de grasa corporal se ha mantenido estable";
     } else {
       message =
         change > 0
           ? `Has ganado ${change.toFixed(1)}% de masa muscular`
           : change < 0
-          ? `Has perdido ${Math.abs(change).toFixed(1)}% de masa muscular`
-          : "Tu masa muscular se ha mantenido estable";
+            ? `Has perdido ${Math.abs(change).toFixed(1)}% de masa muscular`
+            : "Tu masa muscular se ha mantenido estable";
     }
 
     return message;
@@ -350,12 +350,10 @@ export default function ProgressChart() {
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
-            <p className="text-sm font-medium">No hay datos disponibles</p>
-            <NewProgress
-              onSuccess={() => {
-                loadData();
-              }}
-            />
+            <h3 className="text-sm font-medium">No hay datos disponibles</h3>
+            <p className="text-muted-foreground text-xs mb-4">
+                Asegúrate de establecer un objetivo para hacer seguimiento de tu progreso
+              </p>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">

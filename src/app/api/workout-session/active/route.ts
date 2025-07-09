@@ -37,7 +37,7 @@ export async function GET() {
     if (!activeWorkoutSession) {
       return NextResponse.json(
         { error: "No hay sesión de entrenamiento activa" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET() {
     console.error("Error al obtener sesión de entrenamiento activa:", error);
     return NextResponse.json(
       { error: "Error al obtener sesión de entrenamiento activa" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

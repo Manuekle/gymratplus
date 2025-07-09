@@ -13,7 +13,7 @@ export async function GET() {
     console.error("Failed to initialize Redis subscriber:", error);
     return NextResponse.json(
       { success: false, error: "Failed to initialize Redis subscriber" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -45,7 +45,7 @@ export function useWaterIntake() {
         setIsLoading(false);
       }
     },
-    [session]
+    [session],
   );
 
   const fetchHistory = useCallback(async () => {
@@ -58,7 +58,7 @@ export function useWaterIntake() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.error || "Error al obtener el historial de consumo de agua"
+          errorData.error || "Error al obtener el historial de consumo de agua",
         );
       }
 
@@ -135,7 +135,7 @@ export function useWaterIntake() {
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al actualizar el consumo de agua"
+            errorData.error || "Error al actualizar el consumo de agua",
           );
         }
 
@@ -159,7 +159,7 @@ export function useWaterIntake() {
         setIsUpdating(false);
       }
     },
-    [session, fetchHistory]
+    [session, fetchHistory],
   );
 
   const addWater = useCallback(
@@ -170,7 +170,7 @@ export function useWaterIntake() {
       // console.log("Agregar L", newIntake);
       return updateIntake(newIntake);
     },
-    [intake, updateIntake]
+    [intake, updateIntake],
   );
 
   const removeWater = useCallback(
@@ -181,7 +181,7 @@ export function useWaterIntake() {
       // console.log("Agregar L", newIntake);
       return updateIntake(newIntake);
     },
-    [intake, updateIntake]
+    [intake, updateIntake],
   );
 
   useEffect(() => {

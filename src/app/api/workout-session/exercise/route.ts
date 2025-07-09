@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest) {
     if (!exerciseSessionId) {
       return NextResponse.json(
         { error: "ID de la sesión de ejercicio no proporcionado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,14 +31,14 @@ export async function PUT(req: NextRequest) {
     if (!exerciseSession) {
       return NextResponse.json(
         { error: "Sesión de ejercicio no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (exerciseSession.workoutSession.userId !== session.user.id) {
       return NextResponse.json(
         { error: "No autorizado para modificar esta sesión de ejercicio" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -67,7 +67,7 @@ export async function PUT(req: NextRequest) {
     console.error("Error al actualizar sesión de ejercicio:", error);
     return NextResponse.json(
       { error: "Error al actualizar sesión de ejercicio" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

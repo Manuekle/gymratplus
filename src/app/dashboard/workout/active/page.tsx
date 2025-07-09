@@ -57,7 +57,7 @@ export default function ActiveWorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
-    null
+    null,
   );
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -136,12 +136,12 @@ export default function ActiveWorkoutPage() {
 
     const totalSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.length,
-      0
+      0,
     );
 
     const completedSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.filter((set) => set.completed).length,
-      0
+      0,
     );
 
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
@@ -173,7 +173,7 @@ export default function ActiveWorkoutPage() {
   const updateSet = async (
     setId: string,
     data: Partial<Set>,
-    immediate = false
+    immediate = false,
   ) => {
     // Cancelar cualquier temporizador existente para este setId
     if (debounceTimers[setId]) {
@@ -242,12 +242,12 @@ export default function ActiveWorkoutPage() {
           // Si se marca como completado, iniciar temporizador de descanso
           if (data.completed) {
             const exercise = workoutSession?.exercises.find((ex) =>
-              ex.sets.some((set) => set.id === setId)
+              ex.sets.some((set) => set.id === setId),
             );
 
             if (exercise) {
               const exerciseData = workoutSession!.exercises.find(
-                (ex) => ex.id === exercise.id
+                (ex) => ex.id === exercise.id,
               );
               const restTime = exerciseData?.exercise?.restTime || 60;
               startRestTimer(exercise.id, restTime);
@@ -468,7 +468,9 @@ export default function ActiveWorkoutPage() {
   if (!workoutSession) {
     return (
       <div className="text-center p-8">
-        <h2 className="text-xl font-semibold  mb-4">No hay entrenamiento activo</h2>
+        <h2 className="text-xl font-semibold  mb-4">
+          No hay entrenamiento activo
+        </h2>
         <Button onClick={() => router.push("/dashboard/workout")}>
           Iniciar un entrenamiento
         </Button>

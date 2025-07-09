@@ -21,7 +21,7 @@ export async function GET() {
     console.error("Error fetching exercises:", error);
     return NextResponse.json(
       { error: "Error fetching exercises" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

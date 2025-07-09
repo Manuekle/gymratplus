@@ -250,7 +250,9 @@ export default function WorkoutTimerFloat({
               <span className="text-xs text-muted-foreground">
                 Tiempo transcurrido
               </span>
-              <div className="text-xl font-semibold ">{formatTime(elapsedTime)}</div>
+              <div className="text-xl font-semibold ">
+                {formatTime(elapsedTime)}
+              </div>
             </div>
           </div>
 

@@ -18,7 +18,7 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
       fillRef.current.style.transition = "height 0.5s ease-in-out";
       fillRef.current.style.height = `${Math.min(
         100,
-        Math.max(0, fillPercentage)
+        Math.max(0, fillPercentage),
       )}%`;
     }
   }, [fillPercentage]);

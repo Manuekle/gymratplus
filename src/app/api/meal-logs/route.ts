@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
     console.error("Error fetching meal logs:", error);
     return NextResponse.json(
       { error: "Failed to fetch meal logs" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -106,21 +106,21 @@ export async function POST(req: NextRequest) {
     if (!data.mealType) {
       return NextResponse.json(
         { error: "Meal type is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!data.foodId && !data.recipeId) {
       return NextResponse.json(
         { error: "Either food or recipe is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!data.quantity) {
       return NextResponse.json(
         { error: "Quantity is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -157,7 +157,7 @@ export async function POST(req: NextRequest) {
       if (!recipe) {
         return NextResponse.json(
           { error: "Recipe not found" },
-          { status: 404 }
+          { status: 404 },
         );
       }
 
@@ -181,7 +181,7 @@ export async function POST(req: NextRequest) {
           console.error("Fecha inválida:", data.consumedAt);
           return NextResponse.json(
             { error: "Invalid date format" },
-            { status: 400 }
+            { status: 400 },
           );
         }
 
@@ -266,7 +266,7 @@ export async function POST(req: NextRequest) {
           error: "Database error",
           details: dbError instanceof Error ? dbError.message : String(dbError),
         },
-        { status: 500 }
+        { status: 500 },
       );
     }
   } catch (error) {
@@ -276,7 +276,7 @@ export async function POST(req: NextRequest) {
         error: "Failed to create meal log",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

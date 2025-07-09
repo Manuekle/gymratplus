@@ -16,7 +16,7 @@ export async function PUT(req: NextRequest) {
     if (!setId) {
       return NextResponse.json(
         { error: "ID del set no proporcionado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -41,7 +41,7 @@ export async function PUT(req: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "No autorizado para modificar este set" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -61,7 +61,7 @@ export async function PUT(req: NextRequest) {
     console.error("Error al actualizar set:", error);
     return NextResponse.json(
       { error: "Error al actualizar set" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

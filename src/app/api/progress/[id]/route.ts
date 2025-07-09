@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     if (!progressEntry) {
       return NextResponse.json(
         { error: "Registro no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     console.error("Error al obtener registro de progreso:", error);
     return NextResponse.json(
       { error: "Error al obtener registro de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -73,7 +73,7 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -88,7 +88,7 @@ export async function PUT(request: NextRequest) {
     if (!existingEntry) {
       return NextResponse.json(
         { error: "Registro no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -144,7 +144,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error al actualizar registro de progreso:", error);
     return NextResponse.json(
       { error: "Error al actualizar registro de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -168,7 +168,7 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -183,7 +183,7 @@ export async function DELETE(request: NextRequest) {
     if (!existingEntry) {
       return NextResponse.json(
         { error: "Registro no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -228,7 +228,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error al eliminar registro de progreso:", error);
     return NextResponse.json(
       { error: "Error al eliminar registro de progreso" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

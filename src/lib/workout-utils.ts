@@ -100,7 +100,7 @@ export async function createWorkoutPlan(
   trainingFrequency: number,
   workoutType: string,
   _workoutHistory: any[],
-  methodology = "standard"
+  methodology = "standard",
 ) {
   // Determine the workout type based on body distribution
   switch (workoutType) {
@@ -111,7 +111,7 @@ export async function createWorkoutPlan(
         goal,
         gender,
         trainingFrequency,
-        methodology
+        methodology,
       );
     case "Upper/Lower Split":
       return createUpperLowerSplit(
@@ -120,7 +120,7 @@ export async function createWorkoutPlan(
         goal,
         gender,
         trainingFrequency,
-        methodology
+        methodology,
       );
     case "Push/Pull/Legs":
       return createPushPullLegsSplit(
@@ -129,7 +129,7 @@ export async function createWorkoutPlan(
         goal,
         gender,
         trainingFrequency,
-        methodology
+        methodology,
       );
     case "Weider":
       return createWeiderSplit(
@@ -138,7 +138,7 @@ export async function createWorkoutPlan(
         goal,
         gender,
         trainingFrequency,
-        methodology
+        methodology,
       );
     default:
       // If no specific type, create a balanced plan based on frequency
@@ -149,7 +149,7 @@ export async function createWorkoutPlan(
           goal,
           gender,
           trainingFrequency,
-          methodology
+          methodology,
         );
       } else if (trainingFrequency <= 5) {
         return createUpperLowerSplit(
@@ -158,7 +158,7 @@ export async function createWorkoutPlan(
           goal,
           gender,
           trainingFrequency,
-          methodology
+          methodology,
         );
       } else {
         return createPushPullLegsSplit(
@@ -167,7 +167,7 @@ export async function createWorkoutPlan(
           goal,
           gender,
           trainingFrequency,
-          methodology
+          methodology,
         );
       }
   }
@@ -283,10 +283,10 @@ function applyMethodology(exercises: any[], methodology: string, goal: string) {
 function selectUniqueExercises(
   exercises: any[],
   count: number,
-  usedExercises: Set<string> = new Set()
+  usedExercises: Set<string> = new Set(),
 ): any[] {
   const availableExercises = exercises.filter(
-    (ex) => !usedExercises.has(ex.id)
+    (ex) => !usedExercises.has(ex.id),
   );
   const selectedExercises: any[] = [];
 
@@ -313,7 +313,7 @@ export async function createFullBodyWorkout(
   goal: string,
   _gender: string | null,
   trainingFrequency: number,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -324,7 +324,7 @@ export async function createFullBodyWorkout(
   const chestExercises = exercises.filter((e) => e.muscleGroup === "pecho");
   const backExercises = exercises.filter((e) => e.muscleGroup === "espalda");
   const shoulderExercises = exercises.filter(
-    (e) => e.muscleGroup === "hombros"
+    (e) => e.muscleGroup === "hombros",
   );
   const armExercises = exercises.filter((e) => e.muscleGroup === "brazos");
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
@@ -342,32 +342,32 @@ export async function createFullBodyWorkout(
     const selectedLegExercises = selectUniqueExercises(
       legExercises,
       1,
-      usedExercises
+      usedExercises,
     );
     const selectedChestExercises = selectUniqueExercises(
       chestExercises,
       1,
-      usedExercises
+      usedExercises,
     );
     const selectedBackExercises = selectUniqueExercises(
       backExercises,
       1,
-      usedExercises
+      usedExercises,
     );
     const selectedShoulderExercises = selectUniqueExercises(
       shoulderExercises,
       1,
-      usedExercises
+      usedExercises,
     );
     const selectedArmExercises = selectUniqueExercises(
       armExercises,
       1,
-      usedExercises
+      usedExercises,
     );
     const selectedCoreExercises = selectUniqueExercises(
       coreExercises,
       1,
-      usedExercises
+      usedExercises,
     );
 
     const dayExercises = [
@@ -449,8 +449,8 @@ export async function createFullBodyWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(),
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -461,7 +461,7 @@ export async function createUpperLowerSplit(
   goal: string,
   _gender: string | null,
   trainingFrequency: number,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -471,7 +471,7 @@ export async function createUpperLowerSplit(
   const chestExercises = exercises.filter((e) => e.muscleGroup === "pecho");
   const backExercises = exercises.filter((e) => e.muscleGroup === "espalda");
   const shoulderExercises = exercises.filter(
-    (e) => e.muscleGroup === "hombros"
+    (e) => e.muscleGroup === "hombros",
   );
   const armExercises = exercises.filter((e) => e.muscleGroup === "brazos");
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
@@ -605,8 +605,8 @@ export async function createUpperLowerSplit(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -617,7 +617,7 @@ export async function createPushPullLegsSplit(
   goal: string,
   _gender: string | null,
   trainingFrequency: number,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -628,14 +628,15 @@ export async function createPushPullLegsSplit(
   const chestExercises = exercises.filter((e) => e.muscleGroup === "pecho");
   const backExercises = exercises.filter((e) => e.muscleGroup === "espalda");
   const shoulderExercises = exercises.filter(
-    (e) => e.muscleGroup === "hombros"
+    (e) => e.muscleGroup === "hombros",
   );
   const tricepsExercises = exercises.filter(
     (e) =>
-      e.muscleGroup === "brazos" && e.name.toLowerCase().includes("tríceps")
+      e.muscleGroup === "brazos" && e.name.toLowerCase().includes("tríceps"),
   );
   const bicepsExercises = exercises.filter(
-    (e) => e.muscleGroup === "brazos" && e.name.toLowerCase().includes("bíceps")
+    (e) =>
+      e.muscleGroup === "brazos" && e.name.toLowerCase().includes("bíceps"),
   );
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
 
@@ -658,19 +659,19 @@ export async function createPushPullLegsSplit(
       const selectedChestExercises = selectUniqueExercises(
         chestExercises,
         3,
-        usedExercises
+        usedExercises,
       );
       const selectedShoulderExercises = selectUniqueExercises(
         shoulderExercises,
         2,
-        usedExercises
+        usedExercises,
       );
       const selectedTricepsExercises = selectUniqueExercises(
         tricepsExercises.length > 0
           ? tricepsExercises
           : exercises.filter((e) => e.muscleGroup === "brazos"),
         2,
-        usedExercises
+        usedExercises,
       );
 
       dayExercises = [
@@ -716,14 +717,14 @@ export async function createPushPullLegsSplit(
       const selectedBackExercises = selectUniqueExercises(
         backExercises,
         3,
-        usedExercises
+        usedExercises,
       );
       const selectedBicepsExercises = selectUniqueExercises(
         bicepsExercises.length > 0
           ? bicepsExercises
           : exercises.filter((e) => e.muscleGroup === "brazos"),
         2,
-        usedExercises
+        usedExercises,
       );
 
       dayExercises = [
@@ -769,12 +770,12 @@ export async function createPushPullLegsSplit(
       const selectedLegExercises = selectUniqueExercises(
         legExercises,
         4,
-        usedExercises
+        usedExercises,
       );
       const selectedCoreExercises = selectUniqueExercises(
         coreExercises,
         2,
-        usedExercises
+        usedExercises,
       );
 
       dayExercises = [
@@ -850,8 +851,8 @@ export async function createPushPullLegsSplit(
           ...ex,
           exerciseId: ex.exerciseId.toString(),
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -862,7 +863,7 @@ export async function createWeiderSplit(
   goal: string,
   _gender: string | null,
   trainingFrequency: number,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -872,7 +873,7 @@ export async function createWeiderSplit(
   const chestExercises = exercises.filter((e) => e.muscleGroup === "pecho");
   const backExercises = exercises.filter((e) => e.muscleGroup === "espalda");
   const shoulderExercises = exercises.filter(
-    (e) => e.muscleGroup === "hombros"
+    (e) => e.muscleGroup === "hombros",
   );
   const armExercises = exercises.filter((e) => e.muscleGroup === "brazos");
   const coreExercises = exercises.filter((e) => e.muscleGroup === "core");
@@ -905,7 +906,7 @@ export async function createWeiderSplit(
     // Select exercises for this muscle group (4-6 exercises per muscle group)
     const numExercises = Math.min(
       muscleGroupExercises.length,
-      muscleGroupName === "Core" ? 4 : 5
+      muscleGroupName === "Core" ? 4 : 5,
     );
 
     const dayExercises = [];
@@ -927,8 +928,8 @@ export async function createWeiderSplit(
           i === 0
             ? "Principal"
             : i === 1
-            ? "Secundario"
-            : "Aislamiento " + (i - 1)
+              ? "Secundario"
+              : "Aislamiento " + (i - 1)
         }`,
       });
     }
@@ -964,8 +965,8 @@ export async function createWeiderSplit(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -976,7 +977,7 @@ export async function createChestTricepsWorkout(
   workoutId: string,
   exercises: any[],
   goal: string,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -986,7 +987,7 @@ export async function createChestTricepsWorkout(
   const tricepsExercises =
     exercises.filter(
       (e) =>
-        e.muscleGroup === "brazos" && e.name.toLowerCase().includes("tríceps")
+        e.muscleGroup === "brazos" && e.name.toLowerCase().includes("tríceps"),
     ) || exercises.filter((e) => e.muscleGroup === "brazos").slice(0, 2);
 
   // Get sets and reps based on goal
@@ -1064,8 +1065,8 @@ export async function createChestTricepsWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -1074,7 +1075,7 @@ export async function createBackBicepsWorkout(
   workoutId: string,
   exercises: any[],
   goal: string,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -1084,7 +1085,7 @@ export async function createBackBicepsWorkout(
   const bicepsExercises =
     exercises.filter(
       (e) =>
-        e.muscleGroup === "brazos" && e.name.toLowerCase().includes("bíceps")
+        e.muscleGroup === "brazos" && e.name.toLowerCase().includes("bíceps"),
     ) || exercises.filter((e) => e.muscleGroup === "brazos").slice(0, 2);
 
   // Get sets and reps based on goal
@@ -1162,8 +1163,8 @@ export async function createBackBicepsWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -1172,7 +1173,7 @@ export async function createLegWorkout(
   workoutId: string,
   exercises: any[],
   goal: string,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -1266,8 +1267,8 @@ export async function createLegWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -1276,14 +1277,14 @@ export async function createShoulderWorkout(
   workoutId: string,
   exercises: any[],
   goal: string,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
 
   // Filter exercises by muscle group
   const shoulderExercises = exercises.filter(
-    (e) => e.muscleGroup === "hombros"
+    (e) => e.muscleGroup === "hombros",
   );
 
   // Get sets and reps based on goal
@@ -1364,8 +1365,8 @@ export async function createShoulderWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
@@ -1374,7 +1375,7 @@ export async function createCoreWorkout(
   workoutId: string,
   exercises: any[],
   goal: string,
-  methodology = "standard"
+  methodology = "standard",
 ) {
   const workoutExercises = [];
   let order = 1;
@@ -1458,15 +1459,20 @@ export async function createCoreWorkout(
           ...ex,
           exerciseId: ex.exerciseId.toString(), // Convert to string
         },
-      })
-    )
+      }),
+    ),
   );
 }
 
 // Calcula el nivel de experiencia del usuario basado en su perfil
-export function calculateExperienceLevel(profile: { trainingFrequency?: number; monthsTraining?: number; }) {
+export function calculateExperienceLevel(profile: {
+  trainingFrequency?: number;
+  monthsTraining?: number;
+}) {
   if (!profile.trainingFrequency || !profile.monthsTraining) return "beginner";
-  if (profile.trainingFrequency <= 2 || profile.monthsTraining < 6) return "beginner";
-  if (profile.trainingFrequency <= 4 || profile.monthsTraining < 18) return "intermediate";
+  if (profile.trainingFrequency <= 2 || profile.monthsTraining < 6)
+    return "beginner";
+  if (profile.trainingFrequency <= 4 || profile.monthsTraining < 18)
+    return "intermediate";
   return "advanced";
 }

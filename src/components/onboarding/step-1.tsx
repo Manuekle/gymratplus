@@ -45,10 +45,10 @@ import {
 import { BirthDatePicker } from "../ui/birth-date-picker";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
-  (i + 140).toString()
+  (i + 140).toString(),
 ); // 140cm to 220cm
 const weightOptions = Array.from({ length: 141 }, (_, i) =>
-  (i + 40).toString()
+  (i + 40).toString(),
 ); // 40kg to 180kg
 
 const daysOfWeek = [
@@ -140,7 +140,7 @@ export default function StepOnboarding1() {
           return value.toISOString();
         }
         return value;
-      })
+      }),
     );
   };
 
@@ -237,7 +237,7 @@ export default function StepOnboarding1() {
             } else {
               console.warn(
                 "Fecha no válida detectada, enviando tal cual:",
-                payload.birthdate
+                payload.birthdate,
               );
             }
           } catch (e) {

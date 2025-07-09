@@ -14,7 +14,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const workout = await prisma.workout.findUnique({
-      where: { id: id, createdById: session.user.id, type: 'personal' },
+      where: { id: id, createdById: session.user.id, type: "personal" },
       include: {
         exercises: {
           select: {
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
     if (!workout) {
       return NextResponse.json(
         { error: "Workout no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
     console.error("Error obteniendo workout:", error);
     return NextResponse.json(
       { error: "Error en el servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -93,7 +93,7 @@ interface FormattedWorkoutDay {
 
 // Función mejorada para formatear el plan de entrenamiento
 function formatWorkoutPlan(
-  workoutExercises: WorkoutExerciseFromDB[]
+  workoutExercises: WorkoutExerciseFromDB[],
 ): FormattedWorkoutDay[] {
   // Agrupar ejercicios por grupo muscular
   const exercisesByDay = workoutExercises.reduce<
@@ -154,12 +154,12 @@ export async function PUT(request: NextRequest) {
     if (!name || !exercises || exercises.length === 0) {
       return NextResponse.json(
         { error: "Nombre y ejercicios requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const workout = await prisma.workout.update({
-      where: { id: id, createdById: session.user.id, type: 'personal' },
+      where: { id: id, createdById: session.user.id, type: "personal" },
       data: {
         name,
         description,
@@ -183,7 +183,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error actualizando workout:", error);
     return NextResponse.json(
       { error: "Error actualizando workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -204,13 +204,13 @@ export async function DELETE(request: NextRequest) {
   try {
     // Verificar que el workout existe y pertenece al usuario
     const workout = await prisma.workout.findUnique({
-      where: { id, createdById: session.user.id, type: 'personal' },
+      where: { id, createdById: session.user.id, type: "personal" },
     });
 
     if (!workout) {
       return NextResponse.json(
         { error: "Workout no encontrado o no autorizado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -221,7 +221,7 @@ export async function DELETE(request: NextRequest) {
 
     // Luego eliminar el workout
     await prisma.workout.delete({
-      where: { id, createdById: session.user.id, type: 'personal' },
+      where: { id, createdById: session.user.id, type: "personal" },
     });
 
     return NextResponse.json({ message: "Workout eliminado correctamente" });
@@ -229,7 +229,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error eliminando workout:", error);
     return NextResponse.json(
       { error: "Error eliminando workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

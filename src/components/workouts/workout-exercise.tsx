@@ -216,7 +216,8 @@ export default function WorkoutExercise({
                     variant={currentDay === day ? "default" : "outline"}
                     className={cn(
                       "cursor-pointer px-4 py-1 text-xs transition-colors",
-                      currentDay === day && "bg-primary text-primary-foreground"
+                      currentDay === day &&
+                        "bg-primary text-primary-foreground",
                     )}
                     onClick={() => setCurrentDay(day)}
                   >
@@ -234,13 +235,16 @@ export default function WorkoutExercise({
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(
-                    exercises.reduce((acc, exercise) => {
-                      if (!acc[exercise.muscleGroup]) {
-                        acc[exercise.muscleGroup] = [];
-                      }
-                      acc[exercise.muscleGroup].push(exercise);
-                      return acc;
-                    }, {} as Record<string, Exercise[]>)
+                    exercises.reduce(
+                      (acc, exercise) => {
+                        if (!acc[exercise.muscleGroup]) {
+                          acc[exercise.muscleGroup] = [];
+                        }
+                        acc[exercise.muscleGroup].push(exercise);
+                        return acc;
+                      },
+                      {} as Record<string, Exercise[]>,
+                    ),
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
                       <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
@@ -263,7 +267,7 @@ export default function WorkoutExercise({
                                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                                   : "bg-background hover:bg-secondary",
                                 isDisabled &&
-                                  "bg-red-100 text-red-700 cursor-not-allowed opacity-50"
+                                  "bg-red-100 text-red-700 cursor-not-allowed opacity-50",
                               )}
                               title={
                                 isDisabled

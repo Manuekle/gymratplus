@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
     if (!mealLog) {
       return NextResponse.json(
         { error: "Meal log not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
     console.error("Error fetching meal log:", error);
     return NextResponse.json(
       { error: "Failed to fetch meal log" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -76,7 +76,7 @@ export async function DELETE(request: NextRequest) {
     if (!mealLog) {
       return NextResponse.json(
         { error: "Meal log not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -96,7 +96,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error deleting meal log:", error);
     return NextResponse.json(
       { error: "Failed to delete meal log" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

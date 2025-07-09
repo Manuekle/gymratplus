@@ -43,7 +43,7 @@ export async function POST() {
         }
 
         return exercise;
-      })
+      }),
     );
 
     // Crear el entrenamiento por defecto
@@ -52,7 +52,7 @@ export async function POST() {
         name: "Entrenamiento por defecto",
         description: "Entrenamiento para seguimiento de progreso",
         createdById: session.user.id,
-        type: 'personal',
+        type: "personal",
         exercises: {
           create: exercises.map((exercise, index) => ({
             exerciseId: exercise.id,

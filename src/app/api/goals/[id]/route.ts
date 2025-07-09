@@ -29,7 +29,7 @@ export async function PUT(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -44,7 +44,7 @@ export async function PUT(request: NextRequest) {
     if (!existingGoal) {
       return NextResponse.json(
         { error: "Objetivo no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -107,7 +107,7 @@ export async function PUT(request: NextRequest) {
           await publishGoalNotification(user.id, "completed", goalTitle);
 
           console.log(
-            `Goal completion notification created for user ${user.id}`
+            `Goal completion notification created for user ${user.id}`,
           );
         } else {
           // Create notification for goal update
@@ -128,7 +128,7 @@ export async function PUT(request: NextRequest) {
       // Log but don't fail the request if notification creation fails
       console.error(
         "Error creating goal update notification:",
-        notificationError
+        notificationError,
       );
     }
 
@@ -137,7 +137,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error al actualizar objetivo:", error);
     return NextResponse.json(
       { error: "Error al actualizar objetivo" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -160,7 +160,7 @@ export async function DELETE(request: NextRequest) {
     if (!user) {
       return NextResponse.json(
         { error: "Usuario no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -175,7 +175,7 @@ export async function DELETE(request: NextRequest) {
     if (!existingGoal) {
       return NextResponse.json(
         { error: "Objetivo no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -189,7 +189,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error al eliminar objetivo:", error);
     return NextResponse.json(
       { error: "Error al eliminar objetivo" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

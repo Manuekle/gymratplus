@@ -4,7 +4,11 @@ import { useState, useEffect } from "react";
 import { CardTitle, CardDescription } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { ArrowRight01Icon, Clock01Icon, ArrowLeft01Icon } from "hugeicons-react";
+import {
+  ArrowRight01Icon,
+  Clock01Icon,
+  ArrowLeft01Icon,
+} from "hugeicons-react";
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
@@ -49,7 +53,7 @@ export default function WorkoutSummary() {
 
   // Calcular el total de páginas
   const totalPages = Math.ceil(workoutSessions.length / itemsPerPage);
-  
+
   // Obtener los entrenamientos para la página actual
   const startIndex = currentPage * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -142,12 +146,14 @@ export default function WorkoutSummary() {
                 </div>
               </div>
             ))}
-            
+
             {/* Paginación */}
             {totalPages > 1 && (
               <div className="flex items-center justify-between pt-4 border-t">
                 <div className="text-xs text-muted-foreground">
-                  Mostrando {startIndex + 1}-{Math.min(endIndex, workoutSessions.length)} de {workoutSessions.length} entrenamientos
+                  Mostrando {startIndex + 1}-
+                  {Math.min(endIndex, workoutSessions.length)} de{" "}
+                  {workoutSessions.length} entrenamientos
                 </div>
                 <div className="flex items-center gap-2">
                   <Button

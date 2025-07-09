@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useSession } from 'next-auth/react';
-import { toast } from 'sonner';
+import { useState, useEffect, useCallback } from "react";
+import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 export interface AssignedWorkout {
   id: string;
@@ -41,22 +41,24 @@ export interface AssignedWorkout {
 
 export function useAssignedWorkouts() {
   const [isLoading, setIsLoading] = useState(true);
-  const [assignedWorkouts, setAssignedWorkouts] = useState<AssignedWorkout[]>([]);
+  const [assignedWorkouts, setAssignedWorkouts] = useState<AssignedWorkout[]>(
+    [],
+  );
   const { data: session } = useSession();
 
   const fetchAssignedWorkouts = useCallback(async () => {
     setIsLoading(true);
     try {
-      const res = await fetch('/api/students/workouts/assigned');
+      const res = await fetch("/api/students/workouts/assigned");
       if (res.ok) {
         const data = await res.json();
         setAssignedWorkouts(data);
       } else {
-        throw new Error('Error al obtener rutinas asignadas');
+        throw new Error("Error al obtener rutinas asignadas");
       }
     } catch (error) {
-      console.error('Error fetching assigned workouts:', error);
-      toast.error('Error al cargar tus rutinas asignadas');
+      console.error("Error fetching assigned workouts:", error);
+      toast.error("Error al cargar tus rutinas asignadas");
     } finally {
       setIsLoading(false);
     }
@@ -73,4 +75,4 @@ export function useAssignedWorkouts() {
     isLoading,
     refreshAssignedWorkouts: fetchAssignedWorkouts,
   };
-} 
+}

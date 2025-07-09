@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 import { getOrCreateExercises, createWorkoutPlan } from "@/lib/workout-utils";
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
@@ -53,21 +53,21 @@ export async function POST(request: Request) {
     if (!validSplitTypes.includes(splitType)) {
       return NextResponse.json(
         { error: "Invalid split type" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!validMethodologies.includes(methodology)) {
       return NextResponse.json(
         { error: "Invalid methodology" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (trainingFrequency < 1 || trainingFrequency > 7) {
       return NextResponse.json(
         { error: "Training frequency must be between 1 and 7" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -110,7 +110,7 @@ export async function POST(request: Request) {
           translations[methodology as keyof typeof translations]
         } para ${translations[goal as keyof typeof translations]}`,
         createdById: userId,
-        type: 'personal',
+        type: "personal",
       },
     });
 
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       trainingFrequency,
       splitType,
       [], // No workout history to consider
-      methodology
+      methodology,
     );
 
     // Get exercise details for each workout exercise
@@ -139,7 +139,7 @@ export async function POST(request: Request) {
           ...exercise,
           name: exerciseDetails ? exerciseDetails.name : "Unknown Exercise",
         };
-      })
+      }),
     );
 
     // Format workout plan for response
@@ -158,7 +158,7 @@ export async function POST(request: Request) {
     console.error("Error creating custom workout:", error);
     return NextResponse.json(
       { error: "Error creating custom workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -188,7 +188,7 @@ interface FormattedWorkoutDay {
 }
 
 function formatWorkoutPlan(
-  workoutExercises: WorkoutExercise[]
+  workoutExercises: WorkoutExercise[],
 ): FormattedWorkoutDay[] {
   // Group exercises by muscle group/day
   const exercisesByDay = workoutExercises.reduce<

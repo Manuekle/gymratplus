@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     if (!notification) {
       return NextResponse.json(
         { error: "Notificación no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -36,10 +36,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(notification);
   } catch (error) {
     console.error("Error fetching notification:", error);
-    return NextResponse.json(
-      { error: "Error interno" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }
 
@@ -60,7 +57,7 @@ export async function PATCH(request: NextRequest) {
     if (!notification) {
       return NextResponse.json(
         { error: "Notificación no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -72,10 +69,7 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json(updatedNotification);
   } catch (error) {
     console.error("Error marking notification as read:", error);
-    return NextResponse.json(
-      { error: "Error interno" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }
 
@@ -96,7 +90,7 @@ export async function DELETE(request: NextRequest) {
     if (!notification) {
       return NextResponse.json(
         { error: "Notificación no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -108,9 +102,6 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json(deletedNotification);
   } catch (error) {
     console.error("Error deleting notification:", error);
-    return NextResponse.json(
-      { error: "Error interno" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

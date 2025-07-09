@@ -24,7 +24,7 @@ export const useProgress = () => {
     async (
       type: "weight" | "bodyFat" | "muscle" | "all" = "all",
       startDate?: string,
-      endDate?: string
+      endDate?: string,
     ) => {
       setIsLoading(true);
 
@@ -58,14 +58,14 @@ export const useProgress = () => {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al obtener datos de progreso"
+            errorData.error || "Error al obtener datos de progreso",
           );
         }
 
@@ -84,7 +84,7 @@ export const useProgress = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Crear nuevo registro de progreso
@@ -107,14 +107,14 @@ export const useProgress = () => {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al crear registro de progreso"
+            errorData.error || "Error al crear registro de progreso",
           );
         }
 
@@ -134,7 +134,7 @@ export const useProgress = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Actualizar registro de progreso
@@ -157,14 +157,14 @@ export const useProgress = () => {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
           throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta."
+            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
           );
         }
 
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al actualizar registro de progreso"
+            errorData.error || "Error al actualizar registro de progreso",
           );
         }
 
@@ -176,8 +176,8 @@ export const useProgress = () => {
         toast.success("Registro actualizado correctamente");
         setProgressData((prevProgressData) =>
           prevProgressData.map((record) =>
-            record.id === updatedRecord.id ? updatedRecord : record
-          )
+            record.id === updatedRecord.id ? updatedRecord : record,
+          ),
         );
         return updatedRecord;
       } catch (error) {
@@ -188,7 +188,7 @@ export const useProgress = () => {
         setIsLoading(false);
       }
     },
-    []
+    [],
   );
 
   // Eliminar registro de progreso
@@ -205,7 +205,7 @@ export const useProgress = () => {
         if (contentType && contentType.includes("application/json")) {
           const errorData = await response.json();
           throw new Error(
-            errorData.error || "Error al eliminar registro de progreso"
+            errorData.error || "Error al eliminar registro de progreso",
           );
         } else {
           const text = await response.text();
@@ -219,7 +219,7 @@ export const useProgress = () => {
 
       toast.success("Registro eliminado correctamente");
       setProgressData((prevProgressData) =>
-        prevProgressData.filter((record) => record.id !== id)
+        prevProgressData.filter((record) => record.id !== id),
       );
       return true;
     } catch (error) {
@@ -243,7 +243,7 @@ export const useProgress = () => {
       }
 
       const sortedData = [...data].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       );
 
       const first = sortedData[0];
@@ -255,7 +255,7 @@ export const useProgress = () => {
       // Calcular promedio
       const sum = sortedData.reduce(
         (acc, record) => acc + (getValue(record, type) || 0),
-        0
+        0,
       );
       const average = sum / sortedData.length;
 
@@ -269,13 +269,13 @@ export const useProgress = () => {
         average,
       };
     },
-    []
+    [],
   );
 
   // Función auxiliar para obtener el valor correspondiente según el tipo
   const getValue = (
     record: ProgressRecord,
-    type: "weight" | "bodyFat" | "muscle"
+    type: "weight" | "bodyFat" | "muscle",
   ) => {
     switch (type) {
       case "weight":

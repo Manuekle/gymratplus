@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --tracking-heading: -0.96px; 
+  --tracking-heading: -0.96px;
 }
 
 :root {

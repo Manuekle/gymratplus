@@ -25,7 +25,11 @@ export default function MyInstructorsList() {
   }
 
   if (!instructors.length) {
-    return <p className="text-center text-muted-foreground">No tienes instructores asignados actualmente.</p>;
+    return (
+      <p className="text-center text-muted-foreground">
+        No tienes instructores asignados actualmente.
+      </p>
+    );
   }
 
   return (
@@ -38,20 +42,66 @@ export default function MyInstructorsList() {
           </Avatar>
           <CardContent className="flex-1 p-0">
             <h3 className="font-semibold text-lg">{inst.name}</h3>
-            {inst.bio && <p className="text-sm text-muted-foreground mb-1">{inst.bio}</p>}
+            {inst.bio && (
+              <p className="text-sm text-muted-foreground mb-1">{inst.bio}</p>
+            )}
             <div className="text-xs text-muted-foreground space-y-1">
-              {inst.contactEmail && <div>Email: <span className="font-medium">{inst.contactEmail}</span></div>}
-              {inst.contactPhone && <div>Teléfono: <span className="font-medium">{inst.contactPhone}</span></div>}
-              {inst.pricePerMonth && <div>Precio mensual: <span className="font-medium">${inst.pricePerMonth}</span></div>}
-              {(inst.country || inst.city) && <div>Ubicación: <span className="font-medium">{[inst.city, inst.country].filter(Boolean).join(", ")}</span></div>}
-              <div>Modalidad: <span className="font-medium">{inst.isRemote ? "Remoto" : "Presencial"}</span></div>
-              {inst.startDate && <div>Desde: <span className="font-medium">{new Date(inst.startDate).toLocaleDateString()}</span></div>}
-              <div>Estado: <span className="font-medium capitalize">{inst.status}</span></div>
+              {inst.contactEmail && (
+                <div>
+                  Email:{" "}
+                  <span className="font-medium">{inst.contactEmail}</span>
+                </div>
+              )}
+              {inst.contactPhone && (
+                <div>
+                  Teléfono:{" "}
+                  <span className="font-medium">{inst.contactPhone}</span>
+                </div>
+              )}
+              {inst.pricePerMonth && (
+                <div>
+                  Precio mensual:{" "}
+                  <span className="font-medium">${inst.pricePerMonth}</span>
+                </div>
+              )}
+              {(inst.country || inst.city) && (
+                <div>
+                  Ubicación:{" "}
+                  <span className="font-medium">
+                    {[inst.city, inst.country].filter(Boolean).join(", ")}
+                  </span>
+                </div>
+              )}
+              <div>
+                Modalidad:{" "}
+                <span className="font-medium">
+                  {inst.isRemote ? "Remoto" : "Presencial"}
+                </span>
+              </div>
+              {inst.startDate && (
+                <div>
+                  Desde:{" "}
+                  <span className="font-medium">
+                    {new Date(inst.startDate).toLocaleDateString()}
+                  </span>
+                </div>
+              )}
+              <div>
+                Estado:{" "}
+                <span className="font-medium capitalize">{inst.status}</span>
+              </div>
             </div>
-            {inst.curriculum && <div className="mt-2 text-xs">CV: <span className="underline text-blue-600">{inst.curriculum}</span></div>}
+            {inst.curriculum && (
+              <div className="mt-2 text-xs">
+                CV:{" "}
+                <span className="underline text-blue-600">
+                  {inst.curriculum}
+                </span>
+              </div>
+            )}
           </CardContent>
         </Card>
       ))}
     </div>
   );
-} 
+}

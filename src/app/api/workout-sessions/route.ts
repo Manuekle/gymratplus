@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -51,40 +51,43 @@ export async function GET(request: Request) {
       id: session.id,
       date: session.date,
       notes: session.notes,
-      exercises: session.exercises.reduce((acc, exerciseSession) => {
-        // Obtener todas las series completadas
-        const completedSets = exerciseSession.sets
-          .filter((set) => set.completed && set.weight && set.reps)
-          .sort((a, b) => b.setNumber - a.setNumber);
+      exercises: session.exercises.reduce(
+        (acc, exerciseSession) => {
+          // Obtener todas las series completadas
+          const completedSets = exerciseSession.sets
+            .filter((set) => set.completed && set.weight && set.reps)
+            .sort((a, b) => b.setNumber - a.setNumber);
 
-        // Si no hay series completadas, usar todas las series con datos
-        const setsWithData =
-          completedSets.length > 0
-            ? completedSets
-            : exerciseSession.sets
-                .filter((set) => set.weight && set.reps)
-                .sort((a, b) => b.setNumber - a.setNumber);
+          // Si no hay series completadas, usar todas las series con datos
+          const setsWithData =
+            completedSets.length > 0
+              ? completedSets
+              : exerciseSession.sets
+                  .filter((set) => set.weight && set.reps)
+                  .sort((a, b) => b.setNumber - a.setNumber);
 
-        if (setsWithData.length > 0) {
-          // Obtener el set con el peso máximo
-          const maxWeightSet = setsWithData.reduce((max, set) =>
-            (set.weight || 0) > (max.weight || 0) ? set : max
-          );
+          if (setsWithData.length > 0) {
+            // Obtener el set con el peso máximo
+            const maxWeightSet = setsWithData.reduce((max, set) =>
+              (set.weight || 0) > (max.weight || 0) ? set : max,
+            );
 
-          acc[exerciseSession.exercise.name] = {
-            weight: maxWeightSet.weight || 0,
-            reps: maxWeightSet.reps || 0,
-          };
-        } else {
-          // Si no hay sets con datos, usar valores por defecto
-          acc[exerciseSession.exercise.name] = {
-            weight: 0,
-            reps: 0,
-          };
-        }
+            acc[exerciseSession.exercise.name] = {
+              weight: maxWeightSet.weight || 0,
+              reps: maxWeightSet.reps || 0,
+            };
+          } else {
+            // Si no hay sets con datos, usar valores por defecto
+            acc[exerciseSession.exercise.name] = {
+              weight: 0,
+              reps: 0,
+            };
+          }
 
-        return acc;
-      }, {} as Record<string, { weight: number; reps: number }>),
+          return acc;
+        },
+        {} as Record<string, { weight: number; reps: number }>,
+      ),
     }));
 
     return NextResponse.json(transformedSessions);
@@ -94,7 +97,7 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
@@ -140,7 +143,7 @@ export async function POST(request: Request) {
                   completed: false,
                 })),
               },
-            })
+            }),
           ),
         },
       },
@@ -159,14 +162,17 @@ export async function POST(request: Request) {
       id: workoutSession.id,
       date: workoutSession.date,
       notes: workoutSession.notes,
-      exercises: workoutSession.exercises.reduce((acc, exerciseSession) => {
-        const lastSet = exerciseSession.sets[exerciseSession.sets.length - 1];
-        acc[exerciseSession.exercise.name] = {
-          weight: lastSet?.weight || 0,
-          reps: lastSet?.reps || 0,
-        };
-        return acc;
-      }, {} as Record<string, { weight: number; reps: number }>),
+      exercises: workoutSession.exercises.reduce(
+        (acc, exerciseSession) => {
+          const lastSet = exerciseSession.sets[exerciseSession.sets.length - 1];
+          acc[exerciseSession.exercise.name] = {
+            weight: lastSet?.weight || 0,
+            reps: lastSet?.reps || 0,
+          };
+          return acc;
+        },
+        {} as Record<string, { weight: number; reps: number }>,
+      ),
     };
 
     return NextResponse.json(transformedSession);

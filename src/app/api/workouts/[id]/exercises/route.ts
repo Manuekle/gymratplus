@@ -13,8 +13,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const workout = (await prisma.workout.findUnique({
-      where: { id: id, createdById: session.user.id, type: 'personal' },
+    const workout = await prisma.workout.findUnique({
+      where: { id: id, createdById: session.user.id, type: "personal" },
       include: {
         exercises: {
           select: {
@@ -34,42 +34,57 @@ export async function GET(request: NextRequest) {
           },
         },
       },
-    })) as {
+    });
+
+    // Type assertion for the workout object
+    type WorkoutWithExercises = {
       id: string;
       createdById: string;
       name: string;
       createdAt: Date;
       updatedAt: Date;
       description: string | null;
-      exercises: {
+      goal: string;
+      exercises: Array<{
         id: string;
         sets: number;
         reps: number;
-        weight: number;
-        restTime: number;
+        weight: number | null;
+        restTime: number | null;
         order: number;
-        notes: string;
+        notes: string | null;
         exercise: { id: string; name: string };
-      }[];
-      goal: string;
+      }>;
     };
 
-    if (!workout) {
+    const typedWorkout = workout as WorkoutWithExercises | null;
+
+    if (!typedWorkout) {
       return NextResponse.json(
         { error: "Workout no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    // Formatear el plan de entrenamiento para la respuesta
+    // Format the workout plan for the response
     const formattedWorkout = {
-      id: workout.id,
-      name: workout.name,
-      description: workout.description,
-      days: formatWorkoutPlan(workout.exercises),
-      // type: workout.type,
-      // methodology: workout.methodology,
-      goal: workout.goal,
+      id: typedWorkout.id,
+      name: typedWorkout.name,
+      description: typedWorkout.description,
+      days: formatWorkoutPlan(
+        typedWorkout.exercises.map((ex) => ({
+          ...ex,
+          // Ensure we don't send null values for required fields
+          weight: ex.weight ?? 0,
+          restTime: ex.restTime ?? 0,
+          notes: ex.notes ?? "",
+          exercise: {
+            id: ex.exercise.id,
+            name: ex.exercise.name,
+          },
+        })),
+      ),
+      goal: typedWorkout.goal,
     };
 
     return NextResponse.json(formattedWorkout);
@@ -77,7 +92,7 @@ export async function GET(request: NextRequest) {
     console.error("Error obteniendo workout:", error);
     return NextResponse.json(
       { error: "Error en el servidor" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -109,7 +124,7 @@ export async function POST(request: NextRequest) {
           error:
             "ID de entrenamiento no proporcionado o formato de URL incorrecto",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -124,11 +139,11 @@ export async function POST(request: NextRequest) {
     if (!existingWorkout) {
       console.log(
         "Workout not found or not authorized. User ID:",
-        session.user.id
+        session.user.id,
       );
       return NextResponse.json(
         { error: "Workout no encontrado o no autorizado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -144,14 +159,14 @@ export async function POST(request: NextRequest) {
     if (!existingExercise) {
       return NextResponse.json(
         { error: "Ejercicio no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (!exerciseId || !sets || !reps) {
       return NextResponse.json(
         { error: "Faltan campos requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -196,7 +211,7 @@ export async function POST(request: NextRequest) {
         error: "Error creando ejercicio",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -231,7 +246,7 @@ interface FormattedWorkoutDay {
 }
 
 function formatWorkoutPlan(
-  workoutExercises: WorkoutExercise[]
+  workoutExercises: WorkoutExercise[],
 ): FormattedWorkoutDay[] {
   // Agrupar ejercicios por grupo muscular
   const exercisesByDay = workoutExercises.reduce<
@@ -279,12 +294,12 @@ export async function PUT(request: NextRequest) {
     if (!name || exercises?.length === 0) {
       return NextResponse.json(
         { error: "Nombre y ejercicios requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const workout = await prisma.workout.update({
-      where: { id: id, createdById: session.user.id, type: 'personal' },
+      where: { id: id, createdById: session.user.id, type: "personal" },
       data: {
         name,
         description,
@@ -305,7 +320,7 @@ export async function PUT(request: NextRequest) {
               weight: exercise.weight,
               restTime: exercise.restTime,
               order: exercise.order,
-            })
+            }),
           ),
         },
       },
@@ -316,7 +331,7 @@ export async function PUT(request: NextRequest) {
     console.error("Error actualizando workout:", error);
     return NextResponse.json(
       { error: "Error actualizando workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -331,14 +346,14 @@ export async function DELETE(request: NextRequest) {
 
   try {
     await prisma.workout.delete({
-      where: { id: id, createdById: session.user.id, type: 'personal' },
+      where: { id: id, createdById: session.user.id, type: "personal" },
     });
     return NextResponse.json({ message: "Workout eliminado" });
   } catch (error) {
     console.error("Error eliminando workout:", error);
     return NextResponse.json(
       { error: "Error eliminando workout" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

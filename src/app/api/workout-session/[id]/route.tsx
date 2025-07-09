@@ -20,7 +20,7 @@ export async function DELETE(request: NextRequest) {
     if (!workoutSessionId) {
       return NextResponse.json(
         { error: "ID de la sesión de entrenamiento no proporcionado" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,14 +37,14 @@ export async function DELETE(request: NextRequest) {
     if (!workoutSession) {
       return NextResponse.json(
         { error: "Sesión de entrenamiento no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (workoutSession.userId !== session.user.id) {
       return NextResponse.json(
         { error: "No autorizado para eliminar esta sesión de entrenamiento" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 
@@ -96,14 +96,14 @@ export async function DELETE(request: NextRequest) {
         });
 
         console.log(
-          `Workout cancellation notification created for user ${session.user.id}`
+          `Workout cancellation notification created for user ${session.user.id}`,
         );
       }
     } catch (notificationError) {
       // Log but don't fail the request if notification creation fails
       console.error(
         "Error creating workout cancellation notification:",
-        notificationError
+        notificationError,
       );
     }
 
@@ -112,7 +112,7 @@ export async function DELETE(request: NextRequest) {
     console.error("Error al eliminar la sesión de entrenamiento:", error);
     return NextResponse.json(
       { error: "Error al eliminar la sesión de entrenamiento" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -10,9 +16,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
-import { Flame, Target, Activity, Clock, ArrowLeft, Dumbbell } from "lucide-react";
+import {
+  Flame,
+  Target,
+  Activity,
+  Clock,
+  ArrowLeft,
+  Dumbbell,
+} from "lucide-react";
 import Link from "next/link";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 
 interface StudentDetail {
   id: string;
@@ -63,7 +82,8 @@ export default function StudentDetailPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedWorkout, setSelectedWorkout] = useState<AssignedWorkout | null>(null);
+  const [selectedWorkout, setSelectedWorkout] =
+    useState<AssignedWorkout | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Fetch student detail
@@ -74,11 +94,13 @@ export default function StudentDetailPage() {
         const res = await fetch("/api/instructors/students");
         if (!res.ok) throw new Error("No se pudo cargar el alumno");
         const data = await res.json();
-        const found = data.find((s: StudentDetail) => s.id === studentRelationId);
+        const found = data.find(
+          (s: StudentDetail) => s.id === studentRelationId,
+        );
         if (!found) throw new Error("Alumno no encontrado");
         setStudent(found);
-      } catch (e: any) {
-        setError(e.message || "Error inesperado");
+      } catch (error) {
+        setError(error instanceof Error ? error.message : "Error inesperado");
       } finally {
         setLoading(false);
       }
@@ -95,11 +117,15 @@ export default function StudentDetailPage() {
         if (!res.ok) throw new Error("No se pudieron cargar las rutinas");
         const data = await res.json();
         if (student && student.studentId) {
-          setWorkouts(data.filter((w: AssignedWorkout) => w.assignedToId === student.studentId));
+          setWorkouts(
+            data.filter(
+              (w: AssignedWorkout) => w.assignedToId === student.studentId,
+            ),
+          );
         } else {
           setWorkouts([]);
         }
-      } catch (e: any) {
+      } catch {
         setWorkouts([]);
       } finally {
         setLoadingWorkouts(false);
@@ -123,7 +149,9 @@ export default function StudentDetailPage() {
   if (error || !student) {
     return (
       <div className="max-w-2xl mx-auto py-10 text-center">
-        <p className="text-destructive font-semibold mb-4">{error || "Alumno no encontrado"}</p>
+        <p className="text-destructive font-semibold mb-4">
+          {error || "Alumno no encontrado"}
+        </p>
         <Button asChild variant="outline">
           <Link href="/dashboard/students/list">
             <ArrowLeft className="h-4 w-4 mr-2" /> Volver
@@ -143,7 +171,10 @@ export default function StudentDetailPage() {
       <Card>
         <CardContent className="flex flex-col items-center py-8">
           <Avatar className="h-32 w-32 mb-4">
-            <AvatarImage src={student.image || "/placeholder-avatar.jpg"} alt={student.name || "Alumno"} />
+            <AvatarImage
+              src={student.image || "/placeholder-avatar.jpg"}
+              alt={student.name || "Alumno"}
+            />
             <AvatarFallback className="text-4xl font-semibold">
               {student.name?.charAt(0).toUpperCase() || "A"}
             </AvatarFallback>
@@ -151,8 +182,14 @@ export default function StudentDetailPage() {
           <h2 className="text-2xl font-semibold mb-1">{student.name}</h2>
           <p className="text-muted-foreground mb-2">{student.email}</p>
           <div className="flex gap-2 mb-2">
-            <Badge variant={student.status === "active" ? "default" : "secondary"}>
-              {student.status === "active" ? "Activo" : student.status === "pending" ? "Pendiente" : student.status}
+            <Badge
+              variant={student.status === "active" ? "default" : "secondary"}
+            >
+              {student.status === "active"
+                ? "Activo"
+                : student.status === "pending"
+                  ? "Pendiente"
+                  : student.status}
             </Badge>
             {student.agreedPrice && (
               <Badge variant="outline">${student.agreedPrice}/mes</Badge>
@@ -171,7 +208,14 @@ export default function StudentDetailPage() {
           <div className="flex gap-2 mb-2">
             <Badge variant="secondary" className="gap-1">
               <Clock className="h-4 w-4" />
-              Último: {student.lastWorkoutAt ? (isToday(new Date(student.lastWorkoutAt)) ? "Hoy" : format(new Date(student.lastWorkoutAt), "d MMM yyyy", { locale: es })) : "Sin entrenamientos"}
+              Último:{" "}
+              {student.lastWorkoutAt
+                ? isToday(new Date(student.lastWorkoutAt))
+                  ? "Hoy"
+                  : format(new Date(student.lastWorkoutAt), "d MMM yyyy", {
+                      locale: es,
+                    })
+                : "Sin entrenamientos"}
             </Badge>
           </div>
           <div className="flex gap-2 mb-2">
@@ -196,7 +240,9 @@ export default function StudentDetailPage() {
       <Card>
         <CardHeader>
           <CardTitle>Rutinas asignadas</CardTitle>
-          <CardDescription>Rutinas que le has creado y asignado a este alumno.</CardDescription>
+          <CardDescription>
+            Rutinas que le has creado y asignado a este alumno.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loadingWorkouts ? (
@@ -211,21 +257,54 @@ export default function StudentDetailPage() {
           ) : (
             <div className="space-y-4">
               {workouts.map((w: AssignedWorkout) => (
-                <Card key={w.id} className="border border-muted-foreground/10 cursor-pointer hover:shadow-md transition"
-                  onClick={() => { setSelectedWorkout(w); setIsModalOpen(true); }}
+                <Card
+                  key={w.id}
+                  className="border border-muted-foreground/10 cursor-pointer hover:shadow-md transition"
+                  onClick={() => {
+                    setSelectedWorkout(w);
+                    setIsModalOpen(true);
+                  }}
                 >
                   <CardContent className="py-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       <div>
                         <h3 className="font-semibold text-lg mb-1">{w.name}</h3>
-                        <p className="text-xs text-muted-foreground mb-1">Asignada: {format(new Date(w.assignedDate), "d MMM yyyy", { locale: es })}</p>
-                        {w.dueDate && <p className="text-xs text-muted-foreground mb-1">Vence: {format(new Date(w.dueDate), "d MMM yyyy", { locale: es })}</p>}
-                        {w.status && <Badge variant="outline" className="text-xs">{w.status}</Badge>}
-                        {w.notes && <p className="text-xs mt-1">Notas: {w.notes}</p>}
+                        <p className="text-xs text-muted-foreground mb-1">
+                          Asignada:{" "}
+                          {format(new Date(w.assignedDate), "d MMM yyyy", {
+                            locale: es,
+                          })}
+                        </p>
+                        {w.dueDate && (
+                          <p className="text-xs text-muted-foreground mb-1">
+                            Vence:{" "}
+                            {format(new Date(w.dueDate), "d MMM yyyy", {
+                              locale: es,
+                            })}
+                          </p>
+                        )}
+                        {w.status && (
+                          <Badge variant="outline" className="text-xs">
+                            {w.status}
+                          </Badge>
+                        )}
+                        {w.notes && (
+                          <p className="text-xs mt-1">Notas: {w.notes}</p>
+                        )}
                       </div>
                       <div className="flex flex-col gap-1 items-end">
-                        <span className="text-xs text-muted-foreground">{w.exercises.length} ejercicios</span>
-                        <Button size="sm" variant="outline" className="text-xs mt-2" onClick={() => { setSelectedWorkout(w); setIsModalOpen(true); }}>
+                        <span className="text-xs text-muted-foreground">
+                          {w.exercises.length} ejercicios
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="text-xs mt-2"
+                          onClick={() => {
+                            setSelectedWorkout(w);
+                            setIsModalOpen(true);
+                          }}
+                        >
                           Ver detalle
                         </Button>
                       </div>
@@ -249,26 +328,59 @@ export default function StudentDetailPage() {
           {selectedWorkout && (
             <div className="space-y-2">
               <h3 className="font-semibold text-lg">{selectedWorkout.name}</h3>
-              {selectedWorkout.description && <p className="text-sm text-muted-foreground">{selectedWorkout.description}</p>}
+              {selectedWorkout.description && (
+                <p className="text-sm text-muted-foreground">
+                  {selectedWorkout.description}
+                </p>
+              )}
               <div className="flex gap-2 flex-wrap text-xs">
-                <span>Asignada: {format(new Date(selectedWorkout.assignedDate), "d MMM yyyy", { locale: es })}</span>
-                {selectedWorkout.dueDate && <span>Vence: {format(new Date(selectedWorkout.dueDate), "d MMM yyyy", { locale: es })}</span>}
-                {selectedWorkout.status && <Badge variant="outline">{selectedWorkout.status}</Badge>}
+                <span>
+                  Asignada:{" "}
+                  {format(
+                    new Date(selectedWorkout.assignedDate),
+                    "d MMM yyyy",
+                    { locale: es },
+                  )}
+                </span>
+                {selectedWorkout.dueDate && (
+                  <span>
+                    Vence:{" "}
+                    {format(new Date(selectedWorkout.dueDate), "d MMM yyyy", {
+                      locale: es,
+                    })}
+                  </span>
+                )}
+                {selectedWorkout.status && (
+                  <Badge variant="outline">{selectedWorkout.status}</Badge>
+                )}
               </div>
-              {selectedWorkout.notes && <p className="text-xs">Notas: {selectedWorkout.notes}</p>}
+              {selectedWorkout.notes && (
+                <p className="text-xs">Notas: {selectedWorkout.notes}</p>
+              )}
               <Separator />
               <h4 className="font-semibold text-sm mb-1">Ejercicios</h4>
               {selectedWorkout.exercises.length === 0 ? (
-                <p className="text-xs text-muted-foreground">No hay ejercicios registrados.</p>
+                <p className="text-xs text-muted-foreground">
+                  No hay ejercicios registrados.
+                </p>
               ) : (
                 <ul className="space-y-1">
-                  {selectedWorkout.exercises.map((ex: AssignedWorkoutExercise, idx: number) => (
-                    <li key={ex.id || idx} className="flex flex-col md:flex-row md:items-center md:gap-2 text-xs">
-                      <span className="font-medium">{ex.exercise?.name || ex.name}</span>
-                      <span>- {ex.sets}x{ex.reps} reps</span>
-                      {ex.restTime && <span>- {ex.restTime}s descanso</span>}
-                    </li>
-                  ))}
+                  {selectedWorkout.exercises.map(
+                    (ex: AssignedWorkoutExercise, idx: number) => (
+                      <li
+                        key={ex.id || idx}
+                        className="flex flex-col md:flex-row md:items-center md:gap-2 text-xs"
+                      >
+                        <span className="font-medium">
+                          {ex.exercise?.name || ex.name}
+                        </span>
+                        <span>
+                          - {ex.sets}x{ex.reps} reps
+                        </span>
+                        {ex.restTime && <span>- {ex.restTime}s descanso</span>}
+                      </li>
+                    ),
+                  )}
                 </ul>
               )}
             </div>

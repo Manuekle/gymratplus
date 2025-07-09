@@ -209,16 +209,16 @@ export function GoalsDashboard() {
               <ProgressSkeleton />
             </div>
           ) : goals.length === 0 ? (
-            <div className="text-center py-12">
-              <Award01Icon className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <div className="text-center py-20">
+              
               <h3 className="text-sm font-medium mb-2">No hay objetivos</h3>
               <p className="text-muted-foreground text-xs mb-4">
                 Establece objetivos para hacer seguimiento de tu progreso
               </p>
-              <NewGoal
+              {/* <NewGoal
                 onSuccess={handleFormSuccess}
                 initialData={editingGoal || undefined}
-              />
+              /> */}
             </div>
           ) : (
             <div className="gap-4">{goals.map(renderGoalCard)}</div>

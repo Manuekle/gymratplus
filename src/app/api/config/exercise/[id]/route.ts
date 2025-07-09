@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
@@ -17,7 +17,7 @@ export async function DELETE(req: Request) {
     if (!id) {
       return NextResponse.json(
         { error: "Exercise ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -30,7 +30,7 @@ export async function DELETE(req: Request) {
     console.error("Error deleting exercise:", error);
     return NextResponse.json(
       { error: "Failed to delete exercise" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

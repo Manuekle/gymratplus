@@ -85,7 +85,7 @@ export function WeightChart() {
         );
       });
     },
-    []
+    [],
   );
 
   const loadData = useCallback(async () => {
@@ -104,13 +104,13 @@ export function WeightChart() {
             weight: record.weight,
             // Guardar la fecha original para ordenar y filtrar correctamente
             originalDate: new Date(record.date),
-          })
+          }),
         );
 
         // Ordenar por fecha
         const sortedData: WeightData[] = formattedData.sort(
           (a: WeightData, b: WeightData): number =>
-            a.originalDate.getTime() - b.originalDate.getTime()
+            a.originalDate.getTime() - b.originalDate.getTime(),
         );
 
         setChartData(sortedData);
@@ -127,7 +127,7 @@ export function WeightChart() {
       setError(
         error instanceof Error
           ? error.message
-          : "Error desconocido al cargar datos"
+          : "Error desconocido al cargar datos",
       );
     } finally {
       setIsLoading(false);
@@ -297,15 +297,15 @@ export function WeightChart() {
           <p className="text-xs text-muted-foreground mt-1">
             {weightChange.change < 0
               ? `Has perdido ${Math.abs(weightChange.change).toFixed(
-                  1
+                  1,
                 )} kg (de ${weightChange.firstWeight} kg a ${
                   weightChange.lastWeight
                 } kg)`
               : weightChange.change > 0
-              ? `Has ganado ${weightChange.change.toFixed(1)} kg (de ${
-                  weightChange.firstWeight
-                } kg a ${weightChange.lastWeight} kg)`
-              : "Tu peso se ha mantenido estable"}
+                ? `Has ganado ${weightChange.change.toFixed(1)} kg (de ${
+                    weightChange.firstWeight
+                  } kg a ${weightChange.lastWeight} kg)`
+                : "Tu peso se ha mantenido estable"}
           </p>
         </div>
       )}

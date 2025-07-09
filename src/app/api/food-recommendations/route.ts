@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     console.error("Error saving food recommendation:", error);
     return NextResponse.json(
       { error: "Failed to save food recommendation" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -60,7 +60,7 @@ export async function GET(_req: NextRequest) {
     console.error("Error fetching food recommendations:", error);
     return NextResponse.json(
       { error: "Failed to fetch food recommendations" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

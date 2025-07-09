@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -60,7 +61,7 @@ export default function InstructorSearchClient() {
 
   const [country, setCountry] = useState<string>("");
   const [isRemote, setIsRemote] = useState(
-    searchParams.get("isRemote") === "true"
+    searchParams.get("isRemote") === "true",
   );
   const [isVerified, setIsVerified] = useState(false);
   const [maxPrice, setMaxPrice] = useState("");
@@ -72,7 +73,7 @@ export default function InstructorSearchClient() {
   >(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   // Hook para países
@@ -173,7 +174,7 @@ export default function InstructorSearchClient() {
 
         // Agregar el instructor a la lista de solicitados
         setRequestedInstructors((prev) =>
-          new Set(prev).add(instructorProfileId)
+          new Set(prev).add(instructorProfileId),
         );
 
         toast.success("Solicitud enviada", {
@@ -193,12 +194,12 @@ export default function InstructorSearchClient() {
         setRequestingInstructorId(null);
       }
     },
-    [requestedInstructors]
+    [requestedInstructors],
   );
 
   const handleSpecialtyToggle = (spec: string) => {
     setSelectedSpecialties((prev) =>
-      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec]
+      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec],
     );
   };
 
@@ -330,7 +331,7 @@ export default function InstructorSearchClient() {
             instructors.map((instructor) => {
               // Buscar país por código usando countries del hook
               const countryData = countries.find(
-                (c) => c.cca2 === instructor.instructorProfile?.country
+                (c) => c.cca2 === instructor.instructorProfile?.country,
               );
               // Type guard para specialties sin usar 'any'
               let specialties: string[] | undefined = undefined;
@@ -340,7 +341,7 @@ export default function InstructorSearchClient() {
                 "specialties" in instructor.instructorProfile &&
                 Array.isArray(
                   (instructor.instructorProfile as { specialties?: unknown })
-                    .specialties
+                    .specialties,
                 )
               ) {
                 specialties = (
@@ -391,7 +392,7 @@ export default function InstructorSearchClient() {
                       {instructor.experienceLevel && (
                         <Badge variant="secondary" className="text-xs mt-1">
                           {EXPERIENCE_LEVELS.find(
-                            (lvl) => lvl.value === instructor.experienceLevel
+                            (lvl) => lvl.value === instructor.experienceLevel,
                           )?.label || instructor.experienceLevel}
                         </Badge>
                       )}
@@ -442,14 +443,14 @@ export default function InstructorSearchClient() {
                     <Button
                       className={`w-full h-8 text-xs ${
                         requestedInstructors.has(
-                          instructor.instructorProfile?.id || ""
+                          instructor.instructorProfile?.id || "",
                         )
                           ? "bg-red-600 hover:bg-red-700"
                           : ""
                       }`}
                       onClick={() =>
                         handleRequestInstructor(
-                          instructor.instructorProfile?.id
+                          instructor.instructorProfile?.id,
                         )
                       }
                       disabled={
@@ -457,7 +458,7 @@ export default function InstructorSearchClient() {
                           instructor.instructorProfile?.id ||
                         (requestedInstructors.size > 0 &&
                           !requestedInstructors.has(
-                            instructor.instructorProfile?.id || ""
+                            instructor.instructorProfile?.id || "",
                           ))
                       }
                     >
@@ -468,7 +469,7 @@ export default function InstructorSearchClient() {
                           Enviando...
                         </>
                       ) : requestedInstructors.has(
-                          instructor.instructorProfile?.id || ""
+                          instructor.instructorProfile?.id || "",
                         ) ? (
                         <>
                           <CheckCircle2 className="mr-2 h-3 w-3" />
@@ -480,7 +481,7 @@ export default function InstructorSearchClient() {
                     </Button>
                     {requestedInstructors.size > 0 &&
                       !requestedInstructors.has(
-                        instructor.instructorProfile?.id || ""
+                        instructor.instructorProfile?.id || "",
                       ) && (
                         <p className="text-xs text-red-500 mt-1 text-center">
                           Debes cancelar tu solicitud actual primero

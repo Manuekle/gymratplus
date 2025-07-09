@@ -123,7 +123,7 @@ export function BirthDatePicker({
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal text-xs md:text-sm",
-                !value && "text-muted-foreground"
+                !value && "text-muted-foreground",
               )}
             >
               <BirthdayCakeIcon className="mr-2 h-4 w-4" />

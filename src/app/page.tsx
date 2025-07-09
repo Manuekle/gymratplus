@@ -2,13 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dumbbell,
-  Users,
-  BarChart3,
-  Target,
-  Check,
-} from "lucide-react";
+import { Dumbbell, Users, BarChart3, Target, Check } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import Image from "next/image";
@@ -284,8 +278,12 @@ export default function GymRatLanding() {
                 Precios
               </span>
             </Badge>
-            <h2 className="text-3xl font-semibold tracking-heading mb-3">Precios simples</h2>
-            <p className="text-muted-foreground text-sm">Elige el plan que se adapte a ti</p>
+            <h2 className="text-3xl font-semibold tracking-heading mb-3">
+              Precios simples
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Elige el plan que se adapte a ti
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
@@ -294,8 +292,12 @@ export default function GymRatLanding() {
               <div className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <CardContent className="p-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold tracking-heading mb-2">Alumno</h3>
-                  <div className="text-3xl font-semibold tracking-heading mb-1">Gratis</div>
+                  <h3 className="text-lg font-semibold tracking-heading mb-2">
+                    Alumno
+                  </h3>
+                  <div className="text-3xl font-semibold tracking-heading mb-1">
+                    Gratis
+                  </div>
                   <p className="text-muted-foreground text-sm">
                     Perfecto para empezar tu journey fitness
                   </p>
@@ -314,11 +316,7 @@ export default function GymRatLanding() {
                     <span>Acceso a la comunidad</span>
                   </li>
                 </ul>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  asChild
-                >
+                <Button variant="outline" className="w-full" asChild>
                   <Link href="/auth/signup">Comenzar gratis</Link>
                 </Button>
               </CardContent>
@@ -334,7 +332,9 @@ export default function GymRatLanding() {
               </div>
               <CardContent className="p-6">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold tracking-heading mb-2">Instructor</h3>
+                  <h3 className="text-lg font-semibold tracking-heading mb-2">
+                    Instructor
+                  </h3>
                   <div className="text-3xl font-semibold tracking-heading mb-1">
                     $5
                     <span className="text-lg text-foreground font-normal">
@@ -409,11 +409,7 @@ export default function GymRatLanding() {
                     <span>Acceso anticipado a nuevas funciones</span>
                   </li>
                 </ul>
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  asChild
-                >
+                <Button variant="outline" className="w-full" asChild>
                   <Link href="/auth/signup">Elegir anual</Link>
                 </Button>
               </CardContent>
@@ -424,45 +420,48 @@ export default function GymRatLanding() {
 
       {/* Footer */}
       <footer className="relative backdrop-blur-md bg-white/90 dark:bg-black/90 mt-16">
-      <div className="max-w-4xl mx-auto px-6 py-12">
-        {/* Main content */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-          {/* Brand */}
-          <div className="flex items-center space-x-2">
-            <span className="text-2xl font-semibold text-black dark:text-white tracking-heading">GymRat+</span>
+        <div className="max-w-4xl mx-auto px-6 py-12">
+          {/* Main content */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
+            {/* Brand */}
+            <div className="flex items-center space-x-2">
+              <span className="text-2xl font-semibold text-black dark:text-white tracking-heading">
+                GymRat+
+              </span>
+            </div>
+
+            {/* Links */}
+            <div className="flex flex-wrap gap-6 text-sm">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
+              >
+                Privacidad
+              </Link>
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
+              >
+                Términos
+              </Link>
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
+              >
+                Contacto
+              </Link>
+            </div>
           </div>
 
-          {/* Links */}
-          <div className="flex flex-wrap gap-6 text-sm">
-            <Link
-              href="#"
-              className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
-            >
-              Privacidad
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
-            >
-              Términos
-            </Link>
-            <Link
-              href="#"
-              className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
-            >
-              Contacto
-            </Link>
+          {/* Copyright */}
+          <div className="mt-8 pt-6">
+            <p className="text-sm text-muted-foreground text-center">
+              &copy; {new Date().getFullYear()} GymRat+. Todos los derechos
+              reservados.
+            </p>
           </div>
         </div>
-
-        {/* Copyright */}
-        <div className="mt-8 pt-6">
-          <p className="text-sm text-muted-foreground text-center">
-            &copy; {new Date().getFullYear()} GymRat+. Todos los derechos reservados.
-          </p>
-        </div>
-      </div>
-    </footer>
+      </footer>
     </div>
   );
 }

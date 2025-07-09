@@ -96,7 +96,12 @@ interface WorkoutAssignmentDialogProps {
   studentName: string;
 }
 
-export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, studentName }: WorkoutAssignmentDialogProps) {
+export function WorkoutAssignmentDialog({
+  open,
+  onOpenChange,
+  studentId,
+  studentName,
+}: WorkoutAssignmentDialogProps) {
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [selectedExercises, setSelectedExercises] = useState<DayExercise[]>([]);
   const [submitting, setSubmitting] = useState(false);
@@ -137,7 +142,7 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
   const handleDeleteDay = (dayToDelete: string) => {
     setDays(days.filter((day) => day !== dayToDelete));
     setSelectedExercises(
-      selectedExercises.filter((ex) => ex.day !== dayToDelete)
+      selectedExercises.filter((ex) => ex.day !== dayToDelete),
     );
     if (currentDay === dayToDelete) {
       setCurrentDay("");
@@ -151,12 +156,12 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
     }
 
     const existingIndex = selectedExercises.findIndex(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
 
     if (existingIndex >= 0) {
       setSelectedExercises(
-        selectedExercises.filter((_, index) => index !== existingIndex)
+        selectedExercises.filter((_, index) => index !== existingIndex),
       );
     } else {
       setSelectedExercises([
@@ -248,7 +253,7 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
 
   const isExerciseSelected = (exerciseId: string) => {
     return selectedExercises.some(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
   };
 
@@ -324,10 +329,7 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
                   >
                     Resistencia (más de 12 repeticiones)
                   </SelectItem>
-                  <SelectItem
-                    className="text-xs md:text-sm"
-                    value="movilidad"
-                  >
+                  <SelectItem className="text-xs md:text-sm" value="movilidad">
                     Movilidad y flexibilidad
                   </SelectItem>
                 </SelectContent>
@@ -444,13 +446,16 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
             <ScrollArea className="h-[300px] mt-0 pr-4">
               <div className="grid grid-cols-1 gap-4">
                 {Object.entries(
-                  filteredExercises.reduce((acc, exercise) => {
-                    if (!acc[exercise.muscleGroup]) {
-                      acc[exercise.muscleGroup] = [];
-                    }
-                    acc[exercise.muscleGroup].push(exercise);
-                    return acc;
-                  }, {} as Record<string, Exercise[]>)
+                  filteredExercises.reduce(
+                    (acc, exercise) => {
+                      if (!acc[exercise.muscleGroup]) {
+                        acc[exercise.muscleGroup] = [];
+                      }
+                      acc[exercise.muscleGroup].push(exercise);
+                      return acc;
+                    },
+                    {} as Record<string, Exercise[]>,
+                  ),
                 ).map(([muscleGroup, groupExercises]) => (
                   <div key={muscleGroup} className="space-y-2">
                     <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
@@ -516,11 +521,7 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
             <Tabs defaultValue={days[0]} className="w-full">
               <TabsList className="flex flex-wrap h-auto gap-4">
                 {days.map((day) => (
-                  <TabsTrigger
-                    key={day}
-                    value={day}
-                    className="text-xs flex-1"
-                  >
+                  <TabsTrigger key={day} value={day} className="text-xs flex-1">
                     {day}
                   </TabsTrigger>
                 ))}
@@ -533,7 +534,7 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
                       .filter((ex) => ex.day === day)
                       .map((ex) => {
                         const exercise = exercises.find(
-                          (e) => e.id === ex.exerciseId
+                          (e) => e.id === ex.exerciseId,
                         );
                         return (
                           <div
@@ -610,9 +611,11 @@ export function WorkoutAssignmentDialog({ open, onOpenChange, studentId, student
                 size="sm"
                 onClick={handleSubmit}
                 className="text-xs"
-                disabled={submitting || isAssigning || selectedExercises.length === 0}
+                disabled={
+                  submitting || isAssigning || selectedExercises.length === 0
+                }
               >
-                {(submitting || isAssigning) ? (
+                {submitting || isAssigning ? (
                   <>
                     <Icons.spinner className="h-2 w-2 animate-spin" />
                     Generando y asignando

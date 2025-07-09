@@ -3,7 +3,7 @@ import { createNotification } from "@/lib/notification-service";
 // Workout notifications
 export async function createWorkoutReminderNotification(
   userId: string,
-  workoutName: string
+  workoutName: string,
 ) {
   return createNotification({
     userId,
@@ -15,7 +15,7 @@ export async function createWorkoutReminderNotification(
 
 export async function createWorkoutCompletedNotification(
   userId: string,
-  workoutName: string
+  workoutName: string,
 ) {
   return createNotification({
     userId,
@@ -28,7 +28,7 @@ export async function createWorkoutCompletedNotification(
 export async function createWorkoutSessionStartedNotification(
   userId: string,
   workoutName: string,
-  day: string
+  day: string,
 ) {
   return createNotification({
     userId,
@@ -60,7 +60,7 @@ export async function createWaterGoalCompletedNotification(userId: string) {
 // Meal notifications
 export async function createMealReminderNotification(
   userId: string,
-  mealType: string
+  mealType: string,
 ) {
   return createNotification({
     userId,
@@ -91,7 +91,7 @@ export async function createWeightLoggedNotification(userId: string) {
 
 export async function createWeightGoalAchievedNotification(
   userId: string,
-  goalWeight: number
+  goalWeight: number,
 ) {
   return createNotification({
     userId,
@@ -104,7 +104,7 @@ export async function createWeightGoalAchievedNotification(
 // Goal notifications
 export async function createGoalCreatedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ) {
   return createNotification({
     userId,
@@ -117,13 +117,13 @@ export async function createGoalCreatedNotification(
 export async function createGoalProgressUpdatedNotification(
   userId: string,
   goalTitle: string,
-  progress: number
+  progress: number,
 ) {
   return createNotification({
     userId,
     title: "Progreso actualizado",
     message: `Has actualizado tu progreso en el objetivo "${goalTitle}" a ${progress.toFixed(
-      1
+      1,
     )}%`,
     type: "goal",
   });
@@ -131,7 +131,7 @@ export async function createGoalProgressUpdatedNotification(
 
 export async function createGoalReminderNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ) {
   return createNotification({
     userId,
@@ -143,7 +143,7 @@ export async function createGoalReminderNotification(
 
 export async function createGoalAchievedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ) {
   return createNotification({
     userId,
@@ -155,7 +155,7 @@ export async function createGoalAchievedNotification(
 
 export async function createGoalCompletedNotification(
   userId: string,
-  goalTitle: string
+  goalTitle: string,
 ) {
   return createNotification({
     userId,
@@ -169,7 +169,7 @@ export async function createGoalCompletedNotification(
 export async function createSystemNotification(
   userId: string,
   title: string,
-  message: string
+  message: string,
 ) {
   return createNotification({
     userId,
