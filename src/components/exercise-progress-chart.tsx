@@ -176,11 +176,13 @@ export function ExerciseProgressChart() {
     const firstRecord = filteredData[0];
     const lastRecord = filteredData[filteredData.length - 1];
 
+    if (!firstRecord || !lastRecord) return null;
+
     return selectedExercises.reduce(
       (acc, exercise) => {
-        const first = firstRecord.exercises[exercise]?.weight || 0;
-        const last = lastRecord.exercises[exercise]?.weight || 0;
-        const reps = lastRecord.exercises[exercise]?.reps || 0;
+        const first = firstRecord.exercises[exercise]?.weight ?? 0;
+        const last = lastRecord.exercises[exercise]?.weight ?? 0;
+        const reps = lastRecord.exercises[exercise]?.reps ?? 0;
 
         acc[exercise] = {
           change: last - first,

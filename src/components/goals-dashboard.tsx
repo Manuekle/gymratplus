@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Award01Icon,
   Calendar01Icon,
   SquareArrowUp01Icon,
   Target02Icon,
