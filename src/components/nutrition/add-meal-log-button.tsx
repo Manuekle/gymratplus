@@ -277,10 +277,10 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
     try {
       // Crear una fecha con la zona horaria local
       const localDate = new Date(mealDate);
-      const [hours, minutes] = mealTime.split(":").map(Number);
+      const [hours = 0, minutes = 0] = mealTime.split(":").map(Number);
 
-      // Establecer las horas y minutos
-      localDate.setHours(hours, minutes, 0, 0);
+      // Establecer las horas y minutos con valores por defecto si son undefined
+      localDate.setHours(hours || 0, minutes || 0, 0, 0);
 
       // Crear un array de promesas para enviar cada alimento
       const promises = selectedItems.map(async (selectedItem) => {
@@ -367,12 +367,17 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
   };
 
   const updateItemQuantity = (index: number, newQuantity: number) => {
-    const newSelectedItems = [...selectedItems];
-    newSelectedItems[index] = {
-      ...newSelectedItems[index],
-      quantity: Math.max(0.1, newQuantity),
-    };
-    setSelectedItems(newSelectedItems);
+    setSelectedItems(prevItems => {
+      const newItems = [...prevItems];
+      const currentItem = newItems[index];
+      if (currentItem) {
+        newItems[index] = {
+          ...currentItem,
+          quantity: Math.max(0.1, newQuantity)
+        };
+      }
+      return newItems;
+    });
   };
 
   const removeItem = (index: number) => {

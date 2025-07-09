@@ -168,8 +168,13 @@ export function WeightChart() {
   const calculateWeightChange = () => {
     if (filteredData.length < 2) return null;
 
-    const firstWeight = filteredData[0].weight;
-    const lastWeight = filteredData[filteredData.length - 1].weight;
+    const firstItem = filteredData[0];
+    const lastItem = filteredData[filteredData.length - 1];
+    
+    if (!firstItem || !lastItem) return null;
+
+    const firstWeight = firstItem.weight;
+    const lastWeight = lastItem.weight;
 
     return {
       change: lastWeight - firstWeight,

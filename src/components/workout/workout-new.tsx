@@ -37,7 +37,9 @@ export function WorkoutNew({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
   const [isLoading, setIsLoading] = useState(false);
-  const [currentDay, setCurrentDay] = useState<string>(selectedDay);
+  const [currentDay, setCurrentDay] = useState<string>(
+    selectedDay || (days.length > 0 ? days[0] : '') as string
+  );
 
   // Función para cargar los ejercicios del workout filtrados por día
   const fetchExercises = useCallback(async () => {

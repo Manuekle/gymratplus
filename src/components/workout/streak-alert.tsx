@@ -35,6 +35,7 @@ export function StreakAlert({ streak, show, onClose }: StreakAlertProps) {
       }, 5000);
       return () => clearTimeout(timer);
     }
+    return undefined; // Explicit return for the false case
   }, [show, onClose]);
 
   return (

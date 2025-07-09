@@ -127,10 +127,11 @@ export function MealLogList({
   const mealsByType: Record<string, MealLog[]> = {};
 
   mealLogs.forEach((meal) => {
-    if (!mealsByType[meal.mealType]) {
-      mealsByType[meal.mealType] = [];
+    const mealType = meal.mealType || 'other';
+    if (!mealsByType[mealType]) {
+      mealsByType[mealType] = [];
     }
-    mealsByType[meal.mealType].push(meal);
+    mealsByType[mealType].push(meal);
   });
 
   // Sort meal types in a specific order
@@ -152,7 +153,7 @@ export function MealLogList({
             </h3>
           </div>
 
-          {mealsByType[mealType].map((meal) => (
+          {mealsByType[mealType]?.map((meal) => (
             <div key={meal.id}>
               <div className="flex items-baseline justify-between text-sm py-2">
                 <span className="text-muted-foreground text-xs">

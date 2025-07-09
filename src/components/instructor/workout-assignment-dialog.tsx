@@ -180,14 +180,19 @@ export function WorkoutAssignmentDialog({
   const handleNextDay = () => {
     const currentIndex = days.indexOf(currentDay);
     const nextIndex = (currentIndex + 1) % days.length;
-    setCurrentDay(days[nextIndex]);
+    const nextDay = days[nextIndex];
+    if (nextDay) {
+      setCurrentDay(nextDay);
+    }
   };
 
   const handlePreviousDay = () => {
     const currentIndex = days.indexOf(currentDay);
-    const previousIndex =
-      currentIndex === 0 ? days.length - 1 : currentIndex - 1;
-    setCurrentDay(days[previousIndex]);
+    const previousIndex = currentIndex === 0 ? days.length - 1 : currentIndex - 1;
+    const previousDay = days[previousIndex];
+    if (previousDay) {
+      setCurrentDay(previousDay);
+    }
   };
 
   const handleSubmit = async () => {
@@ -446,15 +451,18 @@ export function WorkoutAssignmentDialog({
             <ScrollArea className="h-[300px] mt-0 pr-4">
               <div className="grid grid-cols-1 gap-4">
                 {Object.entries(
-                  filteredExercises.reduce(
+                  filteredExercises.reduce<Record<string, Exercise[]>>(
                     (acc, exercise) => {
-                      if (!acc[exercise.muscleGroup]) {
-                        acc[exercise.muscleGroup] = [];
+                      if (exercise?.muscleGroup) {
+                        const muscleGroup = exercise.muscleGroup;
+                        if (!acc[muscleGroup]) {
+                          acc[muscleGroup] = [];
+                        }
+                        acc[muscleGroup].push(exercise);
                       }
-                      acc[exercise.muscleGroup].push(exercise);
                       return acc;
                     },
-                    {} as Record<string, Exercise[]>,
+                    {},
                   ),
                 ).map(([muscleGroup, groupExercises]) => (
                   <div key={muscleGroup} className="space-y-2">

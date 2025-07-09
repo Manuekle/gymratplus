@@ -88,16 +88,17 @@ export default function WorkoutsTable() {
 
   // Touch handlers for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
-    if (totalSlides <= 1) return;
+    if (totalSlides <= 1 || !e.touches[0]) return;
 
     setIsDragging(true);
-    setStartX(e.touches[0].clientX);
-    setCurrentX(e.touches[0].clientX);
+    const touch = e.touches[0];
+    setStartX(touch.clientX);
+    setCurrentX(touch.clientX);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || totalSlides <= 1) return;
-
+    if (!isDragging || totalSlides <= 1 || !e.touches[0]) return;
+    
     setCurrentX(e.touches[0].clientX);
   };
 
@@ -224,8 +225,8 @@ export default function WorkoutsTable() {
 
   // Calcular el offset del drag para feedback visual (solo en desktop)
   const dragOffset =
-    isDragging && window.innerWidth >= 768
-      ? ((currentX - startX) / containerRef.current?.clientWidth || 0) * 100
+    isDragging && window.innerWidth >= 768 && containerRef.current
+      ? ((currentX - startX) / containerRef.current.clientWidth) * 100
       : 0;
 
   return (

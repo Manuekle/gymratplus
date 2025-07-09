@@ -43,7 +43,10 @@ export function StepFrequency({ value, onChange }: StepFrequencyProps) {
           min={1}
           max={7}
           step={1}
-          onValueChange={(vals) => onChange(vals[0])}
+          onValueChange={(vals) => {
+            const val = vals[0] ?? 1; // Default to 1 if undefined
+            onChange(val);
+          }}
           className="py-1"
         />
 

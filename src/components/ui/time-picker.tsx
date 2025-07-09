@@ -27,9 +27,12 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
 
   useEffect(() => {
     if (value) {
-      const [hour, minute] = value.split(":");
+      const [hour = '00', minute = '00'] = value.split(":");
       setSelectedHour(hour);
       setSelectedMinute(minute);
+    } else {
+      setSelectedHour('00');
+      setSelectedMinute('00');
     }
   }, [value]);
 
