@@ -518,7 +518,7 @@ export default function ProfilePage() {
                       Experiencia
                     </Label>
                     <Select
-                      defaultValue={session?.user?.experienceLevel}
+                      defaultValue={session?.user?.experienceLevel || ''}
                       value={experienceLevel}
                       onValueChange={(value) => setExperienceLevel(value)}
                     >

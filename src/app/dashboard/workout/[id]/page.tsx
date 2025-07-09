@@ -98,7 +98,7 @@ export default function WorkouPage() {
         </div>
 
         <div className="pt-4">
-          <Tabs defaultValue={workout.days[0]?.day}>
+          <Tabs defaultValue={workout.days[0]?.day || ''}>
             {/* <TabsList className="mb-4 flex flex-wrap h-auto gap-4">
               {workout.days.map((day, index) => (
                 <TabsTrigger

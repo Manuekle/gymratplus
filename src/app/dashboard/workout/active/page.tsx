@@ -78,9 +78,11 @@ export default function ActiveWorkoutPage() {
     Record<string, NodeJS.Timeout>
   >({});
 
-  const [inputValues, setInputValues] = useState<
-    Record<string, { weight: string; reps: string }>
-  >({});
+  interface InputValue {
+    weight?: string | undefined;
+    reps?: string | undefined;
+  }
+  const [inputValues, setInputValues] = useState<Record<string, InputValue>>({});
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
 
   // Cargar la sesión de entrenamiento activa
@@ -223,21 +225,16 @@ export default function ActiveWorkoutPage() {
 
         if (response.ok) {
           // Actualizar los valores de input después de una actualización exitosa
-          if (data.weight !== undefined) {
-            setInputValues((prev) => ({
+          setInputValues((prev) => {
+            const currentValues = prev[setId] || { weight: "", reps: "" };
+            return {
               ...prev,
               [setId]: {
-                ...prev[setId],
-                weight: data.weight?.toString() || "",
+                weight: data.weight !== null && data.weight !== undefined ? data.weight.toString() : currentValues.weight,
+                reps: data.reps !== null && data.reps !== undefined ? data.reps.toString() : currentValues.reps,
               },
-            }));
-          }
-          if (data.reps !== undefined) {
-            setInputValues((prev) => ({
-              ...prev,
-              [setId]: { ...prev[setId], reps: data.reps?.toString() || "" },
-            }));
-          }
+            };
+          });
 
           // Si se marca como completado, iniciar temporizador de descanso
           if (data.completed) {
@@ -293,24 +290,13 @@ export default function ActiveWorkoutPage() {
 
         if (response.ok) {
           // Actualizar los valores de input después de una actualización exitosa
-          if (dataToSend.weight !== undefined) {
-            setInputValues((prev) => ({
-              ...prev,
-              [setId]: {
-                ...prev[setId],
-                weight: dataToSend.weight?.toString() || "",
-              },
-            }));
-          }
-          if (dataToSend.reps !== undefined) {
-            setInputValues((prev) => ({
-              ...prev,
-              [setId]: {
-                ...prev[setId],
-                reps: dataToSend.reps?.toString() || "",
-              },
-            }));
-          }
+          setInputValues(prev => ({
+            ...prev,
+            [setId]: {
+              ...(dataToSend.weight != null ? { weight: dataToSend.weight.toString() } : {}),
+              ...(dataToSend.reps != null ? { reps: dataToSend.reps.toString() } : {})
+            }
+          }));
         }
       } catch (error) {
         console.error("Error al actualizar set:", error);
@@ -644,9 +630,12 @@ export default function ActiveWorkoutPage() {
                             value={inputValues[set.id]?.weight || ""}
                             onChange={(e) => {
                               const value = e.target.value;
-                              setInputValues((prev) => ({
+                              setInputValues(prev => ({
                                 ...prev,
-                                [set.id]: { ...prev[set.id], weight: value },
+                                [set.id]: {
+                                  ...prev[set.id],
+                                  weight: value
+                                }
                               }));
                               // Solo actualizamos el estado si el valor es válido
                               if (value === "" || !isNaN(Number(value))) {
@@ -676,9 +665,12 @@ export default function ActiveWorkoutPage() {
                             value={inputValues[set.id]?.reps || ""}
                             onChange={(e) => {
                               const value = e.target.value;
-                              setInputValues((prev) => ({
+                              setInputValues(prev => ({
                                 ...prev,
-                                [set.id]: { ...prev[set.id], reps: value },
+                                [set.id]: {
+                                  ...prev[set.id],
+                                  reps: value
+                                }
                               }));
                               // Solo actualizamos el estado si el valor es válido
                               if (value === "" || !isNaN(Number(value))) {

@@ -3,14 +3,14 @@ import { Button } from "../ui/button";
 
 export default function UpcomingEvents() {
   const today = new Date();
-  const dayNames = [
+  const dayNames: string[] = [
     "Domingo",
     "Lunes",
     "Martes",
     "Miércoles",
     "Jueves",
     "Viernes",
-    "Sábado",
+    "Sábado"
   ];
   const monthNames = [
     "Enero",
@@ -27,9 +27,7 @@ export default function UpcomingEvents() {
     "Diciembre",
   ];
 
-  const todayFormatted = `${dayNames[today.getDay()]}, ${today.getDate()} de ${
-    monthNames[today.getMonth()]
-  }`;
+  const todayFormatted = `${dayNames[today.getDay()]}, ${today.getDate()} de ${monthNames[today.getMonth()]}`;
 
   const events = [
     {
@@ -124,7 +122,7 @@ export default function UpcomingEvents() {
                 className="flex-1 text-center p-2 rounded-lg border"
               >
                 <p className="text-xs text-muted-foreground">
-                  {dayNames[futureDate.getDay()].slice(0, 3)}
+                  {dayNames[futureDate.getDay()]?.slice(0, 3) ?? 'Día'}
                 </p>
                 <p className="text-lg font-semibold ">{futureDate.getDate()}</p>
                 <div className="mt-1 flex justify-center">

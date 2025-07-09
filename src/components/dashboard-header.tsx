@@ -18,7 +18,8 @@ export const DashboardHeader = () => {
     students: "Mis Alumnos",
   };
 
-  const pageTitle = titles[pathname.split("/")[2]] || "Dashboard";
+  const pathSegment = pathname.split("/")[2];
+  const pageTitle = pathSegment ? titles[pathSegment] || "Dashboard" : "Dashboard";
   const isInstructor = session?.user?.isInstructor;
 
   return (
@@ -28,7 +29,7 @@ export const DashboardHeader = () => {
       </h1>
       <Tabs
         defaultValue="dashboard"
-        value={pathname.split("/")[2]}
+        value={pathname.split("/")[2] || "dashboard"}
         className="space-y-4"
       >
         {/* Contenedor con scroll solo en móviles */}
