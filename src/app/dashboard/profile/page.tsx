@@ -63,7 +63,10 @@ export default function ProfilePage() {
       setDailyActivity(storedData.profile?.dailyActivity || "");
       setGoal(storedData.profile?.goal || "");
       setDietaryPreference(storedData.profile?.dietaryPreference || "");
-      setMonthsTraining(storedData.profile?.monthsTraining || 0);
+      setMonthsTraining(
+        (storedData as { profile?: { monthsTraining?: number } })?.profile
+          ?.monthsTraining || 0
+      );
     }
   }, [session]);
 
