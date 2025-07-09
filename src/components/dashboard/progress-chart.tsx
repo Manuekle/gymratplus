@@ -351,7 +351,7 @@ export default function ProgressChart() {
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
             <h3 className="text-sm font-medium">No hay datos disponibles</h3>
-            <p className="text-muted-foreground text-xs mb-4">
+            <p className="text-muted-foreground text-center text-xs mb-4">
                 Asegúrate de establecer un objetivo para hacer seguimiento de tu progreso
               </p>
           </div>

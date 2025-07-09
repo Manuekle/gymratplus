@@ -416,7 +416,7 @@ export default function StudentsListPage() {
                 placeholder="Buscar por nombre o email..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 text-xs"
               />
             </div>
             <Select value={statusFilter} onValueChange={setStatusFilter}>

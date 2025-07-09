@@ -7,6 +7,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CountrySelector } from "@/components/country-selector";
 import {
   Form,
   FormControl,
@@ -164,8 +165,9 @@ export function InstructorProfileForm({
                   <FormControl>
                     <Textarea
                       placeholder="Cuéntanos sobre tu experiencia y filosofía como instructor."
-                      className="resize-y"
+                      className="resize-none text-xs"
                       {...field}
+                      rows={4}
                     />
                   </FormControl>
                   <FormDescription>
@@ -185,8 +187,9 @@ export function InstructorProfileForm({
                   <FormControl>
                     <Textarea
                       placeholder="Detalla tus certificaciones, especialidades o el tipo de entrenamiento que ofreces."
-                      className="resize-y"
+                      className="resize-none text-xs"
                       {...field}
+                      rows={4}
                     />
                   </FormControl>
                   <FormDescription>
@@ -206,6 +209,7 @@ export function InstructorProfileForm({
                   <FormLabel>Precio por mes (USD)</FormLabel>
                   <FormControl>
                     <Input
+                      className="text-xs"
                       type="number"
                       placeholder="Ej: 50.00"
                       {...field}
@@ -227,7 +231,11 @@ export function InstructorProfileForm({
                 <FormItem>
                   <FormLabel>Email de Contacto</FormLabel>
                   <FormControl>
-                    <Input placeholder="tu@ejemplo.com" {...field} />
+                    <Input
+                      className="text-xs"
+                      placeholder="tu@ejemplo.com"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Email donde los alumnos pueden contactarte directamente.
@@ -244,7 +252,11 @@ export function InstructorProfileForm({
                 <FormItem>
                   <FormLabel>Teléfono de Contacto</FormLabel>
                   <FormControl>
-                    <Input placeholder="+1234567890" {...field} />
+                    <Input
+                      className="text-xs"
+                      placeholder="+1234567890"
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Número de teléfono donde los alumnos pueden contactarte.
@@ -262,7 +274,11 @@ export function InstructorProfileForm({
                   <FormItem>
                     <FormLabel>País</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej: España" {...field} />
+                      <CountrySelector
+                        value={field.value}
+                        onValueChange={field.onChange}
+                        placeholder="Selecciona un país"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,7 +291,11 @@ export function InstructorProfileForm({
                   <FormItem>
                     <FormLabel>Ciudad</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ej: Madrid" {...field} />
+                      <Input
+                        className="text-xs"
+                        placeholder="Ej: Madrid"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

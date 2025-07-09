@@ -313,7 +313,7 @@ export default function ProfilePage() {
 
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
               <div>
-                <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+                <div className="flex flex-col items-center md:flex-row md:items-center gap-2 md:gap-4">
                   <h2 className="text-2xl font-semibold  tracking-heading">
                     {session?.user?.name}
                   </h2>

@@ -28,6 +28,7 @@ import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { InstructorProfileForm } from "@/components/instructor/instructor-profile-form";
+import { ArrowRight01Icon } from "hugeicons-react";
 
 interface StudentData {
   id: string;
@@ -61,7 +62,7 @@ export default function InstructorDashboardPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [students, setStudents] = useState<StudentData[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>(
-    [],
+    []
   );
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [stats, setStats] = useState<{
@@ -83,10 +84,10 @@ export default function InstructorDashboardPage() {
       const data: (StudentData | PendingRequestData)[] = await response.json();
 
       const activeStudents = data.filter(
-        (item): item is StudentData => item.status === "accepted",
+        (item): item is StudentData => item.status === "accepted"
       );
       const pRequests = data.filter(
-        (item): item is PendingRequestData => item.status === "pending",
+        (item): item is PendingRequestData => item.status === "pending"
       );
 
       setStudents(activeStudents);
@@ -144,7 +145,7 @@ export default function InstructorDashboardPage() {
         `/api/instructors/students/${requestId}/accept`,
         {
           method: "POST",
-        },
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -329,21 +330,21 @@ export default function InstructorDashboardPage() {
       {/* Active Students */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex justify-start items-start md:justify-between">
             <div className="space-y-1">
               <CardTitle className="text-2xl tracking-heading font-semibold">
-                Alumnos Activos
+                Alumnos activos
               </CardTitle>
               <CardDescription className="text-xs">
                 Supervisa el progreso de tus alumnos
               </CardDescription>
             </div>
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/dashboard/students/list">
-                Ver todos
-                <ArrowRight className="h-4 w-4 ml-1" />
-              </Link>
-            </Button>
+            <Link
+              href="/dashboard/students/list"
+              className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
+            >
+              Ver todos <ArrowRight01Icon className="h-4 w-4" />
+            </Link>
           </div>
         </CardHeader>
         <CardContent>
