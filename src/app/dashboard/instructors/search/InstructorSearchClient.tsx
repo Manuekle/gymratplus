@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { InstructorProfile, User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CheckCircle2, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { CountrySelector } from "@/components/country-selector";
 import {
   Select,
@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/select";
 import { useCountries } from "@/hooks/use-countries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tick02Icon } from "hugeicons-react";
 
 interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
@@ -369,7 +370,7 @@ export default function InstructorSearchClient() {
                           {instructor.name}
                         </CardTitle>
                         {instructor.instructorProfile?.isVerified && (
-                          <CheckCircle2 className="text-green-600 w-4 h-4" />
+                          <Tick02Icon className="text-emerald-600 w-4 h-4" />
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -472,7 +473,7 @@ export default function InstructorSearchClient() {
                           instructor.instructorProfile?.id || "",
                         ) ? (
                         <>
-                          <CheckCircle2 className="mr-2 h-3 w-3" />
+                          <Tick02Icon className="mr-2 h-3 w-3" />
                           Solicitud Enviada
                         </>
                       ) : (

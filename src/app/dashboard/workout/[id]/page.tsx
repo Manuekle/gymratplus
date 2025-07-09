@@ -4,13 +4,25 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft01Icon, Calendar01Icon } from "hugeicons-react";
+import { ArrowLeft01Icon, Calendar01Icon, Delete02Icon } from "hugeicons-react";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import StartWorkout from "@/components/workouts/start-workout";
 import { WorkoutNew } from "@/components/workout/workout-new";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { Input } from "@/components/ui/input";
+import { toast } from "sonner";
 
 interface Workout {
   id: string;
@@ -44,6 +56,9 @@ export default function WorkouPage() {
   const { data: session } = useSession();
 
   const [workout, setWorkout] = useState<Workout | null>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [confirmationText, setConfirmationText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     if (!session) return;
@@ -60,6 +75,33 @@ export default function WorkouPage() {
 
     fetchWorkout();
   }, [id, session, router]);
+
+  const handleDeleteWorkout = async () => {
+    if (!workout) return;
+
+    try {
+      setIsDeleting(true);
+      const response = await fetch(`/api/workouts/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Workout eliminado correctamente");
+        router.push("/dashboard/workout");
+      } else {
+        const error = await response.json();
+        throw new Error(error.message || "Error al eliminar el workout");
+      }
+    } catch (error) {
+      console.error("Error deleting workout:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Error al eliminar el workout"
+      );
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteDialogOpen(false);
+    }
+  };
 
   if (!workout) return <WorkoutSkeleton />;
 
@@ -90,6 +132,15 @@ export default function WorkouPage() {
             </CardDescription>
           </div>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-white bg-destructive hover:bg-destructive/10 hover:text-white"
+              onClick={() => setIsDeleteDialogOpen(true)}
+            >
+              <Delete02Icon className="h-4 w-4 mr-2" />
+              Eliminar
+            </Button>
             <Badge variant="outline" className="flex items-center gap-1">
               <Calendar01Icon className="h-3 w-3" />
               {workout.days.length} días
@@ -98,19 +149,7 @@ export default function WorkouPage() {
         </div>
 
         <div className="pt-4">
-          <Tabs defaultValue={workout.days[0]?.day || ''}>
-            {/* <TabsList className="mb-4 flex flex-wrap h-auto gap-4">
-              {workout.days.map((day, index) => (
-                <TabsTrigger
-                  key={index}
-                  value={day.day}
-                  className="flex-1 text-xs"
-                >
-                  {day.day}
-                </TabsTrigger>
-              ))}
-            </TabsList> */}
-
+          <Tabs defaultValue={workout.days[0]?.day || ""}>
             {workout.days.map((day, dayIndex) => (
               <TabsContent key={dayIndex} value={day.day}>
                 <WorkoutNew
@@ -123,6 +162,44 @@ export default function WorkouPage() {
           </Tabs>
         </div>
       </div>
+
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              ¿Estás seguro de eliminar este workout?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta acción no se puede deshacer. Esto eliminará permanentemente
+              el workout "{workout.name}" y todos sus datos asociados.
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">
+                  Escribe el nombre del workout para confirmar:
+                </p>
+                <Input
+                  placeholder={`Escribe "${workout.name}"`}
+                  value={confirmationText}
+                  onChange={(e) => setConfirmationText(e.target.value)}
+                  className="mt-1"
+                />
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={confirmationText !== workout.name || isDeleting}
+              onClick={handleDeleteWorkout}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? "Eliminando..." : "Eliminar"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

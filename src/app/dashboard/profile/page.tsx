@@ -25,6 +25,8 @@ import {
   BirthdayCakeIcon,
   Calendar01Icon,
   Clock01Icon,
+  DollarCircleIcon,
+  HandGripIcon,
   KidIcon,
   Mail01Icon,
   SmartPhone01Icon,
@@ -32,6 +34,8 @@ import {
   StarIcon,
   SteakIcon,
   Target02Icon,
+  Tick02Icon,
+  UserGroupIcon,
   WorkoutGymnasticsIcon,
 } from "hugeicons-react";
 import { Button } from "@/components/ui/button";
@@ -40,7 +44,6 @@ import { Icons } from "@/components/icons";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
 import { InstructorRegistrationForm } from "@/components/instructor/InstructorRegistrationForm";
 import { Switch } from "@/components/ui/switch";
-import { CheckCircle2, Star, Users, DollarSign } from "lucide-react";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -674,7 +677,7 @@ export default function ProfilePage() {
                     <Separator />
                   </div>
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <StarIcon className="h-5 w-5 text-muted-foreground" />
+                    <HandGripIcon className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">
                         Meses entrenando
@@ -980,19 +983,19 @@ export default function ProfilePage() {
               <ul className="space-y-2">
                 {[
                   {
-                    icon: CheckCircle2,
+                    icon: Tick02Icon,
                     text: "Gana dinero compartiendo tu experiencia",
                   },
                   {
-                    icon: Users,
+                    icon: UserGroupIcon,
                     text: "Accede a una comunidad de alumnos motivados",
                   },
                   {
-                    icon: Star,
+                    icon: StarIcon,
                     text: "Mejora tu reputación y recibe valoraciones",
                   },
                   {
-                    icon: DollarSign,
+                    icon: DollarCircleIcon,
                     text: "Gestiona tus precios y disponibilidad",
                   },
                 ].map((benefit, index) => (
