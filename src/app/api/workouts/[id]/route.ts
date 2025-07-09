@@ -7,6 +7,10 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const id = url.pathname.split("/").pop();
 
+  if (!id) {
+    return NextResponse.json({ error: "Workout ID is required" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -102,9 +106,7 @@ function formatWorkoutPlan(
     // Extraer el grupo muscular del campo notes
     // Manejar el caso donde notes puede ser null
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
-    const muscleGroup = muscleGroupMatch
-      ? muscleGroupMatch[1].trim()
-      : "General";
+    const muscleGroup = muscleGroupMatch?.[1]?.trim() || "General";
 
     if (!acc[muscleGroup]) acc[muscleGroup] = [];
     acc[muscleGroup].push(ex);
