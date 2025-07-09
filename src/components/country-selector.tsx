@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, Globe } from "lucide-react";
+import { Tick02Icon, ArrowDown01Icon, Globe02Icon } from "hugeicons-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { cn } from "@/lib/utils";
@@ -89,7 +89,7 @@ export function CountrySelector({
           disabled
         >
           <span className="text-muted-foreground">Error cargando países</span>
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </div>
     );
@@ -127,7 +127,7 @@ export function CountrySelector({
                 crossOrigin="anonymous"
               />
               <span className="flex-1">{country.name.common}</span>
-              <Check
+              <Tick02Icon
                 className={cn(
                   "ml-auto h-4 w-4",
                   value === country.cca2 ? "opacity-100" : "opacity-0",
@@ -168,12 +168,12 @@ export function CountrySelector({
                   </>
                 ) : (
                   <>
-                    <Globe className="h-4 w-4 text-muted-foreground" />
+                    <Globe02Icon className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{placeholder}</span>
                   </>
                 )}
               </div>
-              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -212,12 +212,12 @@ export function CountrySelector({
                 </>
               ) : (
                 <>
-                  <Globe className="h-4 w-4 text-muted-foreground" />
+                  <Globe02Icon className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{placeholder}</span>
                 </>
               )}
             </div>
-            <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </DrawerTrigger>
         <DrawerContent>

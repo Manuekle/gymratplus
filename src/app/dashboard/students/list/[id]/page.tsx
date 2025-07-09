@@ -16,14 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
-import {
-  Flame,
-  Target,
-  Activity,
-  Clock,
-  ArrowLeft,
-  Dumbbell,
-} from "lucide-react";
+
 import Link from "next/link";
 import {
   Dialog,
@@ -32,6 +25,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Activity02Icon, ArrowLeft01Icon, Clock01Icon, Dumbbell01Icon, FireIcon, Target01Icon } from "hugeicons-react";
 
 interface StudentDetail {
   id: string;
@@ -154,7 +148,7 @@ export default function StudentDetailPage() {
         </p>
         <Button asChild variant="outline">
           <Link href="/dashboard/students/list">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Volver
+            <ArrowLeft01Icon className="h-4 w-4 mr-2" /> Volver
           </Link>
         </Button>
       </div>
@@ -165,7 +159,7 @@ export default function StudentDetailPage() {
     <div className="max-w-2xl mx-auto py-10 space-y-8">
       <Button asChild variant="ghost" size="sm">
         <Link href="/dashboard/students/list">
-          <ArrowLeft className="h-4 w-4 mr-2" /> Volver
+          <ArrowLeft01Icon className="h-4 w-4 mr-2" /> Volver
         </Link>
       </Button>
       <Card>
@@ -197,17 +191,17 @@ export default function StudentDetailPage() {
           </div>
           <div className="flex gap-2 mb-2">
             <Badge variant="secondary" className="gap-1">
-              <Flame className="h-4 w-4" />
+              <FireIcon className="h-4 w-4" />
               Racha: {student.currentWorkoutStreak}
             </Badge>
             <Badge variant="secondary" className="gap-1">
-              <Dumbbell className="h-4 w-4" />
+              <Dumbbell01Icon className="h-4 w-4" />
               Entrenamientos: {student.totalWorkouts}
             </Badge>
           </div>
           <div className="flex gap-2 mb-2">
             <Badge variant="secondary" className="gap-1">
-              <Clock className="h-4 w-4" />
+              <Clock01Icon className="h-4 w-4" />
               Último:{" "}
               {student.lastWorkoutAt
                 ? isToday(new Date(student.lastWorkoutAt))
@@ -221,13 +215,13 @@ export default function StudentDetailPage() {
           <div className="flex gap-2 mb-2">
             {student.hasActiveWorkoutPlan && (
               <Badge variant="default" className="gap-1">
-                <Target className="h-4 w-4" />
+                <Target01Icon className="h-4 w-4" />
                 Plan de entrenamiento activo
               </Badge>
             )}
             {student.hasActiveMealPlan && (
               <Badge variant="default" className="gap-1">
-                <Activity className="h-4 w-4" />
+                <Activity02Icon className="h-4 w-4" />
                 Plan de nutrición activo
               </Badge>
             )}

@@ -14,17 +14,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import {
-  Mail,
-  Phone,
-  MapPin,
-  DollarSign,
-  GraduationCap,
-  Users,
-  Calendar,
-  Globe,
-} from "lucide-react";
+
 import Image from "next/image";
+import { Calendar01Icon, Dollar01Icon, GlobeIcon, GraduateMaleIcon, Mail01Icon, Mail02Icon, MapPinIcon, PhoneOff01Icon, UserGroupIcon } from "hugeicons-react";
 
 interface InstructorData {
   id: string;
@@ -161,7 +153,7 @@ export default function MyInstructorsPage() {
             <CardTitle className="text-sm font-medium">
               Total Instructores
             </CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <UserGroupIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">{instructors.length}</div>
@@ -174,7 +166,7 @@ export default function MyInstructorsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Modalidades</CardTitle>
-            <Globe className="h-4 w-4 text-muted-foreground" />
+            <GlobeIcon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -191,7 +183,7 @@ export default function MyInstructorsPage() {
             <CardTitle className="text-sm font-medium">
               Inversión Mensual
             </CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <Dollar01Icon className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -241,7 +233,7 @@ export default function MyInstructorsPage() {
                         {instructor.name || "Sin nombre"}
                       </CardTitle>
                       <CardDescription className="flex items-center gap-2 mt-1">
-                        <MapPin className="h-3 w-3" />
+                        <MapPinIcon className="h-3 w-3" />
                         {instructor.city && instructor.country ? (
                           <span className="flex items-center gap-1">
                             {instructor.city}, {instructor.country}
@@ -267,7 +259,7 @@ export default function MyInstructorsPage() {
                     <div className="flex flex-wrap gap-1">
                       {instructor.isRemote && (
                         <Badge variant="secondary" className="text-xs">
-                          <Globe className="h-3 w-3 mr-1" />
+                          <GlobeIcon className="h-3 w-3 mr-1" />
                           Remoto
                         </Badge>
                       )}
@@ -303,7 +295,7 @@ export default function MyInstructorsPage() {
                   {instructor.curriculum && (
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <GraduationCap className="h-4 w-4 text-muted-foreground" />
+                        <GraduateMaleIcon className="h-4 w-4 text-muted-foreground" />
                         <span className="text-sm font-medium">
                           Especialidades
                         </span>
@@ -315,7 +307,7 @@ export default function MyInstructorsPage() {
                   )}
 
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Calendar className="h-3 w-3" />
+                    <Calendar01Icon className="h-3 w-3" />
                     <span>Desde {formatDate(instructor.startDate)}</span>
                   </div>
                 </div>
@@ -328,7 +320,7 @@ export default function MyInstructorsPage() {
                   <div className="space-y-2">
                     {instructor.contactEmail ? (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-muted-foreground" />
+                        <Mail01Icon className="h-4 w-4 text-muted-foreground" />
                         <a
                           href={`mailto:${instructor.contactEmail}`}
                           className="text-sm hover:underline text-blue-600 dark:text-blue-400"
@@ -340,7 +332,7 @@ export default function MyInstructorsPage() {
 
                     {instructor.contactPhone ? (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-muted-foreground" />
+                        <PhoneOff01Icon className="h-4 w-4 text-muted-foreground" />
                         <a
                           href={`tel:${instructor.contactPhone}`}
                           className="text-sm hover:underline text-blue-600 dark:text-blue-400"
@@ -363,7 +355,7 @@ export default function MyInstructorsPage() {
                   {instructor.contactEmail && (
                     <Button size="sm" className="flex-1" asChild>
                       <a href={`mailto:${instructor.contactEmail}`}>
-                        <Mail className="h-4 w-4 mr-1" />
+                        <Mail02Icon className="h-4 w-4 mr-1" />
                         Contactar
                       </a>
                     </Button>
