@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import {
@@ -21,10 +21,12 @@ export async function GET(req: NextRequest) {
     const type = url.searchParams.get("type"); // Filtrar por tipo de objetivo
     const status = url.searchParams.get("status"); // Filtrar por estado
 
-    // Consulta base
-    const query: any = {
+    // Typed query with Prisma types
+    const query: Prisma.GoalFindManyArgs = {
       where: {
         userId: session.user.id,
+        ...(type && { type }),
+        ...(status && { status }),
       },
       orderBy: {
         createdAt: "desc",
@@ -38,14 +40,7 @@ export async function GET(req: NextRequest) {
       },
     };
 
-    // Añadir filtros si están presentes
-    if (type) {
-      query.where.type = type;
-    }
-
-    if (status) {
-      query.where.status = status;
-    }
+    // TypeScript now understands that query.where is defined
 
     console.log("Executing goals query:", JSON.stringify(query, null, 2));
     const goals = await prisma.goal.findMany(query);

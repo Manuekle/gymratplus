@@ -1,6 +1,5 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { type NextRequest, NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { foodsToCreate } from "@/data/food";
@@ -28,37 +27,35 @@ export async function GET(req: NextRequest) {
     const onlyFavorites = req.nextUrl.searchParams.get("favorites") === "true";
     const onlyCustom = req.nextUrl.searchParams.get("custom") === "true";
 
-    // Build the where clause
-    const where: any = {};
-
-    // Include system foods (userId is null) and user's custom foods
+    // Build the where clause with proper Prisma types
+    const where: Prisma.FoodWhereInput = {};
+    
+    // Handle custom vs system foods
     if (onlyCustom) {
       where.userId = userId;
     } else {
-      where.OR = [{ userId: null }, { userId: userId }];
+      where.OR = [
+        { userId: null },
+        { userId: userId }
+      ];
     }
 
-    // Add search filter if provided
+    // Apply search filter if provided
     if (searchQuery) {
-      where.name = {
-        contains: searchQuery,
-        mode: "insensitive",
-      };
+      where.name = { contains: searchQuery, mode: 'insensitive' };
     }
 
-    // Add category filter if provided
+    // Apply category filter if provided
     if (category) {
       where.category = category;
     }
 
-    // Add meal type filter if provided
+    // Apply meal type filter if provided
     if (mealType) {
-      where.mealType = {
-        has: mealType,
-      };
+      where.mealType = { has: mealType };
     }
 
-    // Add favorites filter if requested
+    // Apply favorites filter if needed
     if (onlyFavorites) {
       where.isFavorite = true;
     }
