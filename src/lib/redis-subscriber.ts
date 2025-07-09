@@ -200,5 +200,7 @@ export async function initNotificationSubscriber() {
     };
   } catch (error) {
     console.error("Failed to initialize Redis polling:", error);
+    // Devolvemos una función vacía en caso de error para mantener consistencia en el tipo de retorno
+    return () => {};
   }
 }

@@ -52,27 +52,32 @@ export async function getWaterIntakeHistory(
 ): Promise<{ date: string; liters: number }[]> {
   try {
     const historyKey = WATER_HISTORY_KEY(userId);
-    const history = await redis.zrange<string[]>(historyKey, 0, -1);
+    const history = await redis.zrange(historyKey, 0, -1);
 
-    if (!history || !Array.isArray(history)) {
+    if (!Array.isArray(history)) {
       return [];
     }
 
-    return history
-      .map((item) => {
-        try {
-          const [date, litersStr] = item.split(":");
-          return {
-            date,
-            liters: Number.parseFloat(litersStr),
-          };
-        } catch (e) {
-          console.error("Error parsing history item:", item, e);
-          return null;
-        }
-      })
-      .filter((item) => item !== null)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // Filtrar y procesar elementos
+    const result: Array<{ date: string; liters: number }> = [];
+    
+    for (const item of history) {
+      const itemStr = String(item || '');
+      if (!itemStr.includes(':')) continue;
+      
+      const parts = itemStr.split(':');
+      if (parts.length < 2) continue;
+      
+      const date = (parts[0] || '').trim();
+      const liters = Number.parseFloat(parts[1] || '');
+      
+      if (!date || isNaN(liters)) continue;
+      
+      result.push({ date, liters });
+    }
+    
+    // Ordenar por fecha
+    return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   } catch (error) {
     console.error("Error in getWaterIntakeHistory:", error);
     return [];
