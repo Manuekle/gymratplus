@@ -400,7 +400,7 @@ export default function StudentsListPage() {
       <Card>
         <CardHeader className="pb-4">
           <div className="flex items-center gap-2">
-            <CardTitle className="text-lg tracking-heading font-semibold">
+            <CardTitle className="text-2xl tracking-heading font-semibold">
               Filtros
             </CardTitle>
           </div>

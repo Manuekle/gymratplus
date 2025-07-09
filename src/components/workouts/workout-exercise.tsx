@@ -89,7 +89,7 @@ export default function WorkoutExercise({
       fetchExercises();
 
       // Si no hay día seleccionado, establecer el primero por defecto
-      if (!currentDay && days.length > 0) {
+      if (!currentDay && days.length > 0 && days[0]) {
         setCurrentDay(days[0]);
       }
     }
@@ -235,15 +235,19 @@ export default function WorkoutExercise({
               <ScrollArea className="h-[300px] rounded-md border p-4">
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(
-                    exercises.reduce(
+                    exercises.reduce<Record<string, Exercise[]>>(
                       (acc, exercise) => {
-                        if (!acc[exercise.muscleGroup]) {
-                          acc[exercise.muscleGroup] = [];
+                        // Ensure exercise has a muscleGroup before proceeding
+                        if (exercise && exercise.muscleGroup) {
+                          const muscleGroup = exercise.muscleGroup;
+                          if (!acc[muscleGroup]) {
+                            acc[muscleGroup] = [];
+                          }
+                          acc[muscleGroup].push(exercise);
                         }
-                        acc[exercise.muscleGroup].push(exercise);
                         return acc;
                       },
-                      {} as Record<string, Exercise[]>,
+                      {},
                     ),
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
