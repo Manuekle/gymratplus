@@ -27,29 +27,37 @@ export default function GymRatLanding() {
                 GymRat+
               </span>
             </div>
-            <div className="flex items-center space-x-8">
+            <div className="flex items-center xl:space-x-8 space-x-2">
               <Link
                 href="#caracteristicas"
-                className="text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
               >
                 Características
               </Link>
               <Link
                 href="#precios"
-                className="text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
               >
                 Precios
               </Link>
               <Link
                 href="/auth/signin"
-                className="text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
               >
                 Iniciar sesión
               </Link>
               <ThemeToggle />
               <Button
+                size="lg"
+                variant="ghost"
+                className="xl:hidden flex text-sm"
+                asChild
+              >
+                <Link href="/auth/signin">Iniciar sesión</Link>
+              </Button>
+              <Button
                 size="sm"
-                className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-sm"
+                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-sm"
                 asChild
               >
                 <Link href="/auth/signup">Comenzar</Link>
@@ -109,13 +117,13 @@ export default function GymRatLanding() {
 
           <div className="flex justify-center">
             <div className="relative">
-              <div className="absolute inset-0 bg-gray-200/20 dark:bg-white/10 rounded-2xl blur-xl"></div>
+              <div className="absolute inset-0 bg-zinc-200/20 dark:bg-white/10 rounded-2xl blur-xl"></div>
               <Image
                 src="/placeholder.svg?height=500&width=250"
                 alt="GymRat+ App Móvil"
                 width={250}
                 height={500}
-                className="relative rounded-2xl shadow-xl border border-gray-200 dark:border-gray-800/50"
+                className="relative rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800/50"
               />
             </div>
           </div>
@@ -125,7 +133,7 @@ export default function GymRatLanding() {
       {/* Features */}
       <section
         id="caracteristicas"
-        className="relative z-10 py-20 border-t border-gray-200 dark:border-gray-800/50"
+        className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50"
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -149,7 +157,7 @@ export default function GymRatLanding() {
 
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-gray-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-zinc-800">
+                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <Target className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
@@ -164,7 +172,7 @@ export default function GymRatLanding() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-gray-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-zinc-800">
+                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <BarChart3 className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
@@ -179,7 +187,7 @@ export default function GymRatLanding() {
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-gray-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-gray-200 dark:border-zinc-800">
+                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <Users className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
@@ -197,13 +205,13 @@ export default function GymRatLanding() {
 
             <div className="flex justify-center">
               <div className="relative">
-                <div className="absolute inset-0 bg-gray-200/20 dark:bg-white/10 rounded-xl blur-xl"></div>
+                <div className="absolute inset-0 bg-zinc-200/20 dark:bg-white/10 rounded-xl blur-xl"></div>
                 <Image
                   src="/placeholder.svg?height=350&width=500"
                   alt="Dashboard GymRat+"
                   width={500}
                   height={350}
-                  className="relative rounded-xl border border-gray-200 dark:border-gray-800/50 shadow-xl"
+                  className="relative rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-xl"
                 />
               </div>
             </div>
@@ -212,7 +220,7 @@ export default function GymRatLanding() {
       </section>
 
       {/* What We Offer */}
-      <section className="relative z-10 py-20 border-t border-gray-200 dark:border-gray-800/50">
+      <section className="relative z-10 py-20  border-gray-200 dark:border-gray-800/50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge
@@ -233,7 +241,7 @@ export default function GymRatLanding() {
 
           <div className="grid md:grid-cols-2 gap-12">
             <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-zinc-800">
+              <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <Users className="w-6 h-6 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold tracking-heading mb-3">
@@ -247,7 +255,7 @@ export default function GymRatLanding() {
             </div>
 
             <div className="text-center">
-              <div className="w-12 h-12 bg-gray-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-gray-200 dark:border-zinc-800">
+              <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <Dumbbell className="w-6 h-6 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold tracking-heading mb-3">
@@ -266,10 +274,10 @@ export default function GymRatLanding() {
       {/* Pricing */}
       <section
         id="precios"
-        className="relative z-10 py-20 border-t border-gray-200 dark:border-gray-800/50"
+        className="relative z-10 py-20  border-gray-200 dark:border-gray-800/50"
       >
         <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-12 pb-12">
             <Badge
               variant="outline"
               className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
@@ -286,9 +294,9 @@ export default function GymRatLanding() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-3 xl:gap-6 gap-20 max-w-7xl mx-auto">
             {/* Plan Alumno */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100/90 hover:to-gray-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[220px] overflow-hidden">
+            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100/90 hover:to-gray-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-hidden">
               <div className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <CardContent className="p-6">
                 <div className="text-center mb-6">
@@ -316,15 +324,19 @@ export default function GymRatLanding() {
                     <span>Acceso a la comunidad</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full" asChild>
+                <Button
+                  variant="outline"
+                  className="text-xs w-full bg-white text-black border border-zinc-200 hover:bg-black hover:text-white dark:bg-transparent dark:text-white dark:border-zinc-700 dark:hover:bg-white dark:hover:text-black transition-colors shadow-sm hover:shadow-md"
+                  asChild
+                >
                   <Link href="/auth/signup">Comenzar gratis</Link>
                 </Button>
               </CardContent>
             </Card>
 
             {/* Plan Instructor Mensual */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100/90 hover:to-gray-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 pt-6 pb-3 min-h-[220px] overflow-visible">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
+            <Card className="relative flex flex-col shadow-lg dark:shadow-xl transition-all duration-200 hover:shadow-xl hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 px-4 pt-8 pb-4 min-h-[280px] -mt-5 mb-1 overflow-visible transform xl:scale-105 scale-100 ">
+              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                 <div className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs font-medium">
                   Más popular
@@ -364,7 +376,7 @@ export default function GymRatLanding() {
                   </li>
                 </ul>
                 <Button
-                  className="w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100"
+                  className="text-xs w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-md hover:shadow-lg"
                   asChild
                 >
                   <Link href="/auth/signup">Prueba gratis 14 días</Link>
@@ -373,8 +385,8 @@ export default function GymRatLanding() {
             </Card>
 
             {/* Plan Instructor Anual */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100/90 hover:to-gray-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 pt-6 pb-3 min-h-[220px] overflow-visible">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
+            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-visible">
+              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                 <div className="bg-sky-600 text-white dark:text-white px-3 py-1 rounded-full text-xs font-medium">
                   Ahorra 18%
@@ -409,7 +421,11 @@ export default function GymRatLanding() {
                     <span>Acceso anticipado a nuevas funciones</span>
                   </li>
                 </ul>
-                <Button variant="outline" className="w-full" asChild>
+                <Button
+                  variant="outline"
+                  className="text-xs w-full bg-white text-black border border-zinc-200 hover:bg-black hover:text-white dark:bg-transparent dark:text-white dark:border-zinc-700 dark:hover:bg-white dark:hover:text-black transition-colors shadow-sm hover:shadow-md"
+                  asChild
+                >
                   <Link href="/auth/signup">Elegir anual</Link>
                 </Button>
               </CardContent>

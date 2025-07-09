@@ -138,10 +138,13 @@ export async function GET(req: NextRequest) {
           };
         }
 
-        mealTypeGroups[log.mealType].calories += log.calories;
-        mealTypeGroups[log.mealType].protein += log.protein;
-        mealTypeGroups[log.mealType].carbs += log.carbs;
-        mealTypeGroups[log.mealType].fat += log.fat;
+        const mealGroup = mealTypeGroups[log.mealType];
+        if (mealGroup) {
+          mealGroup.calories += log.calories;
+          mealGroup.protein += log.protein;
+          mealGroup.carbs += log.carbs;
+          mealGroup.fat += log.fat;
+        }
       });
 
       responseData = {

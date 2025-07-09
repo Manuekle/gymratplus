@@ -81,12 +81,14 @@ export async function GET() {
         const totalWorkouts = rel.student.workoutSessions.length;
         let weeks = 1;
         if (totalWorkouts > 0) {
-          const first = rel.student.workoutSessions[totalWorkouts - 1].date;
-          const last = rel.student.workoutSessions[0].date;
-          const diff =
-            (new Date(last).getTime() - new Date(first).getTime()) /
-            (1000 * 60 * 60 * 24 * 7);
-          weeks = Math.max(1, Math.round(diff));
+          const firstSession = rel.student.workoutSessions[totalWorkouts - 1];
+          const lastSession = rel.student.workoutSessions[0];
+          if (firstSession && lastSession) {
+            const diff =
+              (new Date(lastSession.date).getTime() - new Date(firstSession.date).getTime()) /
+              (1000 * 60 * 60 * 24 * 7);
+            weeks = Math.max(1, Math.round(diff));
+          }
         }
         return {
           id: rel.id,
@@ -98,7 +100,7 @@ export async function GET() {
           status: rel.status,
           lastWorkoutAt:
             rel.student.workoutSessions.length > 0
-              ? rel.student.workoutSessions[0].date
+              ? rel.student.workoutSessions[0]?.date || null
               : null,
           currentWorkoutStreak: rel.student.workoutStreak?.currentStreak || 0,
           completedWorkoutsLast7Days: rel.student.workoutSessions.length,

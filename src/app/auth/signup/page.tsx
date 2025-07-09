@@ -101,7 +101,7 @@ export default function SignUpPage() {
     <div className="flex h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl font-semibold  tracking-heading">
+          <CardTitle className="text-center text-2xl font-semibold tracking-heading">
             Crear Cuenta
           </CardTitle>
           <CardDescription className="text-center text-xs">

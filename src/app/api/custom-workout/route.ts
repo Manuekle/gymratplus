@@ -196,9 +196,7 @@ function formatWorkoutPlan(
   >((acc, ex) => {
     // Extract the muscle group from the notes field
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
-    const muscleGroup = muscleGroupMatch
-      ? muscleGroupMatch[1].trim()
-      : "General";
+    const muscleGroup = muscleGroupMatch?.[1]?.trim() || "General";
 
     if (!acc[muscleGroup]) acc[muscleGroup] = [];
     acc[muscleGroup].push(ex);

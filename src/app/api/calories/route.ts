@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
       very_active: 1.9, // Ejercicio muy intenso, trabajo físico
     };
 
-    const tdee = Math.round(bmr * activityMultipliers[activityLevel]);
+    const tdee = Math.round(bmr * (activityMultipliers[activityLevel] || 1.2));
 
     // Ajustar según el objetivo
     let dailyCalorieTarget = tdee;

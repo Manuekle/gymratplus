@@ -70,10 +70,15 @@ export async function PUT(req: NextRequest) {
       );
     }
 
+    // Filtrar propiedades undefined
+    const filteredUpdateData = Object.fromEntries(
+      Object.entries(updateData).filter(([_, value]) => value !== undefined)
+    );
+
     // Actualizar el perfil del instructor
     const updatedProfile = await prisma.instructorProfile.update({
       where: { userId: userId },
-      data: updateData,
+      data: filteredUpdateData,
     });
 
     return NextResponse.json(updatedProfile, { status: 200 });

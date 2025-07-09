@@ -45,30 +45,24 @@ export async function POST(req: NextRequest) {
       },
     });
 
+    // Preparar datos para crear/actualizar
+    const updateData: any = {};
+    const createData: any = { userId: session.user.id };
+    
+    if (bio !== undefined) { updateData.bio = bio; createData.bio = bio; }
+    if (curriculum !== undefined) { updateData.curriculum = curriculum; createData.curriculum = curriculum; }
+    if (pricePerMonth !== undefined) { updateData.pricePerMonth = pricePerMonth; createData.pricePerMonth = pricePerMonth; }
+    if (contactEmail !== undefined) { updateData.contactEmail = contactEmail; createData.contactEmail = contactEmail; }
+    if (contactPhone !== undefined) { updateData.contactPhone = contactPhone; createData.contactPhone = contactPhone; }
+    if (country !== undefined) { updateData.country = country; createData.country = country; }
+    if (city !== undefined) { updateData.city = city; createData.city = city; }
+    if (isRemote !== undefined) { updateData.isRemote = isRemote; createData.isRemote = isRemote; }
+
     // Crear o actualizar el perfil de instructor
     const instructorProfile = await prisma.instructorProfile.upsert({
       where: { userId: session.user.id },
-      update: {
-        bio,
-        curriculum,
-        pricePerMonth,
-        contactEmail,
-        contactPhone,
-        country,
-        city,
-        isRemote,
-      },
-      create: {
-        userId: session.user.id,
-        bio,
-        curriculum,
-        pricePerMonth,
-        contactEmail,
-        contactPhone,
-        country,
-        city,
-        isRemote,
-      },
+      update: updateData,
+      create: createData,
     });
 
     // Crear notificación de bienvenida para el instructor

@@ -10,6 +10,10 @@ export async function GET(request: NextRequest) {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
 
+    if (!id) {
+      return NextResponse.json({ error: "Food ID is required" }, { status: 400 });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session || !session.user) {
@@ -49,6 +53,10 @@ export async function PUT(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Food ID is required" }, { status: 400 });
+    }
 
     const session = await getServerSession(authOptions);
 
@@ -128,6 +136,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Food ID is required" }, { status: 400 });
+    }
 
     const session = await getServerSession(authOptions);
 

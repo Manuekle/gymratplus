@@ -8,7 +8,11 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
-
+    
+    if (!id) {
+      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+    }
+    
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -56,6 +60,10 @@ export async function PUT(request: NextRequest) {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
 
+    if (!id) {
+      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+    }
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -92,24 +100,31 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // Preparar datos para actualización
+    const updateData: any = {};
+    
+    if (weight !== undefined) {
+      updateData.weight = Number.parseFloat(weight);
+    }
+    if (bodyFatPercentage !== undefined) {
+      updateData.bodyFatPercentage = Number.parseFloat(bodyFatPercentage);
+    }
+    if (muscleMassPercentage !== undefined) {
+      updateData.muscleMassPercentage = Number.parseFloat(muscleMassPercentage);
+    }
+    if (date) {
+      updateData.date = new Date(date);
+    }
+    if (notes !== undefined) {
+      updateData.notes = notes;
+    }
+
     // Actualizar el registro
     const updatedEntry = await prisma.weight.update({
       where: {
         id: id,
       },
-      data: {
-        weight: weight !== undefined ? Number.parseFloat(weight) : undefined,
-        bodyFatPercentage:
-          bodyFatPercentage !== undefined
-            ? Number.parseFloat(bodyFatPercentage)
-            : undefined,
-        muscleMassPercentage:
-          muscleMassPercentage !== undefined
-            ? Number.parseFloat(muscleMassPercentage)
-            : undefined,
-        date: date ? new Date(date) : undefined,
-        notes,
-      },
+      data: updateData,
     });
 
     // Verificar si este es el registro más reciente
@@ -117,9 +132,6 @@ export async function PUT(request: NextRequest) {
       const latestRecord = await prisma.weight.findFirst({
         where: {
           userId: user.id,
-          weight: {
-            not: undefined, // Changed from 'not: null'
-          },
         },
         orderBy: {
           date: "desc",
@@ -154,6 +166,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+    }
 
     const session = await getServerSession(authOptions);
 
@@ -202,9 +218,6 @@ export async function DELETE(request: NextRequest) {
       const latestRecord = await prisma.weight.findFirst({
         where: {
           userId: user.id,
-          weight: {
-            not: undefined,
-          },
         },
         orderBy: {
           date: "desc",

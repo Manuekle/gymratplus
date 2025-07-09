@@ -146,7 +146,7 @@ function formatWorkoutPlan(
     Record<string, typeof workoutExercises>
   >((acc, ex) => {
     if (!acc[ex.notes]) acc[ex.notes] = [];
-    acc[ex.notes].push(ex);
+    acc[ex.notes]?.push(ex);
     return acc;
   }, {});
 

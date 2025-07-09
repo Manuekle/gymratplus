@@ -10,15 +10,19 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+    
+    if (!id) {
+      return NextResponse.json({ error: "Meal log ID is required" }, { status: 400 });
+    }
+    
+    const mealLogId = id;
 
     const session = await getServerSession(authOptions);
-
-    if (!session || !session.user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const userId = session.user.id;
-    const mealLogId = id;
 
     const mealLog = await prisma.mealLog.findUnique({
       where: {
@@ -56,6 +60,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+
+    if (!id) {
+      return NextResponse.json({ error: "Meal log ID is required" }, { status: 400 });
+    }
 
     const session = await getServerSession(authOptions);
 

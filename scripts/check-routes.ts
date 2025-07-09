@@ -369,7 +369,7 @@ class NextJSRouteChecker {
     return new Promise((resolve) => {
       try {
         console.log("\n🔍 Ejecutando verificación de tipos de TypeScript...");
-        const result = execSync("npx tsc --noEmit --pretty false", {
+        execSync("npx tsc --noEmit --pretty false", {
           cwd: this.projectRoot,
           stdio: "pipe",
           encoding: "utf-8",
@@ -401,13 +401,13 @@ class NextJSRouteChecker {
       const [, file, line, column, severity, message] = match;
 
       // Solo incluir errores de archivos de rutas
-      if (this.isRouteFile(file)) {
+      if (file && this.isRouteFile(file)) {
         errors.push({
           file: relative(this.projectRoot, file),
-          line: parseInt(line),
-          column: parseInt(column),
-          message,
-          severity: severity as "error" | "warning",
+          line: parseInt(line || '1'),
+          column: parseInt(column || '1'),
+          message: message || 'Error desconocido',
+          severity: (severity as "error" | "warning") || 'error',
         });
       }
     }
@@ -469,10 +469,10 @@ class NextJSRouteChecker {
         if (!acc[error.file]) {
           acc[error.file] = [];
         }
-        acc[error.file].push(error);
+        acc[error.file]?.push(error);
         return acc;
       },
-      {},
+      {} as Record<string, RouteError[]>,
     );
 
     // Show errors by file
@@ -498,21 +498,6 @@ class NextJSRouteChecker {
     }
   }
 
-  /**
-   * Agrupa errores por archivo
-   */
-  private groupErrorsByFile(): Record<string, RouteError[]> {
-    return this.errors.reduce(
-      (acc, error) => {
-        if (!acc[error.file]) {
-          acc[error.file] = [];
-        }
-        acc[error.file].push(error);
-        return acc;
-      },
-      {} as Record<string, RouteError[]>,
-    );
-  }
 }
 
 // Ejecutar el script

@@ -1,14 +1,11 @@
 import { readFile, readdir } from "fs/promises";
 import { join } from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 
-// Get current file path
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+// Get current directory
+const __dirname = process.cwd();
 
 // Path to the API directory
-const API_DIR = join(__dirname, "../src/app/api");
+const API_DIR = join(__dirname, "src/app/api");
 
 // List of all Prisma models from the schema
 const PRISMA_MODELS = [
@@ -81,11 +78,13 @@ async function checkFileForPrismaUsage(filePath: string) {
         const matches = content.match(pattern);
         if (matches?.length) {
           matchFound = true;
-          modelUsage[model].count += matches.length;
+          if (modelUsage[model]) {
+            modelUsage[model].count += matches.length;
+          }
         }
       });
 
-      if (matchFound && !modelUsage[model].files.includes(relativePath)) {
+      if (matchFound && modelUsage[model] && !modelUsage[model].files.includes(relativePath)) {
         modelUsage[model].files.push(relativePath);
       }
     });

@@ -13,6 +13,11 @@ export async function PUT(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+    
+    if (!id) {
+      return NextResponse.json({ error: "Goal ID is required" }, { status: 400 });
+    }
+    
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -147,6 +152,11 @@ export async function DELETE(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
+    
+    if (!id) {
+      return NextResponse.json({ error: "Goal ID is required" }, { status: 400 });
+    }
+    
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
