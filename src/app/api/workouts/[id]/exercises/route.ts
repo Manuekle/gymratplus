@@ -7,6 +7,10 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.url);
   const id = url.pathname.split("/").pop();
 
+  if (!id) {
+    return NextResponse.json({ error: "Workout ID is required" }, { status: 400 });
+  }
+
   const session = await getServerSession(authOptions);
   if (!session) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
@@ -101,7 +105,7 @@ export async function GET(request: NextRequest) {
 function extractWorkoutIdFromUrl(url: string): string | null {
   // La URL será algo como /api/workouts/abc123/exercises
   const matches = url.match(/\/workouts\/([^/]+)\/exercises/);
-  return matches ? matches[1] : null;
+  return matches ? matches[1] || null : null;
 }
 
 export async function POST(request: NextRequest) {
@@ -132,7 +136,7 @@ export async function POST(request: NextRequest) {
     const existingWorkout = await prisma.workout.findUnique({
       where: {
         id: workoutId,
-        userId: session.user.id,
+        createdById: session.user.id,
       },
     });
 
@@ -254,9 +258,7 @@ function formatWorkoutPlan(
   >((acc, ex) => {
     // Extraer el grupo muscular del campo notes
     const muscleGroupMatch = ex.notes?.match(/^([^-]+)/);
-    const muscleGroup = muscleGroupMatch
-      ? muscleGroupMatch[1].trim()
-      : "General";
+    const muscleGroup = muscleGroupMatch?.[1]?.trim() || "General";
 
     if (!acc[muscleGroup]) acc[muscleGroup] = [];
     acc[muscleGroup].push(ex);
@@ -282,6 +284,10 @@ function formatWorkoutPlan(
 export async function PUT(request: NextRequest) {
   const url = new URL(request.url);
   const id = url.pathname.split("/").pop();
+
+  if (!id) {
+    return NextResponse.json({ error: "Workout ID is required" }, { status: 400 });
+  }
 
   const session = await getServerSession(authOptions);
   if (!session)

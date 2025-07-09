@@ -15,6 +15,10 @@ export async function GET(request: NextRequest) {
     const exerciseId = pathParts[pathParts.length - 1];
     const workoutId = pathParts[pathParts.length - 3];
 
+    if (!exerciseId || !workoutId) {
+      return NextResponse.json({ error: "IDs requeridos" }, { status: 400 });
+    }
+
     const workoutExercise = await prisma.workoutExercise.findFirst({
       where: {
         id: exerciseId,
@@ -63,6 +67,10 @@ export async function PUT(request: NextRequest) {
     const pathParts = url.pathname.split("/");
     const exerciseId = pathParts[pathParts.length - 1];
     const workoutId = pathParts[pathParts.length - 3];
+
+    if (!exerciseId || !workoutId) {
+      return NextResponse.json({ error: "IDs requeridos" }, { status: 400 });
+    }
 
     const body = await request.json();
     const { sets, reps, restTime, notes } = body;
@@ -114,6 +122,10 @@ export async function DELETE(request: NextRequest) {
     const pathParts = url.pathname.split("/");
     const exerciseId = pathParts[pathParts.length - 1];
     const workoutId = pathParts[pathParts.length - 3];
+
+    if (!exerciseId || !workoutId) {
+      return NextResponse.json({ error: "IDs requeridos" }, { status: 400 });
+    }
 
     await prisma.workoutExercise.delete({
       where: {

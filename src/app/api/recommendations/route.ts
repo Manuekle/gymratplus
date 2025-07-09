@@ -85,14 +85,17 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       // Obtener datos del perfil
       const profile = await prisma.profile.findUnique({ where: { userId } });
       if (profile) {
-        experienceLevel = calculateExperienceLevel({
-          trainingFrequency: profile.trainingFrequency
-            ? Number(profile.trainingFrequency)
-            : undefined,
-          monthsTraining: profile.monthsTraining
-            ? Number(profile.monthsTraining)
-            : undefined,
-        }) as ProfileData["experienceLevel"];
+        const experienceData: { trainingFrequency?: number; monthsTraining?: number } = {};
+        
+        if (profile.trainingFrequency) {
+          experienceData.trainingFrequency = Number(profile.trainingFrequency);
+        }
+        
+        if (profile.monthsTraining) {
+          experienceData.monthsTraining = Number(profile.monthsTraining);
+        }
+        
+        experienceLevel = calculateExperienceLevel(experienceData) as ProfileData["experienceLevel"];
       }
     }
     if (!experienceLevel) {
@@ -128,10 +131,14 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Get exercises
+    const whereClause: any = {};
+    
+    if (profileData.goal === "gain-muscle") {
+      whereClause.muscleGroup = "piernas";
+    }
+    
     const exercises = await prisma.exercise.findMany({
-      where: {
-        muscleGroup: profileData.goal === "gain-muscle" ? "piernas" : undefined,
-      },
+      where: whereClause,
       take: 10,
     });
 

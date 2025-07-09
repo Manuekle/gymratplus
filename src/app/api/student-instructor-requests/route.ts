@@ -48,12 +48,17 @@ export async function POST(req: NextRequest) {
       }
 
       // Si existe pero está en otro estado (ej: rejected, cancelled), actualizarlo
+      const updateData: any = {
+        status: "pending",
+      };
+      
+      if (agreedPrice !== undefined) {
+        updateData.agreedPrice = agreedPrice;
+      }
+      
       const updatedRequest = await prisma.studentInstructor.update({
         where: { id: existingRecord.id },
-        data: {
-          status: "pending",
-          agreedPrice,
-        },
+        data: updateData,
         include: {
           student: {
             select: { name: true, email: true },
@@ -80,13 +85,18 @@ export async function POST(req: NextRequest) {
     }
 
     // Crear la nueva solicitud
+    const createData: any = {
+      studentId,
+      instructorProfileId,
+      status: "pending", // Estado inicial de la solicitud
+    };
+    
+    if (agreedPrice !== undefined) {
+      createData.agreedPrice = agreedPrice;
+    }
+    
     const studentInstructorRequest = await prisma.studentInstructor.create({
-      data: {
-        studentId,
-        instructorProfileId,
-        agreedPrice,
-        status: "pending", // Estado inicial de la solicitud
-      },
+      data: createData,
       include: {
         student: {
           select: {

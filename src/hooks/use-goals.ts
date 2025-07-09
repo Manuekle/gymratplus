@@ -97,10 +97,7 @@ export function useGoals() {
         return data;
       } catch (error) {
         console.error("Error al cargar objetivos:", error);
-        toast.error(
-          "No se pudieron cargar los objetivos: " +
-            (error instanceof Error ? error.message : "Error desconocido"),
-        );
+        toast.error("No se pudieron cargar los objetivos");
         setGoals([]);
         return [];
       } finally {

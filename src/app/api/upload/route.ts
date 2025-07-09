@@ -32,6 +32,14 @@ export async function POST(request: NextRequest) {
     const userId = session.user.id;
     const filename = `${userId}-${Date.now()}-${file.name}`;
 
+    // Verificar que el token esté configurado
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { error: "Blob storage token not configured" },
+        { status: 500 }
+      );
+    }
+
     // Upload to Vercel Blob
     const blob = await put(filename, file, {
       access: "public",

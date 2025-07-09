@@ -134,20 +134,28 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Preparar datos para creación
+    const createData: any = {
+      userId: user.id,
+      weight: weight ? Number.parseFloat(weight) : 0,
+      date: new Date(date),
+    };
+    
+    if (bodyFatPercentage !== undefined) {
+      createData.bodyFatPercentage = Number.parseFloat(bodyFatPercentage);
+    }
+    
+    if (muscleMassPercentage !== undefined) {
+      createData.muscleMassPercentage = Number.parseFloat(muscleMassPercentage);
+    }
+    
+    if (notes !== undefined) {
+      createData.notes = notes;
+    }
+
     // Crear nuevo registro de progreso
     const newProgressEntry = await prisma.weight.create({
-      data: {
-        userId: user.id,
-        weight: weight ? Number.parseFloat(weight) : 0,
-        bodyFatPercentage: bodyFatPercentage
-          ? Number.parseFloat(bodyFatPercentage)
-          : undefined,
-        muscleMassPercentage: muscleMassPercentage
-          ? Number.parseFloat(muscleMassPercentage)
-          : undefined,
-        date: new Date(date),
-        notes,
-      },
+      data: createData,
     });
 
     // Si se registró un peso, actualizar el perfil del usuario
