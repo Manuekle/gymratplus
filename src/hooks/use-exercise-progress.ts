@@ -309,20 +309,28 @@ export const useExerciseProgress = () => {
   const getExerciseProgressStats = useCallback(
     (exercise: string) => {
       const exerciseData = progressData
-        .filter((record) => record.exercises[exercise])
-        .map((record) => ({
-          date: new Date(record.date),
-          weight: record.exercises[exercise].weight,
-          reps: record.exercises[exercise].reps,
-        }))
+        .filter((record) => record.exercises?.[exercise])
+        .map((record) => {
+          const exerciseData = record.exercises[exercise];
+          if (!exerciseData) return null;
+          return {
+            date: new Date(record.date),
+            weight: exerciseData.weight,
+            reps: exerciseData.reps,
+          };
+        })
+        .filter((record): record is { date: Date; weight: number; reps: number } => record !== null)
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
       if (exerciseData.length < 2) return null;
 
       const first = exerciseData[0];
       const last = exerciseData[exerciseData.length - 1];
+      
+      if (!first || !last) return null;
+      
       const change = last.weight - first.weight;
-      const percentageChange = (change / first.weight) * 100;
+      const percentageChange = first.weight > 0 ? (change / first.weight) * 100 : 0;
 
       return {
         first: first.weight,

@@ -175,46 +175,66 @@ export async function createWorkoutPlan(
 
 // Function to determine sets and reps based on goal
 function getSetsAndRepsForGoal(goal: string, exerciseType = "compound") {
+  // Helper function to get the first number from a rep range string
+  const getRepsNumber = (reps: string | number): number => {
+    if (typeof reps === 'number') return reps;
+    const match = String(reps).match(/\d+/);
+    return match ? parseInt(match[0], 10) : 8; // Default to 8 if parsing fails
+  };
+
+  let settings;
+  
   switch (goal) {
     case "strength":
-      return {
+      settings = {
         sets: exerciseType === "compound" ? 5 : 3,
         reps: exerciseType === "compound" ? 5 : 8,
         restTime: 180, // 3 minutes for full recovery
       };
+      break;
     case "gain-muscle":
     case "hypertrophy":
-      return {
+      settings = {
         sets: exerciseType === "compound" ? 4 : 3,
         reps: exerciseType === "compound" ? 8 : 12,
         restTime: 90, // 90 seconds for balance between recovery and congestion
       };
+      break;
     case "endurance":
-      return {
+      settings = {
         sets: 3,
         reps: 15,
         restTime: 45, // Short rest to maintain elevated heart rate
       };
+      break;
     case "lose-weight":
     case "fat-loss":
-      return {
+      settings = {
         sets: 3,
         reps: 12,
         restTime: 60, // Moderate rest to maintain intensity
       };
+      break;
     case "mobility":
-      return {
+      settings = {
         sets: 2,
         reps: 12,
         restTime: 30, // Short rest for mobility exercises
       };
+      break;
     default:
-      return {
+      settings = {
         sets: 3,
         reps: 10,
         restTime: 60,
       };
   }
+
+  // Ensure reps is a number
+  return {
+    ...settings,
+    reps: getRepsNumber(settings.reps)
+  };
 }
 
 // Function to apply methodology to the workout
@@ -894,51 +914,99 @@ export async function createWeiderSplit(
   // Create workout days
   for (let day = 1; day <= workoutDays; day++) {
     const muscleGroupIndex = (day - 1) % muscleGroups.length;
-    const { name: muscleGroupName, exercises: muscleGroupExercises } =
-      muscleGroups[muscleGroupIndex];
+    const muscleGroup = muscleGroups[muscleGroupIndex];
+    
+    // Ensure muscle group exists before destructuring
+    if (!muscleGroup) {
+      console.warn(`No se encontró el grupo muscular en el índice ${muscleGroupIndex}`);
+      continue;
+    }
+    
+    const { name: muscleGroupName, exercises: muscleGroupExercises } = muscleGroup;
 
-    const cycleIndex = Math.floor((day - 1) / muscleGroups.length);
+    // Ensure we have exercises to work with
+    if (!muscleGroupExercises.length) {
+      console.warn(`No exercises found for muscle group: ${muscleGroupName}`);
+      continue;
+    }
 
-    // Get sets and reps based on goal
-    const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
-    const isolationSettings = getSetsAndRepsForGoal(goal, "isolation");
+    const cycleIndex = Math.max(0, Math.floor((day - 1) / muscleGroups.length));
+
+    // Get sets and reps based on goal with fallbacks
+    // Convert string reps to number by taking the first number in the range
+    const parseReps = (reps: string | number): number => {
+      if (typeof reps === 'number') return reps;
+      const match = String(reps).match(/\d+/);
+      return match ? parseInt(match[0], 10) : 8; // Default to 8 if parsing fails
+    };
+    
+    const defaultCompound = { sets: 3, reps: '8-12', restTime: 90 };
+    const defaultIsolation = { sets: 3, reps: '10-15', restTime: 60 };
+    
+    const compoundSettings = getSetsAndRepsForGoal(goal, "compound") || defaultCompound;
+    const isolationSettings = getSetsAndRepsForGoal(goal, "isolation") || defaultIsolation;
 
     // Select exercises for this muscle group (4-6 exercises per muscle group)
-    const numExercises = Math.min(
-      muscleGroupExercises.length,
-      muscleGroupName === "Core" ? 4 : 5,
-    );
+    const targetExercises = muscleGroupName === "Core" ? 4 : 5;
+    const numExercises = Math.min(muscleGroupExercises.length, targetExercises);
 
-    const dayExercises = [];
+    const dayExercises: Array<{
+      exercise: any;
+      sets: number;
+      reps: number; // Changed from string to number to match Prisma schema
+      restTime: number;
+      notes: string;
+    }> = [];
 
     // Use different exercises for each cycle to avoid repetition
     for (let i = 0; i < numExercises; i++) {
       const exerciseIndex = (i + cycleIndex) % muscleGroupExercises.length;
       const exercise = muscleGroupExercises[exerciseIndex];
+      
+      // Skip if exercise is undefined
+      if (!exercise) {
+        console.warn(`Undefined exercise at index ${exerciseIndex} for ${muscleGroupName}`);
+        continue;
+      }
+
       const isCompound = i < 2; // First 2 exercises are compound
+      const settings = isCompound ? compoundSettings : isolationSettings;
 
       dayExercises.push({
         exercise,
-        sets: isCompound ? compoundSettings.sets : isolationSettings.sets,
-        reps: isCompound ? compoundSettings.reps : isolationSettings.reps,
-        restTime: isCompound
-          ? compoundSettings.restTime
-          : isolationSettings.restTime,
+        sets: settings.sets || 3,
+        reps: parseReps(settings.reps || (isCompound ? '8-12' : '10-15')),
+        restTime: settings.restTime || (isCompound ? 90 : 60),
         notes: `${muscleGroupName} - ${
           i === 0
             ? "Principal"
             : i === 1
               ? "Secundario"
-              : "Aislamiento " + (i - 1)
+              : `Aislamiento ${i - 1}`
         }`,
       });
     }
 
+    // Skip if no valid exercises were added
+    if (dayExercises.length === 0) {
+      console.warn(`No valid exercises for ${muscleGroupName} on day ${day}`);
+      continue;
+    }
+
     // Apply methodology if specified
-    const finalExercises =
-      methodology !== "standard"
-        ? applyMethodology(dayExercises, methodology, goal)
-        : dayExercises;
+    let finalExercises = dayExercises;
+    if (methodology && methodology !== "standard") {
+      try {
+        const result = applyMethodology(dayExercises, methodology, goal);
+        if (Array.isArray(result)) {
+          finalExercises = result;
+        } else {
+          console.warn('applyMethodology did not return an array, using default exercises');
+        }
+      } catch (error) {
+        console.error('Error applying methodology:', error);
+      }
+    }
 
     // Add exercises for this day to the workout
     for (const ex of finalExercises) {

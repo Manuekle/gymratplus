@@ -233,21 +233,48 @@ export const useProgress = () => {
 
   // Obtener estadísticas de progreso (diferencia desde el inicio, promedio, etc.)
   const getProgressStats = useCallback(
-    (data: ProgressRecord[], type: "weight" | "bodyFat" | "muscle") => {
-      if (!data || data.length < 2) {
+    (data: ProgressRecord[] | undefined, type: "weight" | "bodyFat" | "muscle") => {
+      // Handle undefined or empty data
+      if (!data || data.length === 0) {
         return {
           change: 0,
           percentChange: 0,
-          average: data && data.length > 0 ? getValue(data[0], type) : 0,
+          average: 0,
+        };
+      }
+      
+      // Filter out any undefined or invalid records
+      const validData = data.filter((record): record is ProgressRecord => 
+        record !== undefined && record.date !== undefined
+      );
+      
+      if (validData.length < 2) {
+        const firstRecord = validData[0];
+        const firstValue = firstRecord ? getValue(firstRecord, type) : 0;
+        return {
+          change: 0,
+          percentChange: 0,
+          average: firstValue,
         };
       }
 
-      const sortedData = [...data].sort(
+      // Sort the valid data
+      const sortedData = [...validData].sort(
         (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
       );
 
+      // Get first and last records (we know they exist since we have at least 2 items)
       const first = sortedData[0];
       const last = sortedData[sortedData.length - 1];
+
+      // Add safety checks in case the type system doesn't recognize our array bounds check
+      if (!first || !last) {
+        return {
+          change: 0,
+          percentChange: 0,
+          average: 0,
+        };
+      }
 
       const firstValue = getValue(first, type);
       const lastValue = getValue(last, type);
