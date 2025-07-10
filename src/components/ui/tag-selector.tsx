@@ -62,11 +62,11 @@ export function TagSelector({
             className="w-full justify-between"
           >
             {selectedTags.length > 0 ? (
-              <span className="truncate">
+              <span className="truncate text-xs">
                 {selectedTags.length} seleccionados
               </span>
             ) : (
-              <span className="text-muted-foreground">{placeholder}</span>
+              <span className="text-muted-foreground text-xs">{placeholder}</span>
             )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>

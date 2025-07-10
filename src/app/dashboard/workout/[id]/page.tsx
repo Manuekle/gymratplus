@@ -183,7 +183,7 @@ export default function WorkouPage() {
                   placeholder={`Escribe "${workout.name}"`}
                   value={confirmationText}
                   onChange={(e) => setConfirmationText(e.target.value)}
-                  className="mt-1"
+                  className="mt-1 text-xs"
                 />
               </div>
             </AlertDialogDescription>
