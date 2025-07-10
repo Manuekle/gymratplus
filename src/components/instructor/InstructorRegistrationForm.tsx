@@ -146,8 +146,19 @@ export function InstructorRegistrationForm({
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Error al registrar como instructor");
       }
+      // Update the session with the new instructor status
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isInstructor: true }),
+        credentials: 'include',
+      });
+      
+      // Update the local session
       await update();
-      window.location.href = '/dashboard/profile';
+      
       toast.success("¡Registro exitoso!", {
         description: "Ahora eres un instructor en nuestra plataforma.",
       });

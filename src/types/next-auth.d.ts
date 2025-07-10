@@ -13,6 +13,9 @@ declare module "next-auth/jwt" {
       goal?: string;
       dietaryPreference?: string;
       monthsTraining?: number;
+      height?: string;
+      currentWeight?: string;
+      gender?: string;
     };
   }
 }
@@ -54,6 +57,9 @@ declare module "next-auth" {
       goal?: string;
       dietaryPreference?: string;
       monthsTraining?: number;
+      height?: number;
+      currentWeight?: number;
+      gender?: string;
     };
   }
 }

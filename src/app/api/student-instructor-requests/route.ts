@@ -13,6 +13,45 @@ const requestInstructorSchema = z.object({
   agreedPrice: z.number().optional(),
 });
 
+export async function GET() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const studentId = session.user.id;
+
+    // Obtener todas las solicitudes del estudiante
+    const requests = await prisma.studentInstructor.findMany({
+      where: {
+        studentId: studentId,
+      },
+      include: {
+        instructor: {
+          select: {
+            user: {
+              select: {
+                name: true,
+                email: true,
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    return NextResponse.json(requests);
+  } catch (error) {
+    console.error("[GET_STUDENT_INSTRUCTOR_REQUESTS_ERROR]", error);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);

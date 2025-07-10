@@ -1,11 +1,39 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
-/* import { UserRole, User } from "@/types/user"; */
 
 export async function middleware(req: NextRequest) {
+  // Get the current token
   const token = await getToken({ req });
   const path = req.nextUrl.pathname;
+
+  // Check if this is a request to update the instructor status
+  if (path === '/api/auth/session' && req.method === 'POST') {
+    const body = await req.json();
+    if (body?.isInstructor !== undefined && token?.isInstructor !== body.isInstructor) {
+      // Create a new response with the updated token
+      const response = NextResponse.next();
+      const newToken = {
+        ...token,
+        isInstructor: body.isInstructor,
+        // Force token update by modifying the expiry
+        exp: Math.floor(Date.now() / 1000) + 30 * 24 * 60 * 60 // 30 days from now
+      };
+      
+      // Set the updated token in the session cookie
+      response.cookies.set({
+        name: '__Secure-next-auth.session-token',
+        value: JSON.stringify(newToken),
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: 30 * 24 * 60 * 60 // 30 days
+      });
+      
+      return response;
+    }
+  }
 
   const protectedRoutes = [
     "/onboarding",

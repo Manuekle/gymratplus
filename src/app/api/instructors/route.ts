@@ -48,10 +48,16 @@ export async function GET(request: NextRequest) {
       if (session?.user?.email) {
         const user = await prisma.user.findUnique({
           where: { email: session.user.email },
-          select: { interests: true }
+          select: { 
+            interests: true,
+            id: true,
+            email: true 
+          }
         });
-        userTags = user?.interests || [];
-        hasUserInterests = (user?.interests?.length || 0) > 0;
+        // Type assertion para manejar el campo interests que existe en el schema pero no en el tipo generado
+        const userWithInterests = user as any;
+        userTags = userWithInterests?.interests || [];
+        hasUserInterests = (userWithInterests?.interests?.length || 0) > 0;
       }
     } else {
       // Si se proporciona tagFilter como parámetro, usarlo en lugar de las etiquetas del usuario
@@ -61,7 +67,14 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir filtros para la consulta de Prisma
-    const whereConditions: any = {
+    const whereConditions: {
+      isInstructor: boolean;
+      instructorProfile: {
+        isNot: null;
+        [key: string]: any;
+      };
+      experienceLevel?: string;
+    } = {
       isInstructor: true,
       instructorProfile: {
         isNot: null
@@ -69,7 +82,12 @@ export async function GET(request: NextRequest) {
     };
 
     // Construir filtros para instructorProfile
-    const instructorProfileFilters: any = {};
+    const instructorProfileFilters: {
+      country?: string;
+      isRemote?: boolean;
+      isVerified?: boolean;
+      pricePerMonth?: { lte: number };
+    } = {};
 
     // Filtro por país
     if (country) {

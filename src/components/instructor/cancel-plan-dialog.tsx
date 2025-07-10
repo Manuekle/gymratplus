@@ -36,20 +36,28 @@ export function CancelPlanDialog({
         throw new Error(errorData.error || "Error al cancelar el plan");
       }
 
-      // 2. Actualizar la sesión local
+      // 2. Update the session with the new instructor status
+      await fetch('/api/auth/session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ isInstructor: false }),
+        credentials: 'include',
+      });
+      
+      // 3. Update the local session
       if (session?.user) {
         await update();
-        window.location.href = '/dashboard/profile';
       }
       
-      // 4. Mostrar mensaje de éxito
+      // 4. Show success message
       toast.success("Plan cancelado", {
         description: "Tu plan de instructor ha sido cancelado correctamente."
       });
       
-      // 5. Cerrar el diálogo y redirigir siempre a profile
+      // 5. Close the dialog
       onOpenChange(false);
-      window.location.href = '/dashboard/profile';
     } catch (error) {
       console.error("Error al cancelar el plan:", error);
       toast.error("Error", {

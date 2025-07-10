@@ -68,6 +68,25 @@ export default function InstructorSearchClient() {
   // Hook para países
   const { countries } = useCountries();
 
+  // Cargar solicitudes existentes del usuario
+  const loadExistingRequests = useCallback(async () => {
+    try {
+      const response = await fetch("/api/student-instructor-requests");
+      if (response.ok) {
+        const requests = await response.json();
+        const requestIds = requests.map((req: { instructorProfileId: string }) => req.instructorProfileId);
+        setRequestedInstructors(new Set(requestIds));
+      }
+    } catch (error) {
+      console.error("Error loading existing requests:", error);
+    }
+  }, []);
+
+  // Cargar solicitudes existentes al montar el componente
+  useEffect(() => {
+    loadExistingRequests();
+  }, [loadExistingRequests]);
+
   const fetchInstructors = useCallback(async () => {
     setIsLoading(true);
     try {
