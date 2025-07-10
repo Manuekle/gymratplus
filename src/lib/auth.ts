@@ -1,13 +1,46 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import { NextAuthOptions, User, Session } from "next-auth";
+import { DefaultSession, NextAuthOptions, User, Session } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
 import { redis } from "@/lib/redis";
+
+declare module 'next-auth' {
+  interface Session {
+    user: {
+      id: string;
+      isInstructor: boolean;
+      experienceLevel: string;
+      profile?: any;
+      instructorProfile?: any;
+      _localStorage?: {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+        experienceLevel?: string | null;
+        isInstructor?: boolean;
+        profile?: any;
+        instructorProfile?: any;
+      };
+    } & DefaultSession['user'];
+  }
+
+  interface User {
+    isInstructor?: boolean;
+    experienceLevel?: string;
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    id?: string;
+    isInstructor?: boolean;
+  }
+}
 
 // Cache en memoria para datos de usuario
 const userDataCache = new Map<
@@ -203,12 +236,13 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
     async session({ session, token }: { session: Session; token: JWT }) {
-      if (session.user) {
+      try {
+        if (!session.user) return session;
+        
+        // Establecer valores por defecto
         session.user.id = typeof token.id === "string" ? token.id : "";
-        session.user.isInstructor = token.isInstructor as boolean;
-        // Obtener datos básicos usando el sistema de caché
-        const userData = await getUserDataWithCache(session.user.id);
-        // Obtener datos actualizados de la base de datos
+        
+        // 1. Obtener datos del usuario desde la base de datos (sin caché para asegurar datos frescos)
         const userFromDB = await prisma.user.findUnique({
           where: { id: session.user.id },
           select: {
@@ -216,40 +250,119 @@ export const authOptions: NextAuthOptions = {
             email: true,
             experienceLevel: true,
             image: true,
-            profile: true,
+            isInstructor: true,
+            instructorProfile: {
+              select: { 
+                id: true,
+                isPaid: true
+              }
+            }
           },
-        });
-        session.user.name = userFromDB?.name ?? userData?.name ?? "";
-        session.user.email = userFromDB?.email ?? userData?.email ?? "";
-        session.user.experienceLevel =
-          userFromDB?.experienceLevel ?? userData?.experienceLevel ?? "";
-        session.user.image = userFromDB?.image ?? userData?.image ?? "";
-        // Obtener el perfil del usuario desde Redis o la BD
-        let profile: any = await redis.get(`profile:${session.user.id}`);
-        if (!profile) {
-          profile = await prisma.profile.findUnique({
-            where: { userId: session.user.id },
+        }).catch(() => null);
+
+        // 2. Determinar si el usuario es instructor (verificando tanto el flag como el perfil)
+        const isInstructor = Boolean(
+          userFromDB?.isInstructor && 
+          userFromDB?.instructorProfile?.id &&
+          userFromDB?.instructorProfile?.isPaid !== false
+        );
+
+        // 3. Si el estado no coincide, actualizar la base de datos
+        if (userFromDB && userFromDB.isInstructor !== isInstructor) {
+          await prisma.user.update({
+            where: { id: session.user.id },
+            data: { isInstructor }
           });
-          if (profile) {
-            await redis.set(`profile:${token.id}`, profile, {
-              ex: 60 * 60 * 24, // 24 horas
-            });
-          }
         }
-        (session.user as any).profile = profile || null;
-        // Agregar datos para localStorage
-        session.user = {
-          ...session.user,
-          _localStorage: {
-            name: session.user.name,
-            email: session.user.email,
-            experienceLevel: session.user.experienceLevel,
-            image: session.user.image,
-            profile: (session.user as any).profile,
-          },
+
+        // 4. Obtener perfil de instructor si es necesario
+        let instructorProfile = null;
+        if (isInstructor) {
+          instructorProfile = await prisma.instructorProfile.findUnique({
+            where: { userId: session.user.id },
+          }).catch(() => null);
+        }
+
+        // 5. Obtener datos en caché (solo para valores por defecto)
+        const cachedUserData = await getUserDataWithCache(session.user.id).catch(() => ({} as Record<string, string>));
+        
+        // 6. Preparar datos seguros para la sesión
+        const safeUserData = {
+          name: userFromDB?.name || (cachedUserData?.name || ""),
+          email: userFromDB?.email || (cachedUserData?.email || ""),
+          experienceLevel: userFromDB?.experienceLevel || (cachedUserData?.experienceLevel || ""),
+          image: userFromDB?.image || (cachedUserData?.image || ""),
+          isInstructor
+        };
+        
+        // 7. Establecer el estado en la sesión
+        session.user.isInstructor = isInstructor;
+
+        // Obtener perfil del usuario
+        let profile = null;
+        try {
+          const cachedProfile = await redis.get(`profile:${session.user.id}`);
+          profile = cachedProfile && typeof cachedProfile === 'string' ? JSON.parse(cachedProfile) : null;
+          
+          if (!profile) {
+            profile = await prisma.profile.findUnique({
+              where: { userId: session.user.id },
+            });
+            
+            if (profile) {
+              await redis.set(
+                `profile:${session.user.id}`, 
+                JSON.stringify(profile),
+                { ex: 60 * 60 * 24 } // 24 horas
+              );
+            }
+          }
+        } catch (error) {
+          console.error("Error al cargar el perfil:", error);
+        }
+
+        // Construir objeto de sesión
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            ...safeUserData,
+            profile: profile || null,
+            instructorProfile: instructorProfile || null,
+            _localStorage: {
+              ...safeUserData,
+              profile: profile || null,
+              instructorProfile: instructorProfile || null
+            }
+          }
+        };
+      } catch (error) {
+        console.error("Error en la sesión:", error);
+        // Devolver una sesión mínima en caso de error
+        return {
+          ...session,
+          user: {
+            id: session.user?.id || "",
+            name: session.user?.name || "",
+            email: session.user?.email || "",
+            image: session.user?.image || "",
+            isInstructor: false,
+            experienceLevel: "",
+            profile: null,
+            instructorProfile: null,
+            _localStorage: {
+              name: session.user?.name || "",
+              email: session.user?.email || "",
+              image: session.user?.image || "",
+              isInstructor: false,
+              experienceLevel: "",
+              profile: null,
+              instructorProfile: null
+            }
+          }
         };
       }
-      return session;
+
     },
     async redirect({ url, baseUrl }) {
       // Si viene de un login, siempre manda al dashboard

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -21,10 +21,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { PaymentSimulationModal } from "./payment-simulation-modal";
-import { CountrySelector } from "@/components/country-selector";
-import { useSession } from "next-auth/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Cancel01Icon, PlusSignIcon, CircleIcon } from "@hugeicons/core-free-icons";
+import { CountrySelector } from "@/components/country-selector";
 
 const instructorFormSchema = z.object({
   bio: z
@@ -56,17 +55,10 @@ interface InstructorRegistrationFormProps {
 export function InstructorRegistrationForm({
   onSuccess,
 }: InstructorRegistrationFormProps) {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
   const [pendingValues, setPendingValues] = useState<InstructorFormValues | null>(null);
   const { data: session, update } = useSession();
-  
-  interface SessionUser extends Record<string, unknown> {
-    isInstructor?: boolean;
-    instructorProfile?: unknown;
-    _localStorage?: Record<string, unknown>;
-  }
 
   const form = useForm<InstructorFormValues>({
     resolver: zodResolver(instructorFormSchema),
@@ -86,45 +78,51 @@ export function InstructorRegistrationForm({
   });
 
   const bioValue = form.watch("bio") as string;
-  const curriculumValue = form.watch("curriculum") as string;
-  const isFormValid =
-    form.formState.isValid && (form.getValues("specialties")?.length || 0) > 0;
+  const specialties: string[] = Array.isArray(form.watch("specialties")) 
+    ? form.watch("specialties") 
+    : [];
+  const isFormValid = form.formState.isValid && specialties.length > 0;
 
   const addSpecialty = () => {
-    const newSpecialty = form.getValues("newSpecialty");
-    if (newSpecialty && newSpecialty.trim() !== "") {
-      const currentSpecialties = form.getValues("specialties") || [];
-      if (!currentSpecialties.includes(newSpecialty)) {
-        form.setValue("specialties", [
-          ...currentSpecialties,
-          newSpecialty.trim(),
-        ]);
-        form.setValue("newSpecialty", "");
-      }
+    const currentSpecialties = Array.isArray(form.getValues("specialties")) 
+      ? form.getValues("specialties") 
+      : [];
+    const newSpecialty = (form.getValues("newSpecialty") as string)?.trim();
+
+    if (newSpecialty && !currentSpecialties.includes(newSpecialty)) {
+      const updatedSpecialties = [...currentSpecialties, newSpecialty];
+      form.setValue("specialties", updatedSpecialties);
+      form.setValue("curriculum", updatedSpecialties.join(", "), { shouldValidate: true });
+      form.setValue("newSpecialty", "", { shouldValidate: true });
     }
   };
 
   const removeSpecialty = (specialtyToRemove: string) => {
-    const currentSpecialties = form.getValues("specialties") || [];
-    form.setValue(
-      "specialties",
-      currentSpecialties.filter((s) => s !== specialtyToRemove),
-    );
+    const currentSpecialties = Array.isArray(form.getValues("specialties")) 
+      ? form.getValues("specialties") 
+      : [];
+    const updatedSpecialties = currentSpecialties.filter((s: string) => s !== specialtyToRemove);
+    
+    form.setValue("specialties", updatedSpecialties, { shouldValidate: true });
+    form.setValue("curriculum", updatedSpecialties.join(", "), { shouldValidate: true });
   };
 
   const onSubmit = (values: InstructorFormValues) => {
-    const filteredValues = {
+    const processedValues = {
       ...values,
-      specialties: (values.specialties || []).filter((s): s is string =>
-        Boolean(s),
-      ),
+      specialties: Array.isArray(values.specialties) 
+        ? values.specialties 
+        : values.specialties 
+          ? [values.specialties] 
+          : []
     };
-    setPendingValues(filteredValues);
+    setPendingValues(processedValues);
     setShowPayment(true);
   };
 
   const handlePaymentConfirm = async () => {
     if (!pendingValues) return;
+    
     setIsLoading(true);
     setShowPayment(false);
 
@@ -132,7 +130,7 @@ export function InstructorRegistrationForm({
       const submissionData = Object.fromEntries(
         Object.entries(pendingValues).filter(([key]) => key !== "newSpecialty"),
       );
-
+      // 1. Register the instructor
       const response = await fetch("/api/instructors/register", {
         method: "POST",
         headers: {
@@ -142,40 +140,56 @@ export function InstructorRegistrationForm({
       });
 
       if (!response.ok) {
-        throw new Error("Error al registrar como instructor");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Error al registrar como instructor");
       }
 
       const result = await response.json();
 
-      // Actualizar la sesión con los nuevos datos
+      // 2. Actualizar la sesión con los nuevos datos
       if (session?.user) {
-        const user = session.user as SessionUser;
+        // 2.1 Forzar una recarga de la sesión desde el servidor
+        const sessionResponse = await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ update: true })
+        });
+        
+        if (!sessionResponse.ok) {
+          throw new Error("Error al actualizar la sesión");
+        }
+
+        // 2.3 Actualizar la sesión local
         await update({
           ...session,
           user: {
-            ...user,
+            ...session.user,
             isInstructor: true,
             instructorProfile: result,
             _localStorage: {
-              ...(user._localStorage || {}),
+              ...(session.user._localStorage || {}),
               isInstructor: true,
               instructorProfile: result,
-            },
-          },
+              name: session.user.name,
+              email: session.user.email,
+              image: session.user.image,
+              experienceLevel: session.user.experienceLevel
+            }
+          }
         });
-      }
 
-      // Forzar actualización de la sesión
-      await fetch("/api/auth/session", {
-        method: "GET",
-      });
+        // 2.4 Mostrar mensaje de éxito
+        toast.success("¡Registro exitoso!", {
+          description: "Ahora eres un instructor en nuestra plataforma.",
+        });
 
-      toast.success("¡Registro exitoso! Ahora eres un instructor.");
-      onSuccess?.();
-      router.refresh();
-
-      if (!onSuccess) {
-        router.push("/dashboard/instructors/search");
+        // 2.5 Llamar al callback de éxito si existe
+        onSuccess?.();
+        
+        // 2.6 Forzar una recarga completa de la página
+        /* setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1500); */
       }
     } catch (error) {
       console.error("Error:", error);
@@ -213,8 +227,8 @@ export function InstructorRegistrationForm({
                         <FormLabel>Especialidades</FormLabel>
                         <div className="space-y-3">
                           <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border rounded-lg bg-muted/30">
-                            {field.value?.length > 0 ? (
-                              field.value.map((specialty: string) => (
+                            {(Array.isArray(field.value) ? field.value : [field.value].filter(Boolean)).length > 0 ? (
+                              (Array.isArray(field.value) ? field.value : [field.value].filter(Boolean)).map((specialty: string) => (
                                 <div
                                   key={specialty}
                                   className="bg-primary/10 text-primary rounded-md px-3 py-1 text-sm flex items-center gap-1"
@@ -306,34 +320,10 @@ export function InstructorRegistrationForm({
                     control={form.control}
                     name="curriculum"
                     render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Currículum y Certificaciones</FormLabel>
+                      <FormItem className="hidden">
                         <FormControl>
-                          <Textarea
-                            placeholder="Certificaciones, especialidades, años de experiencia..."
-                            className="min-h-[120px] resize-none"
-                            {...field}
-                            value={
-                              typeof field.value === "string" ? field.value : ""
-                            }
-                          />
+                          <input type="hidden" {...field} />
                         </FormControl>
-                        <FormDescription className="flex justify-between">
-                          <span>Certificaciones y experiencia relevante</span>
-                          <span
-                            className={
-                              curriculumValue?.length > 900
-                                ? "text-destructive"
-                                : ""
-                            }
-                          >
-                            {typeof field.value === "string"
-                              ? field.value.length
-                              : 0}
-                            /1000
-                          </span>
-                        </FormDescription>
-                        <FormMessage />
                       </FormItem>
                     )}
                   />

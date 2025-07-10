@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Icons } from "../icons";
 
 // Define the profile type based on your session structure with index signature
 interface UserProfile {
@@ -53,6 +52,25 @@ interface User {
   id: string;
   experienceLevel: string;
   profile: UserProfile;
+  createdAt?: string; // Add createdAt as optional
+  isInstructor?: boolean;
+  instructorProfile?: {
+    id: string;
+    userId: string;
+    bio?: string | null;
+    curriculum?: string | null;
+    pricePerMonth?: number | null;
+    contactEmail?: string | null;
+    contactPhone?: string | null;
+    country?: string | null;
+    city?: string | null;
+    isRemote?: boolean | null;
+    specialties?: string[];
+    experienceYears?: number;
+    status?: string;
+    createdAt?: Date | string;
+    updatedAt?: Date | string;
+  };
 }
 
 // Define the session type
@@ -70,59 +88,68 @@ const ProfileCheck = () => {
     status: "loading" | "authenticated" | "unauthenticated";
   };
 
+  const handleRedirect = () => {
+    router.push("/onboarding");
+  };
+
   useEffect(() => {
     // Only proceed when session is loaded (not loading)
     if (status !== "loading") {
       setIsLoading(true);
 
       try {
-        let showProfileAlert = true;
+        // Default to not showing the alert
+        let showProfileAlert = false;
 
-        // Check if session exists and has user data with profile
-        if (session?.user?.profile) {
-          const profile = session.user.profile;
-
-          // Define required fields to check
-          const requiredFields = [
-            "gender",
-            "birthdate",
-            "height",
-            "currentWeight",
-            "targetWeight",
-            "activityLevel",
-            "goal",
-            "bodyFatPercentage",
-            "muscleMass",
-            "dailyActivity",
-            "trainingFrequency",
-            "preferredWorkoutTime",
-            "dietaryPreference",
+        // Check if session exists and has user data
+        if (session?.user) {
+          const user = session.user;
+          const profile = user.profile;
+          
+          // Check for required profile fields
+          const requiredProfileFields = [
+            'gender',
+            'birthdate',
+            'height',
+            'currentWeight',
+            'goal'
           ];
 
-          // Check if any required fields are missing or empty
-          showProfileAlert = requiredFields.some(
-            (field) =>
-              !profile[field] ||
-              profile[field] === "" ||
-              (typeof profile[field] === "number" &&
-                isNaN(profile[field] as number)),
-          );
+          // Check if profile exists and has all required fields
+          if (!profile) {
+            showProfileAlert = true;
+          } else {
+            // Check if any required fields are missing or empty
+            const missingFields = requiredProfileFields.filter(
+              field => !profile[field] || profile[field] === ""
+            );
+            
+            console.log('Profile check debug:', {
+              hasProfile: !!profile,
+              missingFields,
+              profile: {
+                gender: profile.gender,
+                birthdate: profile.birthdate,
+                height: profile.height,
+                currentWeight: profile.currentWeight,
+                goal: profile.goal
+              }
+            });
+            
+            // Show alert if any required fields are missing
+            showProfileAlert = missingFields.length > 0;
+          }
         }
 
-        // Show alert if profile data is incomplete
         setShowAlert(showProfileAlert);
       } catch (error) {
         console.error("Error al verificar datos del usuario:", error);
-        setShowAlert(true);
+        setShowAlert(false);
       } finally {
         setIsLoading(false);
       }
     }
   }, [session, status]);
-
-  const handleRedirect = () => {
-    router.push("/onboarding");
-  };
 
   // Avoid mounting the component on the onboarding page to prevent loops
   useEffect(() => {
@@ -147,7 +174,7 @@ const ProfileCheck = () => {
       {isLoading || status === "loading" ? (
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
-            <Icons.spinner className="h-12 w-12 text-white animate-spin" />
+            <div className="h-12 w-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
             <p className="text-sm font-medium text-white">
               Verificando perfil
             </p>
