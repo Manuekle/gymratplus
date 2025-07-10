@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
 import { DefaultSession, NextAuthOptions, User, Session } from "next-auth";
@@ -215,20 +214,27 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({ token, user }: { token: JWT; user?: User | AdapterUser }) {
-      if (user) {
-        const customUser = user as CustomUser;
-        token.id = customUser.id;
+    async jwt({ token, user, trigger = 'default' }) {
+      // Si es una actualización del token (trigger === 'update') o es un nuevo login (user existe)
+      if (user || trigger === 'update') {
+        const userId = user?.id || token.id;
+        if (!userId) return token;
 
-        // Obtener datos completos del usuario
+        // Obtener datos actualizados del usuario
         const dbUser = await prisma.user.findUnique({
-          where: { id: customUser.id },
+          where: { id: userId },
+          include: {
+            profile: true
+          }
         });
-        token.isInstructor = dbUser?.isInstructor ?? false;
-        // @ts-expect-error interests puede no estar tipado correctamente
-        token.interests = dbUser?.interests ?? [];
-        // @ts-expect-error profile puede no estar tipado correctamente
-        token.profile = dbUser?.profile ?? null;
+
+        if (dbUser) {
+          token.id = dbUser.id;
+          token.isInstructor = dbUser.isInstructor ?? false;
+          token.interests = dbUser.interests ?? [];
+          // @ts-expect-error profile puede no estar tipado correctamente
+          token.profile = dbUser.profile ?? null;
+        }
       }
       return token;
     },

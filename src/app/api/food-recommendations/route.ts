@@ -1,19 +1,36 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
 
+interface NutritionPlan {
+  macros: object;
+  meals: object[];
+  calorieTarget: number;
+}
+
+interface RequestBody {
+  nutritionPlan: NutritionPlan;
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
 
-  if (!session?.user) {
+  if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const body = await req.json();
+    const body: RequestBody = await req.json();
     const { nutritionPlan } = body;
+
+    // Validate required fields
+    if (!nutritionPlan || !nutritionPlan.macros || !nutritionPlan.meals || nutritionPlan.calorieTarget === undefined) {
+      return NextResponse.json(
+        { error: "Missing required fields in nutrition plan" },
+        { status: 400 }
+      );
+    }
 
     // Extract the necessary data from the nutrition plan
     const { macros, meals, calorieTarget } = nutritionPlan;
@@ -24,7 +41,7 @@ export async function POST(req: NextRequest) {
         userId: session.user.id,
         macros: JSON.stringify(macros),
         meals: JSON.stringify(meals),
-        calorieTarget,
+        calorieTarget: Number(calorieTarget),
       },
     });
 
