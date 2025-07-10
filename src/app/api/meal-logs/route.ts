@@ -15,6 +15,10 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    if (!session.user.id) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+    }
+
     const userId = session.user.id;
     const date = req.nextUrl.searchParams.get("date");
     const startDate = req.nextUrl.searchParams.get("startDate");
@@ -40,16 +44,19 @@ export async function GET(req: NextRequest) {
 
     // Filter by specific date
     if (date) {
-      // Parsear la fecha y crear límites del día en la zona horaria local
+        // Parse date and create day boundaries in local timezone
       const parsedDate = parseISO(date);
       const start = startOfDay(parsedDate);
       const end = endOfDay(parsedDate);
 
-      console.log("Filtering logs between:", {
-        start: start.toISOString(),
-        end: end.toISOString(),
-        originalDate: date,
-      });
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.debug("Filtering logs between:", {
+          start: start.toISOString(),
+          end: end.toISOString(),
+          originalDate: date,
+        });
+      }
 
       where.consumedAt = {
         gte: start,
@@ -95,6 +102,10 @@ export async function POST(req: NextRequest) {
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (!session.user.id) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
 
     const userId = session.user.id;
@@ -170,23 +181,25 @@ export async function POST(req: NextRequest) {
     }
 
     try {
-      // Corregir el manejo de la fecha
-      let consumedAt;
+      // Handle date parsing
+      let consumedAt: Date;
       if (data.consumedAt) {
-        // Parsear la fecha ISO y asegurarnos de que se maneje en la zona horaria local
+        // Parse ISO date and ensure proper timezone handling
         consumedAt = new Date(data.consumedAt);
 
-        // Verificar si la fecha es válida
-        if (isNaN(consumedAt.getTime())) {
-          console.error("Fecha inválida:", data.consumedAt);
+        // Validate date
+        if (Number.isNaN(consumedAt.getTime())) {
+          console.error("Invalid date:", data.consumedAt);
           return NextResponse.json(
             { error: "Invalid date format" },
             { status: 400 },
           );
         }
 
-        console.log("Fecha recibida:", data.consumedAt);
-        console.log("Fecha a guardar:", consumedAt.toISOString());
+        if (process.env.NODE_ENV === 'development') {
+          console.debug("Received date:", data.consumedAt);
+          console.debug("Date to save:", consumedAt.toISOString());
+        }
       } else {
         consumedAt = new Date();
       }

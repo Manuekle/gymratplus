@@ -11,13 +11,15 @@ export async function POST(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "No autorizado - Usuario no identificado" }, { status: 401 });
     }
+    
+    const userId = session.user.id;
 
     const { day, exercises } = await req.json();
 
-    if (!day || !exercises || !exercises.length) {
+    if (!day || !exercises || !Array.isArray(exercises) || exercises.length === 0) {
       return NextResponse.json(
         { error: "Datos inválidos proporcionados" },
         { status: 400 },
@@ -30,14 +32,14 @@ export async function POST(req: NextRequest) {
     // Buscar el workout del usuario (personal o asignado)
     // Primero intentamos encontrar una rutina personal activa
     let userWorkout = await prisma.workout.findFirst({
-      where: { createdById: session.user.id, type: "personal" },
+      where: { createdById: userId, type: "personal" },
       orderBy: { createdAt: "desc" },
     });
 
     // Si no hay rutina personal, buscar una asignada
     if (!userWorkout) {
       userWorkout = await prisma.workout.findFirst({
-        where: { assignedToId: session.user.id, type: "assigned" },
+        where: { assignedToId: userId, type: "assigned" },
         orderBy: { createdAt: "desc" },
       });
     }
@@ -52,7 +54,7 @@ export async function POST(req: NextRequest) {
     // Crear la sesión de entrenamiento con los ejercicios proporcionados
     const workoutSession = await prisma.workoutSession.create({
       data: {
-        userId: session.user.id,
+        userId: userId,
         workoutId: userWorkout.id,
         notes: `Día: ${day}`,
         exercises: {
@@ -112,7 +114,7 @@ export async function POST(req: NextRequest) {
     try {
       // Check if user has notifications enabled
       const userProfile = await prisma.profile.findUnique({
-        where: { userId: session.user.id },
+        where: { userId },
         select: { notificationsActive: true },
       });
 
@@ -120,14 +122,14 @@ export async function POST(req: NextRequest) {
         // Default to true if not set
         // Create notification in database directly
         await createWorkoutStartedNotification(
-          session.user.id,
+          userId,
           userWorkout.name,
           day,
         );
 
         // Add to Redis list for polling
         await publishWorkoutNotification(
-          session.user.id,
+          userId,
           workoutSession.id,
           "started",
           userWorkout.name,

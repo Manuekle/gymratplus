@@ -29,6 +29,10 @@ export async function POST() {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
+    if (!session.user.id) {
+      return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
+    }
+
     // Crear o obtener los ejercicios básicos
     const exercises = await Promise.all(
       DEFAULT_EXERCISES.map(async (exerciseData) => {

@@ -51,8 +51,12 @@ export async function GET() {
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions);
-  if (!session)
-    return NextResponse.json({ error: "No autenticado" }, { status: 401 });
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { error: "No se pudo autenticar el usuario" },
+      { status: 401 }
+    );
+  }
 
   try {
     const body = await req.json();

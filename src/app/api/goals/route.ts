@@ -125,24 +125,35 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Crear nuevo objetivo
+    // Ensure required fields are present
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "No autorizado - ID de usuario no disponible" },
+        { status: 401 }
+      );
+    }
+
+    // Create goal data with proper typing
+    const goalData = {
+      userId: session.user.id,
+      type: type as string,
+      title: title as string,
+      description: description || null,
+      targetValue: targetValue ? Number(targetValue) : null,
+      initialValue: initialValue ? Number(initialValue) : null,
+      currentValue: currentValue ? Number(currentValue) : null,
+      unit: unit || null,
+      exerciseType: exerciseType || null,
+      measurementType: measurementType || null,
+      startDate: new Date(startDate as string),
+      targetDate: targetDate ? new Date(targetDate as string) : null,
+      status: "active" as const,
+      progress: progress || 0,
+    };
+
+    // Create new goal
     const newGoal = await prisma.goal.create({
-      data: {
-        userId: session.user.id,
-        type,
-        title,
-        description,
-        targetValue,
-        initialValue,
-        currentValue,
-        unit,
-        exerciseType,
-        measurementType,
-        startDate: new Date(startDate),
-        targetDate: targetDate ? new Date(targetDate) : null,
-        status: "active",
-        progress,
-      },
+      data: goalData,
     });
 
     // Si hay un valor inicial, crear el primer registro de progreso
