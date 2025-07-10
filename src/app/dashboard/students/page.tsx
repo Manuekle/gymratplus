@@ -14,13 +14,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { ArrowRight01Icon, Dollar02Icon, FireIcon, Target01Icon, Tick02Icon, UserGroupIcon } from "hugeicons-react";
+
 import Link from "next/link";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { InstructorProfileForm } from "@/components/instructor/instructor-profile-form";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon, Dollar02Icon, FireIcon, Target01Icon, Tick02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 
 interface StudentData {
   id: string;
@@ -195,10 +197,10 @@ export default function InstructorDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
-            <UserGroupIcon className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-semibold tracking-heading">
               {stats?.totalStudents || 0}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -212,10 +214,10 @@ export default function InstructorDashboardPage() {
             <CardTitle className="text-sm font-medium">
               Planes Activos
             </CardTitle>
-            <Target01Icon className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon icon={Target01Icon} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-semibold tracking-heading">
               {stats?.studentsWithWorkoutPlans || 0} entrenamiento
             </div>
             <p className="text-xs text-muted-foreground">
@@ -229,10 +231,10 @@ export default function InstructorDashboardPage() {
             <CardTitle className="text-sm font-medium">
               Racha Promedio
             </CardTitle>
-            <FireIcon className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon icon={FireIcon} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-semibold tracking-heading">
               {stats?.avgStreak || 0}
             </div>
             <p className="text-xs text-muted-foreground">días consecutivos</p>
@@ -242,10 +244,10 @@ export default function InstructorDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <Dollar02Icon className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon icon={Dollar02Icon} className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold">
+            <div className="text-2xl font-semibold tracking-heading">
               ${stats?.totalRevenue || 0}
             </div>
             <p className="text-xs text-muted-foreground">mensuales</p>
@@ -304,7 +306,7 @@ export default function InstructorDashboardPage() {
                         onClick={() => handleAcceptRequest(request.id)}
                         className="h-8"
                       >
-                        <Tick02Icon className="h-4 w-4 mr-1" />
+                        <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-1" />
                         Aceptar
                       </Button>
                     </div>
@@ -335,7 +337,7 @@ export default function InstructorDashboardPage() {
               href="/dashboard/students/list"
               className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
             >
-              Ver todos <ArrowRight01Icon className="h-4 w-4" />
+              Ver todos <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
             </Link>
           </div>
         </CardHeader>
@@ -453,7 +455,7 @@ export default function InstructorDashboardPage() {
                   <Button variant="ghost" size="sm" className="w-full" asChild>
                     <Link href="/dashboard/instructors/students">
                       Ver todos los alumnos ({students.length})
-                      <ArrowRight01Icon className="h-4 w-4 ml-1" />
+                      <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4 ml-1" />
                     </Link>
                   </Button>
                 </div>

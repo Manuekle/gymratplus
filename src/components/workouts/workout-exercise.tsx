@@ -18,7 +18,8 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { Loader2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CircleIcon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 
 interface Exercise {
@@ -366,7 +367,9 @@ export default function WorkoutExercise({
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <HugeiconsIcon
+                  icon={CircleIcon}
+                  className="mr-2 h-4 w-4 animate-spin" />
                   Guardando
                 </>
               ) : (

@@ -1,11 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ArrowRight01Icon, Clock01Icon } from "hugeicons-react";
+
 import { es } from "date-fns/locale";
 import { Skeleton } from "../ui/skeleton";
 import { formatDistanceToNow } from "date-fns";
 import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon, Clock01Icon } from "@hugeicons/core-free-icons";
 
 interface Exercise {
   // Define the exercise properties as needed, for example:
@@ -57,7 +59,7 @@ export default function WorkoutSummary() {
           className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
         >
           Ver todos
-          <ArrowRight01Icon className="h-4 w-4 text-muted-foreground" />
+          <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4 text-muted-foreground" />
         </Link>
       </div>
 
@@ -138,7 +140,7 @@ export default function WorkoutSummary() {
               </div>
               <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                 <div className="flex items-center">
-                  <Clock01Icon className="h-3 w-3 mr-1 text-foreground" />
+                  <HugeiconsIcon icon={Clock01Icon} className="h-3 w-3 mr-1 text-foreground" />
                   <span>
                     {session.duration ? `${session.duration} min` : "N/A"}
                   </span>

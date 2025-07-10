@@ -25,16 +25,9 @@ import {
 
 import { toast } from "sonner";
 import { Icons } from "./icons";
-import {
-  BroccoliIcon,
-  CheeseIcon,
-  Dish01Icon,
-  PresentationBarChart02Icon,
-  Pulse01Icon,
-  SmileIcon,
-  Target02Icon,
-  Tick02Icon,
-} from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BroccoliIcon, CheeseIcon, Dish01Icon, PresentationBarChart02Icon, Pulse01Icon, SmileIcon, Target02Icon, Tick02Icon,  } from "@hugeicons/core-free-icons";
+
 
 type FormData = {
   gender: "male" | "female";
@@ -173,10 +166,10 @@ export function CalorieCalculator() {
   }, [open]);
 
   const stepIcons = [
-    <SmileIcon key="user" className="h-6 w-6" />,
-    <Pulse01Icon key="activity" className="h-6 w-6" />,
-    <Target02Icon key="target" className="h-6 w-6" />,
-    <PresentationBarChart02Icon key="results" className="h-6 w-6" />,
+    <HugeiconsIcon icon={SmileIcon} key="user" className="h-6 w-6" />,
+    <HugeiconsIcon icon={Pulse01Icon} key="activity" className="h-6 w-6" />,
+    <HugeiconsIcon icon={Target02Icon} key="target" className="h-6 w-6" />,
+    <HugeiconsIcon icon={PresentationBarChart02Icon} key="results" className="h-6 w-6" />,
   ];
 
   return (
@@ -211,7 +204,7 @@ export function CalorieCalculator() {
                 }`}
               >
                 {step > i + 1 ? (
-                  <Tick02Icon className="h-5 w-5" />
+                  <HugeiconsIcon icon={Tick02Icon} className="h-5 w-5" />
                 ) : (
                   stepIcons[i]
                 )}
@@ -504,7 +497,7 @@ export function CalorieCalculator() {
                         }
                       >
                         <div className="flex flex-col items-center">
-                          <Dish01Icon className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon icon={Dish01Icon} className="h-5 w-5 mb-1" />
                           <span className="text-xs font-medium">
                             Sin preferencia
                           </span>
@@ -521,7 +514,7 @@ export function CalorieCalculator() {
                         }
                       >
                         <div className="flex flex-col items-center">
-                          <BroccoliIcon className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon icon={BroccoliIcon} className="h-5 w-5 mb-1" />
                           <span className="text-xs font-medium">
                             Vegetariano
                           </span>
@@ -536,7 +529,7 @@ export function CalorieCalculator() {
                         onClick={() => setValue("dietaryPreference", "keto")}
                       >
                         <div className="flex flex-col items-center">
-                          <CheeseIcon className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon icon={CheeseIcon} className="h-5 w-5 mb-1" />
                           <span className="text-xs font-medium">Keto</span>
                         </div>
                       </div>

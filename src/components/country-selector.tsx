@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Tick02Icon, ArrowDown01Icon, Globe02Icon } from "hugeicons-react";
+
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 import { cn } from "@/lib/utils";
@@ -24,6 +24,8 @@ import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCountries } from "@/hooks/use-countries";
 import Image from "next/image";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick02Icon, ArrowDown01Icon, Globe02Icon } from "@hugeicons/core-free-icons";
 
 interface CountrySelectorProps {
   value?: string;
@@ -89,7 +91,7 @@ export function CountrySelector({
           disabled
         >
           <span className="text-muted-foreground">Error cargando países</span>
-          <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <HugeiconsIcon icon={ArrowDown01Icon} className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </div>
     );
@@ -127,8 +129,7 @@ export function CountrySelector({
                 crossOrigin="anonymous"
               />
               <span className="flex-1">{country.name.common}</span>
-              <Tick02Icon
-                className={cn(
+              <HugeiconsIcon icon={Tick02Icon} className={cn(
                   "ml-auto h-4 w-4",
                   value === country.cca2 ? "opacity-100" : "opacity-0",
                 )}
@@ -168,12 +169,12 @@ export function CountrySelector({
                   </>
                 ) : (
                   <>
-                    <Globe02Icon className="h-4 w-4 text-muted-foreground" />
+                    <HugeiconsIcon icon={Globe02Icon} className="h-4 w-4 text-muted-foreground" />
                     <span className="text-muted-foreground">{placeholder}</span>
                   </>
                 )}
               </div>
-              <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <HugeiconsIcon icon={ArrowDown01Icon} className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent
@@ -212,12 +213,12 @@ export function CountrySelector({
                 </>
               ) : (
                 <>
-                  <Globe02Icon className="h-4 w-4 text-muted-foreground" />
+                  <HugeiconsIcon icon={Globe02Icon} className="h-4 w-4 text-muted-foreground" />
                   <span className="text-muted-foreground">{placeholder}</span>
                 </>
               )}
             </div>
-            <ArrowDown01Icon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            <HugeiconsIcon icon={ArrowDown01Icon} className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </DrawerTrigger>
         <DrawerContent>

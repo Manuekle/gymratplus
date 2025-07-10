@@ -2,11 +2,13 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChartAverageIcon, Dumbbell01Icon, Target02Icon, Tick02Icon, UserGroupIcon } from "hugeicons-react";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChartAverageIcon, Dumbbell01Icon, Target02Icon, Tick02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 
 export default function GymRatLanding() {
   return (
@@ -158,7 +160,7 @@ export default function GymRatLanding() {
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
-                    <Target02Icon className="w-4 h-4 text-gray-700 dark:text-white" />
+                    <HugeiconsIcon icon={Target02Icon} className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold tracking-heading mb-1">
@@ -173,7 +175,7 @@ export default function GymRatLanding() {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
-                    <ChartAverageIcon className="w-4 h-4 text-gray-700 dark:text-white" />
+                    <HugeiconsIcon icon={ChartAverageIcon} className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold tracking-heading mb-1">
@@ -188,7 +190,7 @@ export default function GymRatLanding() {
 
                 <div className="flex items-start space-x-4">
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
-                    <UserGroupIcon className="w-4 h-4 text-gray-700 dark:text-white" />
+                    <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4 text-gray-700 dark:text-white" />
                   </div>
                   <div>
                     <h3 className="font-semibold tracking-heading mb-1">
@@ -242,7 +244,7 @@ export default function GymRatLanding() {
           <div className="grid md:grid-cols-2 gap-12">
             <div className="text-center">
               <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
-                <UserGroupIcon className="w-6 h-6 text-foreground" />
+                <HugeiconsIcon icon={UserGroupIcon} className="w-6 h-6 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold tracking-heading mb-3">
                 Para Atletas
@@ -256,7 +258,7 @@ export default function GymRatLanding() {
 
             <div className="text-center">
               <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
-                <Dumbbell01Icon className="w-6 h-6 text-foreground" />
+                <HugeiconsIcon icon={Dumbbell01Icon} className="w-6 h-6 text-foreground" />
               </div>
               <h3 className="text-xl font-semibold tracking-heading mb-3">
                 Para Entrenadores
@@ -312,15 +314,15 @@ export default function GymRatLanding() {
                 </div>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
                     <span>Planes de entrenamiento básicos</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
                     <span>Seguimiento de progreso</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-foreground flex-shrink-0" />
                     <span>Acceso a la comunidad</span>
                   </li>
                 </ul>
@@ -359,19 +361,19 @@ export default function GymRatLanding() {
                 </div>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
                     <span>Todo lo del plan Alumno</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
                     <span>Gestión de clientes</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
                     <span>Creación de entrenamientos personalizados</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0" />
                     <span>Dashboard de analíticas avanzadas</span>
                   </li>
                 </ul>
@@ -409,15 +411,15 @@ export default function GymRatLanding() {
                 </div>
                 <ul className="space-y-3 mb-6">
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
                     <span>Todo lo del plan Instructor</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
                     <span>Soporte prioritario</span>
                   </li>
                   <li className="flex items-center text-sm">
-                    <Tick02Icon className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
+                    <HugeiconsIcon icon={Tick02Icon} className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0" />
                     <span>Acceso anticipado a nuevas funciones</span>
                   </li>
                 </ul>

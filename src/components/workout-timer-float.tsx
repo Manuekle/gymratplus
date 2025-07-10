@@ -13,14 +13,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import {
-  Clock01Icon,
-  PauseIcon,
-  PlayIcon,
-  Cancel01Icon,
-  ArrowExpandIcon,
-} from "hugeicons-react";
+
 import { Icons } from "./icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Clock01Icon, PauseIcon, PlayIcon, Cancel01Icon, ArrowExpandIcon,  } from "@hugeicons/core-free-icons";
 
 interface WorkoutTimerFloatProps {
   workoutSessionId: string;
@@ -183,7 +179,7 @@ export default function WorkoutTimerFloat({
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <Clock01Icon size={14} className="text-white dark:text-black" />
+                <HugeiconsIcon icon={Clock01Icon} size={14} className="text-white dark:text-black" />
                 <span className="font-medium text-xs text-white dark:text-black">
                   Tiempo de entrenamiento
                 </span>
@@ -193,8 +189,7 @@ export default function WorkoutTimerFloat({
                 className="p-1 rounded-sm"
                 onClick={() => setIsMinimized(true)}
               >
-                <ArrowExpandIcon
-                  size={14}
+                <HugeiconsIcon icon={ArrowExpandIcon} size={14}
                   className="text-white dark:text-black"
                 />
               </Button>
@@ -214,9 +209,9 @@ export default function WorkoutTimerFloat({
                 onClick={togglePause}
               >
                 {isPaused ? (
-                  <PlayIcon size={16} className="text-white dark:text-black" />
+                  <HugeiconsIcon icon={PlayIcon} size={16} className="text-white dark:text-black" />
                 ) : (
-                  <PauseIcon size={16} className="text-white dark:text-black" />
+                  <HugeiconsIcon icon={PauseIcon} size={16} className="text-white dark:text-black" />
                 )}
               </Button>
 
@@ -225,7 +220,7 @@ export default function WorkoutTimerFloat({
                 className="text-xs px-4 bg-destructive dark:bg-[#DE3163] dark:text-white"
                 onClick={() => setShowConfirmDialog(true)}
               >
-                <Cancel01Icon size={16} />
+                <HugeiconsIcon icon={Cancel01Icon} size={16} />
               </Button>
             </div>
           </div>

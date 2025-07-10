@@ -1,7 +1,9 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { MinusSignIcon, PlusSignIcon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
+
 
 interface WaterControlsProps {
   intake: number;
@@ -26,7 +28,7 @@ export function WaterControls({
         disabled={isUpdating || intake >= 10}
         aria-label="Añadir agua"
       >
-        <PlusSignIcon className="h-6 w-6" />
+        <HugeiconsIcon icon={PlusSignIcon} className="h-6 w-6" />
       </Button>
 
       <div className="text-center w-24 h-24 flex flex-col justify-center items-center">
@@ -44,7 +46,7 @@ export function WaterControls({
         disabled={isUpdating || intake <= 0}
         aria-label="Quitar agua"
       >
-        <MinusSignIcon className="h-6 w-6" />
+        <HugeiconsIcon icon={MinusSignIcon} className="h-6 w-6" />
       </Button>
     </div>
   );

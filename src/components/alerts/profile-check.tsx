@@ -148,7 +148,7 @@ const ProfileCheck = () => {
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
             <Icons.spinner className="h-12 w-12 text-white animate-spin" />
-            <p className="text-md md:text-lg font-semibold tracking-heading text-white">
+            <p className="text-sm font-medium text-white">
               Verificando perfil
             </p>
           </div>

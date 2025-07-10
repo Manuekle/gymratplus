@@ -6,7 +6,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
-import { CalendarAdd02Icon, CalendarMinus02Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CalendarAdd02Icon, CalendarMinus02Icon } from "@hugeicons/core-free-icons";
+
 
 interface StepFrequencyProps {
   value: number;
@@ -29,12 +31,12 @@ export function StepFrequency({ value, onChange }: StepFrequencyProps) {
       <div className="space-y-6 ">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
-            <CalendarMinus02Icon size={18} className="text-muted-foreground" />
+            <HugeiconsIcon icon={CalendarMinus02Icon} size={18} className="text-muted-foreground" />
             <span className="text-xs text-accent-foreground">Pocos días</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xs text-accent-foreground">Muchos días</span>
-            <CalendarAdd02Icon size={18} className="text-muted-foreground" />
+            <HugeiconsIcon icon={CalendarAdd02Icon} size={18} className="text-muted-foreground" />
           </div>
         </div>
 

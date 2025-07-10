@@ -2,17 +2,14 @@
 
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BodyPartLegIcon, BodyPartSixPackIcon, WorkoutWarmUpIcon } from "@hugeicons/core-free-icons";
 import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  BodyPartLegIcon,
-  BodyPartSixPackIcon,
-  WorkoutWarmUpIcon,
-} from "hugeicons-react";
+
 
 const splits = [
   {
@@ -79,21 +76,21 @@ const splits = [
     name: "Torso-Pierna",
     description:
       "Se alternan días de torso y días de pierna (4 días por semana)",
-    icon: <BodyPartSixPackIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={BodyPartSixPackIcon} size={18} className="text-muted-foreground" />,
   },
   {
     id: "Push/Pull/Legs",
     name: "Push-Pull-Legs",
     description:
       "Un día empuje (push), otro jalón (pull) y otro pierna (6 días por semana)",
-    icon: <BodyPartLegIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={BodyPartLegIcon} size={18} className="text-muted-foreground" />,
   },
   {
     id: "Weider",
     name: "Weider",
     description:
       "Se entrena un grupo muscular específico por día (5-6 días por semana)",
-    icon: <WorkoutWarmUpIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={WorkoutWarmUpIcon} size={18} className="text-muted-foreground" />,
   },
 ];
 

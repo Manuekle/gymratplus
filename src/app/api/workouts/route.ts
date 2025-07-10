@@ -17,12 +17,31 @@ export async function GET() {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   try {
+    // Obtener todos los workouts del usuario, incluyendo los asignados
     const workouts = await prisma.workout.findMany({
-      where: { createdById: session.user.id, type: "personal" },
-      include: { exercises: true },
+      where: { 
+        OR: [
+          { createdById: session.user.id }, // Workouts creados por el usuario
+          { assignedToId: session.user.id } // Workouts asignados al usuario
+        ]
+      },
+      include: { 
+        exercises: true,
+        instructor: {
+          select: {
+            id: true,
+            name: true,
+            email: true
+          }
+        }
+      },
+      orderBy: {
+        createdAt: 'desc'
+      }
     });
     return NextResponse.json(workouts);
-  } catch {
+  } catch (error) {
+    console.error('Error obteniendo workouts:', error);
     return NextResponse.json(
       { error: "Error obteniendo workouts" },
       { status: 500 },

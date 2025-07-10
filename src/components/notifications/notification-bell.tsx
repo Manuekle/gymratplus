@@ -13,8 +13,10 @@ import { NotificationItem } from "@/components/notifications/notification-item";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useNotifications } from "@/hooks/use-notifications";
 import Link from "next/link";
-import { Notification02Icon } from "hugeicons-react";
+
 import { ScrollArea } from "../ui/scroll-area";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Notification02Icon } from "@hugeicons/core-free-icons";
 
 export function NotificationBell() {
   const { notifications, isLoading, unreadCount, markAsRead, refetch } =
@@ -32,7 +34,7 @@ export function NotificationBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Notification02Icon className="h-5 w-5" />
+          <HugeiconsIcon icon={Notification02Icon} className="h-5 w-5" />
           {unreadCount > 0 && (
             <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[8px] min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold ">
               {unreadCount > 9 ? "+9" : unreadCount}
@@ -81,7 +83,7 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <Notification02Icon className="h-10 w-10 text-muted-foreground opacity-40" />
+                <HugeiconsIcon icon={Notification02Icon} className="h-10 w-10 text-muted-foreground opacity-40" />
                 <p className="text-xs text-muted-foreground text-center">
                   No tienes notificaciones
                 </p>
@@ -108,7 +110,7 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <Notification02Icon className="h-10 w-10 text-muted-foreground opacity-40" />
+                <HugeiconsIcon icon={Notification02Icon} className="h-10 w-10 text-muted-foreground opacity-40" />
                 <p className="text-xs md:text-sm text-muted-foreground text-center">
                   No tienes notificaciones sin leer
                 </p>

@@ -16,16 +16,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Calendar01Icon,
-  SquareArrowUp01Icon,
-  Target02Icon,
-  WeightScaleIcon,
-} from "hugeicons-react";
+
 import { NewGoal } from "./goals/new-goal";
 import { UpdateGoal } from "./goals/update-goal";
 import ProgressSkeleton from "./skeleton/progress-skeleton";
 import { DeleteGoal } from "./goals/delete-goal";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar01Icon, SquareArrowUp01Icon, Target02Icon, WeightScaleIcon,  } from "@hugeicons/core-free-icons";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
@@ -68,13 +65,13 @@ export function GoalsDashboard() {
   const getGoalTypeIcon = (type: GoalType) => {
     switch (type) {
       case "weight":
-        return <WeightScaleIcon size={18} className="text-blue-500" />;
+        return <HugeiconsIcon icon={WeightScaleIcon} size={18} className="text-blue-500" />;
       case "strength":
-        return <SquareArrowUp01Icon size={18} className="text-purple-500" />;
+        return <HugeiconsIcon icon={SquareArrowUp01Icon} size={18} className="text-purple-500" />;
       case "measurement":
-        return <Target02Icon size={18} className="text-green-500" />;
+        return <HugeiconsIcon icon={Target02Icon} size={18} className="text-green-500" />;
       case "activity":
-        return <Calendar01Icon size={18} className="text-orange-500" />;
+        return <HugeiconsIcon icon={Calendar01Icon} size={18} className="text-orange-500" />;
     }
   };
 
@@ -99,8 +96,7 @@ export function GoalsDashboard() {
     // Si tiene fecha objetivo, mostrar días restantes
     if (goal.targetDate) {
       const daysLeft = differenceInDays(new Date(goal.targetDate), new Date());
-      if (daysLeft < 0) return "Vencido";
-      if (daysLeft === 0) return "Hoy";
+      if (daysLeft <= 0) return "Vencido";
       if (daysLeft === 1) return "Mañana";
       return `${daysLeft} días restantes`;
     }

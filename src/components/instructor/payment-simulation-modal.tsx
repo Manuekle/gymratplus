@@ -20,7 +20,8 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { CreditCard, Loader2, Ticket } from "lucide-react";
+import { HugeiconsIcon } from '@hugeicons/react'
+import { Ticket02Icon, CircleIcon, CreditCardIcon} from '@hugeicons/core-free-icons'
 
 interface PaymentSimulationModalProps {
   open: boolean;
@@ -126,7 +127,9 @@ export function PaymentSimulationModal({
                     className="pr-16"
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                    <CreditCard className="h-4 w-4 text-muted-foreground" />
+                    <HugeiconsIcon
+                    icon={CreditCardIcon}
+                    className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </div>
               </div>
@@ -182,7 +185,9 @@ export function PaymentSimulationModal({
                 className="h-auto p-0 text-xs font-normal text-muted-foreground hover:text-foreground"
                 disabled={isLoading}
               >
-                <Ticket className="mr-1 h-3 w-3" />
+                <HugeiconsIcon
+                icon={Ticket02Icon}
+                className="mr-1 h-3 w-3" />
                 Agregar código de descuento
               </Button>
 
@@ -206,7 +211,9 @@ export function PaymentSimulationModal({
             <Button type="submit" className="" disabled={isLoading}>
               {isLoading ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <HugeiconsIcon
+                  icon={CircleIcon}
+                  className="mr-2 h-4 w-4 animate-spin" />
                   Confirmando...
                 </>
               ) : (

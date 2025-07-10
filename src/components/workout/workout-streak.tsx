@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import { Badge } from "@/components/ui/badge";
 
 import { useStreakAlert } from "@/providers/streak-alert-provider";
-import { FireIcon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { FireIcon } from "@hugeicons/core-free-icons";
 
 interface WorkoutStreakProps {
   userId: string;
@@ -54,7 +55,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
   return (
     <div className="flex items-center space-x-2">
-      <FireIcon className="h-4 w-4 text-orange-500" />
+      <HugeiconsIcon icon={FireIcon} className="h-4 w-4 text-orange-500" />
       <Badge variant="secondary" className="text-xs">
         {stats.currentStreak} días
       </Badge>

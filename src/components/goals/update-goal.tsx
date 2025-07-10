@@ -25,8 +25,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar01Icon } from "hugeicons-react";
+
 import { Icons } from "../icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar01Icon } from "@hugeicons/core-free-icons";
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -102,7 +104,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                     !date && "text-muted-foreground",
                   )}
                 >
-                  <Calendar01Icon className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon icon={Calendar01Icon} className="mr-2 h-4 w-4" />
                   {date ? (
                     format(date, "PPP", { locale: es })
                   ) : (

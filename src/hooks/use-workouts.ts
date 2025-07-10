@@ -57,32 +57,27 @@ export function useWorkouts() {
   const { data: session } = useSession();
   const pathname = usePathname();
 
-  // Obtener las rutinas personales del usuario
+  // Obtener todas las rutinas del usuario
   const fetchWorkouts = useCallback(async () => {
     try {
+      setIsLoading(true);
       const res = await fetch("/api/workouts");
       if (res.ok) {
         const data = await res.json();
-        // Filtrar solo las rutinas personales creadas por el usuario
-        const personalWorkouts = data.filter(
-          (workout: Workout) =>
-            workout.createdById === session?.user?.id &&
-            workout.type === "personal" &&
-            workout.status !== "archived",
-        );
-        globalPersonalWorkouts = personalWorkouts;
-        setWorkouts(personalWorkouts);
+        // Mostrar todos los workouts del usuario
+        globalPersonalWorkouts = data;
+        setWorkouts(data);
         notifySubscribers();
       } else {
-        throw new Error("Error al obtener tus rutinas personales");
+        throw new Error("Error al obtener tus rutinas");
       }
     } catch (error) {
-      console.error("Error fetching personal workouts:", error);
-      toast.error("Error al cargar tus rutinas personales");
+      console.error("Error fetching workouts:", error);
+      toast.error("Error al cargar tus rutinas");
     } finally {
       setIsLoading(false);
     }
-  }, [session?.user?.id]);
+  }, []);
 
   // Crear una nueva rutina personal
   const createWorkout = useCallback(

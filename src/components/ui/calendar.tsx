@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { HugeiconsIcon } from '@hugeicons/react'
+import {ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+
 import { DayPicker } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -61,10 +63,14 @@ function Calendar({
       }}
       components={{
         IconLeft: ({ className, ...props }) => (
-          <ChevronLeft className={cn("size-4", className)} {...props} />
+          <HugeiconsIcon
+          icon={ArrowLeft01Icon}
+          className={cn("size-4", className)} {...props} />
         ),
         IconRight: ({ className, ...props }) => (
-          <ChevronRight className={cn("size-4", className)} {...props} />
+          <HugeiconsIcon
+          icon={ArrowRight01Icon}
+          className={cn("size-4", className)} {...props} />
         ),
       }}
       {...props}

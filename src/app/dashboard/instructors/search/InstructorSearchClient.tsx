@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { InstructorProfile, User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { RefreshIcon } from "@hugeicons/core-free-icons";
 import { CountrySelector } from "@/components/country-selector";
 import {
   Select,
@@ -29,7 +29,9 @@ import {
 } from "@/components/ui/select";
 import { useCountries } from "@/hooks/use-countries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tick02Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
+
 
 interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
@@ -370,7 +372,7 @@ export default function InstructorSearchClient() {
                           {instructor.name}
                         </CardTitle>
                         {instructor.instructorProfile?.isVerified && (
-                          <Tick02Icon className="text-emerald-600 w-4 h-4" />
+                          <HugeiconsIcon icon={Tick02Icon} className="text-emerald-600 w-4 h-4" />
                         )}
                       </div>
                       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -466,14 +468,14 @@ export default function InstructorSearchClient() {
                       {requestingInstructorId ===
                       instructor.instructorProfile?.id ? (
                         <>
-                          <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                          <HugeiconsIcon icon={RefreshIcon} className="mr-2 h-3 w-3 animate-spin" />
                           Enviando...
                         </>
                       ) : requestedInstructors.has(
                           instructor.instructorProfile?.id || "",
                         ) ? (
                         <>
-                          <Tick02Icon className="mr-2 h-3 w-3" />
+                          <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-3 w-3" />
                           Solicitud Enviada
                         </>
                       ) : (

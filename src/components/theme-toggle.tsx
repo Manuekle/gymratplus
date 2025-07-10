@@ -2,7 +2,9 @@
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Sun02Icon, Moon02Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Sun02Icon, Moon02Icon } from "@hugeicons/core-free-icons";
+
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
@@ -39,15 +41,13 @@ export function ThemeToggle() {
       className="relative h-9 w-9"
       aria-label="Toggle theme"
     >
-      <Sun02Icon
-        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
+      <HugeiconsIcon icon={Sun02Icon} className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
           theme === "light"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 -rotate-90 scale-50"
         }`}
       />
-      <Moon02Icon
-        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
+      <HugeiconsIcon icon={Moon02Icon} className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
           theme === "dark"
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 rotate-90 scale-50"

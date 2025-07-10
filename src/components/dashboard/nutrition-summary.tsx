@@ -1,10 +1,12 @@
 "use client";
 import { Progress } from "@/components/ui/progress";
-import { ArrowRight01Icon } from "hugeicons-react";
+
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
@@ -165,7 +167,7 @@ export default function NutritionSummary() {
           href="/dashboard/nutrition"
           className="text-xs text-muted-foreground flex items-center gap-1"
         >
-          Ver mas <ArrowRight01Icon className="h-4 w-4" />
+          Ver mas <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
         </Link>
       </div>
 

@@ -8,12 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Calendar01Icon } from "hugeicons-react";
+
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useRouter } from "next/navigation";
 
 import { Workout } from "@/types/workout-types";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar01Icon } from "@hugeicons/core-free-icons";
 
 interface StepResultsProps {
   workout: Workout;
@@ -61,7 +63,7 @@ export function StepResults({ workout }: StepResultsProps) {
                 {workout.type}
               </Badge>
               <Badge variant="outline" className="flex items-center gap-1">
-                <Calendar01Icon className="h-3 w-3" />
+                <HugeiconsIcon icon={Calendar01Icon} className="h-3 w-3" />
                 {workout.days.length} días
               </Badge>
             </div>

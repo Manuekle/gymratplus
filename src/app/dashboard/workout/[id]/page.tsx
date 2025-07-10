@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft01Icon, Calendar01Icon, Delete02Icon } from "hugeicons-react";
+
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
 
 interface Workout {
   id: string;
@@ -114,7 +116,7 @@ export default function WorkouPage() {
           size="sm"
           onClick={() => router.push("/dashboard/workout")}
         >
-          <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" /> Volver a la lista
         </Button>
         <span className="flex flex-row gap-2 text-xs w-full md:w-auto">
           <StartWorkout workout={workout} />
@@ -133,16 +135,14 @@ export default function WorkouPage() {
           </div>
           <div className="flex gap-2">
             <Button
-              variant="outline"
+              variant="destructive"
               size="sm"
-              className="text-white bg-destructive hover:bg-destructive/10 hover:text-white"
               onClick={() => setIsDeleteDialogOpen(true)}
             >
-              <Delete02Icon className="h-4 w-4 mr-2" />
               Eliminar
             </Button>
             <Badge variant="outline" className="flex items-center gap-1">
-              <Calendar01Icon className="h-3 w-3" />
+              <HugeiconsIcon icon={Calendar01Icon} className="h-3 w-3" />
               {workout.days.length} días
             </Badge>
           </div>
@@ -169,10 +169,10 @@ export default function WorkouPage() {
       >
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Estás seguro de eliminar este workout?
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-xs">
               Esta acción no se puede deshacer. Esto eliminará permanentemente
               el workout "{workout.name}" y todos sus datos asociados.
               <div className="mt-4">
@@ -193,7 +193,7 @@ export default function WorkouPage() {
             <AlertDialogAction
               disabled={confirmationText !== workout.name || isDeleting}
               onClick={handleDeleteWorkout}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {isDeleting ? "Eliminando..." : "Eliminar"}
             </AlertDialogAction>

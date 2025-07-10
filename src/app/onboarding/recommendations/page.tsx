@@ -5,7 +5,9 @@ import { CustomSonner } from "@/components/custom-sonner";
 import Recommendations from "@/components/recommendations";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft01Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+
 
 export default function RecommendationsPage() {
   const router = useRouter();
@@ -27,7 +29,7 @@ export default function RecommendationsPage() {
           onClick={() => router.push("/dashboard/profile")}
           className="flex items-center text-xs"
         >
-          <ArrowLeft01Icon className="mr-2 h-4 w-4" />
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
           Volver al Perfil
         </Button>
       </div>

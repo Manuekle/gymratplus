@@ -36,6 +36,7 @@ import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { Badge } from "@/components/ui/badge";
 import TimePicker from "@/components/ui/time-picker";
 import { Icons } from "@/components/icons";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar02Icon,
   Cancel01Icon,
@@ -46,7 +47,8 @@ import {
   PlusSignIcon,
   Search01Icon,
   // Tick02Icon,
-} from "hugeicons-react";
+} from "@hugeicons/core-free-icons";
+
 
 type Food = {
   id: string;
@@ -56,7 +58,7 @@ type Food = {
   carbs: number;
   fat: number;
   serving: number;
-  category: string;
+  category: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
   isFavorite?: boolean;
 };
 
@@ -449,7 +451,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               size="icon"
               onClick={() => setEditingItemIndex(null)}
             >
-              <Cancel01Icon className="h-4 w-4" />
+              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
             </Button>
           </div>
 
@@ -493,7 +495,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   )
                 }
               >
-                <MinusSignIcon className="h-4 w-4" />
+                <HugeiconsIcon icon={MinusSignIcon} className="h-4 w-4" />
               </Button>
               <Input
                 id="quantity"
@@ -519,7 +521,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   )
                 }
               >
-                <PlusSignIcon className="h-4 w-4" />
+                <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -636,7 +638,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   className="border"
                   onClick={() => setEditingItemIndex(index)}
                 >
-                  <PlusSignIcon size={12} />
+                  <HugeiconsIcon icon={PlusSignIcon} size={12} />
                 </Button>
                 <Button
                   variant="ghost"
@@ -644,7 +646,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   className="border"
                   onClick={() => removeItem(index)}
                 >
-                  <Delete02Icon size={12} />
+                  <HugeiconsIcon icon={Delete02Icon} size={12} />
                 </Button>
               </div>
             );
@@ -830,7 +832,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   className="w-full justify-start text-left font-normal mt-1 text-xs md:text-sm"
                   id="mealDate"
                 >
-                  <Calendar02Icon className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
                   {format(mealDate, "PPP", { locale: es })}
                 </Button>
               </PopoverTrigger>
@@ -898,7 +900,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             </div>
 
             <div className="relative mt-2">
-              <Search01Icon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar alimento o receta..."
                 value={searchQuery}
@@ -912,7 +914,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   className="absolute right-1 top-1/2 transform -translate-y-1/2 h-7 w-7"
                   onClick={() => setSearchQuery("")}
                 >
-                  <Cancel01Icon className="h-4 w-4" />
+                  <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
                 </Button>
               )}
             </div>
@@ -924,14 +926,14 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             >
               <TabsList className="grid w-full grid-cols-2 text-xs md:text-sm">
                 <TabsTrigger value="foods" className="flex items-center gap-2">
-                  <FishFoodIcon className="h-4 w-4" />
+                  <HugeiconsIcon icon={FishFoodIcon} className="h-4 w-4" />
                   Alimentos
                 </TabsTrigger>
                 <TabsTrigger
                   value="recipes"
                   className="flex items-center gap-2"
                 >
-                  <FavouriteIcon className="h-4 w-4" />
+                  <HugeiconsIcon icon={FavouriteIcon} className="h-4 w-4" />
                   Recetas
                 </TabsTrigger>
               </TabsList>

@@ -1,10 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { CancelPlanDialog } from "./cancel-plan-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { redis } from "@/lib/redis";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CountrySelector } from "@/components/country-selector";
@@ -19,7 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { ReloadIcon } from "@radix-ui/react-icons";
+import { CircleIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 
@@ -44,10 +48,21 @@ interface InstructorProfileFormProps {
   onSuccess?: () => void;
 }
 
+
+
 export function InstructorProfileForm({
   onSuccess,
 }: InstructorProfileFormProps) {
+  const router = useRouter();
+  const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
+  const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  
+  // In-memory cache for user data
+  const userDataCache = new Map<string, { 
+    data: Record<string, string | undefined>; 
+    timestamp: number 
+  }>();
 
   const form = useForm<InstructorProfileValues>({
     resolver: zodResolver(instructorProfileSchema),
@@ -104,6 +119,47 @@ export function InstructorProfileForm({
     };
     fetchProfile();
   }, [form]);
+
+  const handleCancelSuccess = async () => {
+    try {
+      // 1. Delete the instructor profile
+      const deleteProfileResponse = await fetch("/api/instructors/profile", {
+        method: "DELETE",
+      });
+
+      if (!deleteProfileResponse.ok) {
+        throw new Error("Error al eliminar el perfil de instructor");
+      }
+
+      // 2. Update the user's plan status
+      await fetch("/api/instructors/cancel-plan", {
+        method: "POST",
+      });
+
+      // 3. Clear all caches
+      if (session?.user?.email) {
+        await redis.del(`user:${session.user.email}:data`);
+        userDataCache.delete(session.user.email);
+      }
+
+      // 4. Force session refresh
+      await fetch("/api/auth/session?update=true");
+
+      // 5. Redirect to profile and refresh
+      router.push("/dashboard/profile");
+      router.refresh();
+      
+      toast.success("Plan cancelado exitosamente");
+      setIsCancelDialogOpen(false);
+      
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      console.error("Error al cancelar el plan:", error);
+      toast.error("Error al cancelar el plan");
+    }
+  };
 
   async function onSubmit(values: InstructorProfileValues) {
     setIsLoading(true);
@@ -327,21 +383,36 @@ export function InstructorProfileForm({
         </div>
         <Separator />
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={isLoading}
-            size="lg"
-            className="w-full md:w-auto"
-          >
-            {isLoading ? (
-              <>
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-                Guardando...
-              </>
-            ) : (
-              "Guardar Cambios"
-            )}
-          </Button>
+          <div className="flex gap-4">
+            <Button 
+              type="submit" 
+              disabled={isLoading}
+              size="lg"
+            >
+              {isLoading ? (
+                <>
+                  <CircleIcon className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                'Guardar Cambios'
+              )}
+            </Button>
+            <Button 
+              type="button" 
+              variant="outline" 
+              disabled={isLoading}
+              size="lg"
+              onClick={() => setIsCancelDialogOpen(true)}
+            >
+              Cancelar Plan
+            </Button>
+            <CancelPlanDialog 
+              open={isCancelDialogOpen}
+              onOpenChange={setIsCancelDialogOpen}
+              onSuccess={handleCancelSuccess}
+            />
+          </div>
         </div>
       </form>
     </Form>

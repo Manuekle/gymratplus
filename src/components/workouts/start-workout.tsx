@@ -22,8 +22,10 @@ import {
 } from "@/components/ui/select";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
-import { AlertCircleIcon } from "hugeicons-react";
+
 import { ScrollArea } from "../ui/scroll-area";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AlertCircleIcon } from "@hugeicons/core-free-icons";
 
 type Exercise = {
   id: string;
@@ -220,10 +222,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button
-          size="sm"
-          className="text-xs text-white bg-[#DE3163] hover:bg-[#DE3163]/90 w-full md:w-auto"
-        >
+        <Button size="sm" variant="outline">
           Comenzar rutina
         </Button>
       </DialogTrigger>
@@ -244,7 +243,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
         ) : activeWorkoutExists ? (
           <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
             <span className="flex items-center gap-2 pb-1 text-destructive">
-              <AlertCircleIcon size={14} />
+              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
               <AlertTitle className="text-sm">Entrenamiento activo</AlertTitle>
             </span>
             <AlertDescription className="text-xs text-destructive">

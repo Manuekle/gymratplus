@@ -11,11 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Door01Icon } from "hugeicons-react";
+
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
 import { WorkoutStreak } from "./workout/workout-streak";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Door01Icon } from "@hugeicons/core-free-icons";
 
 export function Navbar() {
   const { data: session } = useSession();
@@ -101,7 +103,7 @@ export function Navbar() {
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                 >
-                  <Door01Icon className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon icon={Door01Icon} className="mr-2 h-4 w-4" />
                   <span className="text-xs">Cerrar sesión</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

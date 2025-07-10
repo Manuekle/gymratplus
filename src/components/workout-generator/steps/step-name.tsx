@@ -7,7 +7,9 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { File01Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { File01Icon } from "@hugeicons/core-free-icons";
+
 
 interface StepNameProps {
   value: string;
@@ -29,7 +31,7 @@ export function StepName({ value, onChange }: StepNameProps) {
       <div className="space-y-4 px-4">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-2 rounded-full text-muted-foreground border">
-            <File01Icon size={18} />
+            <HugeiconsIcon icon={File01Icon} size={18} />
           </div>
           <p className="text-xs text-muted-foreground">
             Un buen nombre te ayudará a mantener la motivación y el enfoque en

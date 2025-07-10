@@ -33,8 +33,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar02Icon } from "hugeicons-react";
+
 import { Icons } from "../icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar02Icon } from "@hugeicons/core-free-icons";
 interface GoalProps {
   onSuccess: () => void;
   initialData?: Partial<Goal>;
@@ -340,7 +342,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                       !startDate && "text-muted-foreground",
                     )}
                   >
-                    <Calendar02Icon className="mr-2 h-4 w-4" />
+                    <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
                     {startDate ? (
                       format(startDate, "PPP", { locale: es })
                     ) : (
@@ -373,7 +375,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                       !targetDate && "text-muted-foreground",
                     )}
                   >
-                    <Calendar02Icon className="mr-2 h-4 w-4" />
+                    <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
                     {targetDate ? (
                       format(targetDate, "PPP", { locale: es })
                     ) : (

@@ -4,47 +4,43 @@ import { Label } from "@/components/ui/label";
 
 import { DialogHeader } from "@/components/ui/dialog";
 import { DialogDescription, DialogTitle } from "@radix-ui/react-dialog";
-import {
-  BodyPartMuscleIcon,
-  EquipmentBenchPressIcon,
-  TapeMeasureIcon,
-  WorkoutRunIcon,
-  YogaMatIcon,
-} from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BodyPartMuscleIcon, EquipmentBenchPressIcon, TapeMeasureIcon, WorkoutRunIcon, YogaMatIcon,  } from "@hugeicons/core-free-icons";
+
 
 const goals = [
   {
     id: "hypertrophy",
     name: "Hipertrofia",
     description: "Aumento de masa muscular (6-12 repeticiones por serie)",
-    icon: <BodyPartMuscleIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={BodyPartMuscleIcon} size={18} className="text-muted-foreground" />,
   },
   {
     id: "strength",
     name: "Fuerza",
     description: "Levantamiento de cargas pesadas (1-6 repeticiones por serie)",
     icon: (
-      <EquipmentBenchPressIcon size={18} className="text-muted-foreground" />
+      <HugeiconsIcon icon={EquipmentBenchPressIcon} size={18} className="text-muted-foreground" />
     ),
   },
   {
     id: "fat-loss",
     name: "Pérdida de grasa",
     description: "Rutinas con alta intensidad, circuitos o HIIT",
-    icon: <TapeMeasureIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={TapeMeasureIcon} size={18} className="text-muted-foreground" />,
   },
   {
     id: "endurance",
     name: "Resistencia",
     description:
       "Aumentar la capacidad muscular y cardiovascular (más de 12 repeticiones)",
-    icon: <WorkoutRunIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={WorkoutRunIcon} size={18} className="text-muted-foreground" />,
   },
   {
     id: "mobility",
     name: "Movilidad y flexibilidad",
     description: "Yoga, pilates o estiramientos dinámicos",
-    icon: <YogaMatIcon size={18} className="text-muted-foreground" />,
+    icon: <HugeiconsIcon icon={YogaMatIcon} size={18} className="text-muted-foreground" />,
   },
 ];
 

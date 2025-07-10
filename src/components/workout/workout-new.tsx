@@ -4,7 +4,8 @@ import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import WorkoutExercise from "../workouts/workout-exercise";
 import { toast } from "sonner";
-import { Delete02Icon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
 import { Skeleton } from "../ui/skeleton";
 
 interface Exercise {
@@ -198,7 +199,7 @@ export function WorkoutNew({
                   className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   onClick={() => handleDelete(exercise.id)}
                 >
-                  <Delete02Icon className="h-4 w-4" />
+                  <HugeiconsIcon icon={Delete02Icon} size={16} color="currentColor" />
                 </Button>
               </div>
               <div className="p-4 grid grid-cols-3 gap-4 text-center">

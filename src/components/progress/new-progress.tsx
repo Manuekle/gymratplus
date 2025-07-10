@@ -25,8 +25,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar02Icon } from "hugeicons-react";
+
 import { Icons } from "../icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Calendar02Icon } from "@hugeicons/core-free-icons";
 interface ProgressProps {
   onSuccess: () => void;
   initialData?: {
@@ -131,7 +133,7 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
                     !date && "text-muted-foreground",
                   )}
                 >
-                  <Calendar02Icon className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
                   {date ? (
                     format(date, "PPP", { locale: es })
                   ) : (

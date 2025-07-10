@@ -31,7 +31,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { Tick02Icon, UnfoldMoreIcon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick02Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons";
+
 
 const COLORS = [
   "#A0C4E7", // Soft Sky Blue
@@ -250,7 +252,7 @@ export function ExerciseProgressChart() {
                 : `${selectedExercises.length} ejercicio${
                     selectedExercises.length === 1 ? "" : "s"
                   } seleccionado${selectedExercises.length === 1 ? "" : "s"}`}
-              <UnfoldMoreIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              <HugeiconsIcon icon={UnfoldMoreIcon} className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-full p-0">
@@ -268,8 +270,7 @@ export function ExerciseProgressChart() {
                       );
                     }}
                   >
-                    <Tick02Icon
-                      className={cn(
+                    <HugeiconsIcon icon={Tick02Icon} className={cn(
                         "mr-2 h-4 w-4",
                         selectedExercises.includes(exercise)
                           ? "opacity-100"

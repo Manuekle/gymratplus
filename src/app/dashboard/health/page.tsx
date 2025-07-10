@@ -17,18 +17,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  Activity01Icon,
-  ArrowDown01Icon,
-  ArrowRight01Icon,
-  ArrowUp01Icon,
-  RulerIcon,
-  WeightScaleIcon,
-} from "hugeicons-react";
+
 import { useState, useEffect } from "react";
 import { WeightChart } from "@/components/weight-chart";
 import { useSession } from "next-auth/react";
 import { WaterIntakeTracker } from "@/components/water/water-intake-tracker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Activity01Icon, ArrowDown01Icon, ArrowRight01Icon, ArrowUp01Icon, RulerIcon, WeightScaleIcon,  } from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
@@ -110,7 +105,7 @@ export default function HealthPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
-                  <WeightScaleIcon className="mr-1 h-4 w-4" />
+                  <HugeiconsIcon icon={WeightScaleIcon} className="mr-1 h-4 w-4" />
                   Peso Actual
                 </div>
                 <div className="text-2xl font-semibold ">
@@ -121,7 +116,7 @@ export default function HealthPage() {
 
               <div className="space-y-2">
                 <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
-                  <RulerIcon className="mr-1 h-4 w-4" />
+                  <HugeiconsIcon icon={RulerIcon} className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
                 <div className="text-2xl font-semibold ">{user?.height} cm</div>
@@ -131,7 +126,7 @@ export default function HealthPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <Activity01Icon className="mr-1 h-4 w-4" />
+                  <HugeiconsIcon icon={Activity01Icon} className="mr-1 h-4 w-4" />
                   IMC (Índice de Masa Corporal)
                 </div>
                 <span className="text-sm font-medium">{bmi.toFixed(0)}</span>
@@ -178,19 +173,19 @@ export default function HealthPage() {
                 <SelectContent>
                   <SelectItem value="lose-weight">
                     <div className="flex items-center">
-                      <ArrowDown01Icon className="mr-2 h-4 w-4 text-red-500" />
+                      <HugeiconsIcon icon={ArrowDown01Icon} className="mr-2 h-4 w-4 text-red-500" />
                       Perder peso
                     </div>
                   </SelectItem>
                   <SelectItem value="maintain">
                     <div className="flex items-center">
-                      <ArrowRight01Icon className="mr-2 h-4 w-4 text-amber-500" />
+                      <HugeiconsIcon icon={ArrowRight01Icon} className="mr-2 h-4 w-4 text-amber-500" />
                       Mantener peso
                     </div>
                   </SelectItem>
                   <SelectItem value="gain-muscle">
                     <div className="flex items-center">
-                      <ArrowUp01Icon className="mr-2 h-4 w-4 text-green-500" />
+                      <HugeiconsIcon icon={ArrowUp01Icon} className="mr-2 h-4 w-4 text-green-500" />
                       Ganar músculo
                     </div>
                   </SelectItem>

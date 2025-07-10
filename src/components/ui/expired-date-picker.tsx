@@ -12,6 +12,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BirthdayCakeIcon } from "@hugeicons/core-free-icons";
 import {
   Select,
   SelectContent,
@@ -19,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BirthdayCakeIcon } from "hugeicons-react";
+
 
 interface ExpiredDatePickerProps {
   value: Date | string | undefined;
@@ -129,7 +131,7 @@ export function ExpiredDatePicker({
               aria-expanded={isCalendarOpen}
               aria-label={label}
             >
-              <BirthdayCakeIcon className="mr-2 h-4 w-4" aria-hidden />
+              <HugeiconsIcon icon={BirthdayCakeIcon} className="mr-2 h-4 w-4" aria-hidden />
               {dateValue ? (
                 format(dateValue, "d 'de' MMMM 'de' yyyy", { locale: es })
               ) : (

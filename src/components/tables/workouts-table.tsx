@@ -2,10 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useRef, useEffect, useCallback } from "react";
-import { ArrowLeft01Icon, ArrowRight01Icon } from "hugeicons-react";
+
 import { useWorkouts } from "@/hooks/use-workouts";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 interface Workout {
   id: string;
@@ -242,7 +244,7 @@ export default function WorkoutsTable() {
               disabled={isTransitioning}
               className="h-8 w-8 p-0 rounded-lg transition-all duration-200 hover:bg-primary/10"
             >
-              <ArrowLeft01Icon className="h-4 w-4" />
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
@@ -251,7 +253,7 @@ export default function WorkoutsTable() {
               disabled={isTransitioning}
               className="h-8 w-8 p-0 rounded-lg transition-all duration-200 hover:bg-primary/10"
             >
-              <ArrowRight01Icon className="h-4 w-4" />
+              <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
             </Button>
           </div>
         )}

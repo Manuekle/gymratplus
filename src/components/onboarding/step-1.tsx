@@ -30,19 +30,10 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 // import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { Icons } from "@/components/icons";
-import {
-  Activity03Icon,
-  BodyPartMuscleIcon,
-  BodyWeightIcon,
-  Clock01Icon,
-  PercentSquareIcon,
-  RulerIcon,
-  SteakIcon,
-  Target02Icon,
-  WeightScaleIcon,
-  WorkoutGymnasticsIcon,
-} from "hugeicons-react";
+
 import { BirthDatePicker } from "../ui/birth-date-picker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Activity03Icon, BodyPartMuscleIcon, BodyWeightIcon, Clock01Icon, PercentSquareIcon, RulerIcon, SteakIcon, Target02Icon, WeightScaleIcon, WorkoutGymnasticsIcon,  } from "@hugeicons/core-free-icons";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
   (i + 140).toString(),
@@ -420,7 +411,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <RulerIcon size={18} className="text-foreground" />
+                          <HugeiconsIcon icon={RulerIcon} size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su altura" />
                         </div>
                       </SelectTrigger>
@@ -453,8 +444,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <WeightScaleIcon
-                            size={18}
+                          <HugeiconsIcon icon={WeightScaleIcon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue placeholder="Seleccione su peso actual" />
@@ -485,8 +475,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <BodyWeightIcon
-                            size={18}
+                          <HugeiconsIcon icon={BodyWeightIcon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue
@@ -528,8 +517,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <Activity03Icon
-                            size={18}
+                          <HugeiconsIcon icon={Activity03Icon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue
@@ -589,8 +577,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <PercentSquareIcon
-                            size={18}
+                          <HugeiconsIcon icon={PercentSquareIcon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue
@@ -683,8 +670,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <BodyPartMuscleIcon
-                            size={18}
+                          <HugeiconsIcon icon={BodyPartMuscleIcon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue
@@ -763,7 +749,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <Target02Icon size={18} className="text-foreground" />
+                          <HugeiconsIcon icon={Target02Icon} size={18} className="text-foreground" />
                           <SelectValue
                             className="text-xs md:text-sm"
                             placeholder="Seleccione su objetivo"
@@ -813,8 +799,7 @@ export default function StepOnboarding1() {
                       <SelectTrigger className="text-xs md:text-sm">
                         {/* <SelectValue placeholder="Select your daily activity" /> */}
                         <div className="flex flex-row items-center gap-4">
-                          <WorkoutGymnasticsIcon
-                            size={18}
+                          <HugeiconsIcon icon={WorkoutGymnasticsIcon} size={18}
                             className="text-foreground"
                           />
                           <SelectValue placeholder="Seleccione su actividad diaria" />
@@ -885,7 +870,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <Clock01Icon size={18} className="text-foreground" />
+                          <HugeiconsIcon icon={Clock01Icon} size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su hora preferida" />
                         </div>
                       </SelectTrigger>
@@ -942,7 +927,7 @@ export default function StepOnboarding1() {
                     >
                       <SelectTrigger className="text-xs md:text-sm">
                         <div className="flex flex-row items-center gap-4">
-                          <SteakIcon size={18} className="text-foreground" />
+                          <HugeiconsIcon icon={SteakIcon} size={18} className="text-foreground" />
                           <SelectValue placeholder="Seleccione su preferencia dietética" />
                         </div>
                       </SelectTrigger>

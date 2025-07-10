@@ -19,7 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { BirthdayCakeIcon } from "hugeicons-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { BirthdayCakeIcon } from "@hugeicons/core-free-icons";
+
 
 interface BirthDatePickerProps {
   value: Date | string | undefined;
@@ -126,7 +128,7 @@ export function BirthDatePicker({
                 !value && "text-muted-foreground",
               )}
             >
-              <BirthdayCakeIcon className="mr-2 h-4 w-4" />
+              <HugeiconsIcon icon={BirthdayCakeIcon} className="mr-2 h-4 w-4" />
               {dateValue ? (
                 format(dateValue, "d 'de' MMMM 'de' yyyy", { locale: es })
               ) : (

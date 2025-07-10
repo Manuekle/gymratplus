@@ -14,8 +14,10 @@ import {
 
 import { useGoals, type Goal } from "@/hooks/use-goals";
 import { Icons } from "../icons";
-import { AlertCircleIcon } from "hugeicons-react";
+
 import { AlertDescription, AlertTitle } from "../ui/alert";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { AlertCircleIcon } from "@hugeicons/core-free-icons";
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -62,7 +64,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
             <span className="flex items-center gap-2 pb-1 text-destructive">
-              <AlertCircleIcon size={14} />
+              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
               <AlertTitle className="text-sm">¡Cuidado!</AlertTitle>
             </span>
             <AlertDescription className="text-xs text-destructive">

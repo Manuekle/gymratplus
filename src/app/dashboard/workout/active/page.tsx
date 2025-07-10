@@ -11,13 +11,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft01Icon } from "hugeicons-react"; // Usando tus iconos
+ // Usando tus iconos
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout-timer-float";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
 // Componente de spinner (ajusta según tus componentes)
 const Spinner = () => (
@@ -485,7 +487,7 @@ export default function ActiveWorkoutPage() {
             size="sm"
             onClick={() => router.push("/dashboard/workout")}
           >
-            <ArrowLeft01Icon className="mr-2 h-4 w-4" /> Volver a la lista
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" /> Volver a la lista
           </Button>
         </div>
         <div className="border rounded-lg p-4 mt-8">

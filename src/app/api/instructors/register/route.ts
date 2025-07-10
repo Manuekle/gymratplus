@@ -46,8 +46,19 @@ export async function POST(req: NextRequest) {
     });
 
     // Preparar datos para crear/actualizar
-    const updateData: any = {};
-    const createData: any = { userId: session.user.id };
+    interface InstructorUpdateData {
+      bio?: string;
+      curriculum?: string;
+      pricePerMonth?: number;
+      contactEmail?: string;
+      contactPhone?: string;
+      country?: string;
+      city?: string;
+      isRemote?: boolean;
+    }
+
+    const updateData: InstructorUpdateData = {};
+    const createData: InstructorUpdateData & { userId: string } = { userId: session.user.id };
     
     if (bio !== undefined) { updateData.bio = bio; createData.bio = bio; }
     if (curriculum !== undefined) { updateData.curriculum = curriculum; createData.curriculum = curriculum; }

@@ -20,10 +20,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Loader2, X, Plus } from "lucide-react";
 import { PaymentSimulationModal } from "./payment-simulation-modal";
 import { CountrySelector } from "@/components/country-selector";
 import { useSession } from "next-auth/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Cancel01Icon, PlusSignIcon, CircleIcon } from "@hugeicons/core-free-icons";
 
 const instructorFormSchema = z.object({
   bio: z
@@ -58,9 +59,14 @@ export function InstructorRegistrationForm({
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [showPayment, setShowPayment] = useState(false);
-  const [pendingValues, setPendingValues] =
-    useState<InstructorFormValues | null>(null);
-  const { update } = useSession();
+  const [pendingValues, setPendingValues] = useState<InstructorFormValues | null>(null);
+  const { data: session, update } = useSession();
+  
+  interface SessionUser extends Record<string, unknown> {
+    isInstructor?: boolean;
+    instructorProfile?: unknown;
+    _localStorage?: Record<string, unknown>;
+  }
 
   const form = useForm<InstructorFormValues>({
     resolver: zodResolver(instructorFormSchema),
@@ -139,14 +145,36 @@ export function InstructorRegistrationForm({
         throw new Error("Error al registrar como instructor");
       }
 
-      await response.json();
-      // Fuerza la actualización de la sesión para reflejar isInstructor
-      await update();
-      toast.success("¡Registro exitoso!");
+      const result = await response.json();
 
-      if (onSuccess) {
-        onSuccess();
-      } else {
+      // Actualizar la sesión con los nuevos datos
+      if (session?.user) {
+        const user = session.user as SessionUser;
+        await update({
+          ...session,
+          user: {
+            ...user,
+            isInstructor: true,
+            instructorProfile: result,
+            _localStorage: {
+              ...(user._localStorage || {}),
+              isInstructor: true,
+              instructorProfile: result,
+            },
+          },
+        });
+      }
+
+      // Forzar actualización de la sesión
+      await fetch("/api/auth/session", {
+        method: "GET",
+      });
+
+      toast.success("¡Registro exitoso! Ahora eres un instructor.");
+      onSuccess?.();
+      router.refresh();
+
+      if (!onSuccess) {
         router.push("/dashboard/instructors/search");
       }
     } catch (error) {
@@ -200,7 +228,7 @@ export function InstructorRegistrationForm({
                                     }}
                                     className="text-muted-foreground hover:text-foreground ml-1"
                                   >
-                                    <X className="w-3 h-3" />
+                                    <HugeiconsIcon icon={Cancel01Icon} size={12} className="text-current" />
                                   </button>
                                 </div>
                               ))
@@ -230,7 +258,7 @@ export function InstructorRegistrationForm({
                               onClick={addSpecialty}
                               className="px-3 bg-transparent"
                             >
-                              <Plus className="w-4 h-4" />
+                              <HugeiconsIcon icon={PlusSignIcon} size={16} className="text-current" />
                             </Button>
                           </div>
                         </div>
@@ -479,7 +507,7 @@ export function InstructorRegistrationForm({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <HugeiconsIcon icon={CircleIcon} size={16} className="text-current" />
                     Procesando...
                   </>
                 ) : (

@@ -72,7 +72,7 @@ export async function PUT(req: NextRequest) {
 
     // Filtrar propiedades undefined
     const filteredUpdateData = Object.fromEntries(
-      Object.entries(updateData).filter(([_, value]) => value !== undefined)
+      Object.entries(updateData).filter(([, value]) => value !== undefined)
     );
 
     // Actualizar el perfil del instructor
@@ -88,6 +88,46 @@ export async function PUT(req: NextRequest) {
     }
 
     console.error("[INSTRUCTOR_PROFILE_UPDATE_ERROR]", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session || !session.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const userId = session.user.id;
+
+    // Check if instructor profile exists
+    const existingProfile = await prisma.instructorProfile.findUnique({
+      where: { userId },
+    });
+
+    if (!existingProfile) {
+      return NextResponse.json(
+        { error: "Instructor profile not found" },
+        { status: 404 },
+      );
+    }
+
+    // Delete the instructor profile
+    await prisma.instructorProfile.delete({
+      where: { userId },
+    });
+
+    return NextResponse.json(
+      { message: "Instructor profile deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("[DELETE_INSTRUCTOR_PROFILE_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

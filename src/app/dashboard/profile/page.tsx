@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -21,29 +21,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  BirthdayCakeIcon,
-  Calendar01Icon,
-  Clock01Icon,
-  DollarCircleIcon,
-  HandGripIcon,
-  KidIcon,
-  Mail01Icon,
-  SmartPhone01Icon,
-  SmileIcon,
-  StarIcon,
-  SteakIcon,
-  Target02Icon,
-  Tick02Icon,
-  UserGroupIcon,
-  WorkoutGymnasticsIcon,
-} from "hugeicons-react";
+
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
 import { InstructorRegistrationForm } from "@/components/instructor/InstructorRegistrationForm";
 import { Switch } from "@/components/ui/switch";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { 
+  BirthdayCakeIcon, 
+  Calendar01Icon, 
+  Clock01Icon, 
+  HandGripIcon, 
+  KidIcon, 
+  Mail01Icon, 
+  SmartPhone01Icon, 
+  SmileIcon, 
+  StarIcon, 
+  SteakIcon, 
+  Target02Icon, 
+  Tick02Icon, 
+  WorkoutGymnasticsIcon 
+} from "@hugeicons/core-free-icons";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
@@ -335,7 +335,7 @@ export default function ProfilePage() {
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <KidIcon className="h-4 w-4 mr-1" />
+                  <HugeiconsIcon icon={KidIcon} className="h-4 w-4 mr-1" />
                   {/* <div className="mr-1">
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -408,7 +408,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <Calendar01Icon className="h-4 w-4 mr-1" />
+                  <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4 mr-1" />
                   <span>
                     Se unió en{" "}
                     {(() => {
@@ -584,7 +584,7 @@ export default function ProfilePage() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <Mail01Icon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={Mail01Icon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">
                         Correo electronico
@@ -602,7 +602,7 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <BirthdayCakeIcon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={BirthdayCakeIcon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">
                         Fecha de nacimiento
@@ -629,7 +629,7 @@ export default function ProfilePage() {
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <SmileIcon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={SmileIcon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">Nombre</div>
                       <div className="text-muted-foreground text-xs">
@@ -643,7 +643,7 @@ export default function ProfilePage() {
                     <Separator />
                   </div>
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <SmartPhone01Icon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={SmartPhone01Icon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">Teléfono</div>
                       <div className="text-muted-foreground text-xs">
@@ -663,7 +663,7 @@ export default function ProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <StarIcon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={StarIcon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">Experiencia</div>
                       <div className="text-muted-foreground text-xs capitalize">
@@ -677,7 +677,7 @@ export default function ProfilePage() {
                     <Separator />
                   </div>
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HandGripIcon className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon icon={HandGripIcon} className="h-5 w-5 text-muted-foreground" />
                     <div>
                       <div className="font-medium text-sm">
                         Meses entrenando
@@ -720,8 +720,7 @@ export default function ProfilePage() {
                     >
                       <SelectTrigger className="w-full">
                         <div className="flex items-center gap-2">
-                          <Clock01Icon
-                            size={18}
+                          <HugeiconsIcon icon={Clock01Icon} size={18}
                             className="text-muted-foreground"
                           />
                           <SelectValue placeholder="Seleccione su hora preferida" />
@@ -755,8 +754,7 @@ export default function ProfilePage() {
                     >
                       <SelectTrigger className="w-full">
                         <div className="flex items-center gap-2">
-                          <WorkoutGymnasticsIcon
-                            size={18}
+                          <HugeiconsIcon icon={WorkoutGymnasticsIcon} size={18}
                             className="text-muted-foreground"
                           />
                           <SelectValue placeholder="Seleccione su actividad diaria" />
@@ -789,8 +787,7 @@ export default function ProfilePage() {
                   <Select value={goal} onValueChange={setGoal}>
                     <SelectTrigger className="w-full">
                       <div className="flex items-center gap-2">
-                        <Target02Icon
-                          size={18}
+                        <HugeiconsIcon icon={Target02Icon} size={18}
                           className="text-muted-foreground"
                         />
                         <SelectValue placeholder="Seleccione su objetivo" />
@@ -816,8 +813,7 @@ export default function ProfilePage() {
                   >
                     <SelectTrigger className="w-full">
                       <div className="flex items-center gap-2">
-                        <SteakIcon
-                          size={18}
+                        <HugeiconsIcon icon={SteakIcon} size={18}
                           className="text-muted-foreground"
                         />
                         <SelectValue placeholder="Seleccione su preferencia dietética" />
@@ -987,7 +983,7 @@ export default function ProfilePage() {
                     text: "Gana dinero compartiendo tu experiencia",
                   },
                   {
-                    icon: UserGroupIcon,
+                    icon: StarIcon,
                     text: "Accede a una comunidad de alumnos motivados",
                   },
                   {
@@ -995,12 +991,14 @@ export default function ProfilePage() {
                     text: "Mejora tu reputación y recibe valoraciones",
                   },
                   {
-                    icon: DollarCircleIcon,
+                    icon: StarIcon,
                     text: "Gestiona tus precios y disponibilidad",
                   },
                 ].map((benefit, index) => (
                   <li key={index} className="flex items-center gap-3">
-                    <benefit.icon className="w-5 h-5 text-muted-foreground" />
+                    <span className="w-5 h-5 text-muted-foreground flex items-center justify-center">
+                      <HugeiconsIcon icon={benefit.icon} className="w-full h-full" />
+                    </span>
                     <span className="text-sm font-medium">{benefit.text}</span>
                   </li>
                 ))}

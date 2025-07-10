@@ -23,13 +23,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  ArrowLeft01Icon,
-  ArrowRight01Icon,
-  Cancel01Icon,
-} from "hugeicons-react";
+
 import { useInstructorWorkouts } from "@/hooks/useInstructorWorkouts";
 import { ExpiredDatePicker } from "@/components/ui/expired-date-picker";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon,  } from "@hugeicons/core-free-icons";
 
 interface Exercise {
   id: string;
@@ -53,10 +51,11 @@ type WorkoutType =
   | "movilidad"
   | "estandar";
 
-const workoutConfigs: Record<
-  WorkoutType,
-  { sets: number; reps: number; restTime: number }
-> = {
+const workoutConfigs: Record<WorkoutType, {
+  sets: number;
+  reps: number;
+  restTime: number;
+}> = {
   estandar: {
     sets: 3,
     reps: 10,
@@ -385,7 +384,7 @@ export function WorkoutAssignmentDialog({
                         onClick={() => handleDeleteDay(day)}
                         className="hover:text-destructive"
                       >
-                        <Cancel01Icon className="h-3 w-3" />
+                        <HugeiconsIcon icon={Cancel01Icon} className="h-3 w-3" />
                       </button>
                     </div>
                   ))}
@@ -418,7 +417,7 @@ export function WorkoutAssignmentDialog({
                     onClick={handlePreviousDay}
                     className="h-7 w-7 p-0"
                   >
-                    <ArrowLeft01Icon className="h-4 w-4" />
+                    <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
                   </Button>
                   <Button
                     size="sm"
@@ -426,7 +425,7 @@ export function WorkoutAssignmentDialog({
                     onClick={handleNextDay}
                     className="h-7 w-7 p-0"
                   >
-                    <ArrowRight01Icon className="h-4 w-4" />
+                    <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
                   </Button>
                 </div>
               </div>
@@ -489,7 +488,7 @@ export function WorkoutAssignmentDialog({
                         >
                           <span>{exercise.name}</span>
                           {isExerciseSelected(exercise.id) && (
-                            <Cancel01Icon className="h-3 w-3 text-current" />
+                            <HugeiconsIcon icon={Cancel01Icon} className="h-3 w-3 text-current" />
                           )}
                         </div>
                       ))}
