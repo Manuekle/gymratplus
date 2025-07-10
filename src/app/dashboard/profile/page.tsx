@@ -1,19 +1,10 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useSession } from "next-auth/react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import React, { useState, useEffect } from "react";
 import {
   Select,
   SelectContent,
@@ -21,57 +12,112 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Tag } from "@/types/tag";
+import { useTags } from "@/hooks/use-tags";
+import { TagSelector } from "@/components/ui/tag-selector";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
 import { InstructorRegistrationForm } from "@/components/instructor/InstructorRegistrationForm";
-import { Switch } from "@/components/ui/switch";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { 
-  BirthdayCakeIcon, 
-  Calendar01Icon, 
-  Clock01Icon, 
-  HandGripIcon, 
-  KidIcon, 
-  Mail01Icon, 
-  SmartPhone01Icon, 
-  SmileIcon, 
-  StarIcon, 
-  SteakIcon, 
-  Target02Icon, 
-  Tick02Icon, 
-  WorkoutGymnasticsIcon 
+import {
+  BirthdayCakeIcon,
+  Calendar01Icon,
+  Clock01Icon,
+  HandGripIcon,
+  KidIcon,
+  Mail01Icon,
+  SmartPhone01Icon,
+  SmileIcon,
+  StarIcon,
+  SteakIcon,
+  Target02Icon,
+  Tick02Icon,
+  WorkoutGymnasticsIcon,
 } from "@hugeicons/core-free-icons";
 
 export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { availableTags, loading: tagsLoading, updateUserTags } = useTags();
   const [isInstructorMode, setIsInstructorMode] = useState(false);
 
   const { data: session, update } = useSession();
-  const isInstructor = !!session?.user?.isInstructor;
-  console.log(session);
+  const isInstructor = session?.user?.isInstructor || false;
 
-  // Cargar datos del localStorage al iniciar
+  // Load user data when session is available
   useEffect(() => {
-    if (session?.user?._localStorage) {
-      const storedData = session.user._localStorage;
-      setName(storedData.name || "");
-      setPhone(storedData.profile?.phone || "");
-      setBirthdate(storedData.profile?.birthdate?.toString() || "");
-      setExperienceLevel(storedData.experienceLevel || "");
-      setPreferredWorkoutTime(storedData.profile?.preferredWorkoutTime || "");
-      setDailyActivity(storedData.profile?.dailyActivity || "");
-      setGoal(storedData.profile?.goal || "");
-      setDietaryPreference(storedData.profile?.dietaryPreference || "");
-      setMonthsTraining(
-        (storedData as { profile?: { monthsTraining?: number } })?.profile
-          ?.monthsTraining || 0
-      );
+    if (session?.user) {
+      const user = session.user;
+      
+      // Set form fields from user data
+      if (user) {
+        setName(user.name || '');
+        setPhone(user.profile?.phone || '');
+        setBirthdate(user.profile?.birthdate?.toString() || '');
+        setExperienceLevel(user.experienceLevel || '');
+        setPreferredWorkoutTime(user.profile?.preferredWorkoutTime || '');
+        setDailyActivity(user.profile?.dailyActivity || '');
+        setGoal(user.profile?.goal || '');
+        setDietaryPreference(user.profile?.dietaryPreference || '');
+        setMonthsTraining(user.profile?.monthsTraining || 0);
+      }
+      
+      // Load user tags
+      fetch('/api/users/me/tags')
+        .then(res => res.json())
+        .then((tags: Tag[]) => {
+          setSelectedTags(tags.map(t => t.id));
+        })
+        .catch(console.error);
     }
   }, [session]);
+
+  // const [email, setEmail] = useState(session?.user?.email || "");
+  const [name, setName] = useState(session?.user?.name || "");
+
+  const [phone, setPhone] = useState(
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
+  );
+
+  const [birthdate, setBirthdate] = useState<string>(
+    (session?.user as { profile?: { birthdate?: string } })?.profile
+      ?.birthdate || ""
+  );
+
+  const [experienceLevel, setExperienceLevel] = useState(
+    session?.user?.experienceLevel || ""
+  );
+
+  const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
+    (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
+      ?.preferredWorkoutTime || ""
+  );
+  const [dailyActivity, setDailyActivity] = useState(
+    (session?.user as { profile?: { dailyActivity?: string } })?.profile
+      ?.dailyActivity || ""
+  );
+
+  const [goal, setGoal] = useState(
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
+  );
+
+  const [dietaryPreference, setDietaryPreference] = useState(
+    (session?.user as { profile?: { dietaryPreference?: string } })?.profile
+      ?.dietaryPreference || ""
+  );
+
+  // Estado para monthsTraining
+  const [monthsTraining, setMonthsTraining] = useState(
+    (session?.user as { profile?: { monthsTraining?: number } })?.profile
+      ?.monthsTraining || 0
+  );
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -139,45 +185,15 @@ export default function ProfilePage() {
     }
   };
 
-  // const [email, setEmail] = useState(session?.user?.email || "");
-  const [name, setName] = useState(session?.user?.name || "");
-
-  const [phone, setPhone] = useState(
-    (session?.user as { profile?: { phone?: string } })?.profile?.phone || "",
-  );
-
-  const [birthdate, setBirthdate] = useState<string>(
-    (session?.user as { profile?: { birthdate?: string } })?.profile
-      ?.birthdate || "",
-  );
-
-  const [experienceLevel, setExperienceLevel] = useState(
-    session?.user?.experienceLevel || "",
-  );
-
-  const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
-    (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
-      ?.preferredWorkoutTime || "",
-  );
-  const [dailyActivity, setDailyActivity] = useState(
-    (session?.user as { profile?: { dailyActivity?: string } })?.profile
-      ?.dailyActivity || "",
-  );
-
-  const [goal, setGoal] = useState(
-    (session?.user as { profile?: { goal?: string } })?.profile?.goal || "",
-  );
-
-  const [dietaryPreference, setDietaryPreference] = useState(
-    (session?.user as { profile?: { dietaryPreference?: string } })?.profile
-      ?.dietaryPreference || "",
-  );
-
-  // Estado para monthsTraining
-  const [monthsTraining, setMonthsTraining] = useState(
-    (session?.user as { profile?: { monthsTraining?: number } })?.profile
-      ?.monthsTraining || 0,
-  );
+  const handleTagChange = async (newTagIds: string[]) => {
+    setSelectedTags(newTagIds);
+    const success = await updateUserTags(newTagIds);
+    if (success) {
+      toast.success('Intereses actualizados correctamente');
+    } else {
+      toast.error('Error al actualizar intereses');
+    }
+  };
 
   const handleSaveProfile = async () => {
     try {
@@ -408,7 +424,10 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <div className="flex items-center text-muted-foreground text-xs">
-                  <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4 mr-1" />
+                  <HugeiconsIcon
+                    icon={Calendar01Icon}
+                    className="h-4 w-4 mr-1"
+                  />
                   <span>
                     Se unió en{" "}
                     {(() => {
@@ -521,7 +540,7 @@ export default function ProfilePage() {
                       Experiencia
                     </Label>
                     <Select
-                      defaultValue={session?.user?.experienceLevel || ''}
+                      defaultValue={session?.user?.experienceLevel || ""}
                       value={experienceLevel}
                       onValueChange={(value) => setExperienceLevel(value)}
                     >
@@ -584,7 +603,10 @@ export default function ProfilePage() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={Mail01Icon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={Mail01Icon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">
                         Correo electronico
@@ -602,7 +624,10 @@ export default function ProfilePage() {
                   </div>
 
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={BirthdayCakeIcon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={BirthdayCakeIcon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">
                         Fecha de nacimiento
@@ -629,7 +654,10 @@ export default function ProfilePage() {
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={SmileIcon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={SmileIcon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">Nombre</div>
                       <div className="text-muted-foreground text-xs">
@@ -643,7 +671,10 @@ export default function ProfilePage() {
                     <Separator />
                   </div>
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={SmartPhone01Icon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={SmartPhone01Icon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">Teléfono</div>
                       <div className="text-muted-foreground text-xs">
@@ -663,7 +694,10 @@ export default function ProfilePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2">
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={StarIcon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={StarIcon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">Experiencia</div>
                       <div className="text-muted-foreground text-xs capitalize">
@@ -677,7 +711,10 @@ export default function ProfilePage() {
                     <Separator />
                   </div>
                   <div className="grid grid-cols-[25px_1fr] gap-4 items-center">
-                    <HugeiconsIcon icon={HandGripIcon} className="h-5 w-5 text-muted-foreground" />
+                    <HugeiconsIcon
+                      icon={HandGripIcon}
+                      className="h-5 w-5 text-muted-foreground"
+                    />
                     <div>
                       <div className="font-medium text-sm">
                         Meses entrenando
@@ -720,7 +757,9 @@ export default function ProfilePage() {
                     >
                       <SelectTrigger className="w-full">
                         <div className="flex items-center gap-2">
-                          <HugeiconsIcon icon={Clock01Icon} size={18}
+                          <HugeiconsIcon
+                            icon={Clock01Icon}
+                            size={18}
                             className="text-muted-foreground"
                           />
                           <SelectValue placeholder="Seleccione su hora preferida" />
@@ -754,7 +793,9 @@ export default function ProfilePage() {
                     >
                       <SelectTrigger className="w-full">
                         <div className="flex items-center gap-2">
-                          <HugeiconsIcon icon={WorkoutGymnasticsIcon} size={18}
+                          <HugeiconsIcon
+                            icon={WorkoutGymnasticsIcon}
+                            size={18}
                             className="text-muted-foreground"
                           />
                           <SelectValue placeholder="Seleccione su actividad diaria" />
@@ -787,7 +828,9 @@ export default function ProfilePage() {
                   <Select value={goal} onValueChange={setGoal}>
                     <SelectTrigger className="w-full">
                       <div className="flex items-center gap-2">
-                        <HugeiconsIcon icon={Target02Icon} size={18}
+                        <HugeiconsIcon
+                          icon={Target02Icon}
+                          size={18}
                           className="text-muted-foreground"
                         />
                         <SelectValue placeholder="Seleccione su objetivo" />
@@ -813,7 +856,9 @@ export default function ProfilePage() {
                   >
                     <SelectTrigger className="w-full">
                       <div className="flex items-center gap-2">
-                        <HugeiconsIcon icon={SteakIcon} size={18}
+                        <HugeiconsIcon
+                          icon={SteakIcon}
+                          size={18}
                           className="text-muted-foreground"
                         />
                         <SelectValue placeholder="Seleccione su preferencia dietética" />
@@ -961,70 +1006,100 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
-
-      {/* Nueva sección para el rol de instructor */}
-      {!isInstructor && (
+      <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              Rol de instructor
-            </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
-              Activa tu rol de instructor y empieza a conectar con alumnos.
+          <CardHeader>
+            <CardTitle className="tracking-heading font-semibold text-2xl">Tus intereses</CardTitle>
+            <CardDescription>
+              Selecciona los temas que te interesan para encontrar instructores y contenido relevante.
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {/* Beneficios visuales */}
-            <div className="space-y-4 mb-8">
-              <ul className="space-y-2">
-                {[
-                  {
-                    icon: Tick02Icon,
-                    text: "Gana dinero compartiendo tu experiencia",
-                  },
-                  {
-                    icon: StarIcon,
-                    text: "Accede a una comunidad de alumnos motivados",
-                  },
-                  {
-                    icon: StarIcon,
-                    text: "Mejora tu reputación y recibe valoraciones",
-                  },
-                  {
-                    icon: StarIcon,
-                    text: "Gestiona tus precios y disponibilidad",
-                  },
-                ].map((benefit, index) => (
-                  <li key={index} className="flex items-center gap-3">
-                    <span className="w-5 h-5 text-muted-foreground flex items-center justify-center">
-                      <HugeiconsIcon icon={benefit.icon} className="w-full h-full" />
-                    </span>
-                    <span className="text-sm font-medium">{benefit.text}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="flex items-center gap-4 mb-8">
-              <Switch
-                checked={isInstructorMode}
-                onCheckedChange={setIsInstructorMode}
-                id="instructor-switch"
-                className="data-[state=checked]:bg-primary"
-              />
-              <label
-                htmlFor="instructor-switch"
-                className="text-sm font-medium select-none cursor-pointer flex-1"
-              >
-                ¿Quieres convertirte en instructor?
-              </label>
-            </div>
-
-            {/* Formulario solo si el switch está activado */}
-            {isInstructorMode && <InstructorRegistrationForm />}
+            {!tagsLoading && (
+              <div className="space-y-4">
+                <TagSelector
+                  selectedTags={selectedTags}
+                  onTagSelect={handleTagChange}
+                  availableTags={availableTags}
+                  placeholder="Selecciona tus intereses..."
+                />
+                <p className="text-xs text-muted-foreground">
+                  Estos intereses te ayudarán a encontrar instructores y contenido más relevante.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
-      )}
+
+        {/* Nueva sección para el rol de instructor */}
+        {!isInstructor && (
+          <Card>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
+                Rol de instructor
+              </CardTitle>
+              <CardDescription className="text-sm text-muted-foreground">
+                Activa tu rol de instructor y empieza a conectar con alumnos.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Beneficios visuales */}
+              <div className="space-y-4 mb-8">
+                <ul className="space-y-2">
+                  {[
+                    {
+                      icon: Tick02Icon,
+                      text: "Gana dinero compartiendo tu experiencia",
+                    },
+                    {
+                      icon: StarIcon,
+                      text: "Accede a una comunidad de alumnos motivados",
+                    },
+                    {
+                      icon: StarIcon,
+                      text: "Mejora tu reputación y recibe valoraciones",
+                    },
+                    {
+                      icon: StarIcon,
+                      text: "Gestiona tus precios y disponibilidad",
+                    },
+                  ].map((benefit, index) => (
+                    <li key={index} className="flex items-center gap-3">
+                      <span className="w-5 h-5 text-muted-foreground flex items-center justify-center">
+                        <HugeiconsIcon
+                          icon={benefit.icon}
+                          className="w-full h-full"
+                        />
+                      </span>
+                      <span className="text-sm font-medium">
+                        {benefit.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="flex items-center gap-4 mb-8">
+                <Switch
+                  checked={isInstructorMode}
+                  onCheckedChange={setIsInstructorMode}
+                  id="instructor-switch"
+                  className="data-[state=checked]:bg-primary"
+                />
+                <label
+                  htmlFor="instructor-switch"
+                  className="text-sm font-medium select-none cursor-pointer flex-1"
+                >
+                  ¿Quieres convertirte en instructor?
+                </label>
+              </div>
+
+              {/* Formulario solo si el switch está activado */}
+              {isInstructorMode && <InstructorRegistrationForm />}
+            </CardContent>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }

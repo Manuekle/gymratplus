@@ -11,35 +11,44 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tag } from "@/components/ui/tag-selector";
+import { useTags } from "@/hooks/use-tags";
+import { TagSelector } from "@/components/ui/tag-selector";
+import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
 interface Instructor {
   id: string;
   name: string;
-  specialty?: string;
   image?: string;
+  tags?: Tag[];
 }
 
 export default function InstructorsPage() {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const { availableTags } = useTags();
+
+  const fetchInstructors = async (tags: string[] = []) => {
+    setLoading(true);
+    try {
+      const url = `/api/instructors${tags.length > 0 ? `?tags=${tags.join(',')}` : ''}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Error al cargar instructores");
+      const data = await res.json();
+      setInstructors(data);
+    } catch (error) {
+      console.error('Error fetching instructors:', error);
+      setInstructors([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchInstructors = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch("/api/instructors");
-        if (!res.ok) throw new Error("Error al cargar instructores");
-        const data = await res.json();
-        setInstructors(data);
-      } catch {
-        setInstructors([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchInstructors();
-  }, []);
+    fetchInstructors(selectedTags);
+  }, [selectedTags]);
 
   return (
     <div className="max-w-2xl mx-auto py-10 space-y-8">
@@ -51,6 +60,14 @@ export default function InstructorsPage() {
           <CardDescription className="text-xs">
             Elige un instructor para ver su perfil o solicitar ser su alumno.
           </CardDescription>
+          <div className="mt-4">
+            <TagSelector
+              selectedTags={selectedTags}
+              onTagSelect={setSelectedTags}
+              availableTags={availableTags}
+              placeholder="Filtrar por intereses..."
+            />
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -91,7 +108,15 @@ export default function InstructorsPage() {
                       <p className="font-semibold tracking-heading text-lg">
                         {inst.name}
                       </p>
-                      {/* No specialty, solo nombre */}
+                      {inst.tags && inst.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1">
+                          {inst.tags.map(tag => (
+                            <Badge key={tag.id} variant="secondary" className="text-xs">
+                              {tag.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
                     </div>
                     <Button
                       asChild

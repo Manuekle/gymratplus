@@ -37,6 +37,15 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Tag {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  users       User[]   @relation("UserTags")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
 model User {
   id                  String               @id @default(cuid())
   name                String?
@@ -46,6 +55,7 @@ model User {
   image               String?
   password            String?
   isInstructor        Boolean              @default(false)
+  tags                Tag[]                @relation("UserTags")
   instructorProfile   InstructorProfile?
   accounts            Account[]
   sessions            Session[]
