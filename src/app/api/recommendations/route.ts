@@ -1,4 +1,4 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth/next";
@@ -64,11 +64,14 @@ interface ResponseData {
   recommendations: string[];
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<NextResponse> {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+    if (!session.user.id) {
+      return NextResponse.json({ error: "User ID not found" }, { status: 401 });
     }
     const userId = (session.user as { id: string }).id;
 
@@ -131,7 +134,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     }
 
     // Get exercises
-    const whereClause: any = {};
+    const whereClause: {
+      muscleGroup?: string;
+    } = {};
     
     if (profileData.goal === "gain-muscle") {
       whereClause.muscleGroup = "piernas";

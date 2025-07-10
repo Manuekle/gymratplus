@@ -19,6 +19,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
   }
 
+  if (!session.user.id) {
+    return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
+  }
+
   try {
     const body = await req.json();
     const today = new Date();
@@ -106,7 +110,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(updatedIntake);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error updating water intake:", error);
     return NextResponse.json(
       { error: "Error al actualizar el consumo de agua" },
@@ -121,6 +125,10 @@ export async function GET(req: NextRequest) {
 
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
   }
 
   const url = new URL(req.url);
@@ -156,7 +164,7 @@ export async function GET(req: NextRequest) {
     // Si no existe en la base de datos, intentar obtener de Redis como fallback
     const redisIntake = await getWaterIntake(session.user.id, date);
     return NextResponse.json({ intake: redisIntake });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching water intake:", error);
     return NextResponse.json(
       { error: "Error al obtener el consumo de agua" },

@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(foodRecommendation);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error saving food recommendation:", error);
     return NextResponse.json(
       { error: "Failed to save food recommendation" },
@@ -55,11 +55,15 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
   }
 
   try {
@@ -73,7 +77,7 @@ export async function GET(_req: NextRequest) {
     });
 
     return NextResponse.json(foodRecommendations);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error fetching food recommendations:", error);
     return NextResponse.json(
       { error: "Failed to fetch food recommendations" },

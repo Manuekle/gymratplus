@@ -87,7 +87,10 @@ export async function POST(req: NextRequest) {
       }
 
       // Si existe pero está en otro estado (ej: rejected, cancelled), actualizarlo
-      const updateData: any = {
+      const updateData: {
+        status: string;
+        agreedPrice?: number;
+      } = {
         status: "pending",
       };
       
@@ -124,7 +127,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Crear la nueva solicitud
-    const createData: any = {
+    const createData: {
+      studentId: string;
+      instructorProfileId: string;
+      status: string;
+      agreedPrice?: number;
+    } = {
       studentId,
       instructorProfileId,
       status: "pending", // Estado inicial de la solicitud

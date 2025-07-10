@@ -83,7 +83,7 @@ export async function GET(req: NextRequest) {
     const progressData = await prisma.weight.findMany(query);
 
     return NextResponse.json(progressData);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error al obtener datos de progreso:", error);
     return NextResponse.json(
       { error: "Error al obtener datos de progreso" },
@@ -135,10 +135,13 @@ export async function POST(req: NextRequest) {
     }
 
     // Preparar datos para creación
-    const createData: any = {
+    const createData = {
       userId: user.id,
       weight: weight ? Number.parseFloat(weight) : 0,
       date: new Date(date),
+      bodyFatPercentage: bodyFatPercentage ? Number.parseFloat(bodyFatPercentage) : undefined,
+      muscleMassPercentage: muscleMassPercentage ? Number.parseFloat(muscleMassPercentage) : undefined,
+      notes: notes || undefined,
     };
     
     if (bodyFatPercentage !== undefined) {
@@ -171,7 +174,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json(newProgressEntry);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Error al crear registro de progreso:", error);
     return NextResponse.json(
       { error: "Error al crear registro de progreso" },

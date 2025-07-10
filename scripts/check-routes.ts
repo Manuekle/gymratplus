@@ -375,9 +375,23 @@ class NextJSRouteChecker {
           encoding: "utf-8",
         });
         console.log("✅ La verificación de tipos se completó sin errores");
-      } catch (error: any) {
-        const output =
-          error.stdout?.toString() || error.stderr?.toString() || error.message;
+      } catch (error) {
+        const getErrorMessage = (err: unknown): string => {
+          if (err && typeof err === 'object') {
+            if ('message' in err && typeof err.message === 'string') {
+              return err.message;
+            }
+            if ('stderr' in err && typeof err.stderr === 'string') {
+              return err.stderr;
+            }
+            if ('stdout' in err && typeof err.stdout === 'string') {
+              return err.stdout;
+            }
+          }
+          return 'Unknown error occurred';
+        };
+        
+        const output = getErrorMessage(error);
         const errors = this.parseTypeScriptErrors(output);
         errors.forEach((err) => {
           this.addError(err.file, err.line, err.column, err.message, err.severity);

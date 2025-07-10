@@ -18,10 +18,10 @@ const nextConfig: NextConfig = {
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: process.env.NODE_ENV === "production",
   },
   typescript: {
-    ignoreBuildErrors: false, // Asegura que errores de TypeScript detengan la compilación
+    ignoreBuildErrors: process.env.NODE_ENV === "production", // Asegura que errores de TypeScript detengan la compilación
   },
   async rewrites() {
     return [

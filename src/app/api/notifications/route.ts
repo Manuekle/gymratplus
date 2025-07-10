@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
@@ -10,11 +9,15 @@ import {
   type CreateNotificationParams,
 } from "@/lib/notification-service";
 
-export async function GET(_req: NextRequest) {
+export async function GET() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
   }
 
   try {
@@ -34,6 +37,10 @@ export async function POST(req: NextRequest) {
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
   }
 
   try {
@@ -56,11 +63,15 @@ export async function POST(req: NextRequest) {
   }
 }
 
-export async function PATCH(_req: NextRequest) {
+export async function PATCH() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
   }
 
   try {
@@ -75,11 +86,15 @@ export async function PATCH(_req: NextRequest) {
   }
 }
 
-export async function DELETE(_req: NextRequest) {
+export async function DELETE() {
   const session = await getServerSession(authOptions);
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
   }
 
   try {
