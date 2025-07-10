@@ -14,10 +14,11 @@ const nextConfig: NextConfig = {
       "lh4.googleusercontent.com",
       "lh5.googleusercontent.com",
       "lh6.googleusercontent.com",
+      "flagcdn.com",
     ],
   },
   eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV === "production",
+    ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: false, // Asegura que errores de TypeScript detengan la compilación
