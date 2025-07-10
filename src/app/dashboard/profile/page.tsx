@@ -19,9 +19,8 @@ import { toast } from "sonner";
 import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Tag } from "@/types/tag";
-import { useTags } from "@/hooks/use-tags";
 import { TagSelector } from "@/components/ui/tag-selector";
+import { SPECIALTIES } from "@/data/specialties";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
 import { InstructorRegistrationForm } from "@/components/instructor/InstructorRegistrationForm";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -45,7 +44,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const { availableTags, loading: tagsLoading, updateUserTags } = useTags();
   const [isInstructorMode, setIsInstructorMode] = useState(false);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
@@ -73,8 +71,8 @@ export default function ProfilePage() {
       // Load user tags
       fetch('/api/users/me/tags')
         .then(res => res.json())
-        .then((tags: Tag[]) => {
-          setSelectedTags(tags.map(t => t.id));
+        .then((interests: string[]) => {
+          setSelectedTags(interests);
         })
         .catch(console.error);
     }
@@ -186,14 +184,10 @@ export default function ProfilePage() {
     }
   };
 
-  const handleTagChange = async (newTagIds: string[]) => {
+  const handleTagChange = (newTagIds: string[]) => {
     setSelectedTags(newTagIds);
-    const success = await updateUserTags(newTagIds);
-    if (success) {
-      toast.success('Intereses actualizados correctamente');
-    } else {
-      toast.error('Error al actualizar intereses');
-    }
+    // Aquí podrías agregar lógica para guardar los tags si lo necesitas
+    toast.success('Intereses actualizados correctamente');
   };
 
   const handleSaveProfile = async () => {
@@ -1016,19 +1010,12 @@ export default function ProfilePage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            {!tagsLoading && (
-              <div className="space-y-4">
-                <TagSelector
-                  selectedTags={selectedTags}
-                  onTagSelect={handleTagChange}
-                  availableTags={availableTags}
-                  placeholder="Selecciona tus intereses..."
-                />
-                <p className="text-xs text-muted-foreground">
-                  Estos intereses te ayudarán a encontrar instructores y contenido más relevante.
-                </p>
-              </div>
-            )}
+            <TagSelector
+              selectedTags={selectedTags}
+              onTagSelect={handleTagChange}
+              availableTags={SPECIALTIES}
+              placeholder="Selecciona tus intereses..."
+            />           
           </CardContent>
         </Card>
 

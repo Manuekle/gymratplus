@@ -11,9 +11,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Tag } from "@/components/ui/tag-selector";
-import { useTags } from "@/hooks/use-tags";
 import { TagSelector } from "@/components/ui/tag-selector";
+import { SPECIALTIES } from "@/data/specialties";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
 
@@ -21,14 +20,13 @@ interface Instructor {
   id: string;
   name: string;
   image?: string;
-  tags?: Tag[];
+  interests?: string[];
 }
 
 export default function InstructorsPage() {
   const [instructors, setInstructors] = useState<Instructor[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const { availableTags } = useTags();
 
   const fetchInstructors = async (tags: string[] = []) => {
     setLoading(true);
@@ -64,7 +62,7 @@ export default function InstructorsPage() {
             <TagSelector
               selectedTags={selectedTags}
               onTagSelect={setSelectedTags}
-              availableTags={availableTags}
+              availableTags={SPECIALTIES}
               placeholder="Filtrar por intereses..."
             />
           </div>
@@ -108,11 +106,11 @@ export default function InstructorsPage() {
                       <p className="font-semibold tracking-heading text-lg">
                         {inst.name}
                       </p>
-                      {inst.tags && inst.tags.length > 0 && (
+                      {inst.interests && inst.interests.length > 0 && (
                         <div className="flex flex-wrap gap-1 mt-1">
-                          {inst.tags.map(tag => (
-                            <Badge key={tag.id} variant="secondary" className="text-xs">
-                              {tag.name}
+                          {inst.interests.map(interest => (
+                            <Badge key={interest} variant="secondary" className="text-xs">
+                              {interest}
                             </Badge>
                           ))}
                         </div>

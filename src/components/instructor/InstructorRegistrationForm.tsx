@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Cancel01Icon, PlusSignIcon, CircleIcon } from "@hugeicons/core-free-icons";
+import { CircleIcon } from "@hugeicons/core-free-icons";
 import { CountrySelector } from "@/components/country-selector";
 import {
   Drawer,
@@ -34,6 +34,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreditCardIcon, Ticket02Icon } from "@hugeicons/core-free-icons";
+import { TagSelector } from "@/components/ui/tag-selector";
+import { SPECIALTIES } from "@/data/specialties";
 
 const instructorFormSchema = z.object({
   bio: z
@@ -112,30 +114,6 @@ export function InstructorRegistrationForm({
     ? form.watch("specialties") 
     : [];
   const isFormValid = form.formState.isValid && specialties.length > 0;
-
-  const addSpecialty = () => {
-    const currentSpecialties = Array.isArray(form.getValues("specialties")) 
-      ? form.getValues("specialties") 
-      : [];
-    const newSpecialty = (form.getValues("newSpecialty") as string)?.trim();
-
-    if (newSpecialty && !currentSpecialties.includes(newSpecialty)) {
-      const updatedSpecialties = [...currentSpecialties, newSpecialty];
-      form.setValue("specialties", updatedSpecialties);
-      form.setValue("curriculum", updatedSpecialties.join(", "), { shouldValidate: true });
-      form.setValue("newSpecialty", "", { shouldValidate: true });
-    }
-  };
-
-  const removeSpecialty = (specialtyToRemove: string) => {
-    const currentSpecialties = Array.isArray(form.getValues("specialties")) 
-      ? form.getValues("specialties") 
-      : [];
-    const updatedSpecialties = currentSpecialties.filter((s: string) => s !== specialtyToRemove);
-    
-    form.setValue("specialties", updatedSpecialties, { shouldValidate: true });
-    form.setValue("curriculum", updatedSpecialties.join(", "), { shouldValidate: true });
-  };
 
   const onSubmit = () => {
     setStep(2);
@@ -272,57 +250,15 @@ export function InstructorRegistrationForm({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Especialidades</FormLabel>
-                            <div className="space-y-3">
-                              <div className="flex flex-wrap gap-2 min-h-[40px] p-3 border rounded-lg bg-background">
-                                {(Array.isArray(field.value) ? field.value : [field.value].filter(Boolean)).length > 0 ? (
-                                  (Array.isArray(field.value) ? field.value : [field.value].filter(Boolean)).map((specialty: string) => (
-                                    <div
-                                      key={specialty}
-                                      className="bg-primary/10 text-primary rounded-md px-3 py-1 text-sm flex items-center gap-1"
-                                    >
-                                      {specialty}
-                                      <button
-                                        type="button"
-                                        onClick={(e) => {
-                                          e.preventDefault();
-                                          removeSpecialty(specialty);
-                                        }}
-                                        className="text-muted-foreground hover:text-foreground ml-1"
-                                      >
-                                        <HugeiconsIcon icon={Cancel01Icon} size={12} className="text-current" />
-                                      </button>
-                                    </div>
-                                  ))
-                                ) : (
-                                  <span className="text-muted-foreground text-sm">
-                                    No hay especialidades añadidas
-                                  </span>
-                                )}
-                              </div>
-                              <div className="flex gap-2 items-center justify-center">
-                                <Input
-                                  placeholder="Ej: Yoga, Pilates, Crossfit..."
-                                  value={form.watch("newSpecialty") || ""}
-                                  onChange={(e) =>
-                                    form.setValue("newSpecialty", e.target.value)
-                                  }
-                                  onKeyDown={(e) =>
-                                    e.key === "Enter" &&
-                                    (e.preventDefault(), addSpecialty())
-                                  }
-                                  className="flex-1"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={addSpecialty}
-                                  className="px-3 bg-transparent"
-                                >
-                                  <HugeiconsIcon icon={PlusSignIcon} size={16} className="text-current" />
-                                </Button>
-                              </div>
-                            </div>
+                            <TagSelector
+                              selectedTags={field.value || []}
+                              onTagSelect={(tags) => {
+                                field.onChange(tags);
+                                form.setValue("curriculum", tags.join(", "), { shouldValidate: true });
+                              }}
+                              availableTags={SPECIALTIES}
+                              placeholder="Selecciona tus especialidades..."
+                            />
                             <FormMessage />
                           </FormItem>
                         )}

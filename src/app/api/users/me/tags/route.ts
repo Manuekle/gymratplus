@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-// GET /api/users/me/tags - Get current user's tags
+// GET /api/users/me/tags - Get current user's interests
 export async function GET() {
   try {
     const session = await getServerSession(authOptions);
@@ -13,28 +13,20 @@ export async function GET() {
 
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      include: {
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-          },
-        },
-      },
+      // El campo interests ya existe tras la migración y prisma generate
     });
 
-    return NextResponse.json(user?.tags || []);
+    return NextResponse.json(user?.interests ?? []);
   } catch (error) {
-    console.error('Error fetching user tags:', error);
+    console.error('Error fetching user interests:', error);
     return NextResponse.json(
-      { error: 'Error fetching user tags' },
+      { error: 'Error fetching user interests' },
       { status: 500 }
     );
   }
 }
 
-// PUT /api/users/me/tags - Update user's tags
+// PUT /api/users/me/tags - Update user's interests
 export async function PUT(request: Request) {
   try {
     const session = await getServerSession(authOptions);
@@ -42,46 +34,21 @@ export async function PUT(request: Request) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
 
-    const { tagIds } = await request.json();
-
-    // First, verify all tag IDs exist
-    const existingTags = await prisma.tag.findMany({
-      where: { id: { in: tagIds } },
-    });
-
-    if (existingTags.length !== tagIds.length) {
-      return new NextResponse('One or more tags not found', { status: 400 });
+    const { interests } = await request.json();
+    if (!Array.isArray(interests)) {
+      return new NextResponse('Invalid interests', { status: 400 });
     }
 
-    // Update user's tags
     await prisma.user.update({
       where: { id: session.user.id },
-      data: {
-        tags: {
-          set: tagIds.map((id: string) => ({ id })),
-        },
-      },
+      data: { interests },
     });
 
-    // Return updated tags
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: session.user.id },
-      include: {
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            description: true,
-          },
-        },
-      },
-    });
-
-    return NextResponse.json(updatedUser?.tags || []);
+    return NextResponse.json(interests);
   } catch (error) {
-    console.error('Error updating user tags:', error);
+    console.error('Error updating user interests:', error);
     return NextResponse.json(
-      { error: 'Error updating user tags' },
+      { error: 'Error updating user interests' },
       { status: 500 }
     );
   }
