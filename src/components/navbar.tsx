@@ -46,7 +46,7 @@ export function Navbar() {
           <div className="flex flex-row items-center space-x-2">
             <h1 className="text-xl font-semibold tracking-heading">GymRat+</h1>
           </div>
-          <div className="flex flex-row items-center space-x-4">
+          <div className="flex flex-row items-center space-x-2">
             {session?.user?.id && (
               <div className="">
                 <WorkoutStreak userId={session.user.id} />

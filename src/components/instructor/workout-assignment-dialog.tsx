@@ -273,7 +273,7 @@ export function WorkoutAssignmentDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
         <DialogHeader className="pt-2">
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Crea tu rutina personalizada para {studentName}

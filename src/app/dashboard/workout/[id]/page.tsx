@@ -167,7 +167,7 @@ export default function WorkouPage() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-0">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Estás seguro de eliminar este workout?

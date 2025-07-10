@@ -154,7 +154,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
           Nuevo objetivo
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             {isEditing ? "Editar objetivo" : "Nuevo objetivo"}

@@ -70,7 +70,7 @@ export function CancelPlanDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">¿Cancelar plan de instructor?</DialogTitle>
           <DialogDescription className="text-sm">

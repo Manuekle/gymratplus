@@ -226,7 +226,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           Comenzar rutina
         </Button>
       </DialogTrigger>
-      <DialogContent className="space-y-4 w-full">
+      <DialogContent className="space-y-4 w-full overflow-y-auto pt-8 xl:pt-0">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Selecciona el día de entrenamiento

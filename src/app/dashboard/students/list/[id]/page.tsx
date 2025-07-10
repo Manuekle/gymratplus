@@ -314,7 +314,7 @@ export default function StudentDetailPage() {
       </Card>
       {/* Modal de detalle de rutina */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-lg">
+        <DialogContent className="max-w-lg overflow-y-auto pt-8 xl:pt-0">
           <DialogHeader>
             <DialogTitle>Detalle de rutina</DialogTitle>
             <DialogDescription>
