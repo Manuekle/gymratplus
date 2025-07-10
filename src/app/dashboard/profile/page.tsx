@@ -47,6 +47,7 @@ export default function ProfilePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const { availableTags, loading: tagsLoading, updateUserTags } = useTags();
   const [isInstructorMode, setIsInstructorMode] = useState(false);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
   const { data: session, update } = useSession();
   const isInstructor = session?.user?.isInstructor || false;
@@ -1082,7 +1083,12 @@ export default function ProfilePage() {
               <div className="flex items-center gap-4 mb-8">
                 <Switch
                   checked={isInstructorMode}
-                  onCheckedChange={setIsInstructorMode}
+                  onCheckedChange={(checked) => {
+                    setIsInstructorMode(checked);
+                    if (checked) {
+                      setIsRegistrationOpen(true);
+                    }
+                  }}
                   id="instructor-switch"
                   className="data-[state=checked]:bg-primary"
                 />
@@ -1094,8 +1100,20 @@ export default function ProfilePage() {
                 </label>
               </div>
 
-              {/* Formulario solo si el switch está activado */}
-              {isInstructorMode && <InstructorRegistrationForm />}
+              <InstructorRegistrationForm 
+                open={isRegistrationOpen} 
+                onOpenChange={(open) => {
+                  setIsRegistrationOpen(open);
+                  if (!open) {
+                    // Reset the switch if dialog is closed without completing registration
+                    setIsInstructorMode(false);
+                  }
+                }}
+                onSuccess={() => {
+                  setIsRegistrationOpen(false);
+                  // The switch will remain on since registration was successful
+                }}
+              />
             </CardContent>
           </Card>
         )}
