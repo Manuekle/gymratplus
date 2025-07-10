@@ -71,10 +71,10 @@ export function InstructorRegistrationForm({
   onOpenChange,
   onSuccess,
 }: InstructorRegistrationFormProps) {
+  const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState(false);
   const [step, setStep] = useState(1);
   const totalSteps = 2;
-  const { data: session, update } = useSession();
 
   // Estado para el paso de pago
   const [isAnnual, setIsAnnual] = useState(true);
@@ -121,74 +121,37 @@ export function InstructorRegistrationForm({
 
   const handlePaymentConfirm = async () => {
     if (!session?.user) return;
-    
     setIsLoading(true);
-
     try {
-      const submissionData = Object.fromEntries(
-        Object.entries(form.getValues()).filter(([key]) => key !== "newSpecialty"),
-      );
-      // 1. Register the instructor
+      // Preparamos los datos para la API
+      const values = form.getValues();
+      // Unimos specialties en curriculum (string) si aplica
+      const curriculum = values.specialties?.join(", ") || "";
+      const payload = {
+        bio: values.bio,
+        curriculum,
+        pricePerMonth: values.pricePerMonth,
+        contactEmail: values.contactEmail,
+        contactPhone: values.contactPhone,
+        country: values.country,
+        city: values.city,
+        isRemote: values.isRemote,
+      };
       const response = await fetch("/api/instructors/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(submissionData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
       });
-
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Error al registrar como instructor");
       }
-
-      const result = await response.json();
-
-      // 2. Actualizar la sesión con los nuevos datos
-      if (session?.user) {
-        // 2.1 Forzar una recarga de la sesión desde el servidor
-        const sessionResponse = await fetch('/api/auth/session', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ update: true })
-        });
-        
-        if (!sessionResponse.ok) {
-          throw new Error("Error al actualizar la sesión");
-        }
-
-        // 2.3 Actualizar la sesión local
-        await update({
-          ...session,
-          user: {
-            ...session.user,
-            isInstructor: true,
-            instructorProfile: result,
-            _localStorage: {
-              ...(session.user._localStorage || {}),
-              isInstructor: true,
-              instructorProfile: result,
-              name: session.user.name,
-              email: session.user.email,
-              image: session.user.image,
-              experienceLevel: session.user.experienceLevel
-            }
-          }
-        });
-
-        // 2.4 Mostrar mensaje de éxito
-        toast.success("¡Registro exitoso!", {
-          description: "Ahora eres un instructor en nuestra plataforma.",
-        });
-
-        // 2.5 Llamar al callback de éxito si existe
-        onSuccess?.();
-        
-        // 2.6 Forzar una recarga completa de la página
-        /* setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 1500); */
-      }
+      await update();
+      window.location.href = '/dashboard/profile';
+      toast.success("¡Registro exitoso!", {
+        description: "Ahora eres un instructor en nuestra plataforma.",
+      });
+      onSuccess?.();
     } catch (error) {
       console.error("Error:", error);
       toast.error("Error al procesar el registro");
@@ -481,7 +444,7 @@ export function InstructorRegistrationForm({
                   <Button
                     type="button"
                     disabled={isLoading || !isFormValid}
-                    size="sm"
+                    size="default"
                     className="px-8"
                     onClick={() => setStep(2)}
                   >
@@ -631,6 +594,7 @@ export function InstructorRegistrationForm({
                 <Button
                   type="button"
                   variant="outline"
+                  size="default"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
                 >

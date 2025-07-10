@@ -31,6 +31,8 @@ export async function GET() {
       );
     }
 
+    console.log(user);
+
     // Actualizar Redis en segundo plano sin esperar la respuesta
     const cacheKey = `profile:${userId}`;
     redis
@@ -64,6 +66,9 @@ export async function POST(req: NextRequest) {
     }
 
     const userId = (session.user as { id: string }).id;
+    if (!userId) {
+      return NextResponse.json({ error: "No se encontró el userId" }, { status: 400 });
+    }
     const data = await req.json();
 
     // Calcular valores automáticos
@@ -198,7 +203,7 @@ export async function PUT(request: NextRequest) {
 
     // Actualizar o crear el perfil del usuario
     const profile = await prisma.profile.upsert({
-      where: { userId },
+      where: { userId: userId },
       update: {
         phone: data.phone ?? undefined,
         birthdate: data.birthdate ?? undefined,
@@ -210,7 +215,7 @@ export async function PUT(request: NextRequest) {
         monthsTraining: data.monthsTraining ?? undefined,
       },
       create: {
-        userId,
+        userId: userId as string,
         phone: data.phone ?? undefined,
         birthdate: data.birthdate ?? undefined,
         preferredWorkoutTime: data.preferredWorkoutTime ?? undefined,

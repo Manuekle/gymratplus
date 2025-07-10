@@ -50,9 +50,10 @@ interface User {
   email: string;
   image: string;
   id: string;
-  experienceLevel: string;
-  profile: UserProfile;
-  createdAt?: string; // Add createdAt as optional
+  experienceLevel?: string;
+  interests?: string[];
+  profile?: UserProfile;
+  createdAt?: string;
   isInstructor?: boolean;
   instructorProfile?: {
     id: string;
@@ -70,7 +71,7 @@ interface User {
     status?: string;
     createdAt?: Date | string;
     updatedAt?: Date | string;
-  };
+  } | null;
 }
 
 // Define the session type

@@ -12,9 +12,9 @@ import { redis } from "@/lib/redis";
 declare module 'next-auth' {
   interface Session {
     user: {
-      id: string;
-      isInstructor: boolean;
-      experienceLevel: string;
+      id?: string;
+      isInstructor?: boolean;
+      experienceLevel?: string;
       profile?: any;
       instructorProfile?: any;
       _localStorage?: {
@@ -30,6 +30,7 @@ declare module 'next-auth' {
   }
 
   interface User {
+    id?: string;
     isInstructor?: boolean;
     experienceLevel?: string;
   }
@@ -218,20 +219,16 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         const customUser = user as CustomUser;
         token.id = customUser.id;
-        // Obtener isInstructor de la base de datos
+
+        // Obtener datos completos del usuario
         const dbUser = await prisma.user.findUnique({
           where: { id: customUser.id },
-          select: { isInstructor: true },
         });
         token.isInstructor = dbUser?.isInstructor ?? false;
-        await redis.hset(`user:${customUser.id}:data`, {
-          id: customUser.id,
-          email: customUser.email ?? "",
-          name: customUser.name ?? "",
-          experienceLevel: customUser.experienceLevel ?? "",
-          image: customUser.image ?? "",
-        });
-        await redis.expire(`user:${customUser.id}:data`, 30 * 24 * 60 * 60); // 30 días
+        // @ts-expect-error interests puede no estar tipado correctamente
+        token.interests = dbUser?.interests ?? [];
+        // @ts-expect-error profile puede no estar tipado correctamente
+        token.profile = dbUser?.profile ?? null;
       }
       return token;
     },
@@ -260,12 +257,8 @@ export const authOptions: NextAuthOptions = {
           },
         }).catch(() => null);
 
-        // 2. Determinar si el usuario es instructor (verificando tanto el flag como el perfil)
-        const isInstructor = Boolean(
-          userFromDB?.isInstructor && 
-          userFromDB?.instructorProfile?.id &&
-          userFromDB?.instructorProfile?.isPaid !== false
-        );
+        // 2. Determinar si el usuario es instructor (directamente desde la base de datos)
+        const isInstructor = Boolean(userFromDB?.isInstructor);
 
         // 3. Si el estado no coincide, actualizar la base de datos
         if (userFromDB && userFromDB.isInstructor !== isInstructor) {

@@ -184,10 +184,20 @@ export default function ProfilePage() {
     }
   };
 
-  const handleTagChange = (newTagIds: string[]) => {
+  const handleTagChange = async (newTagIds: string[]) => {
     setSelectedTags(newTagIds);
-    // Aquí podrías agregar lógica para guardar los tags si lo necesitas
-    toast.success('Intereses actualizados correctamente');
+    try {
+      const res = await fetch("/api/users/me/tags", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interests: newTagIds }),
+      });
+      if (!res.ok) throw new Error("No se pudo guardar los intereses");
+      await update();
+      toast.success("Intereses actualizados correctamente");
+    } catch {
+      toast.error("Error al guardar intereses");
+    }
   };
 
   const handleSaveProfile = async () => {
@@ -254,16 +264,13 @@ export default function ProfilePage() {
         },
       });
 
-      // Forzar actualización de la sesión
-      await fetch("/api/auth/session", {
-        method: "GET",
-      });
+      // Forzar recarga de la página después de un pequeño retraso
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
 
       // Cerrar el modo de edición
       setIsEditing(false);
-
-      // Forzar recarga de la página
-      // window.location.reload();
 
       toast.success("Perfil actualizado", {
         description: "Tu perfil ha sido actualizado correctamente.",

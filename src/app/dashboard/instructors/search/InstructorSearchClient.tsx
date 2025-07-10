@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
@@ -12,13 +11,13 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
+  CardFooter,
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { InstructorProfile, User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { RefreshIcon } from "@hugeicons/core-free-icons";
 import { CountrySelector } from "@/components/country-selector";
 import {
   Select,
@@ -29,8 +28,8 @@ import {
 } from "@/components/ui/select";
 import { useCountries } from "@/hooks/use-countries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { SPECIALTIES } from "@/data/specialties";
+import Image from "next/image";
 
 
 interface InstructorWithProfile extends User {
@@ -43,20 +42,7 @@ const EXPERIENCE_LEVELS = [
   { value: "avanzado", label: "Avanzado" },
 ];
 
-const SPECIALTIES = [
-  "Fuerza",
-  "HIIT",
-  "Pilates",
-  "Yoga",
-  "Cardio",
-  "Crossfit",
-  "Hipertrofia",
-  "Funcional",
-  "Movilidad",
-  "Rehabilitación",
-  "Nutrición",
-  "Otro",
-];
+
 
 export default function InstructorSearchClient() {
   const router = useRouter();
@@ -92,7 +78,7 @@ export default function InstructorSearchClient() {
       if (maxPrice) params.append("maxPrice", maxPrice);
       if (experience) params.append("experienceLevel", experience);
       if (selectedSpecialties.length > 0)
-        params.set("specialty", selectedSpecialties.join(","));
+        params.set("tagFilter", selectedSpecialties.join(","));
 
       const response = await fetch(`/api/instructors?${params.toString()}`);
       if (!response.ok) {
@@ -133,7 +119,7 @@ export default function InstructorSearchClient() {
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (experience) params.set("experienceLevel", experience);
     if (selectedSpecialties.length > 0)
-      params.set("specialty", selectedSpecialties.join(","));
+      params.set("tagFilter", selectedSpecialties.join(","));
     router.push(`?${params.toString()}`);
     fetchInstructors();
   };
@@ -219,7 +205,7 @@ export default function InstructorSearchClient() {
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* País con el nuevo selector */}
-          <div className="space-y-2">
+          <div className="space-y-2 col-span-3 md:col-span-2 lg:col-span-1">
             <CountrySelector
               value={country}
               onValueChange={(value) => setCountry(value)}
@@ -228,7 +214,7 @@ export default function InstructorSearchClient() {
             />
           </div>
           {/* Precio máximo */}
-          <div className="space-y-2">
+          <div className="space-y-2 col-span-3 md:col-span-2 lg:col-span-1">
             <Label htmlFor="maxPrice">Precio máximo (USD/mes)</Label>
             <Input
               id="maxPrice"
@@ -240,7 +226,7 @@ export default function InstructorSearchClient() {
             />
           </div>
           {/* Experiencia */}
-          <div className="space-y-2">
+          <div className="space-y-2 col-span-3 md:col-span-2 lg:col-span-1">
             <Label htmlFor="experience">Nivel de experiencia</Label>
             <Select value={experience} onValueChange={setExperience}>
               <SelectTrigger className="w-full">
@@ -275,28 +261,56 @@ export default function InstructorSearchClient() {
             </div>
           </div>
           {/* Especialidad/metodología como badges */}
-          <div className="space-y-2 md:col-span-2 lg:col-span-1">
+          <div className="space-y-2 col-span-3">
             <Label>Especialidad / Metodología</Label>
-            <div className="flex flex-wrap gap-2">
-              {SPECIALTIES.map((spec) => (
-                <Badge
-                  key={spec}
-                  variant={
-                    selectedSpecialties.includes(spec) ? "default" : "outline"
-                  }
-                  className={`cursor-pointer select-none transition-all ${
-                    selectedSpecialties.includes(spec)
-                      ? "bg-primary text-white"
-                      : ""
-                  }`}
-                  onClick={() => handleSpecialtyToggle(spec)}
-                >
-                  {spec}
-                </Badge>
-              ))}
+            <div className="relative w-full">
+              {/* Scroll horizontal solo en móvil, grid en desktop */}
+              <div className="md:hidden relative w-full">
+                <div className="flex space-x-2 pb-2 overflow-x-auto hide-scrollbar max-w-full">
+                  <div className="flex space-x-2 min-w-max w-full">
+                    {SPECIALTIES.map((spec) => (
+                      <Badge
+                        key={spec.id}
+                        variant={
+                          selectedSpecialties.includes(spec.id) ? "default" : "secondary"
+                        }
+                        className={`whitespace-nowrap px-3 py-1 text-sm transition-all flex-shrink-0 cursor-pointer ${
+                          selectedSpecialties.includes(spec.id)
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-transparent border border-input hover:bg-accent"
+                        }`}
+                        onClick={() => handleSpecialtyToggle(spec.id)}
+                      >
+                        {spec.name}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+              </div>
+              
+              {/* Grid responsive en desktop */}
+              <div className="hidden md:flex md:flex-wrap gap-2">
+                {SPECIALTIES.map((spec) => (
+                  <Badge
+                    key={spec.id}
+                    variant={
+                      selectedSpecialties.includes(spec.id) ? "default" : "secondary"
+                    }
+                    className={`px-3 py-1 text-sm transition-all cursor-pointer ${
+                      selectedSpecialties.includes(spec.id)
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent border border-input hover:bg-accent"
+                    }`}
+                    onClick={() => handleSpecialtyToggle(spec.id)}
+                  >
+                    {spec.name}
+                  </Badge>
+                ))}
+              </div>
             </div>
           </div>
-          <div className="md:col-span-3">
+          <div className="md:col-span-3 ">
             <Button onClick={handleSearch} className="w-full">
               Buscar
             </Button>
@@ -332,129 +346,80 @@ export default function InstructorSearchClient() {
             </p>
           ) : (
             instructors.map((instructor) => {
-              // Buscar país por código usando countries del hook
               const countryData = countries.find(
-                (c) => c.cca2 === instructor.instructorProfile?.country,
+                (c) => c.cca2 === instructor.instructorProfile?.country
               );
-              // Type guard para specialties sin usar 'any'
-              let specialties: string[] | undefined = undefined;
-              if (
-                instructor.instructorProfile &&
-                typeof instructor.instructorProfile === "object" &&
-                "specialties" in instructor.instructorProfile &&
-                Array.isArray(
-                  (instructor.instructorProfile as { specialties?: unknown })
-                    .specialties,
-                )
-              ) {
-                specialties = (
-                  instructor.instructorProfile as { specialties: string[] }
-                ).specialties;
-              }
               return (
-                <Card
-                  key={instructor.id}
-                  className="flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:scale-[1.005] hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100 hover:to-gray-200 dark:hover:from-zinc-900 dark:hover:to-zinc-800 bg-white dark:bg-zinc-950 border px-4 py-3 min-h-[220px]"
-                >
-                  <CardHeader className="flex-row items-center space-x-3 pb-1 px-0">
-                    <Avatar className="h-12 w-12">
-                      <AvatarImage
-                        src={instructor.image || "/placeholder-avatar.jpg"}
-                        alt={instructor.name || "Instructor"}
-                      />
+                <Card key={instructor.id} className="overflow-hidden flex flex-col h-full">
+                  <CardHeader className="flex flex-row items-start space-x-4 pb-3">
+                    <Avatar className="h-16 w-16 mt-1">
+                      <AvatarImage src={instructor.image || ''} alt={instructor.name || 'Instructor'} />
                       <AvatarFallback>
-                        {instructor.name?.charAt(0).toUpperCase()}
+                        {instructor.name
+                          ?.split(" ")
+                          .map((n) => n[0])
+                          .join("")}
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <CardTitle className="text-base font-semibold tracking-heading">
+                        <CardTitle className="text-lg">
                           {instructor.name}
                         </CardTitle>
-                        {instructor.instructorProfile?.isVerified && (
-                          <HugeiconsIcon icon={Tick02Icon} className="text-emerald-600 w-4 h-4" />
-                        )}
                       </div>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        {countryData && (
-                          <span className="flex items-center gap-1">
-                            <Image
-                              src={countryData.flags.svg}
-                              alt={countryData.name.common}
-                              className="w-4 h-3 object-cover rounded-sm"
-                            />
-                            {countryData.name.common}
-                          </span>
-                        )}
-                        {instructor.instructorProfile?.isRemote && (
-                          <Badge variant="outline" className="text-xs">
-                            Remoto
-                          </Badge>
-                        )}
-                      </div>
-                      {instructor.experienceLevel && (
-                        <Badge variant="secondary" className="text-xs mt-1">
-                          {EXPERIENCE_LEVELS.find(
-                            (lvl) => lvl.value === instructor.experienceLevel,
-                          )?.label || instructor.experienceLevel}
-                        </Badge>
+                      {(instructor.instructorProfile?.city || countryData?.name?.common) && (
+                        <div className="flex items-center text-sm text-muted-foreground gap-2">                          
+                          {countryData && (
+                            <span className="flex items-center gap-1">
+                              <Image
+                                src={countryData.flags.svg}
+                                alt={countryData.name.common}
+                                width={16}
+                                height={12}
+                                className="w-4 h-3 object-cover rounded-sm"
+                              />
+                              {countryData.name.common}
+                            </span>
+                          )}
+                          {instructor.instructorProfile?.isRemote && (
+                            <Badge variant="outline" className="text-xs ml-2">Remoto</Badge>
+                          )}
+                        </div>
+                      )}
+                      {instructor.instructorProfile?.pricePerMonth && (
+                        <div className="text-sm font-medium">
+                          ${instructor.instructorProfile.pricePerMonth.toFixed(2)}/mes
+                        </div>
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="pt-2 flex-grow px-0 space-y-2">
-                    <p className="text-sm text-gray-700 dark:text-gray-300 line-clamp-2">
-                      {instructor.instructorProfile?.bio || "Sin biografía."}
+                  <CardContent className="flex-1">
+                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                      {instructor.instructorProfile?.bio || 'Instructor certificado con experiencia en entrenamiento personalizado.'}
                     </p>
-
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                          Precio:
-                        </span>
-                        <Badge variant="outline" className="text-xs">
-                          {instructor.instructorProfile?.pricePerMonth
-                            ? `$${instructor.instructorProfile.pricePerMonth}/mes`
-                            : "Consultar"}
-                        </Badge>
-                      </div>
-
-                      <div className="space-y-1">
-                        <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
-                          Especialidades:
-                        </span>
-                        <div className="flex flex-wrap gap-1">
-                          {specialties && specialties.length ? (
-                            specialties.map((specialty, index) => (
-                              <Badge
-                                key={index}
-                                variant="secondary"
-                                className="text-xs"
-                              >
-                                {specialty}
-                              </Badge>
-                            ))
-                          ) : (
-                            <span className="text-xs text-muted-foreground">
-                              No especificadas
-                            </span>
-                          )}
-                        </div>
-                      </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {instructor.instructorProfile?.curriculum
+                        ? instructor.instructorProfile.curriculum.split(',').slice(0, 4).map((tag, idx) => (
+                            <Badge key={`${tag}-${idx}`} variant="outline" className="text-xs">
+                              {tag.trim()}
+                            </Badge>
+                          ))
+                        : <span className="text-xs text-muted-foreground">Sin especialidades</span>
+                      }
                     </div>
                   </CardContent>
-                  <div className="px-0 pb-1 pt-0 mt-auto">
+                  <CardFooter className="pt-0 flex flex-col gap-1">
                     <Button
-                      className={`w-full h-8 text-xs ${
+                      size="default"
+                      className={`w-full text-xs ${
                         requestedInstructors.has(
-                          instructor.instructorProfile?.id || "",
+                          instructor.instructorProfile?.id || ""
                         )
                           ? "bg-red-600 hover:bg-red-700"
                           : ""
                       }`}
                       onClick={() =>
-                        handleRequestInstructor(
-                          instructor.instructorProfile?.id,
-                        )
+                        handleRequestInstructor(instructor.instructorProfile?.id)
                       }
                       disabled={
                         requestingInstructorId ===
@@ -467,17 +432,11 @@ export default function InstructorSearchClient() {
                     >
                       {requestingInstructorId ===
                       instructor.instructorProfile?.id ? (
-                        <>
-                          <HugeiconsIcon icon={RefreshIcon} className="mr-2 h-3 w-3 animate-spin" />
-                          Enviando...
-                        </>
+                        <span>Enviando...</span>
                       ) : requestedInstructors.has(
-                          instructor.instructorProfile?.id || "",
+                          instructor.instructorProfile?.id || ""
                         ) ? (
-                        <>
-                          <HugeiconsIcon icon={Tick02Icon} className="mr-2 h-3 w-3" />
-                          Solicitud Enviada
-                        </>
+                        <span>Solicitud Enviada</span>
                       ) : (
                         "Solicitar Instructor"
                       )}
@@ -490,7 +449,7 @@ export default function InstructorSearchClient() {
                           Debes cancelar tu solicitud actual primero
                         </p>
                       )}
-                  </div>
+                  </CardFooter>
                 </Card>
               );
             })

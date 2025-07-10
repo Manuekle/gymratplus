@@ -16,11 +16,9 @@ import {
 export function CancelPlanDialog({
   open,
   onOpenChange,
-  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSuccess?: () => void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session, update } = useSession();
@@ -40,32 +38,8 @@ export function CancelPlanDialog({
 
       // 2. Actualizar la sesión local
       if (session?.user) {
-        await update({
-          ...session,
-          user: {
-            ...session.user,
-            isInstructor: false,
-            instructorProfile: null,
-            _localStorage: {
-              ...(session.user._localStorage || {}),
-              isInstructor: false,
-              instructorProfile: null,
-            },
-          },
-        });
-      }
-
-      // 3. Forzar actualización de la sesión en el servidor
-      const sessionResponse = await fetch('/api/auth/session', {
-        method: 'GET',
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
-        }
-      });
-
-      if (!sessionResponse.ok) {
-        throw new Error("Error al actualizar la sesión");
+        await update();
+        window.location.href = '/dashboard/profile';
       }
       
       // 4. Mostrar mensaje de éxito
@@ -73,18 +47,9 @@ export function CancelPlanDialog({
         description: "Tu plan de instructor ha sido cancelado correctamente."
       });
       
-      // 5. Cerrar el diálogo
+      // 5. Cerrar el diálogo y redirigir siempre a profile
       onOpenChange(false);
-      
-      // 6. Ejecutar callback o redirigir
-      if (onSuccess) {
-        onSuccess();
-      } else {
-        // Recargar después de un breve retraso
-        setTimeout(() => {
-          window.location.href = '/dashboard/profile';
-        }, 1000);
-      }
+      window.location.href = '/dashboard/profile';
     } catch (error) {
       console.error("Error al cancelar el plan:", error);
       toast.error("Error", {
