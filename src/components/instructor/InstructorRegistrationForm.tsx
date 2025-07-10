@@ -340,7 +340,7 @@ export function InstructorRegistrationForm({
                             <FormControl>
                               <Textarea
                                 placeholder="Cuéntanos sobre tu experiencia y filosofía como instructor..."
-                                className="min-h-[120px] resize-none"
+                                className="min-h-[120px] resize-none text-xs"
                                 {...field}
                                 value={bioValue}
                               />
@@ -369,7 +369,11 @@ export function InstructorRegistrationForm({
                         render={({ field }) => (
                           <FormItem className="hidden">
                             <FormControl>
-                              <input type="hidden" {...field} />
+                              <Input
+                              type="hidden"
+                              {...field}
+                              className="text-xs"
+                            />
                             </FormControl>
                           </FormItem>
                         )}
@@ -403,6 +407,7 @@ export function InstructorRegistrationForm({
                               type="email"
                               placeholder="tu@email.com"
                               {...field}
+                              className="text-xs"
                             />
                           </FormControl>
                           <FormMessage />
@@ -421,6 +426,7 @@ export function InstructorRegistrationForm({
                               type="tel"
                               placeholder="+1234567890"
                               {...field}
+                              className="text-xs"
                             />
                           </FormControl>
                           <FormMessage />
@@ -438,7 +444,7 @@ export function InstructorRegistrationForm({
                             onValueChange={field.onChange}
                             label="País"
                             placeholder="Selecciona un país"
-                            className="w-full"
+                            className="w-full text-xs"
                           />
                           <FormMessage />
                         </FormItem>
@@ -452,7 +458,7 @@ export function InstructorRegistrationForm({
                         <FormItem>
                           <FormLabel>Ciudad</FormLabel>
                           <FormControl>
-                            <Input placeholder="Madrid" {...field} />
+                            <Input className="text-xs" placeholder="Madrid" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -491,7 +497,7 @@ export function InstructorRegistrationForm({
                                 min="10"
                                 max="1000"
                                 step="5"
-                                className="pl-8"
+                                className="pl-8 text-xs"
                                 {...field}
                                 onChange={(e) =>
                                   field.onChange(Number(e.target.value))
