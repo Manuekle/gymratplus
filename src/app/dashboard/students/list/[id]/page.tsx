@@ -175,8 +175,8 @@ export default function StudentDetailPage() {
               {student.name?.charAt(0).toUpperCase() || "A"}
             </AvatarFallback>
           </Avatar>
-          <h2 className="text-2xl font-semibold mb-1">{student.name}</h2>
-          <p className="text-muted-foreground mb-2">{student.email}</p>
+          <h2 className="text-2xl font-semibold tracking-heading mb-1">{student.name}</h2>
+          <p className="text-xs text-muted-foreground mb-2">{student.email}</p>
           <div className="flex gap-2 mb-2">
             <Badge
               variant={student.status === "active" ? "default" : "secondary"}
@@ -235,8 +235,8 @@ export default function StudentDetailPage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle>Rutinas asignadas</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-2xl font-semibold tracking-heading">Rutinas asignadas</CardTitle>
+          <CardDescription className="text-xs">
             Rutinas que le has creado y asignado a este alumno.
           </CardDescription>
         </CardHeader>
@@ -247,7 +247,7 @@ export default function StudentDetailPage() {
               <Skeleton className="h-8 w-full" />
             </div>
           ) : workouts.length === 0 ? (
-            <div className="text-center text-muted-foreground py-8">
+            <div className="text-center text-xs text-muted-foreground py-8">
               Este alumno aún no tiene rutinas asignadas por ti.
             </div>
           ) : (
@@ -264,7 +264,7 @@ export default function StudentDetailPage() {
                   <CardContent className="py-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       <div>
-                        <h3 className="font-semibold text-lg mb-1">{w.name}</h3>
+                        <h3 className="text-2xl font-semibold tracking-heading mb-1">{w.name}</h3>
                         <p className="text-xs text-muted-foreground mb-1">
                           Asignada:{" "}
                           {format(new Date(w.assignedDate), "d MMM yyyy", {
@@ -314,10 +314,10 @@ export default function StudentDetailPage() {
       </Card>
       {/* Modal de detalle de rutina */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-lg overflow-y-auto pt-8 xl:pt-0">
+        <DialogContent className="py-8 xl:p-8">
           <DialogHeader>
-            <DialogTitle>Detalle de rutina</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-2xl font-semibold tracking-heading">Detalle de rutina</DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
               Información completa de la rutina asignada.
             </DialogDescription>
           </DialogHeader>
@@ -345,10 +345,7 @@ export default function StudentDetailPage() {
                       locale: es,
                     })}
                   </span>
-                )}
-                {selectedWorkout.status && (
-                  <Badge variant="outline">{selectedWorkout.status}</Badge>
-                )}
+                )}                
               </div>
               {selectedWorkout.notes && (
                 <p className="text-xs">Notas: {selectedWorkout.notes}</p>

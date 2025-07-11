@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       where: {
         studentId: studentId,
         instructorProfileId: instructorProfile.id,
-        status: "accepted",
+        status: "active",
       },
     });
 
@@ -103,6 +103,7 @@ export async function POST(request: NextRequest) {
       status: string;
       notes: string | null;
       instructorId?: string;
+      type: string;
     };
 
     // Asignar la rutina al estudiante
@@ -112,6 +113,7 @@ export async function POST(request: NextRequest) {
       dueDate: dueDateValue,
       status: "assigned",
       notes: notes || null,
+      type: "assigned", // Cambiar el tipo a "assigned"
       // Si la rutina no tenía instructorId, asignar el actual
       ...(workout.instructorId ? {} : { instructorId: session.user.id }),
     };

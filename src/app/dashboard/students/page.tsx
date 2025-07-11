@@ -259,7 +259,7 @@ export default function InstructorDashboardPage() {
       {pendingRequests.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="space-y-1">
                 <CardTitle className="flex items-center gap-2">
                   Solicitudes Pendientes
@@ -274,9 +274,9 @@ export default function InstructorDashboardPage() {
           <CardContent>
             <div className="space-y-4">
               {pendingRequests.map((request, index) => (
-                <div key={request.id}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                <div key={request.id} className="flex flex-col gap-2 md:gap-0">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           src={request.image || "/placeholder-avatar.jpg"}
@@ -286,11 +286,11 @@ export default function InstructorDashboardPage() {
                           {request.name?.charAt(0).toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                      <div className="space-y-1 min-w-0">
+                        <p className="text-sm font-medium leading-none truncate">
                           {request.name || "Sin nombre"}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground truncate">
                           {request.email}
                         </p>
                         {request.agreedPrice && (
@@ -300,14 +300,14 @@ export default function InstructorDashboardPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0">
                       <Button
                         size="default"
-                        variant="default"
+                        variant="outline"
                         onClick={() => handleAcceptRequest(request.id)}
-                        className="text-xs"
+                        className="text-xs w-full md:w-auto"
                       >
-                        <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-1" />
+                        <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-0 md:mr-1" />
                         <span className="hidden md:inline">Aceptar</span>
                       </Button>
                     </div>
@@ -325,7 +325,7 @@ export default function InstructorDashboardPage() {
       {/* Active Students */}
       <Card>
         <CardHeader>
-          <div className="flex justify-start items-start md:justify-between">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
             <div className="space-y-1">
               <CardTitle className="text-2xl tracking-heading font-semibold">
                 Alumnos activos
@@ -336,7 +336,7 @@ export default function InstructorDashboardPage() {
             </div>
             <Link
               href="/dashboard/students/list"
-              className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
+              className="text-xs text-muted-foreground flex items-center gap-1 w-full md:w-1/6 justify-end mt-2 md:mt-0"
             >
               Ver todos <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
             </Link>
@@ -373,8 +373,8 @@ export default function InstructorDashboardPage() {
             <div className="space-y-4">
               {students.slice(0, 5).map((student, index) => (
                 <div key={student.id}>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
                           src={student.image || "/placeholder-avatar.jpg"}
@@ -384,11 +384,11 @@ export default function InstructorDashboardPage() {
                           {student.name?.charAt(0).toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">
+                      <div className="space-y-1 min-w-0">
+                        <p className="text-sm font-medium leading-none truncate">
                           {student.name || "Sin nombre"}
                         </p>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground truncate">
                           {student.email}
                         </p>
                         {student.agreedPrice && (
@@ -396,11 +396,11 @@ export default function InstructorDashboardPage() {
                             ${student.agreedPrice}/mes
                           </p>
                         )}
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex gap-2 mt-1 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-300">
                           {student.hasActiveWorkoutPlan && (
                             <Badge
                               variant="default"
-                              className="text-xs bg-green-600/90"
+                              className="text-xs bg-green-600/90 whitespace-nowrap"
                             >
                               Plan de entrenamiento
                             </Badge>
@@ -408,21 +408,21 @@ export default function InstructorDashboardPage() {
                           {student.hasActiveMealPlan && (
                             <Badge
                               variant="default"
-                              className="text-xs bg-blue-600/90"
+                              className="text-xs bg-blue-600/90 whitespace-nowrap"
                             >
                               Plan de nutrición
                             </Badge>
                           )}
                           {!student.hasActiveWorkoutPlan &&
                             !student.hasActiveMealPlan && (
-                              <Badge variant="outline" className="text-xs">
+                              <Badge variant="outline" className="text-xs whitespace-nowrap">
                                 Sin planes activos
                               </Badge>
                             )}
                         </div>
                       </div>
                     </div>
-                    <div className="text-right space-y-1">
+                    <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0 text-right">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-xs">
                           {student.currentWorkoutStreak} días

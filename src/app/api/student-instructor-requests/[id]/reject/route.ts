@@ -13,7 +13,8 @@ export async function PUT(req: NextRequest) {
     }
 
     const url = new URL(req.url);
-    const requestId = url.pathname.split("/").pop();
+    const pathParts = url.pathname.split("/");
+    const requestId = pathParts[pathParts.length - 2]; // El ID está en la penúltima posición
     if (!requestId) {
       return NextResponse.json(
         { error: "ID no proporcionado" },

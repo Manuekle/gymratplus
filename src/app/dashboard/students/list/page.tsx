@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, More01Icon, Search01Icon, Target01Icon, Target02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, MoreHorizontalIcon, Search01Icon, Target01Icon, Target02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import {
 Select,
 SelectContent,
@@ -482,28 +482,28 @@ export default function StudentsListPage() {
                 key={student.id}
                 className="hover:shadow-md transition-shadow"
               >
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <Avatar className="h-12 w-12 border-2 border-background shadow-sm">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div className="flex items-start sm:items-center gap-3 w-full sm:w-auto">
+                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm flex-shrink-0">
                         <AvatarImage
                           src={student.image || "/placeholder-avatar.jpg"}
                           alt={student.name || "Alumno"}
                         />
-                        <AvatarFallback className="font-semibold">
+                        <AvatarFallback className="font-semibold text-sm sm:text-base">
                           {student.name?.charAt(0).toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold">
+                      <div className="min-w-0 space-y-1">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="font-semibold text-sm sm:text-base truncate max-w-[180px] sm:max-w-none">
                             {student.name || "Sin nombre"}
                           </p>
-                          <Badge variant={activityStatus.variant}>
+                          <Badge variant={activityStatus.variant} className="text-xs">
                             {activityStatus.text}
                           </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[240px] sm:max-w-none">
                           {student.email}
                         </p>
                         {student.agreedPrice && (
@@ -511,23 +511,25 @@ export default function StudentsListPage() {
                             ${student.agreedPrice}/mes
                           </p>
                         )}
-                        <div className="flex gap-2 mt-1">
+                        <div className="flex flex-wrap gap-1.5 mt-1">
                           {student.hasActiveWorkoutPlan && (
                             <Badge
                               variant="secondary"
-                              className="text-xs justify-center"
+                              className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
                             >
                               <HugeiconsIcon icon={Target01Icon} className="h-3 w-3 mr-1" />
-                              Entrenamiento
+                              <span className="hidden sm:inline">Entrenamiento</span>
+                              <span className="sm:hidden">Entr.</span>
                             </Badge>
                           )}
                           {student.hasActiveMealPlan && (
                             <Badge
                               variant="secondary"
-                              className="text-xs justify-center"
+                              className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
                             >
                               <HugeiconsIcon icon={Activity01Icon} className="h-3 w-3 mr-1" />
-                              Nutrición
+                              <span className="hidden sm:inline">Nutrición</span>
+                              <span className="sm:hidden">Nutr.</span>
                             </Badge>
                           )}
                           {!student.hasActiveWorkoutPlan &&
@@ -540,30 +542,36 @@ export default function StudentsListPage() {
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-6">
+                    <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 sm:gap-6">
                       {/* Stats */}
-                      <div className="text-right space-y-1">
-                        <div className="flex items-center gap-2">
-                          <Badge variant={streakVariant} className="gap-1">
+                      <div className="text-right space-y-1 min-w-[100px]">
+                        <div className="flex items-center justify-end gap-2">
+                          <Badge variant={streakVariant} className="gap-1 text-xs">
                             <HugeiconsIcon icon={FireIcon} className="h-3 w-3" />
                             {student.currentWorkoutStreak}
                           </Badge>
-                          <span className="text-xs text-muted-foreground">
+                          <span className="text-xs text-muted-foreground hidden sm:inline">
                             {student.completedWorkoutsLast7Days}/sem
+                          </span>
+                          <span className="text-xs text-muted-foreground sm:hidden">
+                            {student.completedWorkoutsLast7Days}s
                           </span>
                         </div>
                         <p className="text-xs text-muted-foreground">
                           {student.lastWorkoutAt ? (
                             isToday(new Date(student.lastWorkoutAt)) ? (
-                              <span className="text-emerald-600 font-medium flex items-center gap-1">
+                              <span className="text-emerald-600 font-medium flex items-center justify-end gap-1">
                                 <HugeiconsIcon icon={Clock01Icon} className="h-3 w-3" />
-                                Entrenó hoy
+                                <span className="hidden sm:inline">Entrenó hoy</span>
+                                <span className="sm:hidden">Hoy</span>
                               </span>
                             ) : (
-                              `Último: ${format(new Date(student.lastWorkoutAt), "d MMM", { locale: es })}`
+                              <span className="whitespace-nowrap">
+                                Últ: {format(new Date(student.lastWorkoutAt), "d MMM", { locale: es })}
+                              </span>
                             )
                           ) : (
-                            "Sin entrenamientos"
+                            <span className="whitespace-nowrap">Sin entrenos</span>
                           )}
                         </p>
                       </div>
@@ -574,9 +582,9 @@ export default function StudentsListPage() {
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="h-8 w-8 p-0"
+                            className="h-8 w-8 p-0 ml-auto sm:ml-0"
                           >
-                            <HugeiconsIcon icon={More01Icon} className="h-4 w-4" />
+                            <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
                             <span className="sr-only">Abrir menú</span>
                           </Button>
                         </DropdownMenuTrigger>

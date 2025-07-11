@@ -51,6 +51,11 @@ export const useExerciseProgress = () => {
     async (exercise: string = "all", startDate?: string, endDate?: string) => {
       setIsLoading(true);
 
+      // Validar que si se proporciona alguna fecha, ambas deben estar presentes
+      if ((startDate && !endDate) || (!startDate && endDate)) {
+        throw new Error("Debes proporcionar tanto la fecha de inicio como la de fin");
+      }
+
       // Crear una clave de caché basada en los parámetros
       const cacheKey = `${exercise}-${startDate || ""}-${endDate || ""}`;
 
@@ -64,12 +69,9 @@ export const useExerciseProgress = () => {
       try {
         let url = `/api/workout-sessions`;
 
-        if (startDate) {
-          url += `?startDate=${startDate}`;
-        }
-
-        if (endDate) {
-          url += startDate ? `&endDate=${endDate}` : `?endDate=${endDate}`;
+        // Solo agregar parámetros de fecha si ambos están presentes
+        if (startDate && endDate) {
+          url += `?startDate=${startDate}&endDate=${endDate}`;
         }
 
         const response = await fetch(url);
