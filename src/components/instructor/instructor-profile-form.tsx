@@ -333,6 +333,7 @@ export function InstructorProfileForm({
                       <CountrySelector
                         value={field.value}
                         onValueChange={field.onChange}
+                        className="text-xs"
                         placeholder="Selecciona un país"
                       />
                     </FormControl>

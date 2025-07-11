@@ -28,7 +28,7 @@ export async function GET() {
       await prisma.studentInstructor.findMany({
         where: {
           instructorProfileId: instructorProfile.id,
-          status: { in: ["accepted", "pending"] },
+          status: { in: ["accepted", "pending", "active"] },
         },
         include: {
           student: {

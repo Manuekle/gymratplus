@@ -78,7 +78,7 @@ export default function InstructorDashboardPage() {
       const data: (StudentData | PendingRequestData)[] = await response.json();
 
       const activeStudents = data.filter(
-        (item): item is StudentData => item.status === "accepted"
+        (item): item is StudentData => item.status === "accepted" || item.status === "active"
       );
       const pRequests = data.filter(
         (item): item is PendingRequestData => item.status === "pending"
@@ -136,9 +136,9 @@ export default function InstructorDashboardPage() {
   const handleAcceptRequest = async (requestId: string) => {
     try {
       const response = await fetch(
-        `/api/instructors/students/${requestId}/accept`,
+        `/api/student-instructor-requests/${requestId}/accept`,
         {
-          method: "POST",
+          method: "PUT",
         }
       );
       if (!response.ok) {
@@ -302,12 +302,13 @@ export default function InstructorDashboardPage() {
                     </div>
                     <div className="flex items-center space-x-2">
                       <Button
-                        size="sm"
+                        size="default"
+                        variant="default"
                         onClick={() => handleAcceptRequest(request.id)}
-                        className="h-8"
+                        className="text-xs"
                       >
                         <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-1" />
-                        Aceptar
+                        <span className="hidden md:inline">Aceptar</span>
                       </Button>
                     </div>
                   </div>

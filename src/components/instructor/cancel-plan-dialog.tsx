@@ -70,7 +70,7 @@ export function CancelPlanDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
+      <DialogContent className="overflow-y-auto pt-20 xl:pt-0">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">¿Cancelar plan de instructor?</DialogTitle>
           <DialogDescription className="text-sm">
@@ -79,7 +79,7 @@ export function CancelPlanDialog({
             deshacer.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex flex-row gap-2">
+        <DialogFooter>
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}
