@@ -29,7 +29,7 @@ export default function GymRatLanding() {
                 GymRat+
               </span>
             </div>
-            <div className="flex items-center xl:space-x-8 space-x-2">
+            <div className="flex items-center gap-4">
               <Link
                 href="#caracteristicas"
                 className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
@@ -50,15 +50,15 @@ export default function GymRatLanding() {
               </Link>
               <ThemeToggle />
               <Button
-                size="lg"
-                variant="ghost"
+                size="default"
+                variant="outline"
                 className="xl:hidden flex text-sm"
                 asChild
               >
                 <Link href="/auth/signin">Iniciar sesión</Link>
               </Button>
               <Button
-                size="sm"
+                size="default"
                 className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-sm"
                 asChild
               >
