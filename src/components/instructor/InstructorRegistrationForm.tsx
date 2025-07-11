@@ -21,7 +21,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CircleIcon } from "@hugeicons/core-free-icons";
 import { CountrySelector } from "@/components/country-selector";
 import {
   Drawer,
@@ -36,6 +35,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { CreditCardIcon, Ticket02Icon } from "@hugeicons/core-free-icons";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
+import { Icons } from "../icons";
 
 const instructorFormSchema = z.object({
   bio: z
@@ -619,7 +619,7 @@ export function InstructorRegistrationForm({
                 >
                   {isLoading ? (
                     <>
-                      <HugeiconsIcon icon={CircleIcon} size={16} className="text-current" />
+                      <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                       Procesando...
                     </>
                   ) : (

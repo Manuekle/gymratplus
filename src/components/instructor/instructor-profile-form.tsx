@@ -23,9 +23,9 @@ import {
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { CircleIcon } from "@radix-ui/react-icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Icons } from "../icons";
 
 const instructorProfileSchema = z.object({
   bio: z.string().optional(),
@@ -391,7 +391,7 @@ export function InstructorProfileForm({
             >
               {isLoading ? (
                 <>
-                  <CircleIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   Guardando...
                 </>
               ) : (

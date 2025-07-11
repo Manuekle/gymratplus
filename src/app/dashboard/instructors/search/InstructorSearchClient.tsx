@@ -147,7 +147,7 @@ export default function InstructorSearchClient() {
     async (instructorProfileId?: string) => {
       if (!instructorProfileId) {
         toast.error("Error", {
-          description: "ID de instructor no disponible.",
+          description: "ID de instructor no disponible. Por favor, intenta de nuevo.",
         });
         return;
       }
@@ -177,7 +177,7 @@ export default function InstructorSearchClient() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.message || "Error al enviar la solicitud.");
+          throw new Error(errorData.error || "Error al enviar la solicitud.");
         }
 
         // Agregar el instructor a la lista de solicitados
@@ -230,6 +230,7 @@ export default function InstructorSearchClient() {
               onValueChange={(value) => setCountry(value)}
               placeholder="Selecciona un país"
               label="País"
+              className="text-xs"
             />
           </div>
           {/* Precio máximo */}
@@ -241,6 +242,7 @@ export default function InstructorSearchClient() {
               min={0}
               placeholder="Ej: 100"
               value={maxPrice}
+              className="text-xs"
               onChange={(e) => setMaxPrice(e.target.value)}
             />
           </div>
@@ -293,7 +295,7 @@ export default function InstructorSearchClient() {
                         variant={
                           selectedSpecialties.includes(spec.id) ? "default" : "secondary"
                         }
-                        className={`whitespace-nowrap px-3 py-1 text-sm transition-all flex-shrink-0 cursor-pointer ${
+                        className={`whitespace-nowrap px-3 py-1 text-xs transition-all flex-shrink-0 cursor-pointer ${
                           selectedSpecialties.includes(spec.id)
                             ? "bg-primary text-primary-foreground"
                             : "bg-transparent border border-input hover:bg-accent"
@@ -316,7 +318,7 @@ export default function InstructorSearchClient() {
                     variant={
                       selectedSpecialties.includes(spec.id) ? "default" : "secondary"
                     }
-                    className={`px-3 py-1 text-sm transition-all cursor-pointer ${
+                    className={`px-3 py-1 text-xs transition-all cursor-pointer ${
                       selectedSpecialties.includes(spec.id)
                         ? "bg-primary text-primary-foreground"
                         : "bg-transparent border border-input hover:bg-accent"
@@ -428,46 +430,50 @@ export default function InstructorSearchClient() {
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0 flex flex-col gap-1">
-                    <Button
-                      size="default"
-                      className={`w-full text-xs ${
-                        requestedInstructors.has(
-                          instructor.instructorProfile?.id || ""
-                        )
-                          ? "bg-red-600 hover:bg-red-700"
-                          : ""
-                      }`}
-                      onClick={() =>
-                        handleRequestInstructor(instructor.instructorProfile?.id)
+                    {(() => {
+                      const profile = instructor.instructorProfile;
+                      if (profile && profile.id) {
+                        return (
+                          <>
+                            <Button
+                              size="default"
+                              className={`w-full text-xs ${
+                                requestedInstructors.has(profile.id)
+                                  ? "bg-red-600 hover:bg-red-700"
+                                  : ""
+                              }`}
+                              onClick={() => handleRequestInstructor(profile.id)}
+                              disabled={
+                                requestingInstructorId === profile.id ||
+                                (requestedInstructors.size > 0 &&
+                                  !requestedInstructors.has(profile.id))
+                              }
+                            >
+                              {requestingInstructorId === profile.id ? (
+                                <span>Enviando...</span>
+                              ) : requestedInstructors.has(profile.id) ? (
+                                <span className="text-white">Solicitud Enviada</span>
+                              ) : (
+                                "Solicitar Instructor"
+                              )}
+                            </Button>
+                            {requestedInstructors.size > 0 &&
+                              !requestedInstructors.has(profile.id) && (
+                                <p className="text-xs text-red-500 mt-1 text-center">
+                                  Debes cancelar tu solicitud actual primero
+                                </p>
+                              )}
+                          </>
+                        );
                       }
-                      disabled={
-                        requestingInstructorId ===
-                          instructor.instructorProfile?.id ||
-                        (requestedInstructors.size > 0 &&
-                          !requestedInstructors.has(
-                            instructor.instructorProfile?.id || "",
-                          ))
-                      }
-                    >
-                      {requestingInstructorId ===
-                      instructor.instructorProfile?.id ? (
-                        <span>Enviando...</span>
-                      ) : requestedInstructors.has(
-                          instructor.instructorProfile?.id || ""
-                        ) ? (
-                        <span>Solicitud Enviada</span>
-                      ) : (
-                        "Solicitar Instructor"
-                      )}
-                    </Button>
-                    {requestedInstructors.size > 0 &&
-                      !requestedInstructors.has(
-                        instructor.instructorProfile?.id || "",
-                      ) && (
-                        <p className="text-xs text-red-500 mt-1 text-center">
-                          Debes cancelar tu solicitud actual primero
-                        </p>
-                      )}
+                      return (
+                        <div className="w-full text-center">
+                          <p className="text-xs text-muted-foreground">
+                            Perfil de instructor no disponible
+                          </p>
+                        </div>
+                      );
+                    })()}
                   </CardFooter>
                 </Card>
               );

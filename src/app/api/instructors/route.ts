@@ -1,26 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-
-// Tipos para los instructores
-interface InstructorProfile {
-  bio: string | null;
-  isVerified: boolean;
-  pricePerMonth: number | null;
-  country: string | null;
-  city: string | null;
-  isRemote: boolean;
-  curriculum: string | null;
-}
-
-interface Instructor {
-  id: string;
-  name: string | null;
-  image: string | null;
-  instructorProfile: InstructorProfile | null;
-  tags?: string[];
-}
 
 // Función para extraer etiquetas de un texto
 const extractTags = (text?: string | null): string[] => {
@@ -43,90 +22,42 @@ export async function GET(request: NextRequest) {
     let userTags: string[] = [];
     let hasUserInterests = false;
     
-    if (!tagFilter) {
-      const session = await getServerSession(authOptions);
-      if (session?.user?.email) {
-        const user = await prisma.user.findUnique({
-          where: { email: session.user.email },
-          select: { 
-            interests: true,
-            id: true,
-            email: true 
-          }
-        });
-        // Type assertion para manejar el campo interests que existe en el schema pero no en el tipo generado
-        const userWithInterests = user as any;
-        userTags = userWithInterests?.interests || [];
-        hasUserInterests = (userWithInterests?.interests?.length || 0) > 0;
-      }
-    } else {
-      // Si se proporciona tagFilter como parámetro, usarlo en lugar de las etiquetas del usuario
-      // Soporta múltiples ids separados por coma
+    if (tagFilter) {
+      // Si se proporciona tagFilter como parámetro, usarlo
       userTags = tagFilter.split(',').map(tag => tag.trim()).filter(Boolean);
       hasUserInterests = userTags.length > 0;
     }
 
-    // Construir filtros para la consulta de Prisma
-    const whereConditions: {
-      isInstructor: boolean;
-      instructorProfile: {
-        isNot: null;
-        [key: string]: any;
-      };
-      experienceLevel?: string;
-    } = {
+    // Construir filtros básicos
+    const whereConditions = {
       isInstructor: true,
       instructorProfile: {
         isNot: null
       }
     };
 
-    // Construir filtros para instructorProfile
-    const instructorProfileFilters: {
-      country?: string;
-      isRemote?: boolean;
-      isVerified?: boolean;
-      pricePerMonth?: { lte: number };
-    } = {};
-
-    // Filtro por país
-    if (country) {
-      instructorProfileFilters.country = country;
-    }
-
-    // Filtro por remoto
-    if (isRemote === 'true') {
-      instructorProfileFilters.isRemote = true;
-    }
-
-    // Filtro por verificado
-    if (isVerified === 'true') {
-      instructorProfileFilters.isVerified = true;
-    }
-
-    // Filtro por precio máximo
-    if (maxPrice) {
-      instructorProfileFilters.pricePerMonth = {
-        lte: parseFloat(maxPrice)
+    // Agregar filtros adicionales si se proporcionan
+    if (country || isRemote === 'true' || isVerified === 'true' || maxPrice) {
+      const profileFilters: Record<string, unknown> = {};
+      
+      if (country) profileFilters.country = country;
+      if (isRemote === 'true') profileFilters.isRemote = true;
+      if (isVerified === 'true') profileFilters.isVerified = true;
+      if (maxPrice) profileFilters.pricePerMonth = { lte: parseFloat(maxPrice) };
+      
+      (whereConditions as any).instructorProfile = {
+        ...(whereConditions as any).instructorProfile,
+        ...profileFilters
       };
     }
 
-    // Combinar filtros de instructorProfile
-    if (Object.keys(instructorProfileFilters).length > 0) {
-      whereConditions.instructorProfile = {
-        ...whereConditions.instructorProfile,
-        ...instructorProfileFilters
-      };
-    }
-
-    // Filtro por nivel de experiencia
     if (experienceLevel) {
-      whereConditions.experienceLevel = experienceLevel;
+      (whereConditions as any).experienceLevel = experienceLevel;
     }
 
     // Obtener instructores con filtros aplicados
     const instructors = await prisma.user.findMany({
-      where: whereConditions,
+      where: whereConditions as any,
       select: {
         id: true,
         name: true,
@@ -134,6 +65,7 @@ export async function GET(request: NextRequest) {
         experienceLevel: true,
         instructorProfile: {
           select: {
+            id: true,
             bio: true,
             isVerified: true,
             pricePerMonth: true,
@@ -147,30 +79,31 @@ export async function GET(request: NextRequest) {
       orderBy: {
         name: 'asc'
       }
-    }) as unknown as Instructor[];
+    });
 
-    // Si no hay filtros de especialidad y el usuario no tiene intereses, seleccionar 6 instructores al azar
-    let selectedInstructors = [...instructors];
-    if (!hasUserInterests && !tagFilter) {
-      // Mezclar el array y tomar los primeros 6
-      selectedInstructors = [...instructors]
+    // Filtrar instructores que tienen perfil válido
+    const validInstructors = instructors.filter((instructor) => 
+      instructor.instructorProfile && instructor.instructorProfile.id
+    );
+
+    // Si no hay filtros de especialidad, seleccionar 6 instructores al azar
+    let selectedInstructors = [...validInstructors];
+    if (!hasUserInterests) {
+      selectedInstructors = [...validInstructors]
         .sort(() => Math.random() - 0.5)
         .slice(0, 6);
     }
 
     // Filtrar instructores basados en las etiquetas solo si hay filtros de especialidad
     const filteredInstructors = hasUserInterests
-      ? instructors.filter(instructor => {
+      ? validInstructors.filter((instructor) => {
           const curriculumTags = extractTags(instructor.instructorProfile?.curriculum);
-          // Filtrar por coincidencia exacta de id
-          return userTags.some(tag =>
-            curriculumTags.includes(tag)
-          );
+          return userTags.some(tag => curriculumTags.includes(tag));
         })
-      : selectedInstructors; // Si no hay intereses, usar los instructores filtrados por otros criterios
+      : selectedInstructors;
 
     // Formatear la respuesta para incluir las etiquetas
-    const result = filteredInstructors.map(instructor => ({
+    const result = filteredInstructors.map((instructor) => ({
       ...instructor,
       instructorProfile: {
         ...instructor.instructorProfile,
