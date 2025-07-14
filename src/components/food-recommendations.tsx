@@ -257,14 +257,16 @@ export default function FoodRecommendations() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle>Food Recommendations</CardTitle>
-          <CardDescription>
-            You don't have any saved food recommendations yet.
+          <CardTitle className="text-2xl font-semibold  tracking-heading">
+            Tu Plan de Alimentación
+          </CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
+            No tienes ningún plan de alimentación guardado.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <p className="text-center py-8 text-muted-foreground">
-            Generate a nutrition plan to see food recommendations.
+          <p className="text-center py-8 text-muted-foreground text-xs">
+            Genera un plan de nutrición para ver las recomendaciones de alimentos.
           </p>
         </CardContent>
       </Card>

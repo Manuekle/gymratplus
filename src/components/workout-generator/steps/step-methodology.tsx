@@ -131,7 +131,7 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
                 id={method.id}
                 className="peer sr-only"
               />
-              <div className="w-full rounded-lg border border-accent peer-data-[state=checked]:border-zinc-200 peer-data-[state=checked]:shadow-sm hover:border-zinc-200 transform transition-all">
+              <div className="w-full rounded-lg border border-accent peer-data-[state=checked]:border-zinc-200 dark:peer-data-[state=checked]:border-zinc-700 peer-data-[state=checked]:shadow-sm hover:border-zinc-200 dark:hover:border-zinc-700 transform transition-all">
                 <div className="flex items-center p-4 gap-4">
                   <div className="mt-0.5 p-2 rounded-full border text-muted-foreground">
                     {method.icon}

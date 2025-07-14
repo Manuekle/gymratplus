@@ -4,6 +4,8 @@ import { CustomSonner } from "@/components/custom-sonner";
 import StepOnboarding1 from "@/components/onboarding/step-1";
 import { useSession } from "next-auth/react";
 import { DefaultSession } from "next-auth";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface CustomSession {
   user: {
@@ -15,14 +17,17 @@ interface CustomSession {
   } & DefaultSession["user"];
 }
 
-import { useRouter } from "next/navigation";
-
 export default function OnboardingPage() {
   const router = useRouter();
   const { data: session } = useSession() as { data: CustomSession | null };
 
-  if (session && session.user?.profile) {
-    router.push("/dashboard/profile");
+  useEffect(() => {
+    if (session?.user?.profile) {
+      router.push("/dashboard/profile");
+    }
+  }, [session, router]);
+
+  if (session?.user?.profile) {
     return null;
   }
 

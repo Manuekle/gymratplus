@@ -6,7 +6,7 @@ import { es } from "date-fns/locale";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 // import { toast } from "sonner";
-import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
+
 import { Badge } from "@/components/ui/badge";
 
 type MealLog = {
@@ -41,8 +41,6 @@ type MealLogListProps = {
 export function MealLogList({
   mealLogs,
   loading,
-  // onMealLogDeleted,
-  selectedDate,
 }: MealLogListProps) {
   // Removed unused deletingId state
 
@@ -111,14 +109,14 @@ export function MealLogList({
 
   if (mealLogs.length === 0) {
     return (
-      <div className="text-center py-12">
+      <div className="text-center py-14">
         <h3 className="text-sm font-medium mb-2">
           No hay comidas registradas para esta fecha.
         </h3>
         <p className="text-xs text-muted-foreground mb-6">
           Registra tus comidas para llevar un seguimiento de tu alimentación
         </p>
-        <AddMealLogButton selectedDate={selectedDate} />
+        {/* <AddMealLogButton selectedDate={selectedDate} /> */}
       </div>
     );
   }

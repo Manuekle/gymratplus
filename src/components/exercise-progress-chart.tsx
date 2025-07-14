@@ -34,7 +34,6 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Tick02Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons";
 
-
 const COLORS = [
   "#A0C4E7", // Soft Sky Blue
   "#B0D0F0", // Pale Blue
@@ -167,8 +166,8 @@ export function ExerciseProgressChart() {
   // Filtrar los datos según los ejercicios seleccionados
   const filteredData = formattedData.filter((record) =>
     selectedExercises.some(
-      (exercise) => record.exercises[exercise] !== undefined,
-    ),
+      (exercise) => record.exercises[exercise] !== undefined
+    )
   );
 
   // Calcular el progreso para cada ejercicio seleccionado
@@ -197,7 +196,7 @@ export function ExerciseProgressChart() {
       {} as Record<
         string,
         { change: number; first: number; last: number; reps: number }
-      >,
+      >
     );
   };
 
@@ -206,84 +205,98 @@ export function ExerciseProgressChart() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-col sm:flex-row justify-between gap-4">
-        <div className="flex flex-col gap-2">
-          <Label className="text-sm">Rango de tiempo</Label>
-          <Select
-            value={timeRange}
-            onValueChange={(value) => setTimeRange(value)}
-          >
-            <SelectTrigger className="w-[180px] text-xs md:text-sm">
-              <SelectValue placeholder="Selecciona el rango" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem className="text-xs md:text-sm" value="7">
-                Última semana
-              </SelectItem>
-              <SelectItem className="text-xs md:text-sm" value="30">
-                Último mes
-              </SelectItem>
-              <SelectItem className="text-xs md:text-sm" value="90">
-                Últimos 3 meses
-              </SelectItem>
-              <SelectItem className="text-xs md:text-sm" value="180">
-                Últimos 6 meses
-              </SelectItem>
-              <SelectItem className="text-xs md:text-sm" value="365">
-                Último año
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-2">
-        <Label className="text-sm">Selecciona los ejercicios a mostrar:</Label>
-        <Popover open={open} onOpenChange={setOpen}>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              role="combobox"
-              aria-expanded={open}
-              className="w-full justify-between text-xs md:text-sm"
+      <div className="flex flex-row flex-wrap gap-4 xl:gap-8">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
+          <div className="flex flex-col gap-2">
+            <Label className="text-sm">Rango de tiempo</Label>
+            <Select
+              value={timeRange}
+              onValueChange={(value) => setTimeRange(value)}
             >
-              {selectedExercises.length === 0
-                ? "Seleccionar ejercicios..."
-                : `${selectedExercises.length} ejercicio${
-                    selectedExercises.length === 1 ? "" : "s"
-                  } seleccionado${selectedExercises.length === 1 ? "" : "s"}`}
-              <HugeiconsIcon icon={UnfoldMoreIcon} className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-full p-0">
-            <Command>
-              <CommandGroup className="max-h-[300px] overflow-auto">
-                {availableExercises.map((exercise) => (
-                  <CommandItem
-                    className="text-xs md:text-sm"
-                    key={exercise}
-                    onSelect={() => {
-                      setSelectedExercises((prev) =>
-                        prev.includes(exercise)
-                          ? prev.filter((item) => item !== exercise)
-                          : [...prev, exercise],
-                      );
-                    }}
-                  >
-                    <HugeiconsIcon icon={Tick02Icon} className={cn(
-                        "mr-2 h-4 w-4",
-                        selectedExercises.includes(exercise)
-                          ? "opacity-100"
-                          : "opacity-0",
-                      )}
-                    />
-                    {exercise}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </Command>
-          </PopoverContent>
-        </Popover>
+              <SelectTrigger className="w-[180px] text-xs md:text-sm">
+                <SelectValue placeholder="Selecciona el rango" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem className="text-xs md:text-sm" value="7">
+                  Última semana
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="30">
+                  Último mes
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="90">
+                  Últimos 3 meses
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="180">
+                  Últimos 6 meses
+                </SelectItem>
+                <SelectItem className="text-xs md:text-sm" value="365">
+                  Último año
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <Label className="text-sm">
+            Selecciona los ejercicios a mostrar:
+          </Label>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className="w-full justify-between text-xs md:text-sm"
+              >
+                {selectedExercises.length === 0
+                  ? "Seleccionar ejercicios..."
+                  : `${selectedExercises.length} ejercicio${
+                      selectedExercises.length === 1 ? "" : "s"
+                    } seleccionado${selectedExercises.length === 1 ? "" : "s"}`}
+                <HugeiconsIcon
+                  icon={UnfoldMoreIcon}
+                  className="ml-2 h-4 w-4 shrink-0 opacity-50"
+                />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-full p-0">
+              <Command>
+                <CommandGroup className="max-h-[200px] overflow-auto">
+                  {availableExercises.length > 0 ? (
+                    availableExercises.map((exercise) => (
+                      <CommandItem
+                        className="text-xs md:text-sm"
+                        key={exercise}
+                        onSelect={() => {
+                          setSelectedExercises((prev) =>
+                            prev.includes(exercise)
+                              ? prev.filter((item) => item !== exercise)
+                              : [...prev, exercise]
+                          );
+                        }}
+                      >
+                        <HugeiconsIcon
+                          icon={Tick02Icon}
+                          className={cn(
+                            "mr-2 h-4 w-4",
+                            selectedExercises.includes(exercise)
+                              ? "opacity-100"
+                              : "opacity-0"
+                          )}
+                        />
+                        {exercise}
+                      </CommandItem>
+                    ))
+                  ) : (
+                    <div className="p-6 text-center text-sm text-muted-foreground">
+                      No hay ejercicios disponibles para mostrar
+                    </div>
+                  )}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {selectedExercises.length > 0 && filteredData.length > 0 ? (
@@ -324,7 +337,7 @@ export function ExerciseProgressChart() {
                       const record = filteredData.find(
                         (d) =>
                           d.exercises[name] &&
-                          d.exercises[name].weight === value,
+                          d.exercises[name].weight === value
                       );
 
                       const reps = record?.exercises[name]?.reps;
@@ -373,7 +386,7 @@ export function ExerciseProgressChart() {
                             ? "text-green-500"
                             : data.change < 0
                               ? "text-red-500"
-                              : "text-muted-foreground",
+                              : "text-muted-foreground"
                         )}
                       >
                         {data.change > 0 ? "+" : ""}
@@ -383,7 +396,7 @@ export function ExerciseProgressChart() {
                         ({data.reps} reps)
                       </span>
                     </div>
-                  ),
+                  )
                 )}
               </div>
             )}

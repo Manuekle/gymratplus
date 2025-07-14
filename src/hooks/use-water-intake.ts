@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -18,6 +18,8 @@ export function useWaterIntake() {
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [pendingHistoryUpdate, setPendingHistoryUpdate] = useState(false);
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const fetchIntake = useCallback(
     async (date?: string) => {
@@ -115,7 +117,7 @@ export function useWaterIntake() {
 
   const updateIntake = useCallback(
     async (newIntake: number) => {
-      if (!session?.user) return;
+      if (!session?.user) return false;
 
       try {
         // Ensure newIntake is a valid number
@@ -123,63 +125,85 @@ export function useWaterIntake() {
           throw new Error("Valor de consumo inválido");
         }
 
+        // Optimistic update
+        const previousIntake = intake;
+        setIntake(newIntake);
+
+        // --- Actualiza el history en memoria para el día actual (optimista) ---
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        const todayStr = `${yyyy}-${mm}-${dd}`;
+        setHistory((prev) => {
+          const found = prev.find((h) => h.date === todayStr);
+          if (found) {
+            return prev.map((h) => h.date === todayStr ? { ...h, liters: newIntake } : h);
+          } else {
+            return [...prev, { date: todayStr, liters: newIntake }];
+          }
+        });
+        // ---------------------------------------------------------------
+
         setIsUpdating(true);
         const response = await fetch("/api/water-intake", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ intake: Number(newIntake) }), // Ensure it's a number
+          body: JSON.stringify({ intake: Number(newIntake) }),
         });
 
         if (!response.ok) {
+          // Revert on error
+          setIntake(previousIntake);
+          // Revert history también
+          setHistory((prev) => {
+            const found = prev.find((h) => h.date === todayStr);
+            if (found) {
+              return prev.map((h) => h.date === todayStr ? { ...h, liters: previousIntake } : h);
+            } else {
+              return prev;
+            }
+          });
           const errorData = await response.json();
           throw new Error(
             errorData.error || "Error al actualizar el consumo de agua",
           );
         }
 
-        setIntake(newIntake);
-
-        // Refresh history after update
-        fetchHistory();
+        // En vez de fetchHistory inmediato, marcamos que hay actualización pendiente
+        setPendingHistoryUpdate(true);
 
         return true;
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Error desconocido");
-
+        const errorMessage = err instanceof Error ? err.message : "Error desconocido";
+        setError(errorMessage);
         toast.error("Error", {
-          description:
-            err instanceof Error
-              ? err.message
-              : "No se pudo actualizar el consumo de agua",
+          description: errorMessage,
         });
         return false;
       } finally {
         setIsUpdating(false);
       }
     },
-    [session, fetchHistory],
+    [session, intake],
   );
 
   const addWater = useCallback(
     async (amount = 0.25) => {
-      const validAmount =
-        typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
+      const validAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
       const newIntake = Math.min(10, intake + validAmount); // Limitar a 10 litros
-      // console.log("Agregar L", newIntake);
-      return updateIntake(newIntake);
+      return updateIntake(Number(newIntake.toFixed(2))); // Ensure 2 decimal places
     },
     [intake, updateIntake],
   );
 
   const removeWater = useCallback(
     async (amount = 0.25) => {
-      const validAmount =
-        typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
-      const newIntake = Math.min(10, intake - validAmount); // Limitar a 10 litros
-      // console.log("Agregar L", newIntake);
-      return updateIntake(newIntake);
+      const validAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
+      const newIntake = Math.max(0, intake - validAmount); // Don't go below 0
+      return updateIntake(Number(newIntake.toFixed(2))); // Ensure 2 decimal places
     },
     [intake, updateIntake],
   );
@@ -191,6 +215,19 @@ export function useWaterIntake() {
       fetchTargetIntake();
     }
   }, [session, fetchIntake, fetchHistory, fetchTargetIntake]);
+
+  // Debounce para actualizar el historial solo después de 1s sin cambios
+  useEffect(() => {
+    if (!pendingHistoryUpdate) return;
+    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    debounceTimeout.current = setTimeout(() => {
+      fetchHistory().catch(console.error);
+      setPendingHistoryUpdate(false);
+    }, 1000);
+    return () => {
+      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
+    };
+  }, [pendingHistoryUpdate, fetchHistory]);
 
   return {
     intake,

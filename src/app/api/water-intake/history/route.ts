@@ -3,7 +3,6 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redis } from "@/lib/redis";
-import { startOfDay } from "date-fns";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -13,30 +12,62 @@ export async function GET() {
   }
 
   try {
-    // Obtener datos de la base de datos primero
-    const thirtyDaysAgo = startOfDay(new Date());
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    // Get data from the database for the last 30 days
+    // Create dates in UTC to avoid timezone issues
+    const now = new Date();
+    // Get current date at midnight UTC
+    const today = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+    // Calculate 29 days ago (30 days including today)
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setUTCDate(today.getUTCDate() - 29);
+    
+    // Set end date to the end of today (inclusive)
+    const endDate = new Date(today);
+    endDate.setUTCDate(today.getUTCDate() + 1); // Next day at 00:00:00
+    
+    // For debugging - log the date range being queried
+    console.log('Querying water intake from', thirtyDaysAgo.toISOString(), 'to', endDate.toISOString());
 
     const dbHistory = await prisma.dailyWaterIntake.findMany({
       where: {
         userId: session.user.id,
         date: {
           gte: thirtyDaysAgo,
+          lt: endDate,
         },
       },
       orderBy: {
         date: "asc",
       },
     });
+    
+    // Log raw database history for debugging
+    console.log('Raw database history:', JSON.stringify(dbHistory, null, 2));
 
+    // Format dates to YYYY-MM-DD in local timezone
     const formattedHistory = dbHistory.map((entry) => {
-      // Asegurarnos de que la fecha se maneje en la zona horaria local
-      const localDate = new Date(entry.date);
+      // Get the date parts in UTC to avoid timezone issues
+      const date = new Date(entry.date);
+      const year = date.getUTCFullYear();
+      const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+      const day = String(date.getUTCDate()).padStart(2, '0');
+      const dateString = `${year}-${month}-${day}`;
+      
+      console.log('Processing date:', {
+        original: entry.date,
+        utc: date.toISOString(),
+        local: date.toString(),
+        formatted: dateString,
+        utcParts: { year, month, day }
+      });
+      
       return {
-        date: localDate.toISOString().split("T")[0],
+        date: dateString,
         liters: entry.intake,
       };
     });
+    
+    console.log('Final formatted history:', JSON.stringify(formattedHistory, null, 2));
 
     // Actualizar Redis en segundo plano
     if (formattedHistory.length > 0) {

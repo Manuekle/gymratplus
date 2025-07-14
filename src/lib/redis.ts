@@ -47,37 +47,61 @@ export async function getWaterIntake(
 }
 
 // Get water intake history for the last 30 days
+interface WaterIntakeEntry {
+  date: string;  // YYYY-MM-DD format
+  liters: number;
+}
+
 export async function getWaterIntakeHistory(
   userId: string,
-): Promise<{ date: string; liters: number }[]> {
+): Promise<WaterIntakeEntry[]> {
+  const historyKey = WATER_HISTORY_KEY(userId);
+  
   try {
-    const historyKey = WATER_HISTORY_KEY(userId);
+    // Get all entries from the sorted set
     const history = await redis.zrange(historyKey, 0, -1);
 
     if (!Array.isArray(history)) {
       return [];
     }
 
-    // Filtrar y procesar elementos
-    const result: Array<{ date: string; liters: number }> = [];
+    const result: WaterIntakeEntry[] = [];
+    const dateSet = new Set<string>(); // To track unique dates
     
+    // Process each history entry
     for (const item of history) {
-      const itemStr = String(item || '');
-      if (!itemStr.includes(':')) continue;
-      
-      const parts = itemStr.split(':');
-      if (parts.length < 2) continue;
-      
-      const date = (parts[0] || '').trim();
-      const liters = Number.parseFloat(parts[1] || '');
-      
-      if (!date || isNaN(liters)) continue;
-      
-      result.push({ date, liters });
+      try {
+        const itemStr = String(item || '').trim();
+        if (!itemStr) continue;
+        
+        // Expected format: "YYYY-MM-DD:liters"
+        const separatorIndex = itemStr.lastIndexOf(':');
+        if (separatorIndex === -1) continue;
+        
+        const date = itemStr.slice(0, separatorIndex).trim();
+        const litersStr = itemStr.slice(separatorIndex + 1).trim();
+        const liters = Number.parseFloat(litersStr);
+        
+        // Validate date format (YYYY-MM-DD)
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
+        
+        // Validate liters is a positive number
+        if (isNaN(liters) || liters < 0) continue;
+        
+        // Only keep the most recent entry for each date
+        if (!dateSet.has(date)) {
+          dateSet.add(date);
+          result.push({ date, liters });
+        }
+      } catch (error) {
+        console.error('Error processing history entry:', item, error);
+        continue;
+      }
     }
     
-    // Ordenar por fecha
-    return result.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    // Sort by date in ascending order
+    return result.sort((a, b) => a.date.localeCompare(b.date));
+    
   } catch (error) {
     console.error("Error in getWaterIntakeHistory:", error);
     return [];

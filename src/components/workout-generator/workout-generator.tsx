@@ -177,7 +177,7 @@ export function WorkoutGenerator() {
               Generar rutina
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-8 xl:pt-8">
+          <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-12 xl:pt-8">
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}
@@ -186,9 +186,7 @@ export function WorkoutGenerator() {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="overflow-y-auto pt-8 xl:pt-8">
-                  {renderStep()}
-                </div>
+                <div>{renderStep()}</div>
               </motion.div>
             </AnimatePresence>
             <DialogFooter>

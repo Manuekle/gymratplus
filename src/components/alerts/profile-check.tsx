@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import {
   AlertDialog,
   AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
@@ -195,12 +194,12 @@ const ProfileCheck = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel
+            {/* <AlertDialogCancel
               className="text-xs font-normal"
               onClick={() => router.push("/dashboard/profile")}
             >
               Volver
-            </AlertDialogCancel>
+            </AlertDialogCancel> */}
             <AlertDialogAction
               className="text-xs font-normal"
               onClick={handleRedirect}
