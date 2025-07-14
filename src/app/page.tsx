@@ -9,11 +9,12 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  BoxingGlove01Icon,
   ChartAverageIcon,
-  Dumbbell01Icon,
   Target02Icon,
   Tick02Icon,
   UserGroupIcon,
+  WorkoutRunIcon,
 } from "@hugeicons/core-free-icons";
 
 export default function GymRatLanding() {
@@ -267,7 +268,7 @@ export default function GymRatLanding() {
             <div className="text-center">
               <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <HugeiconsIcon
-                  icon={UserGroupIcon}
+                  icon={WorkoutRunIcon}
                   className="w-6 h-6 text-foreground"
                 />
               </div>
@@ -284,7 +285,7 @@ export default function GymRatLanding() {
             <div className="text-center">
               <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <HugeiconsIcon
-                  icon={Dumbbell01Icon}
+                  icon={BoxingGlove01Icon}
                   className="w-6 h-6 text-foreground"
                 />
               </div>
