@@ -17,8 +17,14 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const workout = await prisma.workout.findUnique({
-      where: { id: id, createdById: session.user.id, type: "personal" },
+    const workout = await prisma.workout.findFirst({
+      where: {
+        id: id,
+        OR: [
+          { createdById: session.user.id },
+          { assignedToId: session.user.id }
+        ]
+      },
       include: {
         exercises: {
           select: {

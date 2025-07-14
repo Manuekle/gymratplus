@@ -229,7 +229,7 @@ export default function WorkoutTimerFloat({
 
       {/* Diálogo de confirmación */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
+        <DialogContent className="overflow-y-auto pt-8 xl:pt-8">
           <DialogHeader>
             <DialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Qué deseas hacer con este entrenamiento?

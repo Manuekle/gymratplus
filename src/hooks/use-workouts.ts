@@ -64,9 +64,27 @@ export function useWorkouts() {
       const res = await fetch("/api/workouts");
       if (res.ok) {
         const data = await res.json();
-        // Mostrar todos los workouts del usuario
-        globalPersonalWorkouts = data;
-        setWorkouts(data);
+        // Filtrar según el rol del usuario
+        let filtered = data;
+        if (session?.user && typeof session.user.isInstructor !== 'undefined') {
+          if (session.user.isInstructor) {
+            // Instructor: solo los que creó y que NO están asignados
+            filtered = (data as Workout[]).filter(
+              (w) =>
+                w.createdById === session.user.id &&
+                (!w.assignedToId || w.type === "personal")
+            );
+          } else {
+            // Alumno: los que creó o le asignaron
+            filtered = (data as Workout[]).filter(
+              (w) =>
+                w.createdById === session.user.id ||
+                w.assignedToId === session.user.id
+            );
+          }
+        }
+        globalPersonalWorkouts = filtered;
+        setWorkouts(filtered);
         notifySubscribers();
       } else {
         throw new Error("Error al obtener tus rutinas");
@@ -77,7 +95,7 @@ export function useWorkouts() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [session]);
 
   // Crear una nueva rutina personal
   const createWorkout = useCallback(

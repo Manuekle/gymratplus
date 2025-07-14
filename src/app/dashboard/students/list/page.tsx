@@ -8,8 +8,7 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
-  CardDescription,
+  CardTitle
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +31,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, MoreHorizontalIcon, Search01Icon, Target01Icon, Target02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, MoreHorizontalIcon, Search01Icon, Target02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import {
 Select,
 SelectContent,
@@ -388,17 +387,7 @@ export default function StudentsListPage() {
       </div>
 
       {/* Filters */}
-      <Card>
-        <CardHeader className="pb-4">
-          <div className="flex items-center gap-2">
-            <CardTitle className="text-2xl tracking-heading font-semibold">
-              Filtros
-            </CardTitle>
-          </div>
-          <CardDescription className="text-xs">
-            Filtra y busca entre tus alumnos
-          </CardDescription>
-        </CardHeader>
+      <Card>        
         <CardContent>
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1 max-w-sm">
@@ -514,17 +503,16 @@ export default function StudentsListPage() {
                         <div className="flex flex-wrap gap-1.5 mt-1">
                           {student.hasActiveWorkoutPlan && (
                             <Badge
-                              variant="secondary"
+                              variant="outline"
                               className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
-                            >
-                              <HugeiconsIcon icon={Target01Icon} className="h-3 w-3 mr-1" />
+                            >                              
                               <span className="hidden sm:inline">Entrenamiento</span>
                               <span className="sm:hidden">Entr.</span>
                             </Badge>
                           )}
                           {student.hasActiveMealPlan && (
                             <Badge
-                              variant="secondary"
+                              variant="outline"
                               className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
                             >
                               <HugeiconsIcon icon={Activity01Icon} className="h-3 w-3 mr-1" />

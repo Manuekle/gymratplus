@@ -399,16 +399,16 @@ export default function InstructorDashboardPage() {
                         <div className="flex gap-2 mt-1 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-300">
                           {student.hasActiveWorkoutPlan && (
                             <Badge
-                              variant="default"
-                              className="text-xs bg-green-600/90 whitespace-nowrap"
+                              variant="outline"
+                              className="text-xs whitespace-nowrap"
                             >
                               Plan de entrenamiento
                             </Badge>
                           )}
                           {student.hasActiveMealPlan && (
                             <Badge
-                              variant="default"
-                              className="text-xs bg-blue-600/90 whitespace-nowrap"
+                              variant="outline"
+                              className="text-xs whitespace-nowrap"
                             >
                               Plan de nutrición
                             </Badge>

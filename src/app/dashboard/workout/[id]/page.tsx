@@ -61,6 +61,7 @@ export default function WorkouPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [confirmationText, setConfirmationText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!session) return;
@@ -70,8 +71,15 @@ export default function WorkouPage() {
       if (res.ok) {
         const data = await res.json();
         setWorkout(data);
+        setError(null);
       } else {
-        router.push("/workouts");
+        const errorData = await res.json();
+        setError(
+          errorData?.error === "Workout no encontrado" || errorData?.error === "Workout no encontrado o no autorizado"
+            ? "No tienes permiso para ver este workout o no existe."
+            : errorData?.error || "Error al cargar el workout."
+        );
+        setWorkout(null);
       }
     };
 
@@ -104,6 +112,15 @@ export default function WorkouPage() {
       setIsDeleteDialogOpen(false);
     }
   };
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[300px] text-center gap-4">
+        <h2 className="text-lg font-semibold text-destructive">{error}</h2>
+        <Button variant="outline" onClick={() => router.push("/dashboard/workout")}>Volver a la lista de entrenamientos</Button>
+      </div>
+    );
+  }
 
   if (!workout) return <WorkoutSkeleton />;
 
@@ -167,7 +184,7 @@ export default function WorkouPage() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
       >
-        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-0">
+        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Estás seguro de eliminar este workout?

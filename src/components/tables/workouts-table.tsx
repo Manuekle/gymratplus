@@ -14,6 +14,8 @@ interface Workout {
   name: string;
   description?: string;
   createdAt: string;
+  createdById: string;
+  assignedToId?: string;
 }
 
 export default function WorkoutsTable() {

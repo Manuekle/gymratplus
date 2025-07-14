@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
 
@@ -67,6 +68,8 @@ interface AssignedWorkoutExercise {
   reps: number;
   restTime?: number;
   exercise?: { name: string };
+  day?: string; // Added for grouping
+  notes?: string; // Added for grouping
 }
 
 export default function StudentDetailPage() {
@@ -321,63 +324,88 @@ export default function StudentDetailPage() {
               Información completa de la rutina asignada.
             </DialogDescription>
           </DialogHeader>
-          {selectedWorkout && (
-            <div className="space-y-2">
-              <h3 className="font-semibold text-lg">{selectedWorkout.name}</h3>
-              {selectedWorkout.description && (
-                <p className="text-sm text-muted-foreground">
-                  {selectedWorkout.description}
-                </p>
-              )}
-              <div className="flex gap-2 flex-wrap text-xs">
-                <span>
-                  Asignada:{" "}
-                  {format(
-                    new Date(selectedWorkout.assignedDate),
-                    "d MMM yyyy",
-                    { locale: es },
-                  )}
-                </span>
-                {selectedWorkout.dueDate && (
-                  <span>
-                    Vence:{" "}
-                    {format(new Date(selectedWorkout.dueDate), "d MMM yyyy", {
-                      locale: es,
-                    })}
-                  </span>
-                )}                
+          {selectedWorkout && (() => {
+            // Agrupar ejercicios por día (notes o day)
+            type AssignedWorkoutExercise = typeof selectedWorkout.exercises[number];
+            const grouped: Record<string, AssignedWorkoutExercise[]> = {};
+            selectedWorkout.exercises.forEach((ex) => {
+              const day = ex.notes || ex.day || "Día único";
+              if (!grouped[day]) grouped[day] = [];
+              grouped[day].push(ex);
+            });
+            const days = Object.keys(grouped);
+            // Encabezado visual
+            return (
+              <div className="space-y-2">
+                <div className="flex items-center gap-3 mb-2">
+                  <div>
+                    <h3 className="font-semibold text-lg leading-tight">{selectedWorkout.name}</h3>
+                    <div className="flex gap-2 flex-wrap text-xs mt-1">
+                      <Badge variant="secondary">
+                        Asignada: {format(new Date(selectedWorkout.assignedDate), "d MMM yyyy", { locale: es })}
+                      </Badge>
+                      {selectedWorkout.dueDate && (
+                        <Badge variant="secondary">
+                          Vence: {format(new Date(selectedWorkout.dueDate), "d MMM yyyy", { locale: es })}
+                        </Badge>
+                      )}
+                      {selectedWorkout.status && (
+                        <Badge variant="outline" className="text-xs">
+                          {selectedWorkout.status}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                {selectedWorkout.description && (
+                  <p className="text-sm text-muted-foreground mb-2">
+                    {selectedWorkout.description}
+                  </p>
+                )}
+                {selectedWorkout.notes && (
+                  <p className="text-xs mb-2 bg-muted/50 rounded px-2 py-1">
+                    <span className="font-medium">Notas:</span> {selectedWorkout.notes}
+                  </p>
+                )}
+                <Separator />                
+                {selectedWorkout.exercises.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">
+                    No hay ejercicios registrados.
+                  </p>
+                ) : (
+                  <Tabs defaultValue={days[0]} className="w-full">
+                    <TabsList className="flex flex-wrap h-auto gap-4">
+                      {days.map((day) => (
+                        <TabsTrigger
+                          key={day}
+                          value={day}
+                          className="text-xs flex-1"
+                        >
+                          {day}
+                        </TabsTrigger>
+                      ))}
+                    </TabsList>
+                    {days.map((day) => (
+                      <TabsContent key={day} value={day}>
+                        <div className="flex flex-wrap gap-2">
+                          {(grouped[day] ?? []).map((ex: AssignedWorkoutExercise, idx: number) => (
+                            <div
+                              key={ex.id || idx}
+                              className="flex items-center gap-2 px-3 py-1.5 border rounded-full text-xs bg-muted"
+                            >
+                              <span className="font-medium">
+                                {ex.exercise?.name || ex.name} ({ex.sets}x{ex.reps}{ex.restTime ? ` - ${ex.restTime}s` : ""})
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </TabsContent>
+                    ))}
+                  </Tabs>
+                )}
               </div>
-              {selectedWorkout.notes && (
-                <p className="text-xs">Notas: {selectedWorkout.notes}</p>
-              )}
-              <Separator />
-              <h4 className="font-semibold text-sm mb-1">Ejercicios</h4>
-              {selectedWorkout.exercises.length === 0 ? (
-                <p className="text-xs text-muted-foreground">
-                  No hay ejercicios registrados.
-                </p>
-              ) : (
-                <ul className="space-y-1">
-                  {selectedWorkout.exercises.map(
-                    (ex: AssignedWorkoutExercise, idx: number) => (
-                      <li
-                        key={ex.id || idx}
-                        className="flex flex-col md:flex-row md:items-center md:gap-2 text-xs"
-                      >
-                        <span className="font-medium">
-                          {ex.exercise?.name || ex.name}
-                        </span>
-                        <span>
-                          - {ex.sets}x{ex.reps} reps
-                        </span>
-                        {ex.restTime && <span>- {ex.restTime}s descanso</span>}
-                      </li>
-                    ),
-                  )}
-                </ul>
-              )}
-            </div>
-          )}
+            );
+          })()}
         </DialogContent>
       </Dialog>
     </div>

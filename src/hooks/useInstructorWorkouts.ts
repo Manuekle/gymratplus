@@ -102,8 +102,11 @@ export function useInstructorWorkouts() {
       const res = await fetch("/api/instructors/workouts/assigned");
       if (res.ok) {
         const data = await res.json();
-        globalAssignedWorkouts = data;
-        setAssignedWorkouts(data);
+        // Filtrar workouts huérfanos: solo mostrar los que tienen assignedToId o type !== 'personal'
+        type AssignedWorkoutWithType = AssignedWorkout & { type?: string };
+        const filtered = (data as AssignedWorkoutWithType[]).filter((w) => w.assignedToId || w.type !== 'personal');
+        globalAssignedWorkouts = filtered;
+        setAssignedWorkouts(filtered);
         notifySubscribers();
       } else {
         throw new Error("Error al cargar las rutinas asignadas");
