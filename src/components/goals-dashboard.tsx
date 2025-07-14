@@ -50,9 +50,9 @@ export function GoalsDashboard() {
     }
   }, [mounted, loadGoals]);
 
-  const handleFormSuccess = () => {
+  const handleFormSuccess = async () => {
     setEditingGoal(null);
-    loadGoals();
+    await fetchGoals(activeTab === "all" ? undefined : activeTab, undefined, true);
   };
 
   if (!mounted) {
@@ -76,14 +76,14 @@ export function GoalsDashboard() {
   };
 
   const getGoalStatusColor = (goal: Goal) => {
-    if (goal.status === "completed") return "bg-green-500";
-    if (goal.status === "abandoned") return "bg-gray-500";
+    if (goal.status === "completed") return "";
+    if (goal.status === "abandoned") return "";
 
     // Si tiene fecha objetivo, verificar si está próxima
     if (goal.targetDate) {
       const daysLeft = differenceInDays(new Date(goal.targetDate), new Date());
-      if (daysLeft < 0) return "bg-red-500"; // Vencido
-      if (daysLeft < 7) return "bg-yellow-500"; // Próximo a vencer
+      if (daysLeft < 0) return ""; // Vencido
+      if (daysLeft < 7) return ""; // Próximo a vencer
     }
 
     return "";

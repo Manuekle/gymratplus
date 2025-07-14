@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoals, type Goal } from "@/hooks/use-goals";
+import { useSession } from "next-auth/react";
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -36,54 +37,60 @@ interface GoalProps {
 
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [value, setValue] = useState<string>(
-    goal.currentValue?.toString() || "",
-  );
+  const [value, setValue] = useState<string>(goal.currentValue?.toString() || "");
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const { addProgressUpdate } = useGoals();
+  const { data: session } = useSession();
+
+  // Chequeo de dueño
+  const isOwner = session?.user?.id && goal.userId && session.user.id === goal.userId;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
+    if (!isOwner) {
+      setError("No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.");
+      return;
+    }
     // Validación básica
     if (!date) {
       setError("La fecha es obligatoria");
       return;
     }
-
     if (!value) {
       setError("El valor es obligatorio");
       return;
     }
-
-    // Refresh the goals list before proceeding
-    try {
-      onSuccess(); // This will refresh the goals list
-    } catch (refreshError) {
-      console.error("Error refreshing goals:", refreshError);
-    }
-
+    // LOGS DE DEPURACIÓN
+    console.log("goal.id:", goal.id);
+    console.log("goal.userId:", goal.userId);
+    console.log("session.user.id:", session?.user?.id);
+    console.log("Body enviado:", {
+      value: Number.parseFloat(value),
+      date: date?.toISOString(),
+      notes,
+    });
     setIsSubmitting(true);
-
     try {
       if (!goal.id) {
         throw new Error("ID de objetivo inválido");
       }
-
-      await addProgressUpdate(goal.id, {
+      const result = await addProgressUpdate(goal.id, {
         value: Number.parseFloat(value),
         date: date.toISOString(),
         notes,
       });
-
-      onSuccess();
+      if (result) {
+        setOpen(false); // Cierra el diálogo
+        onSuccess(); // Refresca la lista
+      }
     } catch (error: unknown) {
       console.error("Error al guardar:", error);
-      
       if (error instanceof Error) {
         if (error.message === "Objetivo no encontrado") {
           setError("No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.");
@@ -100,7 +107,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
     }
   };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="text-xs px-4">
           Actualizar
@@ -181,7 +188,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
               size="sm"
               className="text-xs px-4"
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isOwner}
             >
               {isSubmitting ? (
                 <>

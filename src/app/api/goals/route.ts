@@ -46,7 +46,10 @@ export async function GET(req: NextRequest) {
     const goals = await prisma.goal.findMany(query);
     console.log(`Found ${goals.length} goals`);
 
-    return NextResponse.json(goals);
+    // Asegurar que userId está presente en la respuesta
+    const goalsWithUserId = goals.map(goal => ({ ...goal, userId: goal.userId }));
+
+    return NextResponse.json(goalsWithUserId);
   } catch (error) {
     console.error("Error al obtener objetivos:", error);
     return NextResponse.json(

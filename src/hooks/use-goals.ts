@@ -17,6 +17,7 @@ export interface GoalProgress {
 
 export interface Goal {
   id?: string;
+  userId?: string; // <--- Agregado para identificar dueño
   type: GoalType;
   title: string;
   description?: string;
@@ -45,14 +46,14 @@ export function useGoals() {
 
   // Obtener todos los objetivos o filtrar por tipo/estado
   const fetchGoals = useCallback(
-    async (type?: GoalType, status?: GoalStatus) => {
+    async (type?: GoalType, status?: GoalStatus, force = false) => {
       setIsLoading(true);
 
       // Crear una clave de caché basada en los parámetros
       const cacheKey = `${type || "all"}-${status || "all"}`;
 
       // Verificar si ya tenemos datos en caché para esta consulta
-      if (dataCacheRef.current[cacheKey]) {
+      if (!force && dataCacheRef.current[cacheKey]) {
         setGoals(dataCacheRef.current[cacheKey]);
         setIsLoading(false);
         return dataCacheRef.current[cacheKey];

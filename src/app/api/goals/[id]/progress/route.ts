@@ -12,7 +12,8 @@ import {
 export async function POST(request: NextRequest) {
   try {
     const url = new URL(request.url);
-    const id = url.pathname.split("/").pop();
+    const segments = url.pathname.split("/");
+    const id = segments[segments.length - 2]; // penúltimo segmento
     
     if (!id) {
       return NextResponse.json({ error: "Goal ID is required" }, { status: 400 });
@@ -24,12 +25,18 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
+    // LOGS DE DEPURACIÓN
+    console.log("API progreso - id:", id);
+    console.log("API progreso - session.user.email:", session?.user?.email);
+
     const body = await request.json();
     const { value, date, notes } = body;
 
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
+
+    console.log("API progreso - user.id:", user?.id);
 
     if (!user) {
       return NextResponse.json(
@@ -45,6 +52,8 @@ export async function POST(request: NextRequest) {
         userId: user.id,
       },
     });
+
+    console.log("API progreso - goal encontrado:", goal);
 
     if (!goal) {
       return NextResponse.json(

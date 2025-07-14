@@ -72,6 +72,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const { createGoal, updateGoal } = useGoals();
 
@@ -124,7 +125,8 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
         await createGoal(data as Goal);
       }
 
-      onSuccess();
+      setOpen(false); // Cierra el diálogo
+      await onSuccess(); // Espera el refresco del dashboard
     } catch (error) {
       console.error("Error al guardar:", error);
       setError("Ocurrió un error al guardar los datos");
@@ -148,7 +150,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
   //   }
   // };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm" className="text-xs px-4">
           Nuevo objetivo
@@ -256,16 +258,26 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="unit">
+            <Label className="text-xs md:text-sm">
               Unidad
             </Label>
-            <Input
-              className="text-xs md:text-sm"
-              id="unit"
-              placeholder="Ej: kg, cm, veces/semana"
-              value={unit}
-              onChange={(e) => setUnit(e.target.value)}
-            />
+            <Select value={unit} onValueChange={setUnit}>
+              <SelectTrigger className="w-full text-xs md:text-sm">
+                <SelectValue placeholder="Selecciona una unidad" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kg">kg</SelectItem>
+                <SelectItem value="lb">lb</SelectItem>
+                <SelectItem value="cm">cm</SelectItem>
+                <SelectItem value="m">m</SelectItem>
+                <SelectItem value="veces/semana">veces/semana</SelectItem>
+                <SelectItem value="minutos">minutos</SelectItem>
+                <SelectItem value="horas">horas</SelectItem>
+                <SelectItem value="días">días</SelectItem>
+                <SelectItem value="semanas">semanas</SelectItem>
+                <SelectItem value="meses">meses</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
           {type === "strength" && (

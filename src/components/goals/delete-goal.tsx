@@ -27,6 +27,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   // const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [open, setOpen] = useState(false);
 
   const { deleteGoal } = useGoals();
 
@@ -37,9 +38,11 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
     setIsSubmitting(true);
 
     try {
-      await deleteGoal(goal.id!);
-
-      onSuccess();
+      const result = await deleteGoal(goal.id!);
+      if (result) {
+        setOpen(false); // Cierra el diálogo
+        onSuccess(); // Refresca la lista
+      }
     } catch (error) {
       console.error("Error al eliminar:", error);
       //   setError("Ocurrió un error al eliminar el progreso");
@@ -49,7 +52,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
     }
   };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" variant="destructive" className="text-xs px-4">
           Eliminar
