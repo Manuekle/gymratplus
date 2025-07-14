@@ -1,9 +1,14 @@
 "use client";
-import { useTheme } from "next-themes";
+import { useTheme as useNextTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Sun02Icon, Moon02Icon } from "@hugeicons/core-free-icons";
+
+export const useTheme = () => {
+  const { theme, setTheme } = useNextTheme();
+  return { theme, setTheme };
+};
 
 export function ThemeToggle() {
   const [mounted, setMounted] = useState(false);
