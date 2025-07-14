@@ -121,11 +121,11 @@ export default function GymRatLanding() {
             <div className="relative">
               <div className="absolute inset-0 bg-zinc-200/20 dark:bg-white/10 rounded-2xl blur-xl"></div>
               <Image
-                src="/placeholder.svg?height=500&width=250"
+                src="/images/pic_la1.png"
                 alt="GymRat+ App Móvil"
                 width={250}
                 height={500}
-                className="relative rounded-2xl shadow-xl border border-zinc-200 dark:border-zinc-800/50"
+                className="relative rounded-2xl shadow-xl border-zinc-200 dark:border-zinc-800/50"
               />
             </div>
           </div>
@@ -209,10 +209,10 @@ export default function GymRatLanding() {
               <div className="relative">
                 <div className="absolute inset-0 bg-zinc-200/20 dark:bg-white/10 rounded-xl blur-xl"></div>
                 <Image
-                  src="/placeholder.svg?height=350&width=500"
+                  src="/images/pic_la2.png"
                   alt="Dashboard GymRat+"
-                  width={500}
-                  height={350}
+                  width={1020}
+                  height={680}
                   className="relative rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-xl"
                 />
               </div>

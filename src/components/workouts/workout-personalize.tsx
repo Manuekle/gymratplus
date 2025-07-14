@@ -248,7 +248,7 @@ export function WorkoutPersonalize() {
             Personalizar rutina
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-8 xl:pt-0">
+        <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-8 xl:pt-8">
           <DialogHeader className="pt-2">
             <DialogTitle className="text-2xl font-semibold  tracking-heading">
               Crea tu rutina personalizada

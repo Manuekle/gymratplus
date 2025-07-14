@@ -179,7 +179,7 @@ export function CalorieCalculator() {
           Actualizar Objetivos
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px] overflow-y-auto pt-8 xl:pt-0">
+      <DialogContent className="sm:max-w-[500px] overflow-y-auto pt-8 xl:pt-8">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Calculadora de Objetivos Calóricos

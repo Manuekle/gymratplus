@@ -60,19 +60,41 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       return;
     }
 
+    // Refresh the goals list before proceeding
+    try {
+      onSuccess(); // This will refresh the goals list
+    } catch (refreshError) {
+      console.error("Error refreshing goals:", refreshError);
+    }
+
     setIsSubmitting(true);
 
     try {
-      await addProgressUpdate(goal.id!, {
+      if (!goal.id) {
+        throw new Error("ID de objetivo inválido");
+      }
+
+      await addProgressUpdate(goal.id, {
         value: Number.parseFloat(value),
         date: date.toISOString(),
         notes,
       });
 
       onSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
       console.error("Error al guardar:", error);
-      setError("Ocurrió un error al guardar los datos");
+      
+      if (error instanceof Error) {
+        if (error.message === "Objetivo no encontrado") {
+          setError("No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.");
+        } else if (error.message === "ID de objetivo inválido") {
+          setError("ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.");
+        } else {
+          setError("Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.");
+        }
+      } else {
+        setError("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +106,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           Actualizar
         </Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto pt-8 xl:pt-0">
+      <DialogContent className="overflow-y-auto pt-8 xl:pt-8">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Actualizar progreso

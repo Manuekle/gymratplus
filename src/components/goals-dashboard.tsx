@@ -65,13 +65,13 @@ export function GoalsDashboard() {
   const getGoalTypeIcon = (type: GoalType) => {
     switch (type) {
       case "weight":
-        return <HugeiconsIcon icon={WeightScaleIcon} size={18} className="text-blue-500" />;
+        return <HugeiconsIcon icon={WeightScaleIcon} size={18} className="text-black dark:text-white" />;
       case "strength":
-        return <HugeiconsIcon icon={SquareArrowUp01Icon} size={18} className="text-purple-500" />;
+        return <HugeiconsIcon icon={SquareArrowUp01Icon} size={18} className="text-black dark:text-white" />;
       case "measurement":
-        return <HugeiconsIcon icon={Target02Icon} size={18} className="text-green-500" />;
+        return <HugeiconsIcon icon={Target02Icon} size={18} className="text-black dark:text-white" />;
       case "activity":
-        return <HugeiconsIcon icon={Calendar01Icon} size={18} className="text-orange-500" />;
+        return <HugeiconsIcon icon={Calendar01Icon} size={18} className="text-black dark:text-white" />;
     }
   };
 
@@ -86,7 +86,7 @@ export function GoalsDashboard() {
       if (daysLeft < 7) return "bg-yellow-500"; // Próximo a vencer
     }
 
-    return "bg-blue-500";
+    return "";
   };
 
   const getGoalStatusText = (goal: Goal) => {
@@ -119,7 +119,7 @@ export function GoalsDashboard() {
             </div>
             <Badge
               variant="outline"
-              className={`${getGoalStatusColor(goal)} text-white`}
+              className={`${getGoalStatusColor(goal)} text-black dark:text-white text-xs`}
             >
               {getGoalStatusText(goal)}
             </Badge>
