@@ -15,6 +15,7 @@ const nextConfig: NextConfig = {
       "lh5.googleusercontent.com",
       "lh6.googleusercontent.com",
       "flagcdn.com",
+      "rijwjlzt9wsyq7fc.public.blob.vercel-storage.com",
     ],
   },
   eslint: {

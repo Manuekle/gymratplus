@@ -181,13 +181,6 @@ model Food {
   serving           Float // en gramos
   category          String // proteína, carbohidrato, grasa, etc.
   mealType          String[] // ["desayuno", "almuerzo", "cena", "snack"]
-  imageUrl          String?
-  isFavorite        Boolean            @default(false)
-  userId            String? // Para alimentos personalizados
-  user              User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  mealEntries       MealEntry[]
-  mealLogs          MealLog[]
-  recipeIngredients RecipeIngredient[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
 }
@@ -231,29 +224,6 @@ model RecipeIngredient {
   updatedAt DateTime @updatedAt
 }
 
-// Modificación al modelo MealEntry para soportar recetas
-model MealEntry {
-  id        String   @id @default(cuid())
-  mealLogId String
-  mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
-  foodId    String
-  food      Food     @relation(fields: [foodId], references: [id])
-  quantity  Float // número de porciones
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-// Nuevo modelo para entrada de recetas en registros de comida
-model MealEntryRecipe {
-  id        String   @id @default(cuid())
-  mealLogId String
-  mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
-  recipeId  String
-  recipe    Recipe   @relation(fields: [recipeId], references: [id])
-  servings  Float // número de porciones
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
 
 model MealLog {
   id              String            @id @default(cuid())
@@ -267,15 +237,12 @@ model MealLog {
   protein         Float
   carbs           Float
   fat             Float
-  notes           String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   // Relaciones
   food            Food?             @relation(fields: [foodId], references: [id])
   recipe          Recipe?           @relation(fields: [recipeId], references: [id])
   User            User              @relation(fields: [userId], references: [id])
-  MealEntry       MealEntry[]
-  MealEntryRecipe MealEntryRecipe[]
 
   @@index([userId])
   @@index([foodId])

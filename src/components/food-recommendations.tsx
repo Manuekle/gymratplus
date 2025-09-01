@@ -25,7 +25,7 @@ import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon, ChocolateIcon, EggsIcon, FrenchFries02Icon, NoodlesIcon, RiceBowl01Icon, SteakIcon,  } from "@hugeicons/core-free-icons";
-
+// cambiar todo
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
   const [recommendations, setRecommendations] = useState<any[]>([]);
