@@ -38,38 +38,38 @@ model Session {
 }
 
 model User {
-  id                  String               @id @default(cuid())
-  name                String?
-  email               String?              @unique
-  experienceLevel     String?
-  emailVerified       DateTime?
-  image               String?
-  password            String?
-  isInstructor        Boolean              @default(false)
-  interests           String[]             @default([])
-  instructorProfile   InstructorProfile?
-  accounts            Account[]
-  sessions            Session[]
-  profile             Profile?
+  id                   String               @id @default(cuid())
+  name                 String?
+  email                String?              @unique
+  experienceLevel      String?
+  emailVerified        DateTime?
+  image                String?
+  password             String?
+  isInstructor         Boolean              @default(false)
+  interests            String[]             @default([])
+  instructorProfile    InstructorProfile?
+  accounts             Account[]
+  sessions             Session[]
+  profile              Profile?
   // Rutinas creadas por este usuario (alumno o instructor)
-  createdWorkouts     Workout[]            @relation("WorkoutCreator")
+  createdWorkouts      Workout[]            @relation("WorkoutCreator")
   // Rutinas creadas como instructor
-  instructorWorkouts  Workout[]            @relation("WorkoutInstructor")
+  instructorWorkouts   Workout[]            @relation("WorkoutInstructor")
   // Rutinas asignadas a este usuario (como alumno)
-  assignedWorkouts    Workout[]            @relation("AssignedWorkouts")
-  workoutSessions     WorkoutSession[]
-  notifications       Notification[]
-  customFoods         Food[]
-  customRecipes       Recipe[]
-  mealLogs            MealLog[]
-  weights             Weight[]
-  workoutStreak       WorkoutStreak?
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  Goal                Goal[]
-  foodRecommendations FoodRecommendation[]
-  foodPlans           FoodPlan[]
-  studentRelationships   StudentInstructor[] @relation("StudentToInstructor")
+  assignedWorkouts     Workout[]            @relation("AssignedWorkouts")
+  workoutSessions      WorkoutSession[]
+  notifications        Notification[]
+  customFoods          Food[]
+  customRecipes        Recipe[]
+  mealLogs             MealLog[]
+  weights              Weight[]
+  workoutStreak        WorkoutStreak?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  Goal                 Goal[]
+  foodRecommendations  FoodRecommendation[]
+  foodPlans            FoodPlan[]
+  studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
 }
 
 model Profile {
@@ -117,30 +117,30 @@ model Exercise {
 }
 
 model Workout {
-  id              String            @id @default(cuid())
-  name            String
-  description     String?           @db.Text
+  id          String  @id @default(cuid())
+  name        String
+  description String? @db.Text
 
   // CREADOR de la rutina (puede ser alumno o instructor)
-  createdById     String
-  createdBy       User              @relation("WorkoutCreator", fields: [createdById], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User   @relation("WorkoutCreator", fields: [createdById], references: [id], onDelete: Cascade)
 
   // INSTRUCTOR que creó/supervisó la rutina (solo si fue creada por instructor)
-  instructorId    String?
-  instructor      User?             @relation("WorkoutInstructor", fields: [instructorId], references: [id])
+  instructorId String?
+  instructor   User?   @relation("WorkoutInstructor", fields: [instructorId], references: [id])
 
   // ALUMNO al que se asigna la rutina
-  assignedToId    String?
-  assignedTo      User?             @relation("AssignedWorkouts", fields: [assignedToId], references: [id])
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedWorkouts", fields: [assignedToId], references: [id])
 
   // Campos de asignación
-  assignedDate    DateTime?
-  dueDate         DateTime?
-  status          String?           @default("draft") // "draft", "assigned", "in_progress", "completed", "skipped"
-  notes           String?
+  assignedDate DateTime?
+  dueDate      DateTime?
+  status       String?   @default("draft") // "draft", "assigned", "in_progress", "completed", "skipped"
+  notes        String?
 
   // Tipo de rutina para mayor claridad
-  type            String            @default("personal") // "personal", "assigned"
+  type String @default("personal") // "personal", "assigned"
 
   exercises       WorkoutExercise[]
   workoutSessions WorkoutSession[]
@@ -170,19 +170,23 @@ model WorkoutExercise {
 
 // Modificaciones al modelo Food existente
 model Food {
-  id                String             @id @default(cuid())
-  name              String
-  calories          Int
-  protein           Float // en gramos
-  carbs             Float // en gramos
-  fat               Float // en gramos
-  fiber             Float? // en gramos
-  sugar             Float? // en gramos
-  serving           Float // en gramos
-  category          String // proteína, carbohidrato, grasa, etc.
-  mealType          String[] // ["desayuno", "almuerzo", "cena", "snack"]
-  createdAt         DateTime           @default(now())
-  updatedAt         DateTime           @updatedAt
+  id               String             @id @default(cuid())
+  name             String
+  calories         Int
+  protein          Float // en gramos
+  carbs            Float // en gramos
+  fat              Float // en gramos
+  fiber            Float? // en gramos
+  sugar            Float? // en gramos
+  serving          Float // en gramos
+  category         String // proteína, carbohidrato, grasa, etc.
+  mealType         String[] // ["desayuno", "almuerzo", "cena", "snack"]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  User             User?              @relation(fields: [userId], references: [id])
+  userId           String?
+  RecipeIngredient RecipeIngredient[]
+  MealLog          MealLog[]
 }
 
 // Nuevo modelo Recipe
@@ -205,7 +209,7 @@ model Recipe {
   user            User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   ingredients     RecipeIngredient[]
   mealLogs        MealLog[]
-  mealEntries     MealEntryRecipe[]
+  mealEntries     MealEntryRecipe[]  @relation("RecipeMealEntries")
   isFavorite      Boolean            @default(false)
   createdAt       DateTime           @default(now())
   updatedAt       DateTime           @updatedAt
@@ -223,7 +227,6 @@ model RecipeIngredient {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 
 model MealLog {
   id              String            @id @default(cuid())
@@ -243,6 +246,7 @@ model MealLog {
   food            Food?             @relation(fields: [foodId], references: [id])
   recipe          Recipe?           @relation(fields: [recipeId], references: [id])
   User            User              @relation(fields: [userId], references: [id])
+  MealEntryRecipe MealEntryRecipe[]
 
   @@index([userId])
   @@index([foodId])
@@ -259,6 +263,19 @@ model DailyWaterIntake {
   updatedAt DateTime @updatedAt
 
   @@unique([userId, date])
+}
+
+model MealEntryRecipe {
+  id        String   @id @default(cuid())
+  recipeId  String
+  recipe    Recipe   @relation("RecipeMealEntries", fields: [recipeId], references: [id], onDelete: Cascade)
+  mealLogId String
+  mealLog   MealLog  @relation(fields: [mealLogId], references: [id], onDelete: Cascade)
+  quantity  Float    @default(1.0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([recipeId, mealLogId])
 }
 
 model Weight {
@@ -336,15 +353,15 @@ model GoalProgress {
 }
 
 model Notification {
-  id            String   @id @default(cuid())
-  userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title         String
-  message       String
-  type          String   // "workout", "streak", "rest_day", "achievement", etc.
-  read          Boolean  @default(false)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  type      String // "workout", "streak", "rest_day", "achievement", etc.
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
 }
@@ -422,52 +439,50 @@ model FoodPlan {
 }
 
 model WorkoutStreak {
-  id            String   @id @default(cuid())
-  userId        String   @unique
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentStreak Int      @default(0)
-  longestStreak Int      @default(0)
+  id            String    @id @default(cuid())
+  userId        String    @unique
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentStreak Int       @default(0)
+  longestStreak Int       @default(0)
   lastWorkoutAt DateTime?
   lastRestDayAt DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@index([userId])
 }
 
 model InstructorProfile {
-  id               String            @id @default(cuid())
-  userId           String            @unique
-  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  bio              String?           @db.Text
-  curriculum       String?           @db.Text
-  pricePerMonth    Float?
-  contactEmail     String?
-  contactPhone     String?
-  country          String?
-  city             String?
-  isRemote         Boolean           @default(false)
-  isVerified       Boolean           @default(false)
-  isPaid           Boolean           @default(false)
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  students         StudentInstructor[] @relation("InstructorProfileToStudentInstructor")
+  id            String              @id @default(cuid())
+  userId        String              @unique
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio           String?             @db.Text
+  curriculum    String?             @db.Text
+  pricePerMonth Float?
+  contactEmail  String?
+  contactPhone  String?
+  country       String?
+  city          String?
+  isRemote      Boolean             @default(false)
+  isVerified    Boolean             @default(false)
+  isPaid        Boolean             @default(false)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  students      StudentInstructor[] @relation("InstructorProfileToStudentInstructor")
 }
 
 model StudentInstructor {
-  id            String   @id @default(cuid())
-  studentId     String
-  student       User     @relation("StudentToInstructor", fields: [studentId], references: [id], onDelete: Cascade)
-  instructorProfileId  String
-  instructor    InstructorProfile @relation("InstructorProfileToStudentInstructor", fields: [instructorProfileId], references: [id], onDelete: Cascade)
-  status        String   @default("pending")
-  agreedPrice   Float?
-  startDate     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id                  String            @id @default(cuid())
+  studentId           String
+  student             User              @relation("StudentToInstructor", fields: [studentId], references: [id], onDelete: Cascade)
+  instructorProfileId String
+  instructor          InstructorProfile @relation("InstructorProfileToStudentInstructor", fields: [instructorProfileId], references: [id], onDelete: Cascade)
+  status              String            @default("pending")
+  agreedPrice         Float?
+  startDate           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
 
   @@unique([studentId, instructorProfileId])
   @@index([studentId])
   @@index([instructorProfileId])
 }
-
-
