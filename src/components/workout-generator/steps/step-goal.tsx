@@ -112,7 +112,7 @@ export function StepGoal({ value, onChange }: StepGoalProps) {
                   {goal.icon}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-sm">{goal.name}</h3>
+                  <h3 className="text-xs">{goal.name}</h3>
                   <p className="text-xs text-muted-foreground">
                     {goal.description}
                   </p>

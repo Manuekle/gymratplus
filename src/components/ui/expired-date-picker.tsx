@@ -112,7 +112,7 @@ export function ExpiredDatePicker({
 
   return (
     <div className="space-y-2">
-      <Label className="text-xs md:text-sm" htmlFor="expired-date">
+      <Label className="text-xs md:text-xs" htmlFor="expired-date">
         {label}
       </Label>
 
@@ -123,8 +123,8 @@ export function ExpiredDatePicker({
               id="expired-date"
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal text-xs md:text-sm",
-                !value && "text-muted-foreground",
+                "w-full justify-start text-left font-normal text-xs md:text-xs",
+                !value && "text-muted-foreground"
               )}
               aria-haspopup="dialog"
               aria-expanded={isCalendarOpen}
@@ -155,13 +155,13 @@ export function ExpiredDatePicker({
                   onValueChange={handleMonthChange}
                   aria-label="Mes"
                 >
-                  <SelectTrigger className="w-[140px] text-xs md:text-sm">
+                  <SelectTrigger className="w-[140px] text-xs md:text-xs">
                     <SelectValue placeholder="Mes" />
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-xs"
                         key={month.value}
                         value={month.value}
                         aria-label={month.label}
@@ -177,13 +177,13 @@ export function ExpiredDatePicker({
                   onValueChange={handleYearChange}
                   aria-label="Año"
                 >
-                  <SelectTrigger className="w-[100px] text-xs md:text-sm">
+                  <SelectTrigger className="w-[100px] text-xs md:text-xs">
                     <SelectValue placeholder="Año" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px]">
                     {years.map((year) => (
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-xs"
                         key={year}
                         value={year.toString()}
                         aria-label={year.toString()}

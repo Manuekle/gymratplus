@@ -39,7 +39,7 @@ export function WorkoutNew({
   const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
   const [isLoading, setIsLoading] = useState(false);
   const [currentDay, setCurrentDay] = useState<string>(
-    selectedDay || ((days.length > 0 ? days[0] : "") as string),
+    selectedDay || ((days.length > 0 ? days[0] : "") as string)
   );
 
   // Función para cargar los ejercicios del workout filtrados por día
@@ -59,7 +59,7 @@ export function WorkoutNew({
 
         // Buscar el día actual en los datos
         const dayData = data.days.find(
-          (day: WorkoutDay) => day.day === currentDay,
+          (day: WorkoutDay) => day.day === currentDay
         );
 
         // Si encontramos el día, establecer sus ejercicios
@@ -103,12 +103,12 @@ export function WorkoutNew({
         `/api/workouts/${workoutId}/exercises/${exerciseId}`,
         {
           method: "DELETE",
-        },
+        }
       );
 
       if (res.ok) {
         setExercises((prevExercises) =>
-          prevExercises.filter((ex) => ex.id !== exerciseId),
+          prevExercises.filter((ex) => ex.id !== exerciseId)
         );
         toast.success("Ejercicio eliminado", {
           description: "El ejercicio se ha eliminado correctamente",
@@ -186,7 +186,7 @@ export function WorkoutNew({
             <div key={exercise.id} className="border rounded-lg shadow-sm">
               <div className="flex items-center p-4 border-b">
                 <div className="flex-1">
-                  <h4 className="font-medium text-sm">{exercise.name}</h4>
+                  <h4 className="font-medium text-xs">{exercise.name}</h4>
                   {exercise.notes && (
                     <p className="text-xs text-muted-foreground">
                       {exercise.notes}

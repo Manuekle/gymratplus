@@ -53,7 +53,7 @@ export function StepResults({ workout }: StepResultsProps) {
         <div className="pb-2">
           <div className="flex justify-between items-start gap-8">
             <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-sm">{workout.name}</CardTitle>
+              <CardTitle className="text-xs">{workout.name}</CardTitle>
               <CardDescription className="text-xs">
                 {workout.description}
               </CardDescription>
@@ -90,7 +90,7 @@ export function StepResults({ workout }: StepResultsProps) {
                       >
                         <div className="flex items-center p-4 border-b">
                           <div className="flex-1">
-                            <h4 className="font-medium text-sm">
+                            <h4 className="font-medium text-xs">
                               {exercise.name}
                             </h4>
                             {exercise.notes && (
@@ -105,7 +105,7 @@ export function StepResults({ workout }: StepResultsProps) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Sets
                             </p>
-                            <p className="font-semibold text-sm">
+                            <p className="font-semibold text-xs">
                               {exercise.sets}
                             </p>
                           </div>
@@ -113,7 +113,7 @@ export function StepResults({ workout }: StepResultsProps) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Reps
                             </p>
-                            <p className="font-semibold text-sm">
+                            <p className="font-semibold text-xs">
                               {exercise.reps || "Tiempo"}
                             </p>
                           </div>
@@ -121,7 +121,7 @@ export function StepResults({ workout }: StepResultsProps) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Descanso
                             </p>
-                            <p className="font-semibold flex items-center justify-center gap-1 text-sm">
+                            <p className="font-semibold flex items-center justify-center gap-1 text-xs">
                               {exercise.restTime}s
                             </p>
                           </div>

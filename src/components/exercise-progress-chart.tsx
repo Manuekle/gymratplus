@@ -166,8 +166,8 @@ export function ExerciseProgressChart() {
   // Filtrar los datos según los ejercicios seleccionados
   const filteredData = formattedData.filter((record) =>
     selectedExercises.some(
-      (exercise) => record.exercises[exercise] !== undefined,
-    ),
+      (exercise) => record.exercises[exercise] !== undefined
+    )
   );
 
   // Calcular el progreso para cada ejercicio seleccionado
@@ -196,7 +196,7 @@ export function ExerciseProgressChart() {
       {} as Record<
         string,
         { change: number; first: number; last: number; reps: number }
-      >,
+      >
     );
   };
 
@@ -208,28 +208,28 @@ export function ExerciseProgressChart() {
       <div className="flex flex-row flex-wrap gap-4 xl:gap-8">
         <div className="flex flex-col sm:flex-row justify-between gap-4">
           <div className="flex flex-col gap-2">
-            <Label className="text-sm">Rango de tiempo</Label>
+            <Label className="text-xs">Rango de tiempo</Label>
             <Select
               value={timeRange}
               onValueChange={(value) => setTimeRange(value)}
             >
-              <SelectTrigger className="w-[180px] text-xs md:text-sm">
+              <SelectTrigger className="w-[180px] text-xs md:text-xs">
                 <SelectValue placeholder="Selecciona el rango" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem className="text-xs md:text-sm" value="7">
+                <SelectItem className="text-xs md:text-xs" value="7">
                   Última semana
                 </SelectItem>
-                <SelectItem className="text-xs md:text-sm" value="30">
+                <SelectItem className="text-xs md:text-xs" value="30">
                   Último mes
                 </SelectItem>
-                <SelectItem className="text-xs md:text-sm" value="90">
+                <SelectItem className="text-xs md:text-xs" value="90">
                   Últimos 3 meses
                 </SelectItem>
-                <SelectItem className="text-xs md:text-sm" value="180">
+                <SelectItem className="text-xs md:text-xs" value="180">
                   Últimos 6 meses
                 </SelectItem>
-                <SelectItem className="text-xs md:text-sm" value="365">
+                <SelectItem className="text-xs md:text-xs" value="365">
                   Último año
                 </SelectItem>
               </SelectContent>
@@ -237,7 +237,7 @@ export function ExerciseProgressChart() {
           </div>
         </div>
         <div className="flex flex-col gap-2">
-          <Label className="text-sm">
+          <Label className="text-xs">
             Selecciona los ejercicios a mostrar:
           </Label>
           <Popover open={open} onOpenChange={setOpen}>
@@ -246,7 +246,7 @@ export function ExerciseProgressChart() {
                 variant="outline"
                 role="combobox"
                 aria-expanded={open}
-                className="w-full justify-between text-xs md:text-sm"
+                className="w-full justify-between text-xs md:text-xs"
               >
                 {selectedExercises.length === 0
                   ? "Seleccionar ejercicios..."
@@ -265,13 +265,13 @@ export function ExerciseProgressChart() {
                   {availableExercises.length > 0 ? (
                     availableExercises.map((exercise) => (
                       <CommandItem
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-xs"
                         key={exercise}
                         onSelect={() => {
                           setSelectedExercises((prev) =>
                             prev.includes(exercise)
                               ? prev.filter((item) => item !== exercise)
-                              : [...prev, exercise],
+                              : [...prev, exercise]
                           );
                         }}
                       >
@@ -281,14 +281,14 @@ export function ExerciseProgressChart() {
                             "mr-2 h-4 w-4",
                             selectedExercises.includes(exercise)
                               ? "opacity-100"
-                              : "opacity-0",
+                              : "opacity-0"
                           )}
                         />
                         {exercise}
                       </CommandItem>
                     ))
                   ) : (
-                    <div className="p-6 text-center text-sm text-muted-foreground">
+                    <div className="p-6 text-center text-xs text-muted-foreground">
                       No hay ejercicios disponibles para mostrar
                     </div>
                   )}
@@ -337,7 +337,7 @@ export function ExerciseProgressChart() {
                       const record = filteredData.find(
                         (d) =>
                           d.exercises[name] &&
-                          d.exercises[name].weight === value,
+                          d.exercises[name].weight === value
                       );
 
                       const reps = record?.exercises[name]?.reps;
@@ -386,7 +386,7 @@ export function ExerciseProgressChart() {
                             ? "text-green-500"
                             : data.change < 0
                               ? "text-red-500"
-                              : "text-muted-foreground",
+                              : "text-muted-foreground"
                         )}
                       >
                         {data.change > 0 ? "+" : ""}
@@ -396,7 +396,7 @@ export function ExerciseProgressChart() {
                         ({data.reps} reps)
                       </span>
                     </div>
-                  ),
+                  )
                 )}
               </div>
             )}

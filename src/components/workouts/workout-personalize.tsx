@@ -134,7 +134,7 @@ export function WorkoutPersonalize() {
   const handleDeleteDay = (dayToDelete: string) => {
     setDays(days.filter((day) => day !== dayToDelete));
     setSelectedExercises(
-      selectedExercises.filter((ex) => ex.day !== dayToDelete),
+      selectedExercises.filter((ex) => ex.day !== dayToDelete)
     );
     if (currentDay === dayToDelete) {
       setCurrentDay("");
@@ -148,12 +148,12 @@ export function WorkoutPersonalize() {
     }
 
     const existingIndex = selectedExercises.findIndex(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
     );
 
     if (existingIndex >= 0) {
       setSelectedExercises(
-        selectedExercises.filter((_, index) => index !== existingIndex),
+        selectedExercises.filter((_, index) => index !== existingIndex)
       );
     } else {
       setSelectedExercises([
@@ -217,7 +217,7 @@ export function WorkoutPersonalize() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.details || "Failed to create personalized workout",
+          errorData.details || "Failed to create personalized workout"
         );
       }
 
@@ -234,7 +234,7 @@ export function WorkoutPersonalize() {
 
   const isExerciseSelected = (exerciseId: string) => {
     return selectedExercises.some(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
     );
   };
 
@@ -269,11 +269,11 @@ export function WorkoutPersonalize() {
           {step === 1 && (
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm" htmlFor="workout-name">
+                <Label className="text-xs md:text-xs" htmlFor="workout-name">
                   Nombre del entrenamiento
                 </Label>
                 <Input
-                  className="text-xs md:text-sm"
+                  className="text-xs md:text-xs"
                   id="workout-name"
                   placeholder="Ej: Mi rutina de hipertrofia"
                   value={name}
@@ -281,43 +281,43 @@ export function WorkoutPersonalize() {
                 />
               </div>
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm" htmlFor="workout-type">
+                <Label className="text-xs md:text-xs" htmlFor="workout-type">
                   Tipo de entrenamiento
                 </Label>
                 <Select
                   value={workoutType}
                   onValueChange={(value: WorkoutType) => setWorkoutType(value)}
                 >
-                  <SelectTrigger className="w-full text-xs md:text-sm">
+                  <SelectTrigger className="w-full text-xs md:text-xs">
                     <SelectValue placeholder="Selecciona el tipo de entrenamiento" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem className="text-xs md:text-sm" value="estandar">
+                    <SelectItem className="text-xs md:text-xs" value="estandar">
                       Estándar (3x10 - 3min descanso)
                     </SelectItem>
                     <SelectItem
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       value="hipertrofia"
                     >
                       Hipertrofia (6-12 repeticiones por serie)
                     </SelectItem>
-                    <SelectItem className="text-xs md:text-sm" value="fuerza">
+                    <SelectItem className="text-xs md:text-xs" value="fuerza">
                       Fuerza (1-6 repeticiones por serie)
                     </SelectItem>
                     <SelectItem
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       value="perdida_grasa"
                     >
                       Pérdida de grasa (Rutinas con alta intensidad)
                     </SelectItem>
                     <SelectItem
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       value="resistencia"
                     >
                       Resistencia (más de 12 repeticiones)
                     </SelectItem>
                     <SelectItem
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       value="movilidad"
                     >
                       Movilidad y flexibilidad
@@ -326,12 +326,12 @@ export function WorkoutPersonalize() {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label className="text-xs md:text-sm" htmlFor="day-name">
+                <Label className="text-xs md:text-xs" htmlFor="day-name">
                   Nombre del día
                 </Label>
                 <div className="flex gap-2">
                   <Input
-                    className="text-xs md:text-sm"
+                    className="text-xs md:text-xs"
                     id="day-name"
                     placeholder="Ej: Día de pecho"
                     value={currentDay}
@@ -349,7 +349,7 @@ export function WorkoutPersonalize() {
               </div>
               {days.length > 0 && (
                 <div className="space-y-2">
-                  <Label className="text-xs md:text-sm">Días agregados:</Label>
+                  <Label className="text-xs md:text-xs">Días agregados:</Label>
                   <div className="flex flex-wrap gap-2">
                     {days.map((day) => (
                       <div
@@ -396,7 +396,7 @@ export function WorkoutPersonalize() {
             <div className="space-y-4">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label className="text-xs md:text-sm">
+                  <Label className="text-xs md:text-xs">
                     Selecciona ejercicios para: {currentDay}
                   </Label>
                   <div className="flex gap-2">
@@ -425,13 +425,13 @@ export function WorkoutPersonalize() {
                   </div>
                 </div>
                 <Select value={muscleFilter} onValueChange={setMuscleFilter}>
-                  <SelectTrigger className="w-full text-xs md:text-sm capitalize">
+                  <SelectTrigger className="w-full text-xs md:text-xs capitalize">
                     <SelectValue placeholder="Filtrar por grupo muscular" />
                   </SelectTrigger>
                   <SelectContent>
                     {muscleGroups.map((group) => (
                       <SelectItem
-                        className="text-xs md:text-sm capitalize"
+                        className="text-xs md:text-xs capitalize"
                         key={group}
                         value={group}
                       >
@@ -454,10 +454,10 @@ export function WorkoutPersonalize() {
                       }
                       acc[muscleGroup].push(exercise);
                       return acc;
-                    }, {}),
+                    }, {})
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
-                      <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
+                      <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
                         {muscleGroup}
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -516,7 +516,7 @@ export function WorkoutPersonalize() {
 
           {step === 3 && (
             <div className="space-y-4">
-              <Label className="text-xs md:text-sm">
+              <Label className="text-xs md:text-xs">
                 Resumen del entrenamiento
               </Label>
 
@@ -540,7 +540,7 @@ export function WorkoutPersonalize() {
                         .filter((ex) => ex.day === day)
                         .map((ex) => {
                           const exercise = exercises.find(
-                            (e) => e.id === ex.exerciseId,
+                            (e) => e.id === ex.exerciseId
                           );
                           return (
                             <div

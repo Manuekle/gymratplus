@@ -78,7 +78,7 @@ export default function WorkouPage() {
           errorData?.error === "Workout no encontrado" ||
             errorData?.error === "Workout no encontrado o no autorizado"
             ? "No tienes permiso para ver este workout o no existe."
-            : errorData?.error || "Error al cargar el workout.",
+            : errorData?.error || "Error al cargar el workout."
         );
         setWorkout(null);
       }
@@ -106,7 +106,7 @@ export default function WorkouPage() {
     } catch (error) {
       console.error("Error deleting workout:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al eliminar el workout",
+        error instanceof Error ? error.message : "Error al eliminar el workout"
       );
     } finally {
       setIsDeleting(false);
@@ -200,7 +200,7 @@ export default function WorkouPage() {
               Esta acción no se puede deshacer. Esto eliminará permanentemente
               el workout "{workout.name}" y todos sus datos asociados.
               <div className="mt-4">
-                <p className="text-sm font-medium mb-2">
+                <p className="text-xs font-medium mb-2">
                   Escribe el nombre del workout para confirmar:
                 </p>
                 <Input

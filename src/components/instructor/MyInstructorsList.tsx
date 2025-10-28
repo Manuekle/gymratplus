@@ -43,7 +43,7 @@ export default function MyInstructorsList() {
           <CardContent className="flex-1 p-0">
             <h3 className="font-semibold text-lg">{inst.name}</h3>
             {inst.bio && (
-              <p className="text-sm text-muted-foreground mb-1">{inst.bio}</p>
+              <p className="text-xs text-muted-foreground mb-1">{inst.bio}</p>
             )}
             <div className="text-xs text-muted-foreground space-y-1">
               {inst.contactEmail && (

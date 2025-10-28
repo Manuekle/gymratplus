@@ -34,7 +34,7 @@ export function WaterControls({
         <div className="text-4xl md:text-5xl font-semibold  tracking-heading">
           {intake.toFixed(2).replace(/\.00$/, "")}
         </div>
-        <div className="text-muted-foreground text-xs md:text-sm">litros</div>
+        <div className="text-muted-foreground text-xs md:text-xs">litros</div>
       </div>
 
       <Button

@@ -54,7 +54,7 @@ export default function WorkoutsTable() {
 
   // Ordenar workouts por fecha de creación (más recientes primero)
   const sortedWorkouts = workouts.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   const totalSlides = Math.ceil(sortedWorkouts.length / cardsPerView);
@@ -73,7 +73,7 @@ export default function WorkoutsTable() {
       // Reset transition flag after animation
       setTimeout(() => setIsTransitioning(false), 300);
     },
-    [isTransitioning],
+    [isTransitioning]
   );
 
   const handlePrevious = useCallback(() => {
@@ -208,7 +208,7 @@ export default function WorkoutsTable() {
   if (sortedWorkouts.length === 0) {
     return (
       <div className="justify-center py-16 items-center flex flex-col">
-        <h3 className="text-sm font-medium">No hay rutinas creadas.</h3>
+        <h3 className="text-xs font-medium">No hay rutinas creadas.</h3>
         <p className="text-muted-foreground text-xs">
           Crea tu primera rutina para comenzar.
         </p>

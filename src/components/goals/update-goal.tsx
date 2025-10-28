@@ -38,7 +38,7 @@ interface GoalProps {
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [value, setValue] = useState<string>(
-    goal.currentValue?.toString() || "",
+    goal.currentValue?.toString() || ""
   );
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +58,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
 
     if (!isOwner) {
       setError(
-        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.",
+        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión."
       );
       return;
     }
@@ -99,15 +99,15 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       if (error instanceof Error) {
         if (error.message === "Objetivo no encontrado") {
           setError(
-            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.",
+            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo."
           );
         } else if (error.message === "ID de objetivo inválido") {
           setError(
-            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.",
+            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo."
           );
         } else {
           setError(
-            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.",
+            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo."
           );
         }
       } else {
@@ -132,7 +132,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="date">
+            <Label className="text-xs md:text-xs" htmlFor="date">
               Fecha
             </Label>
             <Popover>
@@ -140,8 +140,8 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal text-xs md:text-sm",
-                    !date && "text-muted-foreground",
+                    "w-full justify-start text-left font-normal text-xs md:text-xs",
+                    !date && "text-muted-foreground"
                   )}
                 >
                   <HugeiconsIcon
@@ -168,11 +168,11 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="value">
+            <Label className="text-xs md:text-xs" htmlFor="value">
               Valor actual ({goal.unit || ""})
             </Label>
             <Input
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               id="value"
               type="number"
               step="0.1"
@@ -183,12 +183,12 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="notes">
+            <Label className="text-xs md:text-xs" htmlFor="notes">
               Notas (opcional)
             </Label>
             <Textarea
               id="notes"
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               placeholder="Observaciones adicionales..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

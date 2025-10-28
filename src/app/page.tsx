@@ -40,19 +40,19 @@ export default function GymRatLanding() {
             <div className="flex items-center gap-4">
               <Link
                 href="#caracteristicas"
-                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
               >
                 Características
               </Link>
               <Link
                 href="#precios"
-                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
               >
                 Precios
               </Link>
               <Link
                 href="/auth/signin"
-                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-sm"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
               >
                 Iniciar sesión
               </Link>
@@ -60,14 +60,14 @@ export default function GymRatLanding() {
               <Button
                 size="default"
                 variant="outline"
-                className="xl:hidden flex text-sm"
+                className="xl:hidden flex text-xs"
                 asChild
               >
                 <Link href="/auth/signin">Iniciar sesión</Link>
               </Button>
               <Button
                 size="default"
-                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-sm"
+                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-xs"
                 asChild
               >
                 <Link href="/auth/signup">Comenzar</Link>
@@ -92,7 +92,7 @@ export default function GymRatLanding() {
           <h1 className="text-4xl md:text-5xl font-semibold  mb-4 tracking-heading">
             GymRat+
           </h1>
-          <p className="text-sm text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xs text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
             La plataforma inteligente que conecta entrenadores y atletas para
             experiencias de entrenamiento personalizadas
           </p>
@@ -120,7 +120,7 @@ export default function GymRatLanding() {
             <h2 className="text-3xl tracking-heading font-semibold  mb-3">
               Diseñado para atletas
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Simple, potente y enfocado en resultados
             </p>
           </div>
@@ -163,7 +163,7 @@ export default function GymRatLanding() {
                 <h2 className="text-3xl font-semibold tracking-heading mb-3">
                   Todo lo que necesitas
                 </h2>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-muted-foreground text-xs">
                   Herramientas profesionales para tu entrenamiento
                 </p>
               </div>
@@ -180,7 +180,7 @@ export default function GymRatLanding() {
                     <h3 className="font-semibold tracking-heading mb-1">
                       Entrenamientos Personalizados
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
                       Planes de entrenamiento inteligentes que se adaptan a tus
                       objetivos y progreso
                     </p>
@@ -198,7 +198,7 @@ export default function GymRatLanding() {
                     <h3 className="font-semibold tracking-heading mb-1">
                       Seguimiento Avanzado
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
                       Analíticas detalladas para monitorear tu progreso y logros
                       fitness
                     </p>
@@ -216,7 +216,7 @@ export default function GymRatLanding() {
                     <h3 className="font-semibold tracking-heading mb-1">
                       Entrenadores Expertos
                     </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
+                    <p className="text-muted-foreground text-xs leading-relaxed">
                       Conecta con entrenadores certificados para coaching
                       profesional
                     </p>
@@ -259,7 +259,7 @@ export default function GymRatLanding() {
             <h2 className="text-3xl font-semibold tracking-heading mb-3">
               Para todos los niveles
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Desde principiantes hasta profesionales
             </p>
           </div>
@@ -275,7 +275,7 @@ export default function GymRatLanding() {
               <h3 className="text-xl font-semibold tracking-heading mb-3">
                 Para Atletas
               </h3>
-              <p className="text-muted-foreground leading-relaxed text-sm">
+              <p className="text-muted-foreground leading-relaxed text-xs">
                 Accede a planes de entrenamiento personalizados, rastrea tu
                 progreso y conecta con entrenadores profesionales para alcanzar
                 tus metas fitness
@@ -292,7 +292,7 @@ export default function GymRatLanding() {
               <h3 className="text-xl font-semibold tracking-heading mb-3">
                 Para Entrenadores
               </h3>
-              <p className="text-muted-foreground leading-relaxed text-sm">
+              <p className="text-muted-foreground leading-relaxed text-xs">
                 Gestiona tus clientes, crea planes de entrenamiento
                 personalizados y haz crecer tu negocio fitness con herramientas
                 profesionales
@@ -320,7 +320,7 @@ export default function GymRatLanding() {
             <h2 className="text-3xl font-semibold tracking-heading mb-3">
               Precios simples
             </h2>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               Elige el plan que se adapte a ti
             </p>
           </div>
@@ -337,26 +337,26 @@ export default function GymRatLanding() {
                   <div className="text-3xl font-semibold tracking-heading mb-1">
                     Gratis
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     Perfecto para empezar tu journey fitness
                   </p>
                 </div>
                 <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
                     />
                     <span>Planes de entrenamiento básicos</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
                     />
                     <span>Seguimiento de progreso</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
@@ -393,33 +393,33 @@ export default function GymRatLanding() {
                       /mes
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     Para entrenadores profesionales
                   </p>
                 </div>
                 <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
                     <span>Todo lo del plan Alumno</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
                     <span>Gestión de clientes</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
                     <span>Creación de entrenamientos personalizados</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
@@ -455,26 +455,26 @@ export default function GymRatLanding() {
                       /año
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs">
                     Paga una vez y olvídate todo el año
                   </p>
                 </div>
                 <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
                     />
                     <span>Todo lo del plan Instructor</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
                     />
                     <span>Soporte prioritario</span>
                   </li>
-                  <li className="flex items-center text-sm">
+                  <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
@@ -508,7 +508,7 @@ export default function GymRatLanding() {
             </div>
 
             {/* Links */}
-            <div className="flex flex-wrap gap-6 text-sm">
+            <div className="flex flex-wrap gap-6 text-xs">
               <Link
                 href="#"
                 className="text-muted-foreground hover:text-black dark:hover:text-white transition-colors"
@@ -532,7 +532,7 @@ export default function GymRatLanding() {
 
           {/* Copyright */}
           <div className="mt-8 pt-6">
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-xs text-muted-foreground text-center">
               &copy; {new Date().getFullYear()} GymRat+. Todos los derechos
               reservados.
             </p>

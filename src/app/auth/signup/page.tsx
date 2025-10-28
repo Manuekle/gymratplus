@@ -111,11 +111,11 @@ export default function SignUpPage() {
         <CardContent className="space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4 gap-4">
             <div className="flex flex-col gap-2">
-              <Label className="text-xs md:text-sm" htmlFor="name">
+              <Label className="text-xs md:text-xs" htmlFor="name">
                 Nombre
               </Label>
               <Input
-                className="text-xs md:text-sm"
+                className="text-xs md:text-xs"
                 id="name"
                 name="name"
                 type="text"
@@ -123,11 +123,11 @@ export default function SignUpPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs md:text-sm" htmlFor="email">
+              <Label className="text-xs md:text-xs" htmlFor="email">
                 Correo electrónico
               </Label>
               <Input
-                className="text-xs md:text-sm"
+                className="text-xs md:text-xs"
                 id="email"
                 name="email"
                 type="email"
@@ -135,11 +135,11 @@ export default function SignUpPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs md:text-sm" htmlFor="password">
+              <Label className="text-xs md:text-xs" htmlFor="password">
                 Contraseña
               </Label>
               <Input
-                className="text-xs md:text-sm"
+                className="text-xs md:text-xs"
                 id="password"
                 name="password"
                 type="password"
@@ -147,11 +147,11 @@ export default function SignUpPage() {
               />
             </div>
             <div className="flex flex-col gap-2">
-              <Label className="text-xs md:text-sm" htmlFor="repeatPassword">
+              <Label className="text-xs md:text-xs" htmlFor="repeatPassword">
                 Repetir Contraseña
               </Label>
               <Input
-                className="text-xs md:text-sm"
+                className="text-xs md:text-xs"
                 id="repeatPassword"
                 name="repeatPassword"
                 type="password"

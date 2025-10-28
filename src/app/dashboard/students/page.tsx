@@ -63,7 +63,7 @@ export default function InstructorDashboardPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [students, setStudents] = useState<StudentData[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>(
-    [],
+    []
   );
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [stats, setStats] = useState<{
@@ -86,10 +86,10 @@ export default function InstructorDashboardPage() {
 
       const activeStudents = data.filter(
         (item): item is StudentData =>
-          item.status === "accepted" || item.status === "active",
+          item.status === "accepted" || item.status === "active"
       );
       const pRequests = data.filter(
-        (item): item is PendingRequestData => item.status === "pending",
+        (item): item is PendingRequestData => item.status === "pending"
       );
 
       setStudents(activeStudents);
@@ -147,7 +147,7 @@ export default function InstructorDashboardPage() {
         `/api/student-instructor-requests/${requestId}/accept`,
         {
           method: "PUT",
-        },
+        }
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -204,7 +204,7 @@ export default function InstructorDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
+            <CardTitle className="text-xs font-medium">Total Alumnos</CardTitle>
             <HugeiconsIcon
               icon={UserGroupIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -222,7 +222,7 @@ export default function InstructorDashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Planes Activos
             </CardTitle>
             <HugeiconsIcon
@@ -242,7 +242,7 @@ export default function InstructorDashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Racha Promedio
             </CardTitle>
             <HugeiconsIcon
@@ -260,7 +260,7 @@ export default function InstructorDashboardPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
+            <CardTitle className="text-xs font-medium">Ingresos</CardTitle>
             <HugeiconsIcon
               icon={Dollar02Icon}
               className="h-4 w-4 text-muted-foreground"
@@ -307,10 +307,10 @@ export default function InstructorDashboardPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="space-y-1 min-w-0">
-                        <p className="text-sm font-medium leading-none truncate">
+                        <p className="text-xs font-medium leading-none truncate">
                           {request.name || "Sin nombre"}
                         </p>
-                        <p className="text-sm text-muted-foreground truncate">
+                        <p className="text-xs text-muted-foreground truncate">
                           {request.email}
                         </p>
                         {request.agreedPrice && (
@@ -385,7 +385,7 @@ export default function InstructorDashboardPage() {
             </div>
           ) : students.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
-              <h3 className="text-sm font-medium mb-2">
+              <h3 className="text-xs font-medium mb-2">
                 No tienes alumnos activos
               </h3>
               <p className="text-xs text-muted-foreground max-w-sm">
@@ -409,10 +409,10 @@ export default function InstructorDashboardPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="space-y-1 min-w-0">
-                        <p className="text-sm font-medium leading-none truncate">
+                        <p className="text-xs font-medium leading-none truncate">
                           {student.name || "Sin nombre"}
                         </p>
-                        <p className="text-sm text-muted-foreground truncate">
+                        <p className="text-xs text-muted-foreground truncate">
                           {student.email}
                         </p>
                         {student.agreedPrice && (

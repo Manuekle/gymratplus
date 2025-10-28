@@ -208,7 +208,7 @@ export default function WorkoutExercise({
           <div className="space-y-6 py-4">
             {/* Selección de día */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">Selecciona el día:</Label>
+              <Label className="text-xs font-medium">Selecciona el día:</Label>
               <div className="flex flex-wrap gap-2">
                 {days.map((day) => (
                   <Badge
@@ -216,8 +216,7 @@ export default function WorkoutExercise({
                     variant={currentDay === day ? "default" : "outline"}
                     className={cn(
                       "cursor-pointer px-4 py-1 text-xs transition-colors",
-                      currentDay === day &&
-                        "bg-primary text-primary-foreground",
+                      currentDay === day && "bg-primary text-primary-foreground"
                     )}
                     onClick={() => setCurrentDay(day)}
                   >
@@ -229,7 +228,7 @@ export default function WorkoutExercise({
 
             {/* Selección de ejercicio */}
             <div className="space-y-2">
-              <Label className="text-sm font-medium">
+              <Label className="text-xs font-medium">
                 Selecciona el ejercicio:
               </Label>
               <ScrollArea className="h-[300px] rounded-md border p-4">
@@ -247,11 +246,11 @@ export default function WorkoutExercise({
                         }
                         return acc;
                       },
-                      {},
-                    ),
+                      {}
+                    )
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
-                      <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
+                      <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
                         {muscleGroup}
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -271,7 +270,7 @@ export default function WorkoutExercise({
                                   ? "bg-primary text-primary-foreground hover:bg-primary/90"
                                   : "bg-background hover:bg-secondary",
                                 isDisabled &&
-                                  "bg-red-100 text-red-700 cursor-not-allowed opacity-50",
+                                  "bg-red-100 text-red-700 cursor-not-allowed opacity-50"
                               )}
                               title={
                                 isDisabled
@@ -295,14 +294,14 @@ export default function WorkoutExercise({
               <div className="space-y-4 pt-4 border-t">
                 <div className="grid grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="sets" className="text-xs md:text-sm">
+                    <Label htmlFor="sets" className="text-xs md:text-xs">
                       Series
                     </Label>
                     <Input
                       id="sets"
                       type="number"
                       min="1"
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       placeholder="Sets"
                       value={exerciseData.sets || ""}
                       onChange={(e) =>
@@ -315,14 +314,14 @@ export default function WorkoutExercise({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="reps" className="text-xs md:text-sm">
+                    <Label htmlFor="reps" className="text-xs md:text-xs">
                       Repeticiones
                     </Label>
                     <Input
                       id="reps"
                       type="number"
                       min="1"
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       placeholder="Reps"
                       value={exerciseData.reps || ""}
                       onChange={(e) =>
@@ -335,14 +334,14 @@ export default function WorkoutExercise({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="restTime" className="text-xs md:text-sm">
+                    <Label htmlFor="restTime" className="text-xs md:text-xs">
                       Descanso (s)
                     </Label>
                     <Input
                       id="restTime"
                       type="number"
                       min="0"
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       placeholder="Descanso"
                       value={exerciseData.restTime || ""}
                       onChange={(e) =>

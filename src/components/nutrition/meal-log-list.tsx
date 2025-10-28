@@ -107,7 +107,7 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
   if (mealLogs.length === 0) {
     return (
       <div className="text-center py-14">
-        <h3 className="text-sm font-medium mb-2">
+        <h3 className="text-xs font-medium mb-2">
           No hay comidas registradas para esta fecha.
         </h3>
         <p className="text-xs text-muted-foreground mb-6">
@@ -132,7 +132,7 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
   // Sort meal types in a specific order
   const mealTypeOrder = ["desayuno", "almuerzo", "cena", "snack"];
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => mealTypeOrder.indexOf(a) - mealTypeOrder.indexOf(b),
+    (a, b) => mealTypeOrder.indexOf(a) - mealTypeOrder.indexOf(b)
   );
 
   return (
@@ -150,7 +150,7 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
 
           {mealsByType[mealType]?.map((meal) => (
             <div key={meal.id}>
-              <div className="flex items-baseline justify-between text-sm py-2">
+              <div className="flex items-baseline justify-between text-xs py-2">
                 <span className="text-muted-foreground text-xs">
                   {format(new Date(meal.consumedAt), "HH:mm", { locale: es })}
                 </span>
@@ -176,7 +176,7 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
                 </span>
               </div>
               <div>
-                <div className="grid grid-cols-4 text-xs md:text-sm items-center">
+                <div className="grid grid-cols-4 text-xs md:text-xs items-center">
                   <div className="col-span-1">
                     {meal.food?.name || meal.recipe?.name}
                   </div>

@@ -113,7 +113,7 @@ export default function WorkoutSummary() {
           </div>
         ) : workoutSessions.length === 0 ? (
           <div className="justify-center py-40 items-center flex flex-col">
-            <h2 className="text-sm font-medium">
+            <h2 className="text-xs font-medium">
               No hay entrenamientos recientes.
             </h2>
             <p className="text-muted-foreground text-xs">

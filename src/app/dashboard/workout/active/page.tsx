@@ -59,7 +59,7 @@ export default function ActiveWorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
-    null,
+    null
   );
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -85,7 +85,7 @@ export default function ActiveWorkoutPage() {
     reps?: string | undefined;
   }
   const [inputValues, setInputValues] = useState<Record<string, InputValue>>(
-    {},
+    {}
   );
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
 
@@ -142,12 +142,12 @@ export default function ActiveWorkoutPage() {
 
     const totalSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.length,
-      0,
+      0
     );
 
     const completedSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.filter((set) => set.completed).length,
-      0,
+      0
     );
 
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
@@ -179,7 +179,7 @@ export default function ActiveWorkoutPage() {
   const updateSet = async (
     setId: string,
     data: Partial<Set>,
-    immediate = false,
+    immediate = false
   ) => {
     // Cancelar cualquier temporizador existente para este setId
     if (debounceTimers[setId]) {
@@ -249,12 +249,12 @@ export default function ActiveWorkoutPage() {
           // Si se marca como completado, iniciar temporizador de descanso
           if (data.completed) {
             const exercise = workoutSession?.exercises.find((ex) =>
-              ex.sets.some((set) => set.id === setId),
+              ex.sets.some((set) => set.id === setId)
             );
 
             if (exercise) {
               const exerciseData = workoutSession!.exercises.find(
-                (ex) => ex.id === exercise.id,
+                (ex) => ex.id === exercise.id
               );
               const restTime = exerciseData?.exercise?.restTime || 60;
               startRestTimer(exercise.id, restTime);
@@ -528,9 +528,9 @@ export default function ActiveWorkoutPage() {
             <Progress value={progress} className="h-2" />
           </div>
           <div className="pb-6">
-            <h3 className="text-xs md:text-sm font-medium mb-2">Notas</h3>
+            <h3 className="text-xs md:text-xs font-medium mb-2">Notas</h3>
             <Textarea
-              className="w-full text-xs md:text-sm"
+              className="w-full text-xs md:text-xs"
               rows={3}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
@@ -605,7 +605,7 @@ export default function ActiveWorkoutPage() {
                 </CardHeader>
                 <CardContent className="pt-6">
                   <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2 items-center font-medium text-sm">
+                    <div className="grid grid-cols-3 gap-2 items-center font-medium text-xs">
                       {/* <div className="col-span-1"></div> */}
                       <div className="col-span-1">Set</div>
                       <div className="col-span-1">Peso (kg)</div>
@@ -631,7 +631,7 @@ export default function ActiveWorkoutPage() {
                             disabled={exercise.completed}
                           />
                         </div> */}
-                        <div className="col-span-1 text-sm">
+                        <div className="col-span-1 text-xs">
                           {set.setNumber}
                           {set.isDropSet && (
                             <span className="ml-1 text-red-500">*</span>
@@ -669,7 +669,7 @@ export default function ActiveWorkoutPage() {
                               set.completed ||
                               isUpdating[set.id]
                             }
-                            className="text-sm"
+                            className="text-xs"
                           />
                         </div>
                         <div className="col-span-1">
@@ -704,10 +704,10 @@ export default function ActiveWorkoutPage() {
                               set.completed ||
                               isUpdating[set.id]
                             }
-                            className="text-sm"
+                            className="text-xs"
                           />
                         </div>
-                        {/* <div className="col-span-3 text-sm">
+                        {/* <div className="col-span-3 text-xs">
                           {set.completed ? (
                             <Badge variant="outline" className="bg-green-50">
                               Completado

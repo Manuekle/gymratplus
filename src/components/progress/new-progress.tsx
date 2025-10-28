@@ -44,16 +44,16 @@ interface ProgressProps {
 export function NewProgress({ onSuccess, initialData }: ProgressProps) {
   const isEditing = !!initialData?.id;
   const [date, setDate] = useState<Date | undefined>(
-    initialData?.date || new Date(),
+    initialData?.date || new Date()
   );
   const [weight, setWeight] = useState<string>(
-    initialData?.weight?.toString() || "",
+    initialData?.weight?.toString() || ""
   );
   const [bodyFat, setBodyFat] = useState<string>(
-    initialData?.bodyFatPercentage?.toString() || "",
+    initialData?.bodyFatPercentage?.toString() || ""
   );
   const [muscleMass, setMuscleMass] = useState<string>(
-    initialData?.muscleMassPercentage?.toString() || "",
+    initialData?.muscleMassPercentage?.toString() || ""
   );
   const [notes, setNotes] = useState<string>(initialData?.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -121,7 +121,7 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 pt-4">
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="date">
+            <Label className="text-xs md:text-xs" htmlFor="date">
               Fecha
             </Label>
             <Popover>
@@ -129,8 +129,8 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal text-xs md:text-sm",
-                    !date && "text-muted-foreground",
+                    "w-full justify-start text-left font-normal text-xs md:text-xs",
+                    !date && "text-muted-foreground"
                   )}
                 >
                   <HugeiconsIcon
@@ -157,11 +157,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="weight">
+            <Label className="text-xs md:text-xs" htmlFor="weight">
               Peso (kg)
             </Label>
             <Input
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               id="weight"
               type="number"
               step="0.1"
@@ -172,11 +172,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="bodyFat">
+            <Label className="text-xs md:text-xs" htmlFor="bodyFat">
               Grasa corporal (%)
             </Label>
             <Input
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               id="bodyFat"
               type="number"
               step="0.1"
@@ -187,11 +187,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="muscleMass">
+            <Label className="text-xs md:text-xs" htmlFor="muscleMass">
               Masa muscular (%)
             </Label>
             <Input
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               id="muscleMass"
               type="number"
               step="0.1"
@@ -202,11 +202,11 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm" htmlFor="notes">
+            <Label className="text-xs md:text-xs" htmlFor="notes">
               Notas
             </Label>
             <Textarea
-              className="text-xs md:text-sm"
+              className="text-xs md:text-xs"
               id="notes"
               placeholder="Observaciones adicionales..."
               value={notes}

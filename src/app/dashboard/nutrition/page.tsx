@@ -269,7 +269,7 @@ export default function NutritionPage() {
                   }`}
                 />
 
-                <div className="flex justify-between text-sm">
+                <div className="flex justify-between text-xs">
                   <div>
                     <span className="text-muted-foreground text-xs">
                       Restantes:{" "}
@@ -295,8 +295,8 @@ export default function NutritionPage() {
                         Math.round(
                           ((todayData?.todayTotals.calories ?? 0) /
                             (user?.nutrition.calorieTarget ?? 1)) *
-                            100,
-                        ),
+                            100
+                        )
                       )}
                       %
                     </span>

@@ -361,15 +361,15 @@ export default function FoodRecommendations() {
           <div className="flex justify-between items-center">
             {recommendations.length > 1 && (
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   Historial:
                 </span>
                 <select
-                  className="text-sm border rounded p-1"
+                  className="text-xs border rounded p-1"
                   value={selectedRecommendation.id}
                   onChange={(e) => {
                     const selected = recommendations.find(
-                      (r) => r.id === e.target.value,
+                      (r) => r.id === e.target.value
                     );
                     if (selected) {
                       setSelectedRecommendation(selected);
@@ -389,7 +389,7 @@ export default function FoodRecommendations() {
         <CardContent>
           <div className="grid grid-cols-3 gap-4 mb-6">
             {/* <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Protein</p>
+            <p className="text-xs text-muted-foreground">Protein</p>
             
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
@@ -411,7 +411,7 @@ export default function FoodRecommendations() {
               </CardContent>
             </Card>
             {/* <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Carbs</p>
+            <p className="text-xs text-muted-foreground">Carbs</p>
             {formatMacro(macros.carbs)}
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
@@ -435,7 +435,7 @@ export default function FoodRecommendations() {
               </CardContent>
             </Card>
             {/* <div className="space-y-1">
-            <p className="text-sm text-muted-foreground">Fat</p>
+            <p className="text-xs text-muted-foreground">Fat</p>
             {formatMacro(macros.fat)}
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">

@@ -60,7 +60,7 @@ export function GoalsDashboard() {
     await fetchGoals(
       activeTab === "all" ? undefined : activeTab,
       undefined,
-      true,
+      true
     );
   };
 
@@ -146,7 +146,7 @@ export function GoalsDashboard() {
           <div className="flex justify-between items-center">
             <div className="flex flex-row gap-2 items-center justify-center">
               {getGoalTypeIcon(goal.type as GoalType)}
-              <CardTitle className="text-sm font-medium tracking-heading capitalize">
+              <CardTitle className="text-xs font-medium tracking-heading capitalize">
                 {goal.title}
               </CardTitle>
             </div>
@@ -238,7 +238,7 @@ export function GoalsDashboard() {
             </div>
           ) : goals.length === 0 ? (
             <div className="text-center py-20">
-              <h3 className="text-sm font-medium mb-2">No hay objetivos</h3>
+              <h3 className="text-xs font-medium mb-2">No hay objetivos</h3>
               <p className="text-muted-foreground text-xs mb-4">
                 Establece objetivos para hacer seguimiento de tu progreso
               </p>

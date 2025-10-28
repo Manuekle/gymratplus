@@ -121,7 +121,7 @@ const ProfileCheck = () => {
           } else {
             // Check if any required fields are missing or empty
             const missingFields = requiredProfileFields.filter(
-              (field) => !profile[field] || profile[field] === "",
+              (field) => !profile[field] || profile[field] === ""
             );
 
             console.log("Profile check debug:", {
@@ -175,7 +175,7 @@ const ProfileCheck = () => {
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
             <div className="h-12 w-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
-            <p className="text-sm font-medium text-white">
+            <p className="text-xs font-medium text-white">
               Verificando perfil
             </p>
           </div>
@@ -188,7 +188,7 @@ const ProfileCheck = () => {
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               Datos de perfil incompletos
             </AlertDialogTitle>
-            <AlertDialogDescription className="text-sm font-normal">
+            <AlertDialogDescription className="text-xs font-normal">
               Para continuar, necesitas completar tu información personal y de
               entrenamiento.
             </AlertDialogDescription>

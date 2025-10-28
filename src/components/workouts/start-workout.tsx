@@ -170,7 +170,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       if (!completeResponse.ok) {
         const errorData = await completeResponse.json();
         throw new Error(
-          errorData.error || "Error al finalizar el entrenamiento activo",
+          errorData.error || "Error al finalizar el entrenamiento activo"
         );
       }
 
@@ -188,7 +188,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       if (!startResponse.ok) {
         const errorData = await startResponse.json();
         throw new Error(
-          errorData.error || "Error al iniciar nuevo entrenamiento",
+          errorData.error || "Error al iniciar nuevo entrenamiento"
         );
       }
 
@@ -244,7 +244,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
             <span className="flex items-center gap-2 pb-1 text-destructive">
               <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-              <AlertTitle className="text-sm">Entrenamiento activo</AlertTitle>
+              <AlertTitle className="text-xs">Entrenamiento activo</AlertTitle>
             </span>
             <AlertDescription className="text-xs text-destructive">
               Ya tienes un entrenamiento en progreso. ¿Qué deseas hacer?
@@ -277,13 +277,13 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           <>
             <div className="flex flex-col space-y-2">
               <Select value={selectedDay} onValueChange={setSelectedDay}>
-                <SelectTrigger className="text-xs md:text-sm">
+                <SelectTrigger className="text-xs md:text-xs">
                   <SelectValue placeholder="Selecciona tu entrenamiento" />
                 </SelectTrigger>
                 <SelectContent>
                   {days.map((day: Day) => (
                     <SelectItem
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       key={day.day}
                       value={day.day}
                     >
@@ -305,7 +305,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                       >
                         <div className="flex items-center p-4 border-b">
                           <div className="flex-1">
-                            <h4 className="font-medium text-sm">
+                            <h4 className="font-medium text-xs">
                               {exercise.name}
                             </h4>
                             {exercise.notes && (
@@ -320,7 +320,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Sets
                             </p>
-                            <p className="font-semibold text-sm">
+                            <p className="font-semibold text-xs">
                               {exercise.sets}
                             </p>
                           </div>
@@ -328,7 +328,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Reps
                             </p>
-                            <p className="font-semibold text-sm">
+                            <p className="font-semibold text-xs">
                               {exercise.reps || "Tiempo"}
                             </p>
                           </div>
@@ -336,7 +336,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                             <p className="text-xs text-muted-foreground mb-1">
                               Descanso
                             </p>
-                            <p className="font-semibold flex items-center justify-center gap-1 text-sm">
+                            <p className="font-semibold flex items-center justify-center gap-1 text-xs">
                               {exercise.restTime}s
                             </p>
                           </div>

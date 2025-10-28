@@ -178,7 +178,7 @@ export default function NutritionSummary() {
             <div key={index}>
               <div className="flex justify-between mb-1">
                 <span className="text-xs font-medium">{macro.name}</span>
-                {/* <span className="text-sm">
+                {/* <span className="text-xs">
                   {macro.consumed} / {macro.goal} {macro.unit}
                 </span> */}
                 <div className="text-xs">
@@ -214,14 +214,14 @@ export default function NutritionSummary() {
       </div>
 
       {/* <div className="mt-4 pt-4 border-t">
-        <h3 className="text-sm font-medium mb-2">Comidas de hoy</h3>
+        <h3 className="text-xs font-medium mb-2">Comidas de hoy</h3>
         <div className="space-y-2">
           {["Desayuno", "Almuerzo", "Merienda", "Cena"].map((meal, index) => (
             <div
               key={index}
               className="flex justify-between items-center py-4 px-3 border rounded-lg"
             >
-              <span className="text-sm">{meal}</span>
+              <span className="text-xs">{meal}</span>
               {index <= 1 ? (
                 <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
                   Completado

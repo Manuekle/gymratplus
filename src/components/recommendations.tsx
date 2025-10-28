@@ -169,7 +169,7 @@ export default function RecommendationsComponent() {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setError(
-          "No se encontró un perfil. Por favor, complete su perfil primero.",
+          "No se encontró un perfil. Por favor, complete su perfil primero."
         );
         return null;
       }
@@ -184,7 +184,7 @@ export default function RecommendationsComponent() {
     }
 
     const fetchRecommendations = async (
-      profileData: ProfileData,
+      profileData: ProfileData
     ): Promise<void> => {
       if (!profileData) return;
 
@@ -209,7 +209,7 @@ export default function RecommendationsComponent() {
       } catch (error: unknown) {
         console.error("Error fetching recommendations:", error);
         setError(
-          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde.",
+          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde."
         );
         toast.error("Failed to generate recommendations", {
           description: "Please try again later",
@@ -250,7 +250,7 @@ export default function RecommendationsComponent() {
           </div>
         ) : error ? (
           <div className="text-center py-8">
-            <p className="text-[#DE3163] text-sm pb-14">{error}</p>
+            <p className="text-[#DE3163] text-xs pb-14">{error}</p>
             <Button
               variant="outline"
               onClick={() => router.push("/dashboard/profile")}

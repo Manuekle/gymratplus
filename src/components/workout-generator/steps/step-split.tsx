@@ -147,7 +147,7 @@ export function StepSplit({ value, onChange }: StepSplitProps) {
                   {split.icon}
                 </div>
                 <div className="flex flex-col gap-1">
-                  <h3 className="text-sm">{split.name}</h3>
+                  <h3 className="text-xs">{split.name}</h3>
                   <p className="text-xs text-muted-foreground">
                     {split.description}
                   </p>

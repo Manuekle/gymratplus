@@ -63,7 +63,7 @@ export default function MyInstructorsPage() {
 
       // Obtener banderas de los países únicos
       const uniqueCountries = Array.from(
-        new Set(data.map((i) => i.country).filter(Boolean)),
+        new Set(data.map((i) => i.country).filter(Boolean))
       ) as string[];
 
       if (uniqueCountries.length > 0) {
@@ -71,7 +71,7 @@ export default function MyInstructorsPage() {
         for (const c of uniqueCountries) {
           try {
             const flagResponse = await fetch(
-              `https://restcountries.com/v3.1/alpha/${c}`,
+              `https://restcountries.com/v3.1/alpha/${c}`
             );
             if (flagResponse.ok) {
               const countryData = await flagResponse.json();
@@ -161,7 +161,7 @@ export default function MyInstructorsPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Total Instructores
             </CardTitle>
             <HugeiconsIcon
@@ -179,7 +179,7 @@ export default function MyInstructorsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Modalidades</CardTitle>
+            <CardTitle className="text-xs font-medium">Modalidades</CardTitle>
             <HugeiconsIcon
               icon={GlobeIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -197,7 +197,7 @@ export default function MyInstructorsPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Inversión Mensual
             </CardTitle>
             <HugeiconsIcon
@@ -218,7 +218,7 @@ export default function MyInstructorsPage() {
       {instructors.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <h3 className="text-sm font-medium mb-2">
+            <h3 className="text-xs font-medium mb-2">
               No tienes instructores asignados
             </h3>
             <p className="text-muted-foreground text-xs max-w-md mb-6">
@@ -298,7 +298,7 @@ export default function MyInstructorsPage() {
                 {/* Bio */}
                 {instructor.bio && (
                   <div>
-                    <p className="text-sm text-muted-foreground line-clamp-3">
+                    <p className="text-xs text-muted-foreground line-clamp-3">
                       {instructor.bio}
                     </p>
                   </div>
@@ -307,8 +307,8 @@ export default function MyInstructorsPage() {
                 {/* Price and Specialties */}
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Precio acordado</span>
-                    <span className="text-sm font-semibold">
+                    <span className="text-xs font-medium">Precio acordado</span>
+                    <span className="text-xs font-semibold">
                       {instructor.pricePerMonth
                         ? `$${instructor.pricePerMonth}/mes`
                         : "No especificado"}
@@ -322,11 +322,11 @@ export default function MyInstructorsPage() {
                           icon={GraduateMaleIcon}
                           className="h-4 w-4 text-muted-foreground"
                         />
-                        <span className="text-sm font-medium">
+                        <span className="text-xs font-medium">
                           Especialidades
                         </span>
                       </div>
-                      <p className="text-sm text-muted-foreground pl-6">
+                      <p className="text-xs text-muted-foreground pl-6">
                         {instructor.curriculum}
                       </p>
                     </div>
@@ -342,7 +342,7 @@ export default function MyInstructorsPage() {
 
                 {/* Contact Information */}
                 <div className="space-y-3">
-                  <h4 className="text-sm font-medium">Contacto</h4>
+                  <h4 className="text-xs font-medium">Contacto</h4>
                   <div className="space-y-2">
                     {instructor.contactEmail ? (
                       <div className="flex items-center gap-2">
@@ -352,7 +352,7 @@ export default function MyInstructorsPage() {
                         />
                         <a
                           href={`mailto:${instructor.contactEmail}`}
-                          className="text-sm hover:underline text-blue-600 dark:text-blue-400"
+                          className="text-xs hover:underline text-blue-600 dark:text-blue-400"
                         >
                           {instructor.contactEmail}
                         </a>
@@ -367,7 +367,7 @@ export default function MyInstructorsPage() {
                         />
                         <a
                           href={`tel:${instructor.contactPhone}`}
-                          className="text-sm hover:underline text-blue-600 dark:text-blue-400"
+                          className="text-xs hover:underline text-blue-600 dark:text-blue-400"
                         >
                           {instructor.contactPhone}
                         </a>

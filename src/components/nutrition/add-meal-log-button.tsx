@@ -169,7 +169,7 @@ function MacroCircle({
       </svg>
       <div className="absolute inset-0 flex items-center justify-center">
         <div className="text-center">
-          <span className="text-sm tracking-heading font-semibold ">
+          <span className="text-xs tracking-heading font-semibold ">
             {calories}
           </span>
           <span className="text-xs text-muted-foreground block">kcal</span>
@@ -244,13 +244,13 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType),
+      recipe.mealType.includes(mealType)
   );
 
   const resetForm = () => {
@@ -337,11 +337,11 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe",
+    type: "food" | "recipe"
   ) => {
     // Verificar si el item ya está seleccionado
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type,
+      (selected) => selected.id === item.id && selected.type === type
     );
 
     if (existingIndex >= 0) {
@@ -410,7 +410,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
   };
 
@@ -438,7 +438,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         <div className="p-4 border rounded-lg bg-card">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h3 className="text-sm font-semibold">{item.name}</h3>
+              <h3 className="text-xs font-semibold">{item.name}</h3>
               <p className="text-xs text-muted-foreground">
                 {selectedItem.type === "food"
                   ? `${(item as Food).serving}g por porción`
@@ -464,15 +464,15 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             />
 
             <div className="space-y-1 flex-1">
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span className="text-warning">Proteínas</span>
                 <span>{item.protein}g</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span className="text-success">Carbos</span>
                 <span>{item.carbs}g</span>
               </div>
-              <div className="flex justify-between text-sm">
+              <div className="flex justify-between text-xs">
                 <span className="text-destructive">Grasas</span>
                 <span>{item.fat}g</span>
               </div>
@@ -490,7 +490,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onClick={() =>
                   updateItemQuantity(
                     editingItemIndex,
-                    selectedItem.quantity - 0.5,
+                    selectedItem.quantity - 0.5
                   )
                 }
               >
@@ -505,7 +505,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onChange={(e) =>
                   updateItemQuantity(
                     editingItemIndex,
-                    Number.parseFloat(e.target.value) || 0.1,
+                    Number.parseFloat(e.target.value) || 0.1
                   )
                 }
                 className="text-center text-xs"
@@ -516,7 +516,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onClick={() =>
                   updateItemQuantity(
                     editingItemIndex,
-                    selectedItem.quantity + 0.5,
+                    selectedItem.quantity + 0.5
                   )
                 }
               >
@@ -526,7 +526,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
           </div>
 
           <div className="p-4 border rounded-lg bg-muted/20">
-            <h4 className="font-medium text-sm mb-2">
+            <h4 className="font-medium text-xs mb-2">
               Total para {quantity} {quantity === 1 ? "porción" : "porciones"}:
             </h4>
             <div className="grid grid-cols-2 gap-4 text-xs">
@@ -567,7 +567,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
     if (selectedItems.length === 0) {
       return (
         <div className="text-center py-6 border rounded-lg">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             No has seleccionado ningún alimento
           </p>
         </div>
@@ -579,8 +579,8 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
     return (
       <div className="space-y-4">
         <div className="p-4 border rounded-lg bg-muted/20">
-          <h4 className="font-medium mb-2 text-sm">Totales:</h4>
-          <div className="grid grid-cols-2 gap-4 text-sm">
+          <h4 className="font-medium mb-2 text-xs">Totales:</h4>
+          <div className="grid grid-cols-2 gap-4 text-xs">
             <div>
               <span className="text-muted-foreground">Calorías:</span>
               <span className="ml-2 font-medium">{totals.calories} kcal</span>
@@ -619,7 +619,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               >
                 <div className="flex-1">
                   <div className="flex justify-between items-center">
-                    <h3 className="font-medium text-sm">{data.name}</h3>
+                    <h3 className="font-medium text-xs">{data.name}</h3>
                     <span className="text-xs font-medium">{calories} kcal</span>
                   </div>
                   <p className="text-xs text-muted-foreground">
@@ -653,7 +653,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         </div>
 
         <div>
-          <Label className="text-xs md:text-sm" htmlFor="notes">
+          <Label className="text-xs md:text-xs" htmlFor="notes">
             Notas (opcional)
           </Label>
           <Input
@@ -661,7 +661,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
             placeholder="Añade notas sobre esta comida"
-            className="mt-1 text-xs md:text-sm"
+            className="mt-1 text-xs md:text-xs"
           />
         </div>
       </div>
@@ -683,7 +683,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
     if (items.length === 0) {
       return (
         <div className="text-center py-40">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             {searchQuery
               ? "No se encontraron resultados para tu búsqueda"
               : activeTab === "foods"
@@ -691,7 +691,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 : "No hay recetas disponibles para este tipo de comida"}
           </p>
           {!searchQuery && (
-            <p className="text-sm mt-2 text-muted-foreground">
+            <p className="text-xs mt-2 text-muted-foreground">
               Esta funcionalidad solo esta disponible para los usuarios con un
               plan instructor
             </p>
@@ -705,7 +705,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe",
+            activeTab === "foods" ? "food" : "recipe"
           );
 
           return (
@@ -719,7 +719,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe",
+                  activeTab === "foods" ? "food" : "recipe"
                 )
               }
               type="button"
@@ -780,27 +780,27 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label className="text-xs md:text-sm" htmlFor="mealType">
+              <Label className="text-xs md:text-xs" htmlFor="mealType">
                 Tipo de Comida
               </Label>
               <Select value={mealType} onValueChange={setMealType}>
                 <SelectTrigger
                   id="mealType"
-                  className="mt-1 text-xs md:text-sm"
+                  className="mt-1 text-xs md:text-xs"
                 >
                   <SelectValue placeholder="Selecciona el tipo de comida" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem className="text-xs md:text-sm" value="desayuno">
+                  <SelectItem className="text-xs md:text-xs" value="desayuno">
                     Desayuno
                   </SelectItem>
-                  <SelectItem className="text-xs md:text-sm" value="almuerzo">
+                  <SelectItem className="text-xs md:text-xs" value="almuerzo">
                     Almuerzo
                   </SelectItem>
-                  <SelectItem className="text-xs md:text-sm" value="cena">
+                  <SelectItem className="text-xs md:text-xs" value="cena">
                     Cena
                   </SelectItem>
-                  <SelectItem className="text-xs md:text-sm" value="snack">
+                  <SelectItem className="text-xs md:text-xs" value="snack">
                     Snack
                   </SelectItem>
                 </SelectContent>
@@ -808,7 +808,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             </div>
 
             <div>
-              <Label className="text-xs md:text-sm" htmlFor="mealTime">
+              <Label className="text-xs md:text-xs" htmlFor="mealTime">
                 Hora
               </Label>
               <div className="mt-1">
@@ -821,14 +821,14 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
           </div>
 
           <div>
-            <Label className="text-xs md:text-sm" htmlFor="mealDate">
+            <Label className="text-xs md:text-xs" htmlFor="mealDate">
               Fecha
             </Label>
             <Popover>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
-                  className="w-full justify-start text-left font-normal mt-1 text-xs md:text-sm"
+                  className="w-full justify-start text-left font-normal mt-1 text-xs md:text-xs"
                   id="mealDate"
                 >
                   <HugeiconsIcon
@@ -910,7 +910,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 placeholder="Buscar alimento o receta..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-9 text-xs md:text-sm"
+                className="pl-9 text-xs md:text-xs"
               />
               {searchQuery && (
                 <Button
@@ -929,7 +929,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               onValueChange={setActiveTab}
               className="mt-2"
             >
-              <TabsList className="grid w-full grid-cols-2 text-xs md:text-sm">
+              <TabsList className="grid w-full grid-cols-2 text-xs md:text-xs">
                 <TabsTrigger value="foods" className="flex items-center gap-2">
                   <HugeiconsIcon icon={FishFoodIcon} className="h-4 w-4" />
                   Alimentos

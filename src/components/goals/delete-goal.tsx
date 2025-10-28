@@ -68,7 +68,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
           <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
             <span className="flex items-center gap-2 pb-1 text-destructive">
               <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-              <AlertTitle className="text-sm">¡Cuidado!</AlertTitle>
+              <AlertTitle className="text-xs">¡Cuidado!</AlertTitle>
             </span>
             <AlertDescription className="text-xs text-destructive">
               ¿Estás seguro de que deseas eliminar este progreso? Esta acción no

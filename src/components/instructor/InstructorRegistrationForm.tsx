@@ -151,7 +151,7 @@ export function InstructorRegistrationForm({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || "Error al registrar como instructor",
+          errorData.error || "Error al registrar como instructor"
         );
       }
       // Update the session with the new instructor status
@@ -186,7 +186,7 @@ export function InstructorRegistrationForm({
           <DrawerTitle className="text-2xl font-semibold tracking-heading">
             {step === 1 ? "Registro de Instructor" : "Simulación de Pago"}
           </DrawerTitle>
-          <DrawerDescription className="text-sm text-muted-foreground">
+          <DrawerDescription className="text-xs text-muted-foreground">
             {step === 1
               ? "Completa el formulario para convertirte en instructor en nuestra plataforma."
               : "Simula el pago para finalizar tu registro como instructor."}
@@ -501,7 +501,7 @@ export function InstructorRegistrationForm({
                 {/* Plan Toggle */}
                 <div className="flex items-center justify-center gap-4">
                   <span
-                    className={`text-sm font-medium ${!isAnnual ? "text-primary" : "text-muted-foreground"}`}
+                    className={`text-xs font-medium ${!isAnnual ? "text-primary" : "text-muted-foreground"}`}
                   >
                     Mensual
                   </span>
@@ -512,7 +512,7 @@ export function InstructorRegistrationForm({
                   />
                   <div className="flex flex-col">
                     <span
-                      className={`text-sm font-medium ${isAnnual ? "text-primary" : "text-muted-foreground"}`}
+                      className={`text-xs font-medium ${isAnnual ? "text-primary" : "text-muted-foreground"}`}
                     >
                       Anual
                     </span>
@@ -532,7 +532,7 @@ export function InstructorRegistrationForm({
                         {isAnnual ? "/año" : "/mes"}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Próximo pago {currentPlan.nextPayment}
                     </p>
                   </div>
@@ -543,7 +543,7 @@ export function InstructorRegistrationForm({
                   <div className="space-y-2">
                     <Label
                       htmlFor="card-number"
-                      className="text-sm font-medium"
+                      className="text-xs font-medium"
                     >
                       Tarjeta de crédito o débito
                     </Label>

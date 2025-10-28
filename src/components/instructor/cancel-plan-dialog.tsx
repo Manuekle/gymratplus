@@ -78,7 +78,7 @@ export function CancelPlanDialog({
           <DialogTitle className="text-2xl font-semibold tracking-heading">
             ¿Cancelar plan de instructor?
           </DialogTitle>
-          <DialogDescription className="text-sm">
+          <DialogDescription className="text-xs">
             Esta acción cancelará tu plan de instructor. Perderás acceso a las
             funciones exclusivas para instructores. Esta acción no se puede
             deshacer.

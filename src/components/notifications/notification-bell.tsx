@@ -45,7 +45,7 @@ export function NotificationBell() {
       </PopoverTrigger>
       <PopoverContent className="w-80 p-0" align="end">
         <div className="p-4 border-b flex items-center justify-between">
-          <h4 className="font-semibold text-sm">Notificaciones</h4>
+          <h4 className="font-semibold text-xs">Notificaciones</h4>
           {unreadCount > 0 && (
             <Button
               onClick={() => markAsRead("all")}
@@ -117,7 +117,7 @@ export function NotificationBell() {
                   icon={Notification01Icon}
                   className="h-10 w-10 text-muted-foreground opacity-40"
                 />
-                <p className="text-xs md:text-sm text-muted-foreground text-center">
+                <p className="text-xs md:text-xs text-muted-foreground text-center">
                   No tienes notificaciones sin leer
                 </p>
               </div>

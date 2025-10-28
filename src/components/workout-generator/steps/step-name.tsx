@@ -39,11 +39,11 @@ export function StepName({ value, onChange }: StepNameProps) {
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs md:text-sm" htmlFor="workout-name">
+          <Label className="text-xs md:text-xs" htmlFor="workout-name">
             Nombre del entrenamiento
           </Label>
           <Input
-            className="text-xs md:text-sm"
+            className="text-xs md:text-xs"
             id="workout-name"
             placeholder="Ej: Mi rutina de hipertrofia"
             value={value}
@@ -52,7 +52,7 @@ export function StepName({ value, onChange }: StepNameProps) {
         </div>
 
         {!value && (
-          <p className="text-sm text-muted-foreground mt-4">
+          <p className="text-xs text-muted-foreground mt-4">
             Sugerencias: &quot;Mi rutina de fuerza&quot;, &quot;Plan de pérdida
             de grasa&quot;, &quot;Entrenamiento para ganar músculo&quot;
           </p>

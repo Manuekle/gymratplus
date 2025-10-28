@@ -171,7 +171,7 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
                     {method.icon}
                   </div>
                   <div className="flex flex-col gap-1">
-                    <h3 className="text-sm">{method.name}</h3>
+                    <h3 className="text-xs">{method.name}</h3>
                     <p className="text-xs text-muted-foreground">
                       {method.description}
                     </p>

@@ -150,7 +150,7 @@ export default function StudentsListPage() {
       filtered = filtered.filter(
         (student) =>
           student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+          student.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -165,26 +165,26 @@ export default function StudentsListPage() {
         case "active_today":
           filtered = filtered.filter(
             (student) =>
-              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt)),
+              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt))
           );
           break;
         case "active_week":
           filtered = filtered.filter(
             (student) =>
               student.lastWorkoutAt &&
-              isThisWeek(new Date(student.lastWorkoutAt)),
+              isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "inactive":
           filtered = filtered.filter(
             (student) =>
               !student.lastWorkoutAt ||
-              !isThisWeek(new Date(student.lastWorkoutAt)),
+              !isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "high_streak":
           filtered = filtered.filter(
-            (student) => student.currentWorkoutStreak >= 7,
+            (student) => student.currentWorkoutStreak >= 7
           );
           break;
       }
@@ -226,21 +226,21 @@ export default function StudentsListPage() {
   // Calcular estadísticas
   const totalStudents = students.length;
   const activeToday = students.filter(
-    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt)),
+    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt))
   ).length;
   const activeThisWeek = students.filter(
-    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt)),
+    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt))
   ).length;
   const avgStreak =
     totalStudents > 0
       ? Math.round(
           students.reduce((acc, s) => acc + s.currentWorkoutStreak, 0) /
-            totalStudents,
+            totalStudents
         )
       : 0;
   const totalRevenue = students.reduce(
     (acc, s) => acc + (s.agreedPrice || 0),
-    0,
+    0
   );
 
   if (isLoading) {
@@ -330,7 +330,7 @@ export default function StudentsListPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
+            <CardTitle className="text-xs font-medium">Total Alumnos</CardTitle>
             <HugeiconsIcon
               icon={UserGroupIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -346,7 +346,7 @@ export default function StudentsListPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Activos Hoy</CardTitle>
+            <CardTitle className="text-xs font-medium">Activos Hoy</CardTitle>
             <HugeiconsIcon
               icon={ArrangeByLettersAZIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -369,7 +369,7 @@ export default function StudentsListPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Racha Promedio
             </CardTitle>
             <HugeiconsIcon
@@ -387,7 +387,7 @@ export default function StudentsListPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">
+            <CardTitle className="text-xs font-medium">
               Ingresos Mensuales
             </CardTitle>
             <HugeiconsIcon
@@ -484,7 +484,7 @@ export default function StudentsListPage() {
           filteredStudents.map((student) => {
             const activityStatus = getActivityStatus(student.lastWorkoutAt);
             const streakVariant = getStreakVariant(
-              student.currentWorkoutStreak,
+              student.currentWorkoutStreak
             );
 
             return (
@@ -500,13 +500,13 @@ export default function StudentsListPage() {
                           src={student.image || "/placeholder-avatar.jpg"}
                           alt={student.name || "Alumno"}
                         />
-                        <AvatarFallback className="font-semibold text-sm sm:text-base">
+                        <AvatarFallback className="font-semibold text-xs sm:text-base">
                           {student.name?.charAt(0).toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
                       <div className="min-w-0 space-y-1">
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-semibold text-sm sm:text-base truncate max-w-[180px] sm:max-w-none">
+                          <p className="font-semibold text-xs sm:text-base truncate max-w-[180px] sm:max-w-none">
                             {student.name || "Sin nombre"}
                           </p>
                           <Badge
@@ -516,7 +516,7 @@ export default function StudentsListPage() {
                             {activityStatus.text}
                           </Badge>
                         </div>
-                        <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[240px] sm:max-w-none">
+                        <p className="text-xs sm:text-xs text-muted-foreground truncate max-w-[240px] sm:max-w-none">
                           {student.email}
                         </p>
                         {student.agreedPrice && (
@@ -601,7 +601,7 @@ export default function StudentsListPage() {
                                 {format(
                                   new Date(student.lastWorkoutAt),
                                   "d MMM",
-                                  { locale: es },
+                                  { locale: es }
                                 )}
                               </span>
                             )
@@ -690,7 +690,7 @@ export default function StudentsListPage() {
       {filteredStudents.length > 0 && (
         <Card>
           <CardContent className="p-6">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
               <span>
                 Mostrando {filteredStudents.length} de {totalStudents} alumnos
               </span>

@@ -112,7 +112,7 @@ export function BirthDatePicker({
 
   return (
     <div className="space-y-2">
-      <Label className="text-xs md:text-sm" htmlFor="birthdate">
+      <Label className="text-xs md:text-xs" htmlFor="birthdate">
         {label}
       </Label>
 
@@ -123,8 +123,8 @@ export function BirthDatePicker({
               id="birthdate"
               variant="outline"
               className={cn(
-                "w-full justify-start text-left font-normal text-xs md:text-sm",
-                !value && "text-muted-foreground",
+                "w-full justify-start text-left font-normal text-xs md:text-xs",
+                !value && "text-muted-foreground"
               )}
             >
               <HugeiconsIcon icon={BirthdayCakeIcon} className="mr-2 h-4 w-4" />
@@ -142,13 +142,13 @@ export function BirthDatePicker({
                   value={calendarDate.getMonth().toString()}
                   onValueChange={handleMonthChange}
                 >
-                  <SelectTrigger className="w-[140px] text-xs md:text-sm">
+                  <SelectTrigger className="w-[140px] text-xs md:text-xs">
                     <SelectValue placeholder="Mes" />
                   </SelectTrigger>
                   <SelectContent>
                     {months.map((month) => (
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-xs"
                         key={month.value}
                         value={month.value}
                       >
@@ -162,13 +162,13 @@ export function BirthDatePicker({
                   value={calendarDate.getFullYear().toString()}
                   onValueChange={handleYearChange}
                 >
-                  <SelectTrigger className="w-[100px] text-xs md:text-sm">
+                  <SelectTrigger className="w-[100px] text-xs md:text-xs">
                     <SelectValue placeholder="Año" />
                   </SelectTrigger>
                   <SelectContent className="max-h-[200px]">
                     {years.map((year) => (
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="text-xs md:text-xs"
                         key={year}
                         value={year.toString()}
                       >

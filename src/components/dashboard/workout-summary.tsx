@@ -68,33 +68,33 @@ export default function WorkoutSummary() {
 
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-semibold ">Semana actual</p>
+          <p className="text-xs font-semibold ">Semana actual</p>
           <div className="flex items-end mt-1">
             <span className="text-xl text-gray-400 font-semibold ">
               {currentWeek.completed}
             </span>
-            <span className="text-sm text-muted-foreground ml-1">
+            <span className="text-xs text-muted-foreground ml-1">
               / {currentWeek.total} completados
             </span>
           </div>
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-semibold ">Siguiente entrenamiento</p>
-          <p className="mt-1 text-sm font-medium text-muted-foreground">
+          <p className="text-xs font-semibold ">Siguiente entrenamiento</p>
+          <p className="mt-1 text-xs font-medium text-muted-foreground">
             {currentWeek.nextWorkout}
           </p>
         </div>
 
         <div className="border p-4 rounded-lg">
-          <p className="text-sm font-semibold ">Progreso mensual</p>
+          <p className="text-xs font-semibold ">Progreso mensual</p>
           <div className="flex items-center mt-1">
             <span className="text-xl font-semibold  text-muted-foreground">85%</span>
           </div>
         </div>
       </div> */}
 
-      {/* <h3 className="text-sm text-muted-foreground mb-2">
+      {/* <h3 className="text-xs text-muted-foreground mb-2">
         Entrenamientos recientes
       </h3> */}
       <div className="space-y-4">
@@ -119,7 +119,7 @@ export default function WorkoutSummary() {
           </div>
         ) : workoutSessions.length === 0 ? (
           <div className="justify-center py-16 items-center flex flex-col">
-            <h2 className="text-sm font-medium">
+            <h2 className="text-xs font-medium">
               No hay entrenamientos recientes.
             </h2>
             <p className="text-muted-foreground text-xs">

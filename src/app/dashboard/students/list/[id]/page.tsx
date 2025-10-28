@@ -100,7 +100,7 @@ export default function StudentDetailPage() {
         if (!res.ok) throw new Error("No se pudo cargar el alumno");
         const data = await res.json();
         const found = data.find(
-          (s: StudentDetail) => s.id === studentRelationId,
+          (s: StudentDetail) => s.id === studentRelationId
         );
         if (!found) throw new Error("Alumno no encontrado");
         setStudent(found);
@@ -124,8 +124,8 @@ export default function StudentDetailPage() {
         if (student && student.studentId) {
           setWorkouts(
             data.filter(
-              (w: AssignedWorkout) => w.assignedToId === student.studentId,
-            ),
+              (w: AssignedWorkout) => w.assignedToId === student.studentId
+            )
           );
         } else {
           setWorkouts([]);
@@ -366,7 +366,7 @@ export default function StudentDetailPage() {
                           {format(
                             new Date(selectedWorkout.assignedDate),
                             "d MMM yyyy",
-                            { locale: es },
+                            { locale: es }
                           )}
                         </Badge>
                         {selectedWorkout.dueDate && (
@@ -375,7 +375,7 @@ export default function StudentDetailPage() {
                             {format(
                               new Date(selectedWorkout.dueDate),
                               "d MMM yyyy",
-                              { locale: es },
+                              { locale: es }
                             )}
                           </Badge>
                         )}
@@ -388,7 +388,7 @@ export default function StudentDetailPage() {
                     </div>
                   </div>
                   {selectedWorkout.description && (
-                    <p className="text-sm text-muted-foreground mb-2">
+                    <p className="text-xs text-muted-foreground mb-2">
                       {selectedWorkout.description}
                     </p>
                   )}
@@ -431,7 +431,7 @@ export default function StudentDetailPage() {
                                     {ex.restTime ? ` - ${ex.restTime}s` : ""})
                                   </span>
                                 </div>
-                              ),
+                              )
                             )}
                           </div>
                         </TabsContent>

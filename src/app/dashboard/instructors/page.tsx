@@ -83,7 +83,7 @@ export default function InstructorsPage() {
               ))}
             </div>
           ) : instructors.length === 0 ? (
-            <div className="text-center text-sm text-muted-foreground py-8">
+            <div className="text-center text-xs text-muted-foreground py-8">
               No hay instructores disponibles en este momento.
             </div>
           ) : (
@@ -113,7 +113,7 @@ export default function InstructorsPage() {
                         </CardTitle>
                       </div>
                       {instructor.instructorProfile?.country && (
-                        <div className="flex items-center text-sm text-muted-foreground gap-2">
+                        <div className="flex items-center text-xs text-muted-foreground gap-2">
                           {instructor.instructorProfile?.country && (
                             <span className="flex items-center gap-1">
                               <Image
@@ -134,10 +134,10 @@ export default function InstructorsPage() {
                         </div>
                       )}
                       {instructor.instructorProfile?.pricePerMonth && (
-                        <div className="text-sm font-medium">
+                        <div className="text-xs font-medium">
                           $
                           {instructor.instructorProfile.pricePerMonth.toFixed(
-                            2,
+                            2
                           )}
                           /mes
                         </div>
@@ -145,7 +145,7 @@ export default function InstructorsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1">
-                    <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
+                    <p className="text-xs text-muted-foreground line-clamp-3 mb-4">
                       {instructor.instructorProfile?.bio ||
                         "Instructor certificado con experiencia en entrenamiento personalizado."}
                     </p>

@@ -88,40 +88,40 @@ export default function ProfilePage() {
   const [name, setName] = useState(session?.user?.name || "");
 
   const [phone, setPhone] = useState(
-    (session?.user as { profile?: { phone?: string } })?.profile?.phone || "",
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
 
   const [birthdate, setBirthdate] = useState<string>(
     (session?.user as { profile?: { birthdate?: string } })?.profile
-      ?.birthdate || "",
+      ?.birthdate || ""
   );
 
   const [experienceLevel, setExperienceLevel] = useState(
-    session?.user?.experienceLevel || "",
+    session?.user?.experienceLevel || ""
   );
 
   const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
     (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
-      ?.preferredWorkoutTime || "",
+      ?.preferredWorkoutTime || ""
   );
   const [dailyActivity, setDailyActivity] = useState(
     (session?.user as { profile?: { dailyActivity?: string } })?.profile
-      ?.dailyActivity || "",
+      ?.dailyActivity || ""
   );
 
   const [goal, setGoal] = useState(
-    (session?.user as { profile?: { goal?: string } })?.profile?.goal || "",
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
   );
 
   const [dietaryPreference, setDietaryPreference] = useState(
     (session?.user as { profile?: { dietaryPreference?: string } })?.profile
-      ?.dietaryPreference || "",
+      ?.dietaryPreference || ""
   );
 
   // Estado para monthsTraining
   const [monthsTraining, setMonthsTraining] = useState(
     (session?.user as { profile?: { monthsTraining?: number } })?.profile
-      ?.monthsTraining || 0,
+      ?.monthsTraining || 0
   );
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -506,24 +506,24 @@ export default function ProfilePage() {
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="email">
+                    <Label className="text-xs md:text-xs" htmlFor="email">
                       Correo electronico
                     </Label>
                     <Input
                       disabled
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="email"
                       // onChange={(e) => setEmail(e.target.value)}
                       defaultValue={session?.user?.email || ""}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="name">
+                    <Label className="text-xs md:text-xs" htmlFor="name">
                       Nombre
                     </Label>
                     <Input
                       // disabled
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="name"
                       onChange={(e) => setName(e.target.value)}
                       defaultValue={session?.user?.name || ""}
@@ -533,18 +533,18 @@ export default function ProfilePage() {
                 <Separator />
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="phone">
+                    <Label className="text-xs md:text-xs" htmlFor="phone">
                       Teléfono
                     </Label>
                     <Input
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="phone"
                       defaultValue={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="experience">
+                    <Label className="text-xs md:text-xs" htmlFor="experience">
                       Experiencia
                     </Label>
                     <Select
@@ -552,24 +552,24 @@ export default function ProfilePage() {
                       value={experienceLevel}
                       onValueChange={(value) => setExperienceLevel(value)}
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <SelectValue placeholder="Selecciona tu experiencia" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="principiante"
                         >
                           <div className="flex items-center">Principiante</div>
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="intermedio"
                         >
                           <div className="flex items-center">Intermedio</div>
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="avanzado"
                         >
                           <div className="flex items-center">Avanzado</div>
@@ -589,13 +589,13 @@ export default function ProfilePage() {
                   </div>
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="monthsTraining"
                     >
                       Meses entrenando
                     </Label>
                     <Input
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="monthsTraining"
                       type="number"
                       min={0}
@@ -616,7 +616,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">
+                      <div className="font-medium text-xs">
                         Correo electronico
                       </div>
                       <div className="text-muted-foreground text-xs">
@@ -637,7 +637,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">
+                      <div className="font-medium text-xs">
                         Fecha de nacimiento
                       </div>
                       <div className="text-muted-foreground text-xs">
@@ -667,7 +667,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">Nombre</div>
+                      <div className="font-medium text-xs">Nombre</div>
                       <div className="text-muted-foreground text-xs">
                         {session?.user?.name}
                       </div>
@@ -684,7 +684,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">Teléfono</div>
+                      <div className="font-medium text-xs">Teléfono</div>
                       <div className="text-muted-foreground text-xs">
                         {(() => {
                           // Obtain the createdAt value
@@ -707,7 +707,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">Experiencia</div>
+                      <div className="font-medium text-xs">Experiencia</div>
                       <div className="text-muted-foreground text-xs capitalize">
                         {session?.user?.experienceLevel || "No especificado"}
                       </div>
@@ -724,7 +724,7 @@ export default function ProfilePage() {
                       className="h-5 w-5 text-muted-foreground"
                     />
                     <div>
-                      <div className="font-medium text-sm">
+                      <div className="font-medium text-xs">
                         Meses entrenando
                       </div>
                       <div className="text-muted-foreground text-xs">
@@ -747,7 +747,7 @@ export default function ProfilePage() {
             <CardTitle className="text-2xl font-semibold tracking-heading">
               Preferencias de entrenamiento
             </CardTitle>
-            <CardDescription className="text-sm text-muted-foreground">
+            <CardDescription className="text-xs text-muted-foreground">
               Información sobre tus preferencias
             </CardDescription>
           </CardHeader>
@@ -773,7 +773,7 @@ export default function ProfilePage() {
                           <SelectValue placeholder="Seleccione su hora preferida" />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="text-sm">
+                      <SelectContent className="text-xs">
                         <SelectItem value="early-morning">
                           Temprano en la mañana (5-8 AM)
                         </SelectItem>
@@ -809,7 +809,7 @@ export default function ProfilePage() {
                           <SelectValue placeholder="Seleccione su actividad diaria" />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="text-sm">
+                      <SelectContent className="text-xs">
                         <SelectItem value="office-work">
                           Trabajo de oficina (sedentario)
                         </SelectItem>
@@ -844,7 +844,7 @@ export default function ProfilePage() {
                         <SelectValue placeholder="Seleccione su objetivo" />
                       </div>
                     </SelectTrigger>
-                    <SelectContent className="text-sm">
+                    <SelectContent className="text-xs">
                       <SelectItem value="lose-weight">Perder peso</SelectItem>
                       <SelectItem value="maintain">Mantener peso</SelectItem>
                       <SelectItem value="gain-muscle">Ganar músculo</SelectItem>
@@ -872,7 +872,7 @@ export default function ProfilePage() {
                         <SelectValue placeholder="Seleccione su preferencia dietética" />
                       </div>
                     </SelectTrigger>
-                    <SelectContent className="text-sm">
+                    <SelectContent className="text-xs">
                       <SelectItem value="no-preference">
                         Sin preferencia específica
                       </SelectItem>
@@ -892,8 +892,8 @@ export default function ProfilePage() {
               <>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <div className="text-sm font-medium">Horario preferido</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs font-medium">Horario preferido</div>
+                    <div className="text-xs text-muted-foreground">
                       {(() => {
                         const time = (
                           session?.user as {
@@ -920,8 +920,8 @@ export default function ProfilePage() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-sm font-medium">Actividad diaria</div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs font-medium">Actividad diaria</div>
+                    <div className="text-xs text-muted-foreground">
                       {(() => {
                         const activity = (
                           session?.user as {
@@ -949,11 +949,11 @@ export default function ProfilePage() {
                 <Separator />
 
                 <div>
-                  <div className="text-sm font-medium mb-2">
+                  <div className="text-xs font-medium mb-2">
                     Objetivo actual
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-sm">
+                    <Badge variant="outline" className="text-xs">
                       {(() => {
                         const goal = (
                           session?.user as {
@@ -978,10 +978,10 @@ export default function ProfilePage() {
                 <Separator />
 
                 <div>
-                  <div className="text-sm font-medium">
+                  <div className="text-xs font-medium">
                     Preferencia dietetica
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     {(() => {
                       const preference = (
                         session?.user as {
@@ -1042,7 +1042,7 @@ export default function ProfilePage() {
               <CardTitle className="text-2xl font-semibold tracking-heading">
                 Rol de instructor
               </CardTitle>
-              <CardDescription className="text-sm text-muted-foreground">
+              <CardDescription className="text-xs text-muted-foreground">
                 Activa tu rol de instructor y empieza a conectar con alumnos.
               </CardDescription>
             </CardHeader>
@@ -1075,7 +1075,7 @@ export default function ProfilePage() {
                           className="w-full h-full"
                         />
                       </span>
-                      <span className="text-sm font-medium">
+                      <span className="text-xs font-medium">
                         {benefit.text}
                       </span>
                     </li>
@@ -1097,7 +1097,7 @@ export default function ProfilePage() {
                 />
                 <label
                   htmlFor="instructor-switch"
-                  className="text-sm font-medium select-none cursor-pointer flex-1"
+                  className="text-xs font-medium select-none cursor-pointer flex-1"
                 >
                   ¿Quieres convertirte en instructor?
                 </label>

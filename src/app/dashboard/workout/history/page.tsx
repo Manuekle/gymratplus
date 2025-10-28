@@ -48,7 +48,7 @@ export default function WorkoutHistoryPage() {
             const totalExercises = data.reduce(
               (acc: number, session: WorkoutSession) =>
                 acc + session.exercises.length,
-              0,
+              0
             );
             const totalSets = data.reduce(
               (acc: number, session: WorkoutSession) => {
@@ -56,16 +56,16 @@ export default function WorkoutHistoryPage() {
                   acc +
                   session.exercises.reduce(
                     (exAcc: number, ex: Exercise) => exAcc + ex.sets.length,
-                    0,
+                    0
                   )
                 );
               },
-              0,
+              0
             );
             const totalDuration = data.reduce(
               (acc: number, session: WorkoutSession) =>
                 acc + (session.duration || 0),
-              0,
+              0
             );
 
             setStats({
@@ -100,12 +100,12 @@ export default function WorkoutHistoryPage() {
   const calculateSessionProgress = (session: WorkoutSession) => {
     const totalSets = session.exercises.reduce(
       (acc: number, ex: Exercise) => acc + ex.sets.length,
-      0,
+      0
     );
     const completedSets = session.exercises.reduce(
       (acc: number, ex: Exercise) =>
         acc + ex.sets.filter((set: Set) => set.completed).length,
-      0,
+      0
     );
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
   };
@@ -175,7 +175,7 @@ export default function WorkoutHistoryPage() {
   if (workoutSessions.length === 0) {
     return (
       <Card className="text-center py-56 items-center flex">
-        <h2 className="text-sm font-medium">
+        <h2 className="text-xs font-medium">
           No hay entrenamientos completados
         </h2>
         <Button
@@ -214,7 +214,7 @@ export default function WorkoutHistoryPage() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
                 <p className="text-xl md:text-3xl font-semibold  tracking-heading">
@@ -235,7 +235,7 @@ export default function WorkoutHistoryPage() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
                 <p className="text-xl md:text-3xl font-semibold ">
@@ -256,7 +256,7 @@ export default function WorkoutHistoryPage() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
                 <p className="text-xl md:text-3xl font-semibold ">
@@ -277,7 +277,7 @@ export default function WorkoutHistoryPage() {
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs md:text-sm text-muted-foreground dark:text-muted-foreground">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
                 <p className="text-xl md:text-3xl font-semibold ">
@@ -363,7 +363,7 @@ export default function WorkoutHistoryPage() {
                           (acc: number, ex: Exercise) =>
                             acc +
                             ex.sets.filter((set: Set) => set.completed).length,
-                          0,
+                          0
                         )}
                       </p>
                     </div>
@@ -399,9 +399,9 @@ export default function WorkoutHistoryPage() {
                       {session.exercises.map((exercise: Exercise) => (
                         <div
                           key={exercise.id}
-                          className="border rounded-md p-2 text-sm"
+                          className="border rounded-md p-2 text-xs"
                         >
-                          <h4 className="font-semibold  tracking-heading text-xs md:text-sm truncate border-b pb-1 mb-1">
+                          <h4 className="font-semibold  tracking-heading text-xs md:text-xs truncate border-b pb-1 mb-1">
                             {exercise.exercise.name}
                           </h4>
 

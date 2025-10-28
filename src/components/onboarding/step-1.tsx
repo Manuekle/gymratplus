@@ -47,10 +47,10 @@ import {
 } from "@hugeicons/core-free-icons";
 
 const heightOptions = Array.from({ length: 81 }, (_, i) =>
-  (i + 140).toString(),
+  (i + 140).toString()
 ); // 140cm to 220cm
 const weightOptions = Array.from({ length: 141 }, (_, i) =>
-  (i + 40).toString(),
+  (i + 40).toString()
 ); // 40kg to 180kg
 
 const daysOfWeek = [
@@ -142,7 +142,7 @@ export default function StepOnboarding1() {
           return value.toISOString();
         }
         return value;
-      }),
+      })
     );
   };
 
@@ -239,7 +239,7 @@ export default function StepOnboarding1() {
             } else {
               console.warn(
                 "Fecha no válida detectada, enviando tal cual:",
-                payload.birthdate,
+                payload.birthdate
               );
             }
           } catch (e) {
@@ -301,7 +301,7 @@ export default function StepOnboarding1() {
             {[0, 1, 2, 3].map((step) => (
               <div key={step} className="flex flex-col items-center">
                 <div
-                  className={`w-8 h-8 rounded-full flex items-center text-xs md:text-sm justify-center ${
+                  className={`w-8 h-8 rounded-full flex items-center text-xs md:text-xs justify-center ${
                     step <= currentStep
                       ? "bg-zinc-900 text-white dark:bg-white dark:text-black border"
                       : "bg-background dark:bg-background border text-muted-foreground dark:text-gray-300"
@@ -325,7 +325,7 @@ export default function StepOnboarding1() {
               {currentStep === 0 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="gender">
+                    <Label className="text-xs md:text-xs" htmlFor="gender">
                       Genero
                     </Label>
                     <Select
@@ -334,7 +334,7 @@ export default function StepOnboarding1() {
                         updateFormData({ gender: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4 text-black dark:text-white">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -372,23 +372,23 @@ export default function StepOnboarding1() {
                             />
                           </svg>
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su género"
                           />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem className="text-xs md:text-sm" value="male">
+                        <SelectItem className="text-xs md:text-xs" value="male">
                           Masculino
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="female"
                         >
                           Femenino
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="other"
                         >
                           Otro
@@ -411,7 +411,7 @@ export default function StepOnboarding1() {
               {currentStep === 1 && (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="height">
+                    <Label className="text-xs md:text-xs" htmlFor="height">
                       Altura (cm)
                     </Label>
                     <Select
@@ -420,7 +420,7 @@ export default function StepOnboarding1() {
                         updateFormData({ height: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={RulerIcon}
@@ -433,7 +433,7 @@ export default function StepOnboarding1() {
                       <SelectContent>
                         {heightOptions.map((height) => (
                           <SelectItem
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             key={height}
                             value={height}
                           >
@@ -446,7 +446,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="currentWeight"
                     >
                       Peso Actual (kg)
@@ -457,7 +457,7 @@ export default function StepOnboarding1() {
                         updateFormData({ currentWeight: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={WeightScaleIcon}
@@ -479,7 +479,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="targetWeight"
                     >
                       Peso Objetivo (kg)
@@ -490,7 +490,7 @@ export default function StepOnboarding1() {
                         updateFormData({ targetWeight: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={BodyWeightIcon}
@@ -498,7 +498,7 @@ export default function StepOnboarding1() {
                             className="text-foreground"
                           />
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su peso objetivo"
                           />
                         </div>
@@ -506,7 +506,7 @@ export default function StepOnboarding1() {
                       <SelectContent>
                         {weightOptions.map((weight) => (
                           <SelectItem
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             key={weight}
                             value={weight}
                           >
@@ -523,7 +523,7 @@ export default function StepOnboarding1() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="activityLevel"
                     >
                       Nivel de actividad
@@ -534,7 +534,7 @@ export default function StepOnboarding1() {
                         updateFormData({ activityLevel: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={Activity03Icon}
@@ -542,39 +542,39 @@ export default function StepOnboarding1() {
                             className="text-foreground"
                           />
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su nivel de actividad"
                           />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="sedentary"
                         >
                           Sedentario (poco o ningún ejercicio)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="light"
                         >
                           Ligeramente activo (ejercicio ligero 1-3 días/semana)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="moderate"
                         >
                           Moderadamente activo (ejercicio moderado 3-5
                           días/semana)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="active"
                         >
                           Activo (ejercicio intenso 6-7 días/semana)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="very-active"
                         >
                           Muy activo (ejercicio muy intenso y trabajo físico)
@@ -585,7 +585,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="bodyFatPercentage"
                     >
                       Procentaje de grasa corporal
@@ -596,7 +596,7 @@ export default function StepOnboarding1() {
                         updateFormData({ bodyFatPercentage: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={PercentSquareIcon}
@@ -604,7 +604,7 @@ export default function StepOnboarding1() {
                             className="text-foreground"
                           />
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su porcentaje de grasa corporal"
                           />
                         </div>
@@ -613,31 +613,31 @@ export default function StepOnboarding1() {
                         {formData.gender === "male" ? (
                           <>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="essential"
                             >
                               Grasa esencial (5%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="athletes"
                             >
                               Atletas (6-13%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="fitness"
                             >
                               Forma física (14-17%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="average"
                             >
                               Promedio (18-24%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="above-average"
                             >
                               Por encima del promedio (25%+)
@@ -646,31 +646,31 @@ export default function StepOnboarding1() {
                         ) : (
                           <>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="essential"
                             >
                               Grasa esencial (8%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="athletes"
                             >
                               Atletas (14-20%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="fitness"
                             >
                               Forma física (21-24%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="average"
                             >
                               Promedio (25-31%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="above-average"
                             >
                               Por encima del promedio (32%+)
@@ -682,7 +682,7 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="muscleMass">
+                    <Label className="text-xs md:text-xs" htmlFor="muscleMass">
                       Masa muscular
                     </Label>
                     <Select
@@ -691,7 +691,7 @@ export default function StepOnboarding1() {
                         updateFormData({ muscleMass: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={BodyPartMuscleIcon}
@@ -699,7 +699,7 @@ export default function StepOnboarding1() {
                             className="text-foreground"
                           />
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su masa muscular"
                           />
                         </div>
@@ -708,25 +708,25 @@ export default function StepOnboarding1() {
                         {formData.gender === "male" ? (
                           <>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="low"
                             >
                               Bajo (menos del 40%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="healthy"
                             >
                               Saludable (40-45%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="athletic"
                             >
                               Atlético (45-50%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="high"
                             >
                               Alto (más del 50%)
@@ -735,25 +735,25 @@ export default function StepOnboarding1() {
                         ) : (
                           <>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="low"
                             >
                               Bajo (menos del 30%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="healthy"
                             >
                               Saludable (30-35%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="athletic"
                             >
                               Atlético (35-40%)
                             </SelectItem>
                             <SelectItem
-                              className="text-xs md:text-sm"
+                              className="text-xs md:text-xs"
                               value="high"
                             >
                               Alto (más del 40%)
@@ -765,14 +765,14 @@ export default function StepOnboarding1() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="goal">
+                    <Label className="text-xs md:text-xs" htmlFor="goal">
                       Objetivo
                     </Label>
                     <Select
                       value={formData.goal}
                       onValueChange={(value) => updateFormData({ goal: value })}
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={Target02Icon}
@@ -780,26 +780,26 @@ export default function StepOnboarding1() {
                             className="text-foreground"
                           />
                           <SelectValue
-                            className="text-xs md:text-sm"
+                            className="text-xs md:text-xs"
                             placeholder="Seleccione su objetivo"
                           />
                         </div>
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="lose-weight"
                         >
                           Perder peso
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="maintain"
                         >
                           Mantener peso
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="gain-muscle"
                         >
                           Ganar músculo
@@ -814,7 +814,7 @@ export default function StepOnboarding1() {
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="dailyActivity"
                     >
                       Actividad diaria
@@ -825,7 +825,7 @@ export default function StepOnboarding1() {
                         updateFormData({ dailyActivity: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         {/* <SelectValue placeholder="Select your daily activity" /> */}
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
@@ -858,7 +858,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="trainingFrequency"
                     >
                       Frecuencia de entrenamiento (dias por semana)
@@ -878,7 +878,7 @@ export default function StepOnboarding1() {
                           key={day.id}
                           value={day.id}
                           aria-label={day.label}
-                          className="w-10 h-10 text-xs md:text-sm"
+                          className="w-10 h-10 text-xs md:text-xs"
                         >
                           {day.label}
                         </ToggleGroupItem>
@@ -888,7 +888,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="preferredWorkoutTime"
                     >
                       Tiempo de entrenamiento
@@ -899,7 +899,7 @@ export default function StepOnboarding1() {
                         updateFormData({ preferredWorkoutTime: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={Clock01Icon}
@@ -911,34 +911,34 @@ export default function StepOnboarding1() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="early-morning"
                         >
                           Temprano en la mañana (5-8 AM)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="morning"
                         >
                           Mañana (8-11 AM)
                         </SelectItem>
-                        <SelectItem className="text-xs md:text-sm" value="noon">
+                        <SelectItem className="text-xs md:text-xs" value="noon">
                           Mediodía (11 AM-2 PM)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="afternoon"
                         >
                           Tarde (2-5 PM)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="evening"
                         >
                           Atardecer (5-8 PM)
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="night"
                         >
                           Noche (8-11 PM)
@@ -949,7 +949,7 @@ export default function StepOnboarding1() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="dietaryPreference"
                     >
                       Preferencia dietetica
@@ -960,7 +960,7 @@ export default function StepOnboarding1() {
                         updateFormData({ dietaryPreference: value })
                       }
                     >
-                      <SelectTrigger className="text-xs md:text-sm">
+                      <SelectTrigger className="text-xs md:text-xs">
                         <div className="flex flex-row items-center gap-4">
                           <HugeiconsIcon
                             icon={SteakIcon}
@@ -972,40 +972,40 @@ export default function StepOnboarding1() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="no-preference"
                         >
                           Sin preferencia específica
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="vegetarian"
                         >
                           Vegetariano
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="vegan"
                         >
                           Vegano
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="pescatarian"
                         >
                           Pescetariano
                         </SelectItem>
-                        <SelectItem className="text-xs md:text-sm" value="keto">
+                        <SelectItem className="text-xs md:text-xs" value="keto">
                           Keto
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="paleo"
                         >
                           Paleo
                         </SelectItem>
                         <SelectItem
-                          className="text-xs md:text-sm"
+                          className="text-xs md:text-xs"
                           value="mediterranean"
                         >
                           Mediterránea

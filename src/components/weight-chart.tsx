@@ -85,7 +85,7 @@ export function WeightChart() {
         );
       });
     },
-    [],
+    []
   );
 
   const loadData = useCallback(async () => {
@@ -104,13 +104,13 @@ export function WeightChart() {
             weight: record.weight,
             // Guardar la fecha original para ordenar y filtrar correctamente
             originalDate: new Date(record.date),
-          }),
+          })
         );
 
         // Ordenar por fecha
         const sortedData: WeightData[] = formattedData.sort(
           (a: WeightData, b: WeightData): number =>
-            a.originalDate.getTime() - b.originalDate.getTime(),
+            a.originalDate.getTime() - b.originalDate.getTime()
         );
 
         setChartData(sortedData);
@@ -127,7 +127,7 @@ export function WeightChart() {
       setError(
         error instanceof Error
           ? error.message
-          : "Error desconocido al cargar datos",
+          : "Error desconocido al cargar datos"
       );
     } finally {
       setIsLoading(false);
@@ -222,20 +222,20 @@ export function WeightChart() {
             <p className="text-red-500 mb-2">Error: {error}</p>
             <Button
               onClick={() => loadData()}
-              className="px-3 py-1 bg-primary text-white rounded-md text-sm"
+              className="px-3 py-1 bg-primary text-white rounded-md text-xs"
             >
               Reintentar
             </Button>
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-sm font-medium">
+            <p className="text-xs font-medium">
               No hay datos de peso disponibles
             </p>
           </div>
         ) : filteredData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-sm font-medium">
+            <p className="text-xs font-medium">
               No hay datos para el período seleccionado
             </p>
           </div>
@@ -298,11 +298,11 @@ export function WeightChart() {
 
       {filteredData.length > 0 && weightChange && (
         <div className="text-center">
-          <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
+          <p className="text-xs font-medium">{getTimePeriodLabel()}</p>
           <p className="text-xs text-muted-foreground mt-1">
             {weightChange.change < 0
               ? `Has perdido ${Math.abs(weightChange.change).toFixed(
-                  1,
+                  1
                 )} kg (de ${weightChange.firstWeight} kg a ${
                   weightChange.lastWeight
                 } kg)`

@@ -47,7 +47,7 @@ export default function NotificationsPage() {
 
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
   };
 
@@ -100,7 +100,7 @@ export default function NotificationsPage() {
           <h1 className="text-2xl font-semibold  tracking-heading">
             Notificaciones
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             Gestiona tus notificaciones y alertas
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function NotificationsPage() {
                   key={type}
                   checked={selectedTypes.includes(type)}
                   onCheckedChange={() => toggleType(type)}
-                  className="text-xs md:text-sm capitalize"
+                  className="text-xs md:text-xs capitalize"
                 >
                   {type.charAt(0).toUpperCase() + type.slice(1)}
                 </DropdownMenuCheckboxItem>
@@ -142,7 +142,7 @@ export default function NotificationsPage() {
 
       <Tabs defaultValue="all" className="w-full">
         <TabsList className="w-full max-w-md grid grid-cols-2">
-          <TabsTrigger className="text-sm" value="all">
+          <TabsTrigger className="text-xs" value="all">
             Todas
           </TabsTrigger>
           <TabsTrigger value="unread" disabled={unreadCount === 0}>
@@ -170,7 +170,7 @@ export default function NotificationsPage() {
                     icon={Notification03Icon}
                     className="h-12 w-12 text-muted-foreground opacity-30"
                   />
-                  <h3 className="font-medium text-sm">No hay notificaciones</h3>
+                  <h3 className="font-medium text-xs">No hay notificaciones</h3>
                   <p className="text-xs text-muted-foreground text-center max-w-sm">
                     No tienes notificaciones en este momento. Las nuevas
                     notificaciones aparecerán aquí.
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
                           ))}
                         </div>
                       </div>
-                    ),
+                    )
                   )}
                 </div>
               )}
@@ -225,7 +225,7 @@ export default function NotificationsPage() {
                   <h3 className="font-medium">
                     No hay notificaciones sin leer
                   </h3>
-                  <p className="text-sm text-muted-foreground text-center max-w-sm">
+                  <p className="text-xs text-muted-foreground text-center max-w-sm">
                     Has leído todas tus notificaciones. ¡Buen trabajo!
                   </p>
                 </div>

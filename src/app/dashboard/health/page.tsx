@@ -110,7 +110,7 @@ export default function HealthPage() {
           <div className="space-y-6">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-heading text-xs text-muted-foreground">
                   <HugeiconsIcon
                     icon={WeightScaleIcon}
                     className="mr-1 h-4 w-4"
@@ -124,7 +124,7 @@ export default function HealthPage() {
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
+                <div className="flex items-center font-semibold tracking-heading text-xs text-muted-foreground">
                   <HugeiconsIcon icon={RulerIcon} className="mr-1 h-4 w-4" />
                   Estatura
                 </div>
@@ -134,14 +134,14 @@ export default function HealthPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center text-sm text-muted-foreground">
+                <div className="flex items-center text-xs text-muted-foreground">
                   <HugeiconsIcon
                     icon={Activity01Icon}
                     className="mr-1 h-4 w-4"
                   />
                   IMC (Índice de Masa Corporal)
                 </div>
-                <span className="text-sm font-medium">{bmi.toFixed(0)}</span>
+                <span className="text-xs font-medium">{bmi.toFixed(0)}</span>
               </div>
               <Progress value={progressValue} className="h-2" />
               <div className="flex justify-between text-xs text-muted-foreground">
@@ -154,10 +154,10 @@ export default function HealthPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   Porcentaje de grasa corporal
                 </span>
-                <span className="text-sm font-medium">{bodyFat}%</span>
+                <span className="text-xs font-medium">{bodyFat}%</span>
               </div>
               <Progress value={bodyFat * 3} className="h-2" />
             </div>
@@ -178,7 +178,7 @@ export default function HealthPage() {
           <div className="space-y-2">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex flex-col space-y-2 w-full">
-                <label className="text-sm font-medium">Objetivo</label>
+                <label className="text-xs font-medium">Objetivo</label>
                 <Select disabled value={user?.goal ?? ""}>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Selecciona tu objetivo" />
@@ -216,7 +216,7 @@ export default function HealthPage() {
               </div>
 
               <div className="flex flex-col space-y-2 w-full">
-                <label className="text-sm font-medium">
+                <label className="text-xs font-medium">
                   Nivel de actividad física
                 </label>
                 <Select value={user?.dailyActivity ?? ""} disabled>

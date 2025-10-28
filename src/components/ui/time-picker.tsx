@@ -54,7 +54,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
         <Input
-          className="text-xs md:text-sm"
+          className="text-xs md:text-xs"
           value={`${selectedHour}:${selectedMinute}`}
           readOnly
         />
@@ -63,14 +63,14 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
         <div className="flex space-x-2">
           <Select value={selectedHour} onValueChange={handleHourChange}>
             <SelectTrigger className="w-[80px]">
-              <SelectValue className="text-xs md:text-sm" placeholder="Hora" />
+              <SelectValue className="text-xs md:text-xs" placeholder="Hora" />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 24 }, (_, i) =>
-                i.toString().padStart(2, "0"),
+                i.toString().padStart(2, "0")
               ).map((hour) => (
                 <SelectItem
-                  className="text-xs md:text-sm"
+                  className="text-xs md:text-xs"
                   key={hour}
                   value={hour}
                 >
@@ -83,16 +83,16 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
           <Select value={selectedMinute} onValueChange={handleMinuteChange}>
             <SelectTrigger className="w-[80px]">
               <SelectValue
-                className="text-xs md:text-sm"
+                className="text-xs md:text-xs"
                 placeholder="Minuto"
               />
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 60 }, (_, i) =>
-                i.toString().padStart(2, "0"),
+                i.toString().padStart(2, "0")
               ).map((minute) => (
                 <SelectItem
-                  className="text-xs md:text-sm"
+                  className="text-xs md:text-xs"
                   key={minute}
                   value={minute}
                 >

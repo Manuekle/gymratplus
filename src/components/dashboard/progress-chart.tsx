@@ -89,7 +89,7 @@ export default function ProgressChart() {
         );
       });
     },
-    [],
+    []
   );
 
   const loadData = useCallback(async () => {
@@ -114,7 +114,7 @@ export default function ProgressChart() {
         // Ordenar por fecha
         const sortedData: ProgressRecord[] = formattedData.sort(
           (a: ProgressRecord, b: ProgressRecord) =>
-            a.originalDate.getTime() - b.originalDate.getTime(),
+            a.originalDate.getTime() - b.originalDate.getTime()
         );
 
         setChartData(sortedData);
@@ -139,7 +139,7 @@ export default function ProgressChart() {
               ? "weight"
               : dataType === "bodyFat"
                 ? "bodyFat"
-                : "muscle",
+                : "muscle"
           );
 
           setProgressStats(stats);
@@ -158,7 +158,7 @@ export default function ProgressChart() {
       setError(
         error instanceof Error
           ? error.message
-          : "Error desconocido al cargar datos",
+          : "Error desconocido al cargar datos"
       );
     } finally {
       setIsLoading(false);
@@ -343,14 +343,14 @@ export default function ProgressChart() {
             <p className="text-red-500 mb-2">Error: {error}</p>
             <button
               onClick={() => loadData()}
-              className="px-3 py-1 bg-primary text-white rounded-md text-sm"
+              className="px-3 py-1 bg-primary text-white rounded-md text-xs"
             >
               Reintentar
             </button>
           </div>
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
-            <h3 className="text-sm font-medium">No hay datos disponibles</h3>
+            <h3 className="text-xs font-medium">No hay datos disponibles</h3>
             <p className="text-muted-foreground text-center text-xs mb-4">
               Asegúrate de establecer un objetivo para hacer seguimiento de tu
               progreso
@@ -423,7 +423,7 @@ export default function ProgressChart() {
       <div className="mt-4 text-center">
         {filteredData.length > 0 ? (
           <div>
-            <p className="text-sm font-medium">{getTimePeriodLabel()}</p>
+            <p className="text-xs font-medium">{getTimePeriodLabel()}</p>
             <p className="text-xs text-muted-foreground mt-1">
               {getProgressMessage()}
             </p>

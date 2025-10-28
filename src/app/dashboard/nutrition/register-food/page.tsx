@@ -136,13 +136,13 @@ export default function RegistrarComidaPage() {
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType),
+      recipe.mealType.includes(mealType)
   );
 
   const handleSubmit = async () => {
@@ -206,10 +206,10 @@ export default function RegistrarComidaPage() {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe",
+    type: "food" | "recipe"
   ) => {
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type,
+      (selected) => selected.id === item.id && selected.type === type
     );
 
     if (existingIndex >= 0) {
@@ -342,7 +342,7 @@ export default function RegistrarComidaPage() {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
   };
 
@@ -351,7 +351,7 @@ export default function RegistrarComidaPage() {
       return (
         <div className="flex flex-col gap-3 justify-center items-center py-16 text-muted-foreground">
           <Icons.spinner className="h-8 w-8 animate-spin" />
-          <p className="text-sm">Cargando...</p>
+          <p className="text-xs">Cargando...</p>
         </div>
       );
     }
@@ -361,7 +361,7 @@ export default function RegistrarComidaPage() {
     if (items.length === 0) {
       return (
         <div className="py-16 text-center">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             {searchQuery
               ? "No se encontraron resultados"
               : "No hay elementos disponibles"}
@@ -375,7 +375,7 @@ export default function RegistrarComidaPage() {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe",
+            activeTab === "foods" ? "food" : "recipe"
           );
 
           const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
@@ -392,7 +392,7 @@ export default function RegistrarComidaPage() {
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe",
+                  activeTab === "foods" ? "food" : "recipe"
                 )
               }
               className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm ${
@@ -475,7 +475,7 @@ export default function RegistrarComidaPage() {
                       />
                     </svg>
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs sm:text-sm font-semibold">
+                      <span className="text-xs sm:text-xs font-semibold">
                         {item.calories}
                       </span>
                     </div>
@@ -531,7 +531,7 @@ export default function RegistrarComidaPage() {
                 Tipo de comida
               </Label>
               <Select value={mealType} onValueChange={setMealType}>
-                <SelectTrigger className="h-10 w-full text-sm">
+                <SelectTrigger className="h-10 w-full text-xs">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -549,7 +549,7 @@ export default function RegistrarComidaPage() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start h-10 font-normal bg-transparent text-xs sm:text-sm"
+                    className="w-full justify-start h-10 font-normal bg-transparent text-xs sm:text-xs"
                   >
                     <HugeiconsIcon
                       icon={Calendar02Icon}
@@ -588,7 +588,7 @@ export default function RegistrarComidaPage() {
                   placeholder="Buscar..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 text-sm"
+                  className="pl-10 h-10 text-xs"
                 />
                 {searchQuery && (
                   <Button
@@ -610,7 +610,7 @@ export default function RegistrarComidaPage() {
                 <TabsList className="grid w-full grid-cols-2 h-10">
                   <TabsTrigger
                     value="foods"
-                    className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                    className="gap-1 sm:gap-2 text-xs sm:text-xs"
                   >
                     <HugeiconsIcon
                       icon={FishFoodIcon}
@@ -620,7 +620,7 @@ export default function RegistrarComidaPage() {
                   </TabsTrigger>
                   <TabsTrigger
                     value="recipes"
-                    className="gap-1 sm:gap-2 text-xs sm:text-sm"
+                    className="gap-1 sm:gap-2 text-xs sm:text-xs"
                   >
                     <HugeiconsIcon
                       icon={FavouriteIcon}
@@ -642,7 +642,7 @@ export default function RegistrarComidaPage() {
                 <Card className="border-muted/50">
                   <CardContent className="p-3 sm:p-4">
                     {selectedItems.length === 0 ? (
-                      <div className="text-center py-6 text-sm text-muted-foreground">
+                      <div className="text-center py-6 text-xs text-muted-foreground">
                         Selecciona alimentos para ver el resumen
                       </div>
                     ) : (
@@ -709,7 +709,7 @@ export default function RegistrarComidaPage() {
 
                         <div className="grid grid-cols-3 gap-2 mb-4">
                           <div className="text-center p-2 rounded-lg bg-blue-500/10">
-                            <div className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
                               {totals.protein.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
@@ -717,7 +717,7 @@ export default function RegistrarComidaPage() {
                             </div>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-amber-500/10">
-                            <div className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                            <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">
                               {totals.carbs.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
@@ -725,7 +725,7 @@ export default function RegistrarComidaPage() {
                             </div>
                           </div>
                           <div className="text-center p-2 rounded-lg bg-rose-500/10">
-                            <div className="text-sm font-semibold text-rose-600 dark:text-rose-400">
+                            <div className="text-xs font-semibold text-rose-600 dark:text-rose-400">
                               {totals.fat.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
@@ -775,7 +775,7 @@ export default function RegistrarComidaPage() {
                                 }
 
                                 const calories = Math.round(
-                                  data.calories * ratio,
+                                  data.calories * ratio
                                 );
 
                                 return (
@@ -785,7 +785,7 @@ export default function RegistrarComidaPage() {
                                   >
                                     <div className="flex items-start justify-between gap-2">
                                       <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-sm truncate">
+                                        <div className="font-medium text-xs truncate">
                                           {data.name}
                                         </div>
                                         <div className="text-xs text-muted-foreground">
@@ -824,7 +824,7 @@ export default function RegistrarComidaPage() {
                                               >
                                                 {unit.label}
                                               </SelectItem>
-                                            ),
+                                            )
                                           )}
                                         </SelectContent>
                                       </Select>
@@ -837,10 +837,7 @@ export default function RegistrarComidaPage() {
                                           onClick={() =>
                                             updateItemQuantity(
                                               index,
-                                              Math.max(
-                                                0.1,
-                                                item.quantity - 0.5,
-                                              ),
+                                              Math.max(0.1, item.quantity - 0.5)
                                             )
                                           }
                                         >
@@ -870,8 +867,8 @@ export default function RegistrarComidaPage() {
                                                     index,
                                                     Math.max(
                                                       1,
-                                                      Math.floor(numValue),
-                                                    ),
+                                                      Math.floor(numValue)
+                                                    )
                                                   );
                                                 }
                                               }
@@ -888,12 +885,12 @@ export default function RegistrarComidaPage() {
                                                       "Por favor ingresa un número mayor o igual a 1",
                                                     position: "top-center",
                                                     duration: 2000,
-                                                  },
+                                                  }
                                                 );
                                                 updateItemQuantity(index, 1);
                                               }
                                             }}
-                                            className="h-7 text-center text-sm w-full"
+                                            className="h-7 text-center text-xs w-full"
                                             placeholder="Cantidad"
                                           />
                                         </div>
@@ -904,7 +901,7 @@ export default function RegistrarComidaPage() {
                                           onClick={() =>
                                             updateItemQuantity(
                                               index,
-                                              item.quantity + 0.5,
+                                              item.quantity + 0.5
                                             )
                                           }
                                         >

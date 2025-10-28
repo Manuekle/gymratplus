@@ -77,7 +77,7 @@ export default function WorkoutsPage() {
         <CardContent>
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
-              <label className="text-sm font-medium">Rutina actual</label>
+              <label className="text-xs font-medium">Rutina actual</label>
               <Select disabled defaultValue="custom">
                 <SelectTrigger>
                   <SelectValue placeholder="Selecciona tu rutina" />
@@ -94,7 +94,7 @@ export default function WorkoutsPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center text-sm">
+                <div className="flex items-center text-xs">
                   {/* <Calendar02Icon className="mr-2 h-4 w-4 text-muted-foreground" /> */}
                   <span className="text-xs">
                     Días de entrenamiento por semana
