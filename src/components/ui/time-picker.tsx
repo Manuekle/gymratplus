@@ -27,12 +27,12 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
 
   useEffect(() => {
     if (value) {
-      const [hour = '00', minute = '00'] = value.split(":");
+      const [hour = "00", minute = "00"] = value.split(":");
       setSelectedHour(hour);
       setSelectedMinute(minute);
     } else {
-      setSelectedHour('00');
-      setSelectedMinute('00');
+      setSelectedHour("00");
+      setSelectedMinute("00");
     }
   }, [value]);
 
@@ -67,7 +67,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 24 }, (_, i) =>
-                i.toString().padStart(2, "0"),
+                i.toString().padStart(2, "0")
               ).map((hour) => (
                 <SelectItem
                   className="text-xs md:text-sm"
@@ -89,7 +89,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
             </SelectTrigger>
             <SelectContent>
               {Array.from({ length: 60 }, (_, i) =>
-                i.toString().padStart(2, "0"),
+                i.toString().padStart(2, "0")
               ).map((minute) => (
                 <SelectItem
                   className="text-xs md:text-sm"

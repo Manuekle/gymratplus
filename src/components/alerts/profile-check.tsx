@@ -105,14 +105,14 @@ const ProfileCheck = () => {
         if (session?.user) {
           const user = session.user;
           const profile = user.profile;
-          
+
           // Check for required profile fields
           const requiredProfileFields = [
-            'gender',
-            'birthdate',
-            'height',
-            'currentWeight',
-            'goal'
+            "gender",
+            "birthdate",
+            "height",
+            "currentWeight",
+            "goal",
           ];
 
           // Check if profile exists and has all required fields
@@ -121,10 +121,10 @@ const ProfileCheck = () => {
           } else {
             // Check if any required fields are missing or empty
             const missingFields = requiredProfileFields.filter(
-              field => !profile[field] || profile[field] === ""
+              (field) => !profile[field] || profile[field] === ""
             );
-            
-            console.log('Profile check debug:', {
+
+            console.log("Profile check debug:", {
               hasProfile: !!profile,
               missingFields,
               profile: {
@@ -132,10 +132,10 @@ const ProfileCheck = () => {
                 birthdate: profile.birthdate,
                 height: profile.height,
                 currentWeight: profile.currentWeight,
-                goal: profile.goal
-              }
+                goal: profile.goal,
+              },
             });
-            
+
             // Show alert if any required fields are missing
             showProfileAlert = missingFields.length > 0;
           }
@@ -171,7 +171,7 @@ const ProfileCheck = () => {
 
   return (
     <>
-      {isLoading || status === "loading" ? (
+      {/* {isLoading || status === "loading" ? (
         <div className="fixed inset-0 dark:bg-black/80 bg-black/50 flex items-center justify-center z-50">
           <div className="flex flex-col items-center space-y-4">
             <div className="h-12 w-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
@@ -180,7 +180,7 @@ const ProfileCheck = () => {
             </p>
           </div>
         </div>
-      ) : null}
+      ) : null} */}
 
       <AlertDialog open={showAlert && !isLoading} onOpenChange={setShowAlert}>
         <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8">

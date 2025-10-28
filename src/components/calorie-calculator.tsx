@@ -23,11 +23,21 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { useSession } from "next-auth/react";
+
 import { toast } from "sonner";
 import { Icons } from "./icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BroccoliIcon, CheeseIcon, Dish01Icon, PresentationBarChart02Icon, Pulse01Icon, SmileIcon, Target02Icon, Tick02Icon,  } from "@hugeicons/core-free-icons";
-
+import {
+  BroccoliIcon,
+  CheeseIcon,
+  Dish01Icon,
+  PresentationBarChart02Icon,
+  Pulse01Icon,
+  SmileIcon,
+  Target02Icon,
+  Tick02Icon,
+} from "@hugeicons/core-free-icons";
 
 type FormData = {
   gender: "male" | "female";
@@ -51,6 +61,10 @@ export function CalorieCalculator() {
     dailyFatTarget: number;
   } | null>(null);
 
+  const { data: session } = useSession();
+
+  const profile = session?.user?.profile;
+
   const {
     register,
     handleSubmit,
@@ -59,21 +73,27 @@ export function CalorieCalculator() {
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
-      gender: "male" as "male" | "female",
-      age: 0,
-      weight: 0,
-      height: 0,
-      activityLevel: "moderate" as
-        | "sedentary"
-        | "light"
-        | "moderate"
-        | "active"
-        | "very_active",
-      goal: "maintain" as "lose-weight" | "maintain" | "gain-muscle",
-      dietaryPreference: "no-preference" as
-        | "no-preference"
-        | "vegetarian"
-        | "keto",
+      gender: (profile?.gender as "male" | "female") || "male",
+      age: profile?.birthdate
+        ? new Date().getFullYear() - new Date(profile.birthdate).getFullYear()
+        : 25,
+      weight: profile?.currentWeight || 70,
+      height: profile?.height || 170,
+      activityLevel:
+        (profile?.activityLevel as
+          | "sedentary"
+          | "light"
+          | "moderate"
+          | "active"
+          | "very_active") || "moderate",
+      goal:
+        (profile?.goal as "lose-weight" | "maintain" | "gain-muscle") ||
+        "maintain",
+      dietaryPreference:
+        (profile?.dietaryPreference as
+          | "no-preference"
+          | "vegetarian"
+          | "keto") || "no-preference",
     },
   });
 
@@ -169,7 +189,11 @@ export function CalorieCalculator() {
     <HugeiconsIcon icon={SmileIcon} key="user" className="h-6 w-6" />,
     <HugeiconsIcon icon={Pulse01Icon} key="activity" className="h-6 w-6" />,
     <HugeiconsIcon icon={Target02Icon} key="target" className="h-6 w-6" />,
-    <HugeiconsIcon icon={PresentationBarChart02Icon} key="results" className="h-6 w-6" />,
+    <HugeiconsIcon
+      icon={PresentationBarChart02Icon}
+      key="results"
+      className="h-6 w-6"
+    />,
   ];
 
   return (
@@ -191,7 +215,7 @@ export function CalorieCalculator() {
         </DialogHeader>
 
         {/* Indicador de pasos */}
-        <div className="flex justify-between mb-6 px-2">
+        <div className="flex justify-between  px-2">
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div key={i} className="flex flex-col items-center">
               <div
@@ -232,7 +256,7 @@ export function CalorieCalculator() {
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="gender">
+                  <Label className="text-xs md:text-xs" htmlFor="gender">
                     Género
                   </Label>
                   <RadioGroup
@@ -246,7 +270,7 @@ export function CalorieCalculator() {
                       <RadioGroupItem value="male" id="male" />
                       <Label
                         htmlFor="male"
-                        className="font-normal text-xs md:text-sm"
+                        className="font-normal text-xs md:text-xs"
                       >
                         Masculino
                       </Label>
@@ -255,7 +279,7 @@ export function CalorieCalculator() {
                       <RadioGroupItem value="female" id="female" />
                       <Label
                         htmlFor="female"
-                        className="font-normal text-xs md:text-sm"
+                        className="font-normal text-xs md:text-xs"
                       >
                         Femenino
                       </Label>
@@ -264,11 +288,11 @@ export function CalorieCalculator() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="age">
+                  <Label className="text-xs md:text-xs" htmlFor="age">
                     Edad
                   </Label>
                   <Input
-                    className="text-xs md:text-sm"
+                    className="text-xs md:text-xs"
                     id="age"
                     type="number"
                     {...register("age", {
@@ -287,11 +311,11 @@ export function CalorieCalculator() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="weight">
+                    <Label className="text-xs md:text-xs" htmlFor="weight">
                       Peso (kg)
                     </Label>
                     <Input
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="weight"
                       type="number"
                       step="0.1"
@@ -310,11 +334,11 @@ export function CalorieCalculator() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="height">
+                    <Label className="text-xs md:text-xs" htmlFor="height">
                       Altura (cm)
                     </Label>
                     <Input
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       id="height"
                       type="number"
                       {...register("height", {
@@ -344,11 +368,11 @@ export function CalorieCalculator() {
                 className="space-y-6"
               >
                 <div className="space-y-2">
-                  <Label className="text-xs md:text-sm" htmlFor="activityLevel">
+                  <Label className="text-xs md:text-xs" htmlFor="activityLevel">
                     Nivel de Actividad
                   </Label>
                   <Select
-                    defaultValue={formValues.activityLevel}
+                    value={formValues.activityLevel}
                     onValueChange={(value) =>
                       setValue(
                         "activityLevel",
@@ -357,61 +381,67 @@ export function CalorieCalculator() {
                           | "light"
                           | "moderate"
                           | "active"
-                          | "very_active",
+                          | "very_active"
                       )
                     }
                   >
-                    <SelectTrigger className="text-xs md:text-sm">
+                    <SelectTrigger className="h-full px-4 text-center text-xs border-border/60 hover:border-border transition-colors">
                       <SelectValue placeholder="Selecciona tu nivel de actividad" />
                     </SelectTrigger>
-                    <SelectContent>
+                    <SelectContent className="p-1">
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="px-4 py-3 text-xs cursor-pointer focus:bg-accent/50"
                         value="sedentary"
                       >
-                        <div className="flex flex-col">
-                          <span>Sedentario</span>
-                          <span className="text-xs text-muted-foreground">
+                        <div className="space-y-0.5">
+                          <div className="font-medium">Sedentario</div>
+                          <div className="text-xs text-muted-foreground">
                             Poco o ningún ejercicio
-                          </span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem className="text-xs md:text-sm" value="light">
-                        <div className="flex flex-col">
-                          <span>Ligero</span>
-                          <span className="text-xs text-muted-foreground">
-                            Ejercicio 1-3 días/semana
-                          </span>
+                          </div>
                         </div>
                       </SelectItem>
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="px-4 py-3 text-xs cursor-pointer focus:bg-accent/50"
+                        value="light"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="font-medium">Ligero</div>
+                          <div className="text-xs text-muted-foreground">
+                            Ejercicio 1-3 días/semana
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem
+                        className="px-4 py-3 text-xs cursor-pointer focus:bg-accent/50"
                         value="moderate"
                       >
-                        <div className="flex flex-col">
-                          <span>Moderado</span>
-                          <span className="text-xs text-muted-foreground">
+                        <div className="space-y-0.5">
+                          <div className="font-medium">Moderado</div>
+                          <div className="text-xs text-muted-foreground">
                             Ejercicio 3-5 días/semana
-                          </span>
-                        </div>
-                      </SelectItem>
-                      <SelectItem className="text-xs md:text-sm" value="active">
-                        <div className="flex flex-col">
-                          <span>Activo</span>
-                          <span className="text-xs text-muted-foreground">
-                            Ejercicio intenso 6-7 días/semana
-                          </span>
+                          </div>
                         </div>
                       </SelectItem>
                       <SelectItem
-                        className="text-xs md:text-sm"
+                        className="px-4 py-3 text-xs cursor-pointer focus:bg-accent/50"
+                        value="active"
+                      >
+                        <div className="space-y-0.5">
+                          <div className="font-medium">Activo</div>
+                          <div className="text-xs text-muted-foreground">
+                            Ejercicio intenso 6-7 días/semana
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem
+                        className="px-4 py-3 text-xs cursor-pointer focus:bg-accent/50"
                         value="very_active"
                       >
-                        <div className="flex flex-col">
-                          <span>Muy activo</span>
-                          <span className="text-xs text-muted-foreground">
+                        <div className="space-y-0.5">
+                          <div className="font-medium">Muy activo</div>
+                          <div className="text-xs text-muted-foreground">
                             Ejercicio muy intenso, trabajo físico
-                          </span>
+                          </div>
                         </div>
                       </SelectItem>
                     </SelectContent>
@@ -431,15 +461,15 @@ export function CalorieCalculator() {
               >
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label className="text-xs md:text-sm" htmlFor="goal">
+                    <Label className="text-xs md:text-xs" htmlFor="goal">
                       Objetivo
                     </Label>
                     <div className="grid grid-cols-3 gap-2">
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.goal === "lose-weight"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() => setValue("goal", "lose-weight")}
                       >
@@ -452,8 +482,8 @@ export function CalorieCalculator() {
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.goal === "maintain"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() => setValue("goal", "maintain")}
                       >
@@ -464,8 +494,8 @@ export function CalorieCalculator() {
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.goal === "gain-muscle"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() => setValue("goal", "gain-muscle")}
                       >
@@ -480,7 +510,7 @@ export function CalorieCalculator() {
 
                   <div className="space-y-2">
                     <Label
-                      className="text-xs md:text-sm"
+                      className="text-xs md:text-xs"
                       htmlFor="dietaryPreference"
                     >
                       Preferencia Dietética
@@ -489,15 +519,18 @@ export function CalorieCalculator() {
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.dietaryPreference === "no-preference"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "no-preference")
                         }
                       >
                         <div className="flex flex-col items-center">
-                          <HugeiconsIcon icon={Dish01Icon} className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon
+                            icon={Dish01Icon}
+                            className="h-5 w-5 mb-1"
+                          />
                           <span className="text-xs font-medium">
                             Sin preferencia
                           </span>
@@ -506,15 +539,18 @@ export function CalorieCalculator() {
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.dietaryPreference === "vegetarian"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "vegetarian")
                         }
                       >
                         <div className="flex flex-col items-center">
-                          <HugeiconsIcon icon={BroccoliIcon} className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon
+                            icon={BroccoliIcon}
+                            className="h-5 w-5 mb-1"
+                          />
                           <span className="text-xs font-medium">
                             Vegetariano
                           </span>
@@ -523,13 +559,16 @@ export function CalorieCalculator() {
                       <div
                         className={`border rounded-lg p-3 text-center cursor-pointer transition-all transform ${
                           formValues.dietaryPreference === "keto"
-                            ? "border-zinc-200 shadow-sm dark:border-zinc-500"
-                            : "border hover:border-zinc-200 dark:hover:border-zinc-500"
+                            ? "bg-black text-white border-0 hover:bg-black/80 transition-colors dark:bg-white dark:text-black dark:hover:bg-white/80 dark:hover:text-black dark:hover:border-0"
+                            : "border hover:border-zinc-200 dark:hover:border-zinc-300 transition-colors hover:shadow-sm dark:hover:shadow-sm  dark:hover:bg-white dark:hover:text-black"
                         }`}
                         onClick={() => setValue("dietaryPreference", "keto")}
                       >
                         <div className="flex flex-col items-center">
-                          <HugeiconsIcon icon={CheeseIcon} className="h-5 w-5 mb-1" />
+                          <HugeiconsIcon
+                            icon={CheeseIcon}
+                            className="h-5 w-5 mb-1"
+                          />
                           <span className="text-xs font-medium">Keto</span>
                         </div>
                       </div>
@@ -577,7 +616,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyProteinTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.1 }}
@@ -600,7 +639,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyCarbTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.2 }}
@@ -623,7 +662,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyFatTarget * 9) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.3 }}
@@ -633,7 +672,7 @@ export function CalorieCalculator() {
                 </div>
 
                 <div className="pt-2">
-                  <h3 className="text-sm font-medium mb-2">Recomendaciones</h3>
+                  <h3 className="text-xs font-medium mb-2">Recomendaciones</h3>
                   <motion.ul
                     className="list-disc pl-5 space-y-1 text-xs text-muted-foreground"
                     initial={{ opacity: 0 }}

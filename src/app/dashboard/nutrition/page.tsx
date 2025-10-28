@@ -21,12 +21,15 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { CalorieChart } from "@/components/calorie-chart";
 import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
-import { AddMealLogButton } from "@/components/nutrition/add-meal-log-button";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CalorieCalculator } from "@/components/calorie-calculator";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Bread04Icon, FishFoodIcon, SteakIcon } from "@hugeicons/core-free-icons";
+import {
+  Bread04Icon,
+  FishFoodIcon,
+  SteakIcon,
+} from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
@@ -292,8 +295,8 @@ export default function NutritionPage() {
                         Math.round(
                           ((todayData?.todayTotals.calories ?? 0) /
                             (user?.nutrition.calorieTarget ?? 1)) *
-                            100,
-                        ),
+                            100
+                        )
                       )}
                       %
                     </span>
@@ -321,7 +324,11 @@ export default function NutritionPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div className="flex items-center gap-2">
-                      <HugeiconsIcon icon={SteakIcon} size={18} className="text-muted-foreground" />
+                      <HugeiconsIcon
+                        icon={SteakIcon}
+                        size={18}
+                        className="text-muted-foreground"
+                      />
                       <span className="text-xs">Proteínas</span>
                     </div>
                     <div className="text-xs">
@@ -352,7 +359,9 @@ export default function NutritionPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div className="flex items-center gap-2">
-                      <HugeiconsIcon icon={Bread04Icon} size={18}
+                      <HugeiconsIcon
+                        icon={Bread04Icon}
+                        size={18}
                         className="text-muted-foreground"
                       />
                       <span className="text-xs">Carbohidratos</span>
@@ -385,7 +394,9 @@ export default function NutritionPage() {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <div className="flex items-center gap-2">
-                      <HugeiconsIcon icon={FishFoodIcon} size={18}
+                      <HugeiconsIcon
+                        icon={FishFoodIcon}
+                        size={18}
                         className="text-muted-foreground"
                       />
                       <span className="text-xs">Grasas</span>
@@ -429,10 +440,14 @@ export default function NutritionPage() {
                 </CardDescription>
               </span>
               <div className="flex flex-row gap-2 items-center">
-                <AddMealLogButton />
                 <Link href="/dashboard/nutrition/food-plans">
                   <Button size="sm" className="text-xs" variant="outline">
                     Ver Planes de Comida
+                  </Button>
+                </Link>
+                <Link href="/dashboard/nutrition/register-food">
+                  <Button size="sm" className="text-xs" variant="default">
+                    Registrar Comida
                   </Button>
                 </Link>
               </div>
