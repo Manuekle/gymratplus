@@ -8,11 +8,14 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
-    
+
     if (!id) {
-      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Progress ID is required" },
+        { status: 400 },
+      );
     }
-    
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {
@@ -61,7 +64,10 @@ export async function PUT(request: NextRequest) {
     const id = url.pathname.split("/").pop();
 
     if (!id) {
-      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Progress ID is required" },
+        { status: 400 },
+      );
     }
 
     const session = await getServerSession(authOptions);
@@ -102,7 +108,7 @@ export async function PUT(request: NextRequest) {
 
     // Preparar datos para actualización
     const updateData: any = {};
-    
+
     if (weight !== undefined) {
       updateData.weight = Number.parseFloat(weight);
     }
@@ -168,7 +174,10 @@ export async function DELETE(request: NextRequest) {
     const id = url.pathname.split("/").pop();
 
     if (!id) {
-      return NextResponse.json({ error: "Progress ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Progress ID is required" },
+        { status: 400 },
+      );
     }
 
     const session = await getServerSession(authOptions);

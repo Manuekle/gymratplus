@@ -47,7 +47,10 @@ export async function GET(req: NextRequest) {
     console.log(`Found ${goals.length} goals`);
 
     // Asegurar que userId está presente en la respuesta
-    const goalsWithUserId = goals.map(goal => ({ ...goal, userId: goal.userId }));
+    const goalsWithUserId = goals.map((goal) => ({
+      ...goal,
+      userId: goal.userId,
+    }));
 
     return NextResponse.json(goalsWithUserId);
   } catch (error) {
@@ -132,7 +135,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No autorizado - ID de usuario no disponible" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 

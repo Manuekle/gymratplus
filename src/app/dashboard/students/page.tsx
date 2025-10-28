@@ -22,7 +22,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { InstructorProfileForm } from "@/components/instructor/instructor-profile-form";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Dollar02Icon, FireIcon, Target01Icon, Tick02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight01Icon,
+  Dollar02Icon,
+  FireIcon,
+  Target01Icon,
+  Tick02Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
 
 interface StudentData {
   id: string;
@@ -56,7 +63,7 @@ export default function InstructorDashboardPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [students, setStudents] = useState<StudentData[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>(
-    []
+    [],
   );
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [stats, setStats] = useState<{
@@ -78,10 +85,11 @@ export default function InstructorDashboardPage() {
       const data: (StudentData | PendingRequestData)[] = await response.json();
 
       const activeStudents = data.filter(
-        (item): item is StudentData => item.status === "accepted" || item.status === "active"
+        (item): item is StudentData =>
+          item.status === "accepted" || item.status === "active",
       );
       const pRequests = data.filter(
-        (item): item is PendingRequestData => item.status === "pending"
+        (item): item is PendingRequestData => item.status === "pending",
       );
 
       setStudents(activeStudents);
@@ -139,7 +147,7 @@ export default function InstructorDashboardPage() {
         `/api/student-instructor-requests/${requestId}/accept`,
         {
           method: "PUT",
-        }
+        },
       );
       if (!response.ok) {
         const errorData = await response.json();
@@ -197,7 +205,10 @@ export default function InstructorDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
-            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={UserGroupIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold tracking-heading">
@@ -214,7 +225,10 @@ export default function InstructorDashboardPage() {
             <CardTitle className="text-sm font-medium">
               Planes Activos
             </CardTitle>
-            <HugeiconsIcon icon={Target01Icon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Target01Icon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold tracking-heading">
@@ -231,7 +245,10 @@ export default function InstructorDashboardPage() {
             <CardTitle className="text-sm font-medium">
               Racha Promedio
             </CardTitle>
-            <HugeiconsIcon icon={FireIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={FireIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold tracking-heading">
@@ -244,7 +261,10 @@ export default function InstructorDashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Ingresos</CardTitle>
-            <HugeiconsIcon icon={Dollar02Icon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Dollar02Icon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-semibold tracking-heading">
@@ -307,7 +327,10 @@ export default function InstructorDashboardPage() {
                         onClick={() => handleAcceptRequest(request.id)}
                         className="text-xs w-full md:w-auto"
                       >
-                        <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4 mr-0 md:mr-1" />
+                        <HugeiconsIcon
+                          icon={Tick02Icon}
+                          className="h-4 w-4 mr-0 md:mr-1"
+                        />
                         <span className="hidden md:inline">Aceptar</span>
                       </Button>
                     </div>
@@ -338,7 +361,8 @@ export default function InstructorDashboardPage() {
               href="/dashboard/students/list"
               className="text-xs text-muted-foreground flex items-center gap-1 w-full md:w-1/6 justify-end mt-2 md:mt-0"
             >
-              Ver todos <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+              Ver todos{" "}
+              <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
             </Link>
           </div>
         </CardHeader>
@@ -415,7 +439,10 @@ export default function InstructorDashboardPage() {
                           )}
                           {!student.hasActiveWorkoutPlan &&
                             !student.hasActiveMealPlan && (
-                              <Badge variant="outline" className="text-xs whitespace-nowrap">
+                              <Badge
+                                variant="outline"
+                                className="text-xs whitespace-nowrap"
+                              >
                                 Sin planes activos
                               </Badge>
                             )}
@@ -456,7 +483,10 @@ export default function InstructorDashboardPage() {
                   <Button variant="ghost" size="sm" className="w-full" asChild>
                     <Link href="/dashboard/instructors/students">
                       Ver todos los alumnos ({students.length})
-                      <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4 ml-1" />
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        className="h-4 w-4 ml-1"
+                      />
                     </Link>
                   </Button>
                 </div>

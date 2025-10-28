@@ -20,7 +20,14 @@ import { es } from "date-fns/locale";
 
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Activity02Icon, ArrowLeft01Icon, Clock01Icon, Dumbbell01Icon, FireIcon, Target01Icon } from "@hugeicons/core-free-icons";
+import {
+  Activity02Icon,
+  ArrowLeft01Icon,
+  Clock01Icon,
+  Dumbbell01Icon,
+  FireIcon,
+  Target01Icon,
+} from "@hugeicons/core-free-icons";
 import {
   Dialog,
   DialogContent,
@@ -28,7 +35,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-
 
 interface StudentDetail {
   id: string;
@@ -153,7 +159,8 @@ export default function StudentDetailPage() {
         </p>
         <Button asChild variant="outline">
           <Link href="/dashboard/students/list">
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" /> Volver
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
+            Volver
           </Link>
         </Button>
       </div>
@@ -164,7 +171,8 @@ export default function StudentDetailPage() {
     <div className="max-w-2xl mx-auto py-10 space-y-8">
       <Button asChild variant="ghost" size="sm">
         <Link href="/dashboard/students/list">
-          <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" /> Volver
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
+          Volver
         </Link>
       </Button>
       <Card>
@@ -178,7 +186,9 @@ export default function StudentDetailPage() {
               {student.name?.charAt(0).toUpperCase() || "A"}
             </AvatarFallback>
           </Avatar>
-          <h2 className="text-2xl font-semibold tracking-heading mb-1">{student.name}</h2>
+          <h2 className="text-2xl font-semibold tracking-heading mb-1">
+            {student.name}
+          </h2>
           <p className="text-xs text-muted-foreground mb-2">{student.email}</p>
           <div className="flex gap-2 mb-2">
             <Badge
@@ -238,7 +248,9 @@ export default function StudentDetailPage() {
       </Card>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-semibold tracking-heading">Rutinas asignadas</CardTitle>
+          <CardTitle className="text-2xl font-semibold tracking-heading">
+            Rutinas asignadas
+          </CardTitle>
           <CardDescription className="text-xs">
             Rutinas que le has creado y asignado a este alumno.
           </CardDescription>
@@ -267,7 +279,9 @@ export default function StudentDetailPage() {
                   <CardContent className="py-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
                       <div>
-                        <h3 className="text-2xl font-semibold tracking-heading mb-1">{w.name}</h3>
+                        <h3 className="text-2xl font-semibold tracking-heading mb-1">
+                          {w.name}
+                        </h3>
                         <p className="text-xs text-muted-foreground mb-1">
                           Asignada:{" "}
                           {format(new Date(w.assignedDate), "d MMM yyyy", {
@@ -319,93 +333,114 @@ export default function StudentDetailPage() {
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent className="py-8 xl:p-8">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold tracking-heading">Detalle de rutina</DialogTitle>
+            <DialogTitle className="text-2xl font-semibold tracking-heading">
+              Detalle de rutina
+            </DialogTitle>
             <DialogDescription className="text-xs text-muted-foreground">
               Información completa de la rutina asignada.
             </DialogDescription>
           </DialogHeader>
-          {selectedWorkout && (() => {
-            // Agrupar ejercicios por día (notes o day)
-            type AssignedWorkoutExercise = typeof selectedWorkout.exercises[number];
-            const grouped: Record<string, AssignedWorkoutExercise[]> = {};
-            selectedWorkout.exercises.forEach((ex) => {
-              const day = ex.notes || ex.day || "Día único";
-              if (!grouped[day]) grouped[day] = [];
-              grouped[day].push(ex);
-            });
-            const days = Object.keys(grouped);
-            // Encabezado visual
-            return (
-              <div className="space-y-2">
-                <div className="flex items-center gap-3 mb-2">
-                  <div>
-                    <h3 className="font-semibold text-lg leading-tight">{selectedWorkout.name}</h3>
-                    <div className="flex gap-2 flex-wrap text-xs mt-1">
-                      <Badge variant="secondary">
-                        Asignada: {format(new Date(selectedWorkout.assignedDate), "d MMM yyyy", { locale: es })}
-                      </Badge>
-                      {selectedWorkout.dueDate && (
+          {selectedWorkout &&
+            (() => {
+              // Agrupar ejercicios por día (notes o day)
+              type AssignedWorkoutExercise =
+                (typeof selectedWorkout.exercises)[number];
+              const grouped: Record<string, AssignedWorkoutExercise[]> = {};
+              selectedWorkout.exercises.forEach((ex) => {
+                const day = ex.notes || ex.day || "Día único";
+                if (!grouped[day]) grouped[day] = [];
+                grouped[day].push(ex);
+              });
+              const days = Object.keys(grouped);
+              // Encabezado visual
+              return (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div>
+                      <h3 className="font-semibold text-lg leading-tight">
+                        {selectedWorkout.name}
+                      </h3>
+                      <div className="flex gap-2 flex-wrap text-xs mt-1">
                         <Badge variant="secondary">
-                          Vence: {format(new Date(selectedWorkout.dueDate), "d MMM yyyy", { locale: es })}
+                          Asignada:{" "}
+                          {format(
+                            new Date(selectedWorkout.assignedDate),
+                            "d MMM yyyy",
+                            { locale: es },
+                          )}
                         </Badge>
-                      )}
-                      {selectedWorkout.status && (
-                        <Badge variant="outline" className="text-xs">
-                          {selectedWorkout.status}
-                        </Badge>
-                      )}
+                        {selectedWorkout.dueDate && (
+                          <Badge variant="secondary">
+                            Vence:{" "}
+                            {format(
+                              new Date(selectedWorkout.dueDate),
+                              "d MMM yyyy",
+                              { locale: es },
+                            )}
+                          </Badge>
+                        )}
+                        {selectedWorkout.status && (
+                          <Badge variant="outline" className="text-xs">
+                            {selectedWorkout.status}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-                {selectedWorkout.description && (
-                  <p className="text-sm text-muted-foreground mb-2">
-                    {selectedWorkout.description}
-                  </p>
-                )}
-                {selectedWorkout.notes && (
-                  <p className="text-xs mb-2 bg-muted/50 rounded px-2 py-1">
-                    <span className="font-medium">Notas:</span> {selectedWorkout.notes}
-                  </p>
-                )}
-                <Separator />                
-                {selectedWorkout.exercises.length === 0 ? (
-                  <p className="text-xs text-muted-foreground">
-                    No hay ejercicios registrados.
-                  </p>
-                ) : (
-                  <Tabs defaultValue={days[0]} className="w-full">
-                    <TabsList className="flex flex-wrap h-auto gap-4">
+                  {selectedWorkout.description && (
+                    <p className="text-sm text-muted-foreground mb-2">
+                      {selectedWorkout.description}
+                    </p>
+                  )}
+                  {selectedWorkout.notes && (
+                    <p className="text-xs mb-2 bg-muted/50 rounded px-2 py-1">
+                      <span className="font-medium">Notas:</span>{" "}
+                      {selectedWorkout.notes}
+                    </p>
+                  )}
+                  <Separator />
+                  {selectedWorkout.exercises.length === 0 ? (
+                    <p className="text-xs text-muted-foreground">
+                      No hay ejercicios registrados.
+                    </p>
+                  ) : (
+                    <Tabs defaultValue={days[0]} className="w-full">
+                      <TabsList className="flex flex-wrap h-auto gap-4">
+                        {days.map((day) => (
+                          <TabsTrigger
+                            key={day}
+                            value={day}
+                            className="text-xs flex-1"
+                          >
+                            {day}
+                          </TabsTrigger>
+                        ))}
+                      </TabsList>
                       {days.map((day) => (
-                        <TabsTrigger
-                          key={day}
-                          value={day}
-                          className="text-xs flex-1"
-                        >
-                          {day}
-                        </TabsTrigger>
+                        <TabsContent key={day} value={day}>
+                          <div className="flex flex-wrap gap-2">
+                            {(grouped[day] ?? []).map(
+                              (ex: AssignedWorkoutExercise, idx: number) => (
+                                <div
+                                  key={ex.id || idx}
+                                  className="flex items-center gap-2 px-3 py-1.5 border rounded-full text-xs bg-muted"
+                                >
+                                  <span className="font-medium">
+                                    {ex.exercise?.name || ex.name} ({ex.sets}x
+                                    {ex.reps}
+                                    {ex.restTime ? ` - ${ex.restTime}s` : ""})
+                                  </span>
+                                </div>
+                              ),
+                            )}
+                          </div>
+                        </TabsContent>
                       ))}
-                    </TabsList>
-                    {days.map((day) => (
-                      <TabsContent key={day} value={day}>
-                        <div className="flex flex-wrap gap-2">
-                          {(grouped[day] ?? []).map((ex: AssignedWorkoutExercise, idx: number) => (
-                            <div
-                              key={ex.id || idx}
-                              className="flex items-center gap-2 px-3 py-1.5 border rounded-full text-xs bg-muted"
-                            >
-                              <span className="font-medium">
-                                {ex.exercise?.name || ex.name} ({ex.sets}x{ex.reps}{ex.restTime ? ` - ${ex.restTime}s` : ""})
-                              </span>
-                            </div>
-                          ))}
-                        </div>
-                      </TabsContent>
-                    ))}
-                  </Tabs>
-                )}
-              </div>
-            );
-          })()}
+                    </Tabs>
+                  )}
+                </div>
+              );
+            })()}
         </DialogContent>
       </Dialog>
     </div>

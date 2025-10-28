@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { FireIcon } from "@hugeicons/core-free-icons";
 
-
 interface StreakAlertProps {
   streak: number;
   show: boolean;
@@ -61,7 +60,9 @@ export function StreakAlert({ streak, show, onClose }: StreakAlertProps) {
                 repeatType: "reverse",
               }}
             >
-              <HugeiconsIcon icon={FireIcon} className={`w-8 h-8 ${streakLevel.color}`}
+              <HugeiconsIcon
+                icon={FireIcon}
+                className={`w-8 h-8 ${streakLevel.color}`}
                 style={{ transform: `scale(${streakLevel.scale})` }}
               />
             </motion.div>

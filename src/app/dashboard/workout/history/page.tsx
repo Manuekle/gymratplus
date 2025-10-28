@@ -12,7 +12,14 @@ import { es } from "date-fns/locale";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Progress } from "@/components/ui/progress";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, Calendar01Icon, Calendar02Icon, CheckmarkCircle02Icon, Clock02Icon, Dumbbell01Icon,  } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  Calendar01Icon,
+  Calendar02Icon,
+  CheckmarkCircle02Icon,
+  Clock02Icon,
+  Dumbbell01Icon,
+} from "@hugeicons/core-free-icons";
 // import { Icons } from "@/components/icons";
 
 export default function WorkoutHistoryPage() {
@@ -192,7 +199,8 @@ export default function WorkoutHistoryPage() {
             onClick={() => router.push("/dashboard/workout")}
             className="mb-2 text-xs"
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" /> Volver a la lista
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
+            Volver a la lista
           </Button>
           <CardTitle className="text-2xl font-semibold  tracking-heading pt-4">
             Historial de entrenamientos
@@ -214,7 +222,10 @@ export default function WorkoutHistoryPage() {
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center">
-                <HugeiconsIcon icon={Calendar01Icon} className="h-6 w-6 text-pink-600 dark:text-pink-300" />
+                <HugeiconsIcon
+                  icon={Calendar01Icon}
+                  className="h-6 w-6 text-pink-600 dark:text-pink-300"
+                />
               </div>
             </div>
           </CardContent>
@@ -232,7 +243,10 @@ export default function WorkoutHistoryPage() {
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
-                <HugeiconsIcon icon={Dumbbell01Icon} className="h-6 w-6 text-blue-600 dark:text-blue-300" />
+                <HugeiconsIcon
+                  icon={Dumbbell01Icon}
+                  className="h-6 w-6 text-blue-600 dark:text-blue-300"
+                />
               </div>
             </div>
           </CardContent>
@@ -250,7 +264,10 @@ export default function WorkoutHistoryPage() {
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
-                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="h-6 w-6 text-green-600 dark:text-green-300" />
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  className="h-6 w-6 text-green-600 dark:text-green-300"
+                />
               </div>
             </div>
           </CardContent>
@@ -268,7 +285,10 @@ export default function WorkoutHistoryPage() {
                 </p>
               </div>
               <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-800 flex items-center justify-center">
-                <HugeiconsIcon icon={Clock02Icon} className="h-6 w-6 text-purple-600 dark:text-purple-300" />
+                <HugeiconsIcon
+                  icon={Clock02Icon}
+                  className="h-6 w-6 text-purple-600 dark:text-purple-300"
+                />
               </div>
             </div>
           </CardContent>

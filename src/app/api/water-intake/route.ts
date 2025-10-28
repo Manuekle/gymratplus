@@ -20,16 +20,26 @@ export async function POST(req: NextRequest) {
   }
 
   if (!session.user.id) {
-    return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
+    return NextResponse.json(
+      { error: "ID de usuario no encontrado" },
+      { status: 401 },
+    );
   }
 
   try {
     const body = await req.json();
     const today = new Date();
     // Get local date in YYYY-MM-DD format for the default value
-    const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
-    const { intake, date = localDate } = body as { intake: number; date?: string };
-    
+    const localDate = new Date(
+      today.getTime() - today.getTimezoneOffset() * 60000,
+    )
+      .toISOString()
+      .split("T")[0];
+    const { intake, date = localDate } = body as {
+      intake: number;
+      date?: string;
+    };
+
     // Enhanced validation
     if (intake === undefined || intake === null) {
       return NextResponse.json(
@@ -78,18 +88,18 @@ export async function POST(req: NextRequest) {
     // Update in Redis with the same date we used for the database
     // We know date is either a valid string or undefined, and localDate is always defined
     const dateToUse = date || localDate;
-    
+
     // Create a date object at midnight UTC and format as YYYY-MM-DD
     // This ensures consistent date handling regardless of timezone
-    const dateObj = new Date(dateToUse + 'T00:00:00Z');
+    const dateObj = new Date(dateToUse + "T00:00:00Z");
     if (isNaN(dateObj.getTime())) {
-      throw new Error('Invalid date format');
+      throw new Error("Invalid date format");
     }
-    
+
     // Format as YYYY-MM-DD for Redis
-    const formattedDate = dateObj.toISOString().split('T')[0];
+    const formattedDate = dateObj.toISOString().split("T")[0];
     if (!formattedDate) {
-      throw new Error('Failed to format date');
+      throw new Error("Failed to format date");
     }
     await storeWaterIntake(session.user.id, formattedDate, numericIntake);
 
@@ -142,50 +152,60 @@ export async function GET(req: NextRequest) {
   }
 
   if (!session.user.id) {
-    return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
+    return NextResponse.json(
+      { error: "ID de usuario no encontrado" },
+      { status: 401 },
+    );
   }
 
   const url = new URL(req.url);
   // Get local date in YYYY-MM-DD format
   const today = new Date();
-  const localDate = new Date(today.getTime() - (today.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  const localDate = new Date(
+    today.getTime() - today.getTimezoneOffset() * 60000,
+  )
+    .toISOString()
+    .split("T")[0];
   // Ensure we have a valid date string (localDate is always defined)
   const dateParam = url.searchParams.get("date") || localDate;
-  if (typeof dateParam !== 'string') {
-    return NextResponse.json({ error: "Invalid date parameter" }, { status: 400 });
+  if (typeof dateParam !== "string") {
+    return NextResponse.json(
+      { error: "Invalid date parameter" },
+      { status: 400 },
+    );
   }
 
   try {
     // Parse the date parameter into a Date object at midnight UTC
-    const dateParts = dateParam.split('-');
+    const dateParts = dateParam.split("-");
     if (dateParts.length !== 3) {
-      throw new Error('Invalid date format');
+      throw new Error("Invalid date format");
     }
-    
+
     // Ensure all parts are defined before parsing
     const [yearStr, monthStr, dayStr] = dateParts;
     if (!yearStr || !monthStr || !dayStr) {
-      throw new Error('Invalid date format');
+      throw new Error("Invalid date format");
     }
-    
+
     const year = parseInt(yearStr, 10);
     const month = parseInt(monthStr, 10);
     const day = parseInt(dayStr, 10);
-    
+
     if (isNaN(year) || isNaN(month) || isNaN(day)) {
-      throw new Error('Invalid date format');
+      throw new Error("Invalid date format");
     }
-    
+
     const intakeDate = new Date(Date.UTC(year, month - 1, day));
-    
+
     if (isNaN(intakeDate.getTime())) {
-      throw new Error('Invalid date');
+      throw new Error("Invalid date");
     }
 
     // Format as YYYY-MM-DD for Redis
-    const dateString = intakeDate.toISOString().split('T')[0];
+    const dateString = intakeDate.toISOString().split("T")[0];
     if (!dateString) {
-      throw new Error('Failed to format date');
+      throw new Error("Failed to format date");
     }
 
     // Query the database using the same date format

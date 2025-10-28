@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
 
     // Transacción: actualizar usuario y perfil de instructor
     try {
-      console.log("[INSTRUCTOR_REGISTER] Actualizando usuario:", session.user.id);
+      console.log(
+        "[INSTRUCTOR_REGISTER] Actualizando usuario:",
+        session.user.id,
+      );
       const [user, instructorProfile] = await prisma.$transaction([
         prisma.user.update({
           where: { id: session.user.id },
@@ -70,10 +73,16 @@ export async function POST(req: NextRequest) {
         }),
       ]);
       console.log("[INSTRUCTOR_REGISTER] Usuario actualizado:", user);
-      console.log("[INSTRUCTOR_REGISTER] Perfil instructor actualizado/creado:", instructorProfile);
+      console.log(
+        "[INSTRUCTOR_REGISTER] Perfil instructor actualizado/creado:",
+        instructorProfile,
+      );
     } catch (err) {
       console.error("[INSTRUCTOR_REGISTER] Error en la transacción:", err);
-      return NextResponse.json({ error: "Error actualizando usuario o perfil de instructor" }, { status: 500 });
+      return NextResponse.json(
+        { error: "Error actualizando usuario o perfil de instructor" },
+        { status: 500 },
+      );
     }
 
     // Limpiar cache de usuario en Redis

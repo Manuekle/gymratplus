@@ -49,7 +49,6 @@ import {
   // Tick02Icon,
 } from "@hugeicons/core-free-icons";
 
-
 type Food = {
   id: string;
   name: string;
@@ -58,7 +57,7 @@ type Food = {
   carbs: number;
   fat: number;
   serving: number;
-  category: 'breakfast' | 'lunch' | 'dinner' | 'snack' | 'other';
+  category: "breakfast" | "lunch" | "dinner" | "snack" | "other";
   isFavorite?: boolean;
 };
 
@@ -369,13 +368,13 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
   };
 
   const updateItemQuantity = (index: number, newQuantity: number) => {
-    setSelectedItems(prevItems => {
+    setSelectedItems((prevItems) => {
       const newItems = [...prevItems];
       const currentItem = newItems[index];
       if (currentItem) {
         newItems[index] = {
           ...currentItem,
-          quantity: Math.max(0.1, newQuantity)
+          quantity: Math.max(0.1, newQuantity),
         };
       }
       return newItems;
@@ -832,7 +831,10 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                   className="w-full justify-start text-left font-normal mt-1 text-xs md:text-sm"
                   id="mealDate"
                 >
-                  <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={Calendar02Icon}
+                    className="mr-2 h-4 w-4"
+                  />
                   {format(mealDate, "PPP", { locale: es })}
                 </Button>
               </PopoverTrigger>
@@ -900,7 +902,10 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             </div>
 
             <div className="relative mt-2">
-              <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={Search01Icon}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              />
               <Input
                 placeholder="Buscar alimento o receta..."
                 value={searchQuery}

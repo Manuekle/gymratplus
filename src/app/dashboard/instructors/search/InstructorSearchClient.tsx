@@ -31,7 +31,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SPECIALTIES } from "@/data/specialties";
 import Image from "next/image";
 
-
 interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
 }
@@ -41,8 +40,6 @@ const EXPERIENCE_LEVELS = [
   { value: "intermedio", label: "Intermedio" },
   { value: "avanzado", label: "Avanzado" },
 ];
-
-
 
 export default function InstructorSearchClient() {
   const router = useRouter();
@@ -74,7 +71,9 @@ export default function InstructorSearchClient() {
       const response = await fetch("/api/student-instructor-requests");
       if (response.ok) {
         const requests = await response.json();
-        const requestIds = requests.map((req: { instructorProfileId: string }) => req.instructorProfileId);
+        const requestIds = requests.map(
+          (req: { instructorProfileId: string }) => req.instructorProfileId,
+        );
         setRequestedInstructors(new Set(requestIds));
       }
     } catch (error) {
@@ -147,7 +146,8 @@ export default function InstructorSearchClient() {
     async (instructorProfileId?: string) => {
       if (!instructorProfileId) {
         toast.error("Error", {
-          description: "ID de instructor no disponible. Por favor, intenta de nuevo.",
+          description:
+            "ID de instructor no disponible. Por favor, intenta de nuevo.",
         });
         return;
       }
@@ -293,7 +293,9 @@ export default function InstructorSearchClient() {
                       <Badge
                         key={spec.id}
                         variant={
-                          selectedSpecialties.includes(spec.id) ? "default" : "secondary"
+                          selectedSpecialties.includes(spec.id)
+                            ? "default"
+                            : "secondary"
                         }
                         className={`whitespace-nowrap px-3 py-1 text-xs transition-all flex-shrink-0 cursor-pointer ${
                           selectedSpecialties.includes(spec.id)
@@ -309,14 +311,16 @@ export default function InstructorSearchClient() {
                 </div>
                 <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
               </div>
-              
+
               {/* Grid responsive en desktop */}
               <div className="hidden md:flex md:flex-wrap gap-2">
                 {SPECIALTIES.map((spec) => (
                   <Badge
                     key={spec.id}
                     variant={
-                      selectedSpecialties.includes(spec.id) ? "default" : "secondary"
+                      selectedSpecialties.includes(spec.id)
+                        ? "default"
+                        : "secondary"
                     }
                     className={`px-3 py-1 text-xs transition-all cursor-pointer ${
                       selectedSpecialties.includes(spec.id)
@@ -368,13 +372,19 @@ export default function InstructorSearchClient() {
           ) : (
             instructors.map((instructor) => {
               const countryData = countries.find(
-                (c) => c.cca2 === instructor.instructorProfile?.country
+                (c) => c.cca2 === instructor.instructorProfile?.country,
               );
               return (
-                <Card key={instructor.id} className="overflow-hidden flex flex-col h-full">
+                <Card
+                  key={instructor.id}
+                  className="overflow-hidden flex flex-col h-full"
+                >
                   <CardHeader className="flex flex-row items-start space-x-4 pb-3">
                     <Avatar className="h-16 w-16 mt-1">
-                      <AvatarImage src={instructor.image || ''} alt={instructor.name || 'Instructor'} />
+                      <AvatarImage
+                        src={instructor.image || ""}
+                        alt={instructor.name || "Instructor"}
+                      />
                       <AvatarFallback>
                         {instructor.name
                           ?.split(" ")
@@ -388,8 +398,9 @@ export default function InstructorSearchClient() {
                           {instructor.name}
                         </CardTitle>
                       </div>
-                      {(instructor.instructorProfile?.city || countryData?.name?.common) && (
-                        <div className="flex items-center text-sm text-muted-foreground gap-2">                          
+                      {(instructor.instructorProfile?.city ||
+                        countryData?.name?.common) && (
+                        <div className="flex items-center text-sm text-muted-foreground gap-2">
                           {countryData && (
                             <span className="flex items-center gap-1">
                               <Image
@@ -403,30 +414,47 @@ export default function InstructorSearchClient() {
                             </span>
                           )}
                           {instructor.instructorProfile?.isRemote && (
-                            <Badge variant="outline" className="text-xs ml-2">Remoto</Badge>
+                            <Badge variant="outline" className="text-xs ml-2">
+                              Remoto
+                            </Badge>
                           )}
                         </div>
                       )}
                       {instructor.instructorProfile?.pricePerMonth && (
                         <div className="text-sm font-medium">
-                          ${instructor.instructorProfile.pricePerMonth.toFixed(2)}/mes
+                          $
+                          {instructor.instructorProfile.pricePerMonth.toFixed(
+                            2,
+                          )}
+                          /mes
                         </div>
                       )}
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1">
                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                      {instructor.instructorProfile?.bio || 'Instructor certificado con experiencia en entrenamiento personalizado.'}
+                      {instructor.instructorProfile?.bio ||
+                        "Instructor certificado con experiencia en entrenamiento personalizado."}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {instructor.instructorProfile?.curriculum
-                        ? instructor.instructorProfile.curriculum.split(',').slice(0, 4).map((tag, idx) => (
-                            <Badge key={`${tag}-${idx}`} variant="outline" className="text-xs">
+                      {instructor.instructorProfile?.curriculum ? (
+                        instructor.instructorProfile.curriculum
+                          .split(",")
+                          .slice(0, 4)
+                          .map((tag, idx) => (
+                            <Badge
+                              key={`${tag}-${idx}`}
+                              variant="outline"
+                              className="text-xs"
+                            >
                               {tag.trim()}
                             </Badge>
                           ))
-                        : <span className="text-xs text-muted-foreground">Sin especialidades</span>
-                      }
+                      ) : (
+                        <span className="text-xs text-muted-foreground">
+                          Sin especialidades
+                        </span>
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0 flex flex-col gap-1">
@@ -442,7 +470,9 @@ export default function InstructorSearchClient() {
                                   ? "bg-red-600 hover:bg-red-700"
                                   : ""
                               }`}
-                              onClick={() => handleRequestInstructor(profile.id)}
+                              onClick={() =>
+                                handleRequestInstructor(profile.id)
+                              }
                               disabled={
                                 requestingInstructorId === profile.id ||
                                 (requestedInstructors.size > 0 &&
@@ -452,7 +482,9 @@ export default function InstructorSearchClient() {
                               {requestingInstructorId === profile.id ? (
                                 <span>Enviando...</span>
                               ) : requestedInstructors.has(profile.id) ? (
-                                <span className="text-white">Solicitud Enviada</span>
+                                <span className="text-white">
+                                  Solicitud Enviada
+                                </span>
                               ) : (
                                 "Solicitar Instructor"
                               )}

@@ -236,22 +236,27 @@ async function createMealLog(
 ) {
   // Select appropriate foods based on meal type and dietary preference
   let selectedFoods: Food[] = [];
-  
+
   // Helper function to safely get food items with explicit type guard
-  const getSafeFoods = (foods: Food[] | undefined, index: number = 0): Food[] => {
+  const getSafeFoods = (
+    foods: Food[] | undefined,
+    index: number = 0,
+  ): Food[] => {
     if (!foods || !Array.isArray(foods) || foods.length <= index) {
       return [];
     }
     const food = foods[index];
     // Explicit type guard to ensure we only return valid Food objects
-    if (food && 
-        typeof food === 'object' && 
-        'id' in food && 
-        'name' in food && 
-        'calories' in food && 
-        'protein' in food && 
-        'carbs' in food && 
-        'fat' in food) {
+    if (
+      food &&
+      typeof food === "object" &&
+      "id" in food &&
+      "name" in food &&
+      "calories" in food &&
+      "protein" in food &&
+      "carbs" in food &&
+      "fat" in food
+    ) {
       return [food as Food];
     }
     return [];
@@ -280,29 +285,34 @@ async function createMealLog(
         (f.name === "Aguacate" || f.name === "Almendras"),
     );
 
-      // Select foods based on dietary preference
+    // Select foods based on dietary preference
     if (dietaryPreference === "keto") {
       const safeProteinFoods = getSafeFoods(proteinFoods);
       const safeFatFoods = getSafeFoods(fatFoods);
-      const additionalFat = fatFoods.length > 1 ? getSafeFoods(fatFoods, 1) : [];
-      
+      const additionalFat =
+        fatFoods.length > 1 ? getSafeFoods(fatFoods, 1) : [];
+
       selectedFoods = [
         ...safeProteinFoods,
         ...safeFatFoods,
-        ...additionalFat
-      ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+        ...additionalFat,
+      ].filter(
+        (food): food is Food => food !== undefined && food !== null,
+      ) as Food[];
     } else {
       const safeProteinFoods = getSafeFoods(proteinFoods);
       const safeCarbFoods = getSafeFoods(carbFoods);
       const safeFruitFoods = getSafeFoods(fruitFoods);
       const safeFatFoods = getSafeFoods(fatFoods);
-      
+
       selectedFoods = [
         ...safeProteinFoods,
         ...safeCarbFoods,
         ...safeFruitFoods,
-        ...safeFatFoods
-      ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+        ...safeFatFoods,
+      ].filter(
+        (food): food is Food => food !== undefined && food !== null,
+      ) as Food[];
     }
   } else if (mealType === "lunch") {
     // Filter appropriate lunch foods
@@ -323,28 +333,34 @@ async function createMealLog(
       const safeProteinFoods = getSafeFoods(proteinFoods);
       const safeVegFoods = getSafeFoods(vegFoods);
       const safeFatFoods = getSafeFoods(fatFoods);
-      const additionalVeg = vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : [];
-      
+      const additionalVeg =
+        vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : [];
+
       selectedFoods = [
         ...safeProteinFoods,
         ...safeVegFoods,
         ...additionalVeg,
-        ...safeFatFoods
-      ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+        ...safeFatFoods,
+      ].filter(
+        (food): food is Food => food !== undefined && food !== null,
+      ) as Food[];
     } else {
       const safeProteinFoods = getSafeFoods(proteinFoods);
       const safeCarbFoods = getSafeFoods(carbFoods);
       const safeVegFoods = getSafeFoods(vegFoods);
-      const additionalVeg = vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : [];
+      const additionalVeg =
+        vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : [];
       const safeFatFoods = getSafeFoods(fatFoods);
-      
+
       selectedFoods = [
         ...safeProteinFoods,
         ...safeCarbFoods,
         ...safeVegFoods,
         ...additionalVeg,
-        ...safeFatFoods
-      ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+        ...safeFatFoods,
+      ].filter(
+        (food): food is Food => food !== undefined && food !== null,
+      ) as Food[];
     }
   } else if (mealType === "dinner") {
     // Filter appropriate dinner foods
@@ -361,19 +377,24 @@ async function createMealLog(
           );
 
     // Select foods based on dietary preference
-    const safeProteinFoods = proteinFoods.length > 1 ? getSafeFoods(proteinFoods, 1) : getSafeFoods(proteinFoods);
+    const safeProteinFoods =
+      proteinFoods.length > 1
+        ? getSafeFoods(proteinFoods, 1)
+        : getSafeFoods(proteinFoods);
     const safeCarbFoods = getSafeFoods(carbFoods);
     const safeVegFoods = getSafeFoods(vegFoods);
     const additionalVeg = vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : [];
     const safeFatFoods = getSafeFoods(fatFoods);
-    
+
     selectedFoods = [
       ...safeProteinFoods,
       ...safeCarbFoods,
       ...safeVegFoods,
       ...additionalVeg,
-      ...safeFatFoods
-    ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+      ...safeFatFoods,
+    ].filter(
+      (food): food is Food => food !== undefined && food !== null,
+    ) as Food[];
   } else if (mealType === "snack") {
     // Filter appropriate snack foods
     const proteinFoods = foods.filter(
@@ -397,12 +418,14 @@ async function createMealLog(
     const safeProteinFoods = getSafeFoods(proteinFoods);
     const safeFruitFoods = getSafeFoods(fruitFoods);
     const safeNutFoods = getSafeFoods(nutFoods);
-    
+
     selectedFoods = [
       ...safeProteinFoods,
       ...safeFruitFoods,
-      ...safeNutFoods
-    ].filter((food): food is Food => food !== undefined && food !== null) as Food[];
+      ...safeNutFoods,
+    ].filter(
+      (food): food is Food => food !== undefined && food !== null,
+    ) as Food[];
   }
 
   // Calculate macros and create meal entries

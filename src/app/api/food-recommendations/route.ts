@@ -25,10 +25,15 @@ export async function POST(req: NextRequest) {
     const { nutritionPlan } = body;
 
     // Validate required fields
-    if (!nutritionPlan || !nutritionPlan.macros || !nutritionPlan.meals || nutritionPlan.calorieTarget === undefined) {
+    if (
+      !nutritionPlan ||
+      !nutritionPlan.macros ||
+      !nutritionPlan.meals ||
+      nutritionPlan.calorieTarget === undefined
+    ) {
       return NextResponse.json(
         { error: "Missing required fields in nutrition plan" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 

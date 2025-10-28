@@ -39,13 +39,18 @@ export async function PUT() {
                     : ["desayuno", "almuerzo", "cena", "snack"],
             userId: null, // Alimentos base del sistema
           },
-        })
-      )
+        }),
+      ),
     );
 
-    return NextResponse.json({ message: `Se subieron ${foods.length} alimentos` });
+    return NextResponse.json({
+      message: `Se subieron ${foods.length} alimentos`,
+    });
   } catch (error) {
     console.error("Error al subir alimentos:", error);
-    return NextResponse.json({ error: "Error al subir alimentos" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Error al subir alimentos" },
+      { status: 500 },
+    );
   }
 }

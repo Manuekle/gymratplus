@@ -67,4 +67,4 @@ export const SPECIALTIES: Tag[] = [
   { id: "FitnessAddict", name: "Fitness Addict" },
   { id: "CuerpoFit", name: "Cuerpo Fit" },
   { id: "FitnessJourney", name: "Fitness Journey" },
-]; 
+];

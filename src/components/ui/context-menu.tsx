@@ -2,8 +2,12 @@
 
 import * as React from "react";
 import * as ContextMenuPrimitive from "@radix-ui/react-context-menu";
-import { HugeiconsIcon } from '@hugeicons/react'
-import {ArrowRight01Icon, Tick01Icon, CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowRight01Icon,
+  Tick01Icon,
+  CircleIcon,
+} from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils";
 
 function ContextMenu({

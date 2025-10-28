@@ -10,7 +10,13 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Clock05Icon, EquipmentBenchPressIcon, Flowchart02Icon, GitCompareIcon, MayanPyramidIcon,  } from "@hugeicons/core-free-icons";
+import {
+  Clock05Icon,
+  EquipmentBenchPressIcon,
+  Flowchart02Icon,
+  GitCompareIcon,
+  MayanPyramidIcon,
+} from "@hugeicons/core-free-icons";
 
 const methodologies = [
   {
@@ -19,7 +25,11 @@ const methodologies = [
     description:
       "Entrenamiento tradicional con series y repeticiones definidas",
     icon: (
-      <HugeiconsIcon icon={EquipmentBenchPressIcon} size={18} className="text-muted-foreground" />
+      <HugeiconsIcon
+        icon={EquipmentBenchPressIcon}
+        size={18}
+        className="text-muted-foreground"
+      />
     ),
   },
   {
@@ -27,13 +37,25 @@ const methodologies = [
     name: "Circuito",
     description:
       "Ejercicios consecutivos sin descanso (ideal para quemar grasa)",
-    icon: <HugeiconsIcon icon={GitCompareIcon} size={18} className="text-muted-foreground" />,
+    icon: (
+      <HugeiconsIcon
+        icon={GitCompareIcon}
+        size={18}
+        className="text-muted-foreground"
+      />
+    ),
   },
   {
     id: "hiit",
     name: "HIIT",
     description: "Alternancia de esfuerzo máximo y descanso",
-    icon: <HugeiconsIcon icon={Clock05Icon} size={18} className="text-muted-foreground" />,
+    icon: (
+      <HugeiconsIcon
+        icon={Clock05Icon}
+        size={18}
+        className="text-muted-foreground"
+      />
+    ),
   },
   {
     id: "drop-sets",
@@ -87,13 +109,25 @@ const methodologies = [
     id: "pyramid",
     name: "Piramidal",
     description: "Se sube o baja el peso progresivamente en cada serie",
-    icon: <HugeiconsIcon icon={MayanPyramidIcon} size={18} className="text-muted-foreground" />,
+    icon: (
+      <HugeiconsIcon
+        icon={MayanPyramidIcon}
+        size={18}
+        className="text-muted-foreground"
+      />
+    ),
   },
   {
     id: "supersets",
     name: "Superseries",
     description: "Dos ejercicios seguidos sin descanso",
-    icon: <HugeiconsIcon icon={Flowchart02Icon} size={18} className="text-muted-foreground" />,
+    icon: (
+      <HugeiconsIcon
+        icon={Flowchart02Icon}
+        size={18}
+        className="text-muted-foreground"
+      />
+    ),
   },
 ];
 

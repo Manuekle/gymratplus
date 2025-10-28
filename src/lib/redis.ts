@@ -48,7 +48,7 @@ export async function getWaterIntake(
 
 // Get water intake history for the last 30 days
 interface WaterIntakeEntry {
-  date: string;  // YYYY-MM-DD format
+  date: string; // YYYY-MM-DD format
   liters: number;
 }
 
@@ -56,7 +56,7 @@ export async function getWaterIntakeHistory(
   userId: string,
 ): Promise<WaterIntakeEntry[]> {
   const historyKey = WATER_HISTORY_KEY(userId);
-  
+
   try {
     // Get all entries from the sorted set
     const history = await redis.zrange(historyKey, 0, -1);
@@ -67,41 +67,40 @@ export async function getWaterIntakeHistory(
 
     const result: WaterIntakeEntry[] = [];
     const dateSet = new Set<string>(); // To track unique dates
-    
+
     // Process each history entry
     for (const item of history) {
       try {
-        const itemStr = String(item || '').trim();
+        const itemStr = String(item || "").trim();
         if (!itemStr) continue;
-        
+
         // Expected format: "YYYY-MM-DD:liters"
-        const separatorIndex = itemStr.lastIndexOf(':');
+        const separatorIndex = itemStr.lastIndexOf(":");
         if (separatorIndex === -1) continue;
-        
+
         const date = itemStr.slice(0, separatorIndex).trim();
         const litersStr = itemStr.slice(separatorIndex + 1).trim();
         const liters = Number.parseFloat(litersStr);
-        
+
         // Validate date format (YYYY-MM-DD)
         if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) continue;
-        
+
         // Validate liters is a positive number
         if (isNaN(liters) || liters < 0) continue;
-        
+
         // Only keep the most recent entry for each date
         if (!dateSet.has(date)) {
           dateSet.add(date);
           result.push({ date, liters });
         }
       } catch (error) {
-        console.error('Error processing history entry:', item, error);
+        console.error("Error processing history entry:", item, error);
         continue;
       }
     }
-    
+
     // Sort by date in ascending order
     return result.sort((a, b) => a.date.localeCompare(b.date));
-    
   } catch (error) {
     console.error("Error in getWaterIntakeHistory:", error);
     return [];

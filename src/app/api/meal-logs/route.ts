@@ -44,13 +44,13 @@ export async function GET(req: NextRequest) {
 
     // Filter by specific date
     if (date) {
-        // Parse date and create day boundaries in local timezone
+      // Parse date and create day boundaries in local timezone
       const parsedDate = parseISO(date);
       const start = startOfDay(parsedDate);
       const end = endOfDay(parsedDate);
 
       // Debug logging
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === "development") {
         console.debug("Filtering logs between:", {
           start: start.toISOString(),
           end: end.toISOString(),
@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
           );
         }
 
-        if (process.env.NODE_ENV === 'development') {
+        if (process.env.NODE_ENV === "development") {
           console.debug("Received date:", data.consumedAt);
           console.debug("Date to save:", consumedAt.toISOString());
         }
@@ -209,7 +209,6 @@ export async function POST(req: NextRequest) {
         mealType: string;
         consumedAt: Date;
         quantity: number;
-        notes?: string | null;
         calories: number;
         protein: number;
         carbs: number;
@@ -233,7 +232,6 @@ export async function POST(req: NextRequest) {
         mealType: data.mealType,
         consumedAt: consumedAt,
         quantity: data.quantity,
-        notes: data.notes || null,
         calories: calories,
         protein: protein,
         carbs: carbs,

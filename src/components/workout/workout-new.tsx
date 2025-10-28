@@ -39,7 +39,7 @@ export function WorkoutNew({
   const [exercises, setExercises] = useState<Exercise[]>(initialExercises);
   const [isLoading, setIsLoading] = useState(false);
   const [currentDay, setCurrentDay] = useState<string>(
-    selectedDay || (days.length > 0 ? days[0] : '') as string
+    selectedDay || ((days.length > 0 ? days[0] : "") as string),
   );
 
   // Función para cargar los ejercicios del workout filtrados por día
@@ -199,7 +199,11 @@ export function WorkoutNew({
                   className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
                   onClick={() => handleDelete(exercise.id)}
                 >
-                  <HugeiconsIcon icon={Delete02Icon} size={16} color="currentColor" />
+                  <HugeiconsIcon
+                    icon={Delete02Icon}
+                    size={16}
+                    color="currentColor"
+                  />
                 </Button>
               </div>
               <div className="p-4 grid grid-cols-3 gap-4 text-center">

@@ -12,14 +12,22 @@ export async function POST(req: NextRequest) {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
-      return NextResponse.json({ error: "No autorizado - Usuario no identificado" }, { status: 401 });
+      return NextResponse.json(
+        { error: "No autorizado - Usuario no identificado" },
+        { status: 401 },
+      );
     }
-    
+
     const userId = session.user.id;
 
     const { day, exercises } = await req.json();
 
-    if (!day || !exercises || !Array.isArray(exercises) || exercises.length === 0) {
+    if (
+      !day ||
+      !exercises ||
+      !Array.isArray(exercises) ||
+      exercises.length === 0
+    ) {
       return NextResponse.json(
         { error: "Datos inválidos proporcionados" },
         { status: 400 },
@@ -121,11 +129,7 @@ export async function POST(req: NextRequest) {
       if (userProfile?.notificationsActive !== false) {
         // Default to true if not set
         // Create notification in database directly
-        await createWorkoutStartedNotification(
-          userId,
-          userWorkout.name,
-          day,
-        );
+        await createWorkoutStartedNotification(userId, userWorkout.name, day);
 
         // Add to Redis list for polling
         await publishWorkoutNotification(

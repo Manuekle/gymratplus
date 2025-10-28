@@ -2,8 +2,12 @@
 
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
-import { HugeiconsIcon } from '@hugeicons/react'
-import {ArrowRight01Icon, Tick01Icon, CircleIcon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  ArrowRight01Icon,
+  Tick01Icon,
+  CircleIcon,
+} from "@hugeicons/core-free-icons";
 
 import { cn } from "@/lib/utils";
 
@@ -136,7 +140,7 @@ function DropdownMenuRadioItem({
     >
       <span className="pointer-events-none absolute left-2 flex size-3.5 items-center justify-center">
         <DropdownMenuPrimitive.ItemIndicator>
-          <HugeiconsIcon icon={ CircleIcon} className="size-2 fill-current" />
+          <HugeiconsIcon icon={CircleIcon} className="size-2 fill-current" />
         </DropdownMenuPrimitive.ItemIndicator>
       </span>
       {children}

@@ -19,7 +19,9 @@ export const DashboardHeader = () => {
   };
 
   const pathSegment = pathname.split("/")[2];
-  const pageTitle = pathSegment ? titles[pathSegment] || "Dashboard" : "Dashboard";
+  const pageTitle = pathSegment
+    ? titles[pathSegment] || "Dashboard"
+    : "Dashboard";
   const isInstructor = session?.user?.isInstructor;
 
   return (

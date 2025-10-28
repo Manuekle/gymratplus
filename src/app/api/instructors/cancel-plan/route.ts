@@ -16,13 +16,13 @@ export async function POST() {
 
     // Verificar si el perfil de instructor existe primero
     const existingProfile = await prisma.instructorProfile.findUnique({
-      where: { userId }
+      where: { userId },
     });
 
     if (!existingProfile) {
       return NextResponse.json(
         { error: "Perfil de instructor no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -37,7 +37,7 @@ export async function POST() {
       prisma.user.update({
         where: { id: userId },
         data: { isInstructor: false },
-      })
+      }),
     ]);
 
     // Aquí podrías cancelar suscripciones activas en tu proveedor de pagos
@@ -57,11 +57,11 @@ export async function POST() {
 
     return NextResponse.json(
       { message: "Plan cancelado exitosamente" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (error) {
     console.error("[INSTRUCTOR_CANCEL_PLAN_ERROR]", error);
-    
+
     // Log more detailed error information
     if (error instanceof Error) {
       console.error("Error details:", {
@@ -73,10 +73,11 @@ export async function POST() {
 
     return NextResponse.json(
       {
-        error: "Error al cancelar el plan. Por favor, inténtalo de nuevo más tarde.",
-        details: error instanceof Error ? error.message : 'Unknown error',
+        error:
+          "Error al cancelar el plan. Por favor, inténtalo de nuevo más tarde.",
+        details: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

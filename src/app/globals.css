@@ -173,8 +173,8 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .hide-scrollbar {
-  -ms-overflow-style: none;  /* IE y Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none; /* IE y Edge */
+  scrollbar-width: none; /* Firefox */
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch; /* Mejora el scroll en iOS */
   padding-bottom: 4px; /* Espacio para el gradiente */

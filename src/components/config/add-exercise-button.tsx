@@ -44,7 +44,7 @@ export default function AddExerciseButton() {
         setMessage(
           method === "POST"
             ? "¡Ejercicios agregados correctamente!"
-            : "¡Ejercicios duplicados eliminados!"
+            : "¡Ejercicios duplicados eliminados!",
         );
         setMessageType("success");
       } else {
@@ -98,10 +98,15 @@ export default function AddExerciseButton() {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Eliminar ejercicios duplicados?</AlertDialogTitle>
+            <AlertDialogTitle>
+              ¿Eliminar ejercicios duplicados?
+            </AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción eliminará todos los ejercicios duplicados de la base de datos. <br />
-              <span className="text-destructive font-semibold">Esta acción no se puede deshacer.</span>
+              Esta acción eliminará todos los ejercicios duplicados de la base
+              de datos. <br />
+              <span className="text-destructive font-semibold">
+                Esta acción no se puede deshacer.
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -121,7 +126,10 @@ export default function AddExerciseButton() {
 
       {/* Feedback visual con Alert */}
       {message && (
-        <Alert variant={messageType === "error" ? "destructive" : "default"} className="w-full mt-2">
+        <Alert
+          variant={messageType === "error" ? "destructive" : "default"}
+          className="w-full mt-2"
+        >
           {messageType === "success" && (
             <HugeiconsIcon icon={Tick01Icon} className="text-green-600" />
           )}
@@ -129,7 +137,9 @@ export default function AddExerciseButton() {
             <HugeiconsIcon icon={Cancel01Icon} className="text-red-600" />
           )}
           <div>
-            <AlertTitle>{messageType === "success" ? "Éxito" : "Error"}</AlertTitle>
+            <AlertTitle>
+              {messageType === "success" ? "Éxito" : "Error"}
+            </AlertTitle>
             <AlertDescription>{message}</AlertDescription>
           </div>
         </Alert>

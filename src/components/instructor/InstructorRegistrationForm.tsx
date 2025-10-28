@@ -31,7 +31,13 @@ import {
   DrawerDescription,
 } from "@/components/ui/drawer";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { CreditCardIcon, Ticket02Icon } from "@hugeicons/core-free-icons";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
@@ -110,8 +116,8 @@ export function InstructorRegistrationForm({
   });
 
   const bioValue = form.watch("bio") as string;
-  const specialties: string[] = Array.isArray(form.watch("specialties")) 
-    ? form.watch("specialties") 
+  const specialties: string[] = Array.isArray(form.watch("specialties"))
+    ? form.watch("specialties")
     : [];
   const isFormValid = form.formState.isValid && specialties.length > 0;
 
@@ -144,21 +150,23 @@ export function InstructorRegistrationForm({
       });
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Error al registrar como instructor");
+        throw new Error(
+          errorData.error || "Error al registrar como instructor",
+        );
       }
       // Update the session with the new instructor status
-      await fetch('/api/auth/session', {
-        method: 'POST',
+      await fetch("/api/auth/session", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ isInstructor: true }),
-        credentials: 'include',
+        credentials: "include",
       });
-      
+
       // Update the local session
       await update();
-      
+
       toast.success("¡Registro exitoso!", {
         description: "Ahora eres un instructor en nuestra plataforma.",
       });
@@ -203,7 +211,10 @@ export function InstructorRegistrationForm({
         <div className="px-6 md:px-16 pb-8 flex-1 overflow-y-auto">
           {step === 1 && (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-6"
+              >
                 {/* Sección 1: Información Profesional */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-3">
@@ -228,7 +239,9 @@ export function InstructorRegistrationForm({
                               selectedTags={field.value || []}
                               onTagSelect={(tags) => {
                                 field.onChange(tags);
-                                form.setValue("curriculum", tags.join(", "), { shouldValidate: true });
+                                form.setValue("curriculum", tags.join(", "), {
+                                  shouldValidate: true,
+                                });
                               }}
                               availableTags={SPECIALTIES}
                               placeholder="Selecciona tus especialidades..."
@@ -259,7 +272,9 @@ export function InstructorRegistrationForm({
                               <span>Describe tu experiencia y enfoque</span>
                               <span
                                 className={
-                                  bioValue.length > 450 ? "text-destructive" : ""
+                                  bioValue.length > 450
+                                    ? "text-destructive"
+                                    : ""
                                 }
                               >
                                 {bioValue.length}/500
@@ -280,10 +295,10 @@ export function InstructorRegistrationForm({
                           <FormItem className="hidden">
                             <FormControl>
                               <Input
-                              type="hidden"
-                              {...field}
-                              className="text-xs"
-                            />
+                                type="hidden"
+                                {...field}
+                                className="text-xs"
+                              />
                             </FormControl>
                           </FormItem>
                         )}
@@ -368,7 +383,11 @@ export function InstructorRegistrationForm({
                         <FormItem>
                           <FormLabel>Ciudad</FormLabel>
                           <FormControl>
-                            <Input className="text-xs" placeholder="Madrid" {...field} />
+                            <Input
+                              className="text-xs"
+                              placeholder="Madrid"
+                              {...field}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -522,7 +541,10 @@ export function InstructorRegistrationForm({
                 {/* Payment Form */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="card-number" className="text-sm font-medium">
+                    <Label
+                      htmlFor="card-number"
+                      className="text-sm font-medium"
+                    >
                       Tarjeta de crédito o débito
                     </Label>
                     <div className="relative">
@@ -536,15 +558,14 @@ export function InstructorRegistrationForm({
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                         <HugeiconsIcon
                           icon={CreditCardIcon}
-                          className="h-4 w-4 text-muted-foreground" />
+                          className="h-4 w-4 text-muted-foreground"
+                        />
                       </div>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-2">
-                      <Label htmlFor="expiry">
-                        Vencimiento
-                      </Label>
+                      <Label htmlFor="expiry">Vencimiento</Label>
                       <Input
                         id="expiry"
                         type="text"
@@ -553,9 +574,7 @@ export function InstructorRegistrationForm({
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="cvc">
-                        CVC
-                      </Label>
+                      <Label htmlFor="cvc">CVC</Label>
                       <Input
                         id="cvc"
                         type="text"
@@ -591,12 +610,14 @@ export function InstructorRegistrationForm({
                   >
                     <HugeiconsIcon
                       icon={Ticket02Icon}
-                      className="mr-1 h-3 w-3" />
+                      className="mr-1 h-3 w-3"
+                    />
                     Agregar código de descuento
                   </Button>
                   <p className="text-xs text-muted-foreground/80 leading-relaxed">
                     Al proporcionar tu información de tarjeta, permites a Vertex
-                    cobrar tu tarjeta por pagos futuros en acuerdo con sus términos.
+                    cobrar tu tarjeta por pagos futuros en acuerdo con sus
+                    términos.
                   </p>
                 </div>
               </div>

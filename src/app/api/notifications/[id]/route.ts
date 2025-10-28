@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import {
-  deleteNotification,
-} from "@/lib/notification-service";
+import { deleteNotification } from "@/lib/notification-service";
 import { prisma } from "@/lib/prisma";
 
 export async function PATCH(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
-    
+
     if (!id) {
-      return NextResponse.json({ error: "Notification ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Notification ID is required" },
+        { status: 400 },
+      );
     }
-    
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user) {
@@ -53,11 +54,14 @@ export async function DELETE(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
-    
+
     if (!id) {
-      return NextResponse.json({ error: "Notification ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Notification ID is required" },
+        { status: 400 },
+      );
     }
-    
+
     const notification = await prisma.notification.findUnique({
       where: { id: id },
     });

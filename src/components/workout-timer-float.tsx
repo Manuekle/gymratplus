@@ -16,7 +16,13 @@ import { toast } from "sonner";
 
 import { Icons } from "./icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Clock01Icon, PauseIcon, PlayIcon, Cancel01Icon, ArrowExpandIcon,  } from "@hugeicons/core-free-icons";
+import {
+  Clock01Icon,
+  PauseIcon,
+  PlayIcon,
+  Cancel01Icon,
+  ArrowExpandIcon,
+} from "@hugeicons/core-free-icons";
 
 interface WorkoutTimerFloatProps {
   workoutSessionId: string;
@@ -179,7 +185,11 @@ export default function WorkoutTimerFloat({
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
-                <HugeiconsIcon icon={Clock01Icon} size={14} className="text-white dark:text-black" />
+                <HugeiconsIcon
+                  icon={Clock01Icon}
+                  size={14}
+                  className="text-white dark:text-black"
+                />
                 <span className="font-medium text-xs text-white dark:text-black">
                   Tiempo de entrenamiento
                 </span>
@@ -189,7 +199,9 @@ export default function WorkoutTimerFloat({
                 className="p-1 rounded-sm"
                 onClick={() => setIsMinimized(true)}
               >
-                <HugeiconsIcon icon={ArrowExpandIcon} size={14}
+                <HugeiconsIcon
+                  icon={ArrowExpandIcon}
+                  size={14}
                   className="text-white dark:text-black"
                 />
               </Button>
@@ -209,9 +221,17 @@ export default function WorkoutTimerFloat({
                 onClick={togglePause}
               >
                 {isPaused ? (
-                  <HugeiconsIcon icon={PlayIcon} size={16} className="text-white dark:text-black" />
+                  <HugeiconsIcon
+                    icon={PlayIcon}
+                    size={16}
+                    className="text-white dark:text-black"
+                  />
                 ) : (
-                  <HugeiconsIcon icon={PauseIcon} size={16} className="text-white dark:text-black" />
+                  <HugeiconsIcon
+                    icon={PauseIcon}
+                    size={16}
+                    className="text-white dark:text-black"
+                  />
                 )}
               </Button>
 

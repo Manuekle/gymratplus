@@ -14,11 +14,14 @@ export async function POST(request: NextRequest) {
     const url = new URL(request.url);
     const segments = url.pathname.split("/");
     const id = segments[segments.length - 2]; // penúltimo segmento
-    
+
     if (!id) {
-      return NextResponse.json({ error: "Goal ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Goal ID is required" },
+        { status: 400 },
+      );
     }
-    
+
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.email) {

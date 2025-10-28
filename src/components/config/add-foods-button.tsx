@@ -35,11 +35,7 @@ export default function AddFoodsButton() {
 
   return (
     <div className="flex flex-col items-center space-y-4 w-full max-w-xs mx-auto">
-      <Button
-        onClick={handleUploadFoods}
-        disabled={loading}
-        className="w-full"
-      >
+      <Button onClick={handleUploadFoods} disabled={loading} className="w-full">
         {loading ? (
           <span className="flex items-center gap-2">Procesando...</span>
         ) : (
@@ -50,7 +46,10 @@ export default function AddFoodsButton() {
         )}
       </Button>
       {message && (
-        <Alert variant={messageType === "error" ? "destructive" : "default"} className="w-full mt-2">
+        <Alert
+          variant={messageType === "error" ? "destructive" : "default"}
+          className="w-full mt-2"
+        >
           {messageType === "success" && (
             <HugeiconsIcon icon={Tick01Icon} className="text-green-600" />
           )}
@@ -58,11 +57,13 @@ export default function AddFoodsButton() {
             <HugeiconsIcon icon={Cancel01Icon} className="text-red-600" />
           )}
           <div>
-            <AlertTitle>{messageType === "success" ? "Éxito" : "Error"}</AlertTitle>
+            <AlertTitle>
+              {messageType === "success" ? "Éxito" : "Error"}
+            </AlertTitle>
             <AlertDescription>{message}</AlertDescription>
           </div>
         </Alert>
       )}
     </div>
   );
-} 
+}

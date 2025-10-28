@@ -25,7 +25,11 @@ import { useNotifications } from "@/hooks/use-notifications";
 // import { Icons } from "@/components/icons";
 import NotificationSkeleton from "@/components/skeleton/notification-skeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, FilterAddIcon, Notification03Icon,  } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  FilterAddIcon,
+  Notification03Icon,
+} from "@hugeicons/core-free-icons";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -86,7 +90,8 @@ export default function NotificationsPage() {
             onClick={() => router.push("/dashboard")}
             className="mb-2 text-xs"
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" /> Volver
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
+            Volver
           </Button>
         </div>
       </div>
@@ -161,7 +166,10 @@ export default function NotificationsPage() {
                 <NotificationSkeleton cantidad={8} />
               ) : filteredNotifications.length === 0 ? (
                 <div className="flex flex-col items-center justify-center px-12 space-y-3">
-                  <HugeiconsIcon icon={Notification03Icon} className="h-12 w-12 text-muted-foreground opacity-30" />
+                  <HugeiconsIcon
+                    icon={Notification03Icon}
+                    className="h-12 w-12 text-muted-foreground opacity-30"
+                  />
                   <h3 className="font-medium text-sm">No hay notificaciones</h3>
                   <p className="text-xs text-muted-foreground text-center max-w-sm">
                     No tienes notificaciones en este momento. Las nuevas
@@ -210,7 +218,10 @@ export default function NotificationsPage() {
                 <NotificationSkeleton cantidad={8} />
               ) : filteredNotifications.filter((n) => !n.read).length === 0 ? (
                 <div className="flex flex-col items-center justify-center p-12 space-y-3">
-                  <HugeiconsIcon icon={Notification03Icon} className="h-12 w-12 text-muted-foreground opacity-30" />
+                  <HugeiconsIcon
+                    icon={Notification03Icon}
+                    className="h-12 w-12 text-muted-foreground opacity-30"
+                  />
                   <h3 className="font-medium">
                     No hay notificaciones sin leer
                   </h3>

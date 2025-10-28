@@ -17,8 +17,17 @@ import { toast } from "sonner";
 
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar01Icon, Dollar01Icon, GlobeIcon, GraduateMaleIcon, Mail01Icon, Mail02Icon, MapPinIcon, PhoneOff01Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
-
+import {
+  Calendar01Icon,
+  Dollar01Icon,
+  GlobeIcon,
+  GraduateMaleIcon,
+  Mail01Icon,
+  Mail02Icon,
+  MapPinIcon,
+  PhoneOff01Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
 
 interface InstructorData {
   id: string;
@@ -155,7 +164,10 @@ export default function MyInstructorsPage() {
             <CardTitle className="text-sm font-medium">
               Total Instructores
             </CardTitle>
-            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={UserGroupIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">{instructors.length}</div>
@@ -168,7 +180,10 @@ export default function MyInstructorsPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Modalidades</CardTitle>
-            <HugeiconsIcon icon={GlobeIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={GlobeIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -185,7 +200,10 @@ export default function MyInstructorsPage() {
             <CardTitle className="text-sm font-medium">
               Inversión Mensual
             </CardTitle>
-            <HugeiconsIcon icon={Dollar01Icon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Dollar01Icon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -261,7 +279,10 @@ export default function MyInstructorsPage() {
                     <div className="flex flex-wrap gap-1">
                       {instructor.isRemote && (
                         <Badge variant="secondary" className="text-xs">
-                          <HugeiconsIcon icon={GlobeIcon} className="h-3 w-3 mr-1" />
+                          <HugeiconsIcon
+                            icon={GlobeIcon}
+                            className="h-3 w-3 mr-1"
+                          />
                           Remoto
                         </Badge>
                       )}
@@ -297,7 +318,10 @@ export default function MyInstructorsPage() {
                   {instructor.curriculum && (
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <HugeiconsIcon icon={GraduateMaleIcon} className="h-4 w-4 text-muted-foreground" />
+                        <HugeiconsIcon
+                          icon={GraduateMaleIcon}
+                          className="h-4 w-4 text-muted-foreground"
+                        />
                         <span className="text-sm font-medium">
                           Especialidades
                         </span>
@@ -322,7 +346,10 @@ export default function MyInstructorsPage() {
                   <div className="space-y-2">
                     {instructor.contactEmail ? (
                       <div className="flex items-center gap-2">
-                        <HugeiconsIcon icon={Mail01Icon} className="h-4 w-4 text-muted-foreground" />
+                        <HugeiconsIcon
+                          icon={Mail01Icon}
+                          className="h-4 w-4 text-muted-foreground"
+                        />
                         <a
                           href={`mailto:${instructor.contactEmail}`}
                           className="text-sm hover:underline text-blue-600 dark:text-blue-400"
@@ -334,7 +361,10 @@ export default function MyInstructorsPage() {
 
                     {instructor.contactPhone ? (
                       <div className="flex items-center gap-2">
-                        <HugeiconsIcon icon={PhoneOff01Icon} className="h-4 w-4 text-muted-foreground" />
+                        <HugeiconsIcon
+                          icon={PhoneOff01Icon}
+                          className="h-4 w-4 text-muted-foreground"
+                        />
                         <a
                           href={`tel:${instructor.contactPhone}`}
                           className="text-sm hover:underline text-blue-600 dark:text-blue-400"
@@ -357,7 +387,10 @@ export default function MyInstructorsPage() {
                   {instructor.contactEmail && (
                     <Button size="sm" className="flex-1" asChild>
                       <a href={`mailto:${instructor.contactEmail}`}>
-                        <HugeiconsIcon icon={Mail02Icon} className="h-4 w-4 mr-1" />
+                        <HugeiconsIcon
+                          icon={Mail02Icon}
+                          className="h-4 w-4 mr-1"
+                        />
                         Contactar
                       </a>
                     </Button>

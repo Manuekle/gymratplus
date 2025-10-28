@@ -295,8 +295,8 @@ export default function NutritionPage() {
                         Math.round(
                           ((todayData?.todayTotals.calories ?? 0) /
                             (user?.nutrition.calorieTarget ?? 1)) *
-                            100
-                        )
+                            100,
+                        ),
                       )}
                       %
                     </span>

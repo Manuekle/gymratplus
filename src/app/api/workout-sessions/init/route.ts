@@ -30,7 +30,10 @@ export async function POST() {
     }
 
     if (!session.user.id) {
-      return NextResponse.json({ error: "ID de usuario no encontrado" }, { status: 401 });
+      return NextResponse.json(
+        { error: "ID de usuario no encontrado" },
+        { status: 401 },
+      );
     }
 
     // Crear o obtener los ejercicios básicos

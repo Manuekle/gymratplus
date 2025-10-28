@@ -22,7 +22,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 interface ExpiredDatePickerProps {
   value: Date | string | undefined;
   onValueChange: (date: string) => void;
@@ -131,7 +130,11 @@ export function ExpiredDatePicker({
               aria-expanded={isCalendarOpen}
               aria-label={label}
             >
-              <HugeiconsIcon icon={BirthdayCakeIcon} className="mr-2 h-4 w-4" aria-hidden />
+              <HugeiconsIcon
+                icon={BirthdayCakeIcon}
+                className="mr-2 h-4 w-4"
+                aria-hidden
+              />
               {dateValue ? (
                 format(dateValue, "d 'de' MMMM 'de' yyyy", { locale: es })
               ) : (

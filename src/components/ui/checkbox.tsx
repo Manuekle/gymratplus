@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { HugeiconsIcon } from '@hugeicons/react'
-import {Tick01Icon } from '@hugeicons/core-free-icons'
-
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick01Icon } from "@hugeicons/core-free-icons";
 
 import { cn } from "@/lib/utils";
 

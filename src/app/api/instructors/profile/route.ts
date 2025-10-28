@@ -72,7 +72,7 @@ export async function PUT(req: NextRequest) {
 
     // Filtrar propiedades undefined
     const filteredUpdateData = Object.fromEntries(
-      Object.entries(updateData).filter(([, value]) => value !== undefined)
+      Object.entries(updateData).filter(([, value]) => value !== undefined),
     );
 
     // Actualizar el perfil del instructor

@@ -84,7 +84,11 @@ async function checkFileForPrismaUsage(filePath: string) {
         }
       });
 
-      if (matchFound && modelUsage[model] && !modelUsage[model].files.includes(relativePath)) {
+      if (
+        matchFound &&
+        modelUsage[model] &&
+        !modelUsage[model].files.includes(relativePath)
+      ) {
         modelUsage[model].files.push(relativePath);
       }
     });

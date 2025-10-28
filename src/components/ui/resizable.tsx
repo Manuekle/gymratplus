@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { HugeiconsIcon } from '@hugeicons/react'
+import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowExpandIcon } from "@hugeicons/core-free-icons";
 import * as ResizablePrimitive from "react-resizable-panels";
 

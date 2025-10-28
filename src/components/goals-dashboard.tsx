@@ -22,7 +22,12 @@ import { UpdateGoal } from "./goals/update-goal";
 import ProgressSkeleton from "./skeleton/progress-skeleton";
 import { DeleteGoal } from "./goals/delete-goal";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Calendar01Icon, SquareArrowUp01Icon, Target02Icon, WeightScaleIcon,  } from "@hugeicons/core-free-icons";
+import {
+  Calendar01Icon,
+  SquareArrowUp01Icon,
+  Target02Icon,
+  WeightScaleIcon,
+} from "@hugeicons/core-free-icons";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
@@ -52,7 +57,11 @@ export function GoalsDashboard() {
 
   const handleFormSuccess = async () => {
     setEditingGoal(null);
-    await fetchGoals(activeTab === "all" ? undefined : activeTab, undefined, true);
+    await fetchGoals(
+      activeTab === "all" ? undefined : activeTab,
+      undefined,
+      true,
+    );
   };
 
   if (!mounted) {
@@ -65,13 +74,37 @@ export function GoalsDashboard() {
   const getGoalTypeIcon = (type: GoalType) => {
     switch (type) {
       case "weight":
-        return <HugeiconsIcon icon={WeightScaleIcon} size={18} className="text-black dark:text-white" />;
+        return (
+          <HugeiconsIcon
+            icon={WeightScaleIcon}
+            size={18}
+            className="text-black dark:text-white"
+          />
+        );
       case "strength":
-        return <HugeiconsIcon icon={SquareArrowUp01Icon} size={18} className="text-black dark:text-white" />;
+        return (
+          <HugeiconsIcon
+            icon={SquareArrowUp01Icon}
+            size={18}
+            className="text-black dark:text-white"
+          />
+        );
       case "measurement":
-        return <HugeiconsIcon icon={Target02Icon} size={18} className="text-black dark:text-white" />;
+        return (
+          <HugeiconsIcon
+            icon={Target02Icon}
+            size={18}
+            className="text-black dark:text-white"
+          />
+        );
       case "activity":
-        return <HugeiconsIcon icon={Calendar01Icon} size={18} className="text-black dark:text-white" />;
+        return (
+          <HugeiconsIcon
+            icon={Calendar01Icon}
+            size={18}
+            className="text-black dark:text-white"
+          />
+        );
     }
   };
 
@@ -205,7 +238,6 @@ export function GoalsDashboard() {
             </div>
           ) : goals.length === 0 ? (
             <div className="text-center py-20">
-              
               <h3 className="text-sm font-medium mb-2">No hay objetivos</h3>
               <p className="text-muted-foreground text-xs mb-4">
                 Establece objetivos para hacer seguimiento de tu progreso

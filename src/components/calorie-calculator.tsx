@@ -381,7 +381,7 @@ export function CalorieCalculator() {
                           | "light"
                           | "moderate"
                           | "active"
-                          | "very_active"
+                          | "very_active",
                       )
                     }
                   >
@@ -616,7 +616,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyProteinTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100
+                              100,
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.1 }}
@@ -639,7 +639,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyCarbTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100
+                              100,
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.2 }}
@@ -662,7 +662,7 @@ export function CalorieCalculator() {
                           width: `${Math.round(
                             ((calculatedValues.dailyFatTarget * 9) /
                               calculatedValues.dailyCalorieTarget) *
-                              100
+                              100,
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.3 }}

@@ -258,9 +258,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
           </div>
 
           <div className="space-y-2">
-            <Label className="text-xs md:text-sm">
-              Unidad
-            </Label>
+            <Label className="text-xs md:text-sm">Unidad</Label>
             <Select value={unit} onValueChange={setUnit}>
               <SelectTrigger className="w-full text-xs md:text-sm">
                 <SelectValue placeholder="Selecciona una unidad" />
@@ -354,7 +352,10 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                       !startDate && "text-muted-foreground",
                     )}
                   >
-                    <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
+                    <HugeiconsIcon
+                      icon={Calendar02Icon}
+                      className="mr-2 h-4 w-4"
+                    />
                     {startDate ? (
                       format(startDate, "PPP", { locale: es })
                     ) : (
@@ -387,7 +388,10 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                       !targetDate && "text-muted-foreground",
                     )}
                   >
-                    <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
+                    <HugeiconsIcon
+                      icon={Calendar02Icon}
+                      className="mr-2 h-4 w-4"
+                    />
                     {targetDate ? (
                       format(targetDate, "PPP", { locale: es })
                     ) : (

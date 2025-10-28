@@ -132,13 +132,15 @@ export function useWaterIntake() {
         // --- Actualiza el history en memoria para el día actual (optimista) ---
         const today = new Date();
         const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const dd = String(today.getDate()).padStart(2, "0");
         const todayStr = `${yyyy}-${mm}-${dd}`;
         setHistory((prev) => {
           const found = prev.find((h) => h.date === todayStr);
           if (found) {
-            return prev.map((h) => h.date === todayStr ? { ...h, liters: newIntake } : h);
+            return prev.map((h) =>
+              h.date === todayStr ? { ...h, liters: newIntake } : h,
+            );
           } else {
             return [...prev, { date: todayStr, liters: newIntake }];
           }
@@ -161,7 +163,9 @@ export function useWaterIntake() {
           setHistory((prev) => {
             const found = prev.find((h) => h.date === todayStr);
             if (found) {
-              return prev.map((h) => h.date === todayStr ? { ...h, liters: previousIntake } : h);
+              return prev.map((h) =>
+                h.date === todayStr ? { ...h, liters: previousIntake } : h,
+              );
             } else {
               return prev;
             }
@@ -177,7 +181,8 @@ export function useWaterIntake() {
 
         return true;
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "Error desconocido";
+        const errorMessage =
+          err instanceof Error ? err.message : "Error desconocido";
         setError(errorMessage);
         toast.error("Error", {
           description: errorMessage,
@@ -192,7 +197,8 @@ export function useWaterIntake() {
 
   const addWater = useCallback(
     async (amount = 0.25) => {
-      const validAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
+      const validAmount =
+        typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
       const newIntake = Math.min(10, intake + validAmount); // Limitar a 10 litros
       return updateIntake(Number(newIntake.toFixed(2))); // Ensure 2 decimal places
     },
@@ -201,7 +207,8 @@ export function useWaterIntake() {
 
   const removeWater = useCallback(
     async (amount = 0.25) => {
-      const validAmount = typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
+      const validAmount =
+        typeof amount === "number" && !isNaN(amount) ? amount : 0.25;
       const newIntake = Math.max(0, intake - validAmount); // Don't go below 0
       return updateIntake(Number(newIntake.toFixed(2))); // Ensure 2 decimal places
     },

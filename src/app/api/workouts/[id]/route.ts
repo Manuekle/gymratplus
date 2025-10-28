@@ -8,7 +8,10 @@ export async function GET(request: NextRequest) {
   const id = url.pathname.split("/").pop();
 
   if (!id) {
-    return NextResponse.json({ error: "Workout ID is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Workout ID is required" },
+      { status: 400 },
+    );
   }
 
   const session = await getServerSession(authOptions);
@@ -22,8 +25,8 @@ export async function GET(request: NextRequest) {
         id: id,
         OR: [
           { createdById: session.user.id },
-          { assignedToId: session.user.id }
-        ]
+          { assignedToId: session.user.id },
+        ],
       },
       include: {
         exercises: {
@@ -152,7 +155,10 @@ export async function PUT(request: NextRequest) {
   const id = url.pathname.split("/").pop();
 
   if (!id) {
-    return NextResponse.json({ error: "Workout ID is required" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Workout ID is required" },
+      { status: 400 },
+    );
   }
 
   const session = await getServerSession(authOptions);

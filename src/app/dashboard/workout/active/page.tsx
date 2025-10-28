@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
- // Usando tus iconos
+// Usando tus iconos
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout-timer-float";
@@ -84,7 +84,9 @@ export default function ActiveWorkoutPage() {
     weight?: string | undefined;
     reps?: string | undefined;
   }
-  const [inputValues, setInputValues] = useState<Record<string, InputValue>>({});
+  const [inputValues, setInputValues] = useState<Record<string, InputValue>>(
+    {},
+  );
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
 
   // Cargar la sesión de entrenamiento activa
@@ -232,8 +234,14 @@ export default function ActiveWorkoutPage() {
             return {
               ...prev,
               [setId]: {
-                weight: data.weight !== null && data.weight !== undefined ? data.weight.toString() : currentValues.weight,
-                reps: data.reps !== null && data.reps !== undefined ? data.reps.toString() : currentValues.reps,
+                weight:
+                  data.weight !== null && data.weight !== undefined
+                    ? data.weight.toString()
+                    : currentValues.weight,
+                reps:
+                  data.reps !== null && data.reps !== undefined
+                    ? data.reps.toString()
+                    : currentValues.reps,
               },
             };
           });
@@ -292,12 +300,16 @@ export default function ActiveWorkoutPage() {
 
         if (response.ok) {
           // Actualizar los valores de input después de una actualización exitosa
-          setInputValues(prev => ({
+          setInputValues((prev) => ({
             ...prev,
             [setId]: {
-              ...(dataToSend.weight != null ? { weight: dataToSend.weight.toString() } : {}),
-              ...(dataToSend.reps != null ? { reps: dataToSend.reps.toString() } : {})
-            }
+              ...(dataToSend.weight != null
+                ? { weight: dataToSend.weight.toString() }
+                : {}),
+              ...(dataToSend.reps != null
+                ? { reps: dataToSend.reps.toString() }
+                : {}),
+            },
           }));
         }
       } catch (error) {
@@ -487,7 +499,8 @@ export default function ActiveWorkoutPage() {
             size="sm"
             onClick={() => router.push("/dashboard/workout")}
           >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" /> Volver a la lista
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+            Volver a la lista
           </Button>
         </div>
         <div className="border rounded-lg p-4 mt-8">
@@ -632,12 +645,12 @@ export default function ActiveWorkoutPage() {
                             value={inputValues[set.id]?.weight || ""}
                             onChange={(e) => {
                               const value = e.target.value;
-                              setInputValues(prev => ({
+                              setInputValues((prev) => ({
                                 ...prev,
                                 [set.id]: {
                                   ...prev[set.id],
-                                  weight: value
-                                }
+                                  weight: value,
+                                },
                               }));
                               // Solo actualizamos el estado si el valor es válido
                               if (value === "" || !isNaN(Number(value))) {
@@ -667,12 +680,12 @@ export default function ActiveWorkoutPage() {
                             value={inputValues[set.id]?.reps || ""}
                             onChange={(e) => {
                               const value = e.target.value;
-                              setInputValues(prev => ({
+                              setInputValues((prev) => ({
                                 ...prev,
                                 [set.id]: {
                                   ...prev[set.id],
-                                  reps: value
-                                }
+                                  reps: value,
+                                },
                               }));
                               // Solo actualizamos el estado si el valor es válido
                               if (value === "" || !isNaN(Number(value))) {

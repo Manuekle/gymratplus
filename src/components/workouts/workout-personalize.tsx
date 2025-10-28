@@ -27,7 +27,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 import { useWorkouts } from "@/hooks/use-workouts";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, ArrowRight01Icon, Cancel01Icon,  } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 
 interface Exercise {
   id: string;
@@ -51,11 +55,14 @@ type WorkoutType =
   | "movilidad"
   | "estandar";
 
-const workoutConfigs: Record<WorkoutType, {
-  sets: number;
-  reps: number;
-  restTime: number;
-}> = {
+const workoutConfigs: Record<
+  WorkoutType,
+  {
+    sets: number;
+    reps: number;
+    restTime: number;
+  }
+> = {
   estandar: {
     sets: 3,
     reps: 10,
@@ -173,7 +180,8 @@ export function WorkoutPersonalize() {
 
   const handlePreviousDay = () => {
     const currentIndex = days.indexOf(currentDay);
-    const previousIndex = currentIndex === 0 ? days.length - 1 : currentIndex - 1;
+    const previousIndex =
+      currentIndex === 0 ? days.length - 1 : currentIndex - 1;
     const previousDay = days[previousIndex];
     if (previousDay) {
       setCurrentDay(previousDay);
@@ -362,7 +370,10 @@ export function WorkoutPersonalize() {
                           onClick={() => handleDeleteDay(day)}
                           className="hover:text-destructive"
                         >
-                          <HugeiconsIcon icon={Cancel01Icon} className="h-3 w-3" />
+                          <HugeiconsIcon
+                            icon={Cancel01Icon}
+                            className="h-3 w-3"
+                          />
                         </button>
                       </div>
                     ))}
@@ -395,7 +406,10 @@ export function WorkoutPersonalize() {
                       onClick={handlePreviousDay}
                       className="h-7 w-7 p-0"
                     >
-                      <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
+                      <HugeiconsIcon
+                        icon={ArrowLeft01Icon}
+                        className="h-4 w-4"
+                      />
                     </Button>
                     <Button
                       size="sm"
@@ -403,7 +417,10 @@ export function WorkoutPersonalize() {
                       onClick={handleNextDay}
                       className="h-7 w-7 p-0"
                     >
-                      <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+                      <HugeiconsIcon
+                        icon={ArrowRight01Icon}
+                        className="h-4 w-4"
+                      />
                     </Button>
                   </div>
                 </div>
@@ -428,17 +445,16 @@ export function WorkoutPersonalize() {
               <ScrollArea className="h-[300px] mt-0 pr-4">
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(
-                    (filteredExercises as Exercise[]).reduce<Record<string, Exercise[]>>(
-                      (acc, exercise) => {
-                        const muscleGroup = exercise.muscleGroup || 'other';
-                        if (!acc[muscleGroup]) {
-                          acc[muscleGroup] = [];
-                        }
-                        acc[muscleGroup].push(exercise);
-                        return acc;
-                      },
-                      {},
-                    ),
+                    (filteredExercises as Exercise[]).reduce<
+                      Record<string, Exercise[]>
+                    >((acc, exercise) => {
+                      const muscleGroup = exercise.muscleGroup || "other";
+                      if (!acc[muscleGroup]) {
+                        acc[muscleGroup] = [];
+                      }
+                      acc[muscleGroup].push(exercise);
+                      return acc;
+                    }, {}),
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
                       <h3 className="text-sm capitalize tracking-heading font-semibold  text-muted-foreground">
@@ -464,7 +480,10 @@ export function WorkoutPersonalize() {
                           >
                             <span>{exercise.name}</span>
                             {isExerciseSelected(exercise.id) && (
-                              <HugeiconsIcon icon={Cancel01Icon} className="h-3 w-3 text-current" />
+                              <HugeiconsIcon
+                                icon={Cancel01Icon}
+                                className="h-3 w-3 text-current"
+                              />
                             )}
                           </div>
                         ))}

@@ -75,9 +75,10 @@ export default function WorkouPage() {
       } else {
         const errorData = await res.json();
         setError(
-          errorData?.error === "Workout no encontrado" || errorData?.error === "Workout no encontrado o no autorizado"
+          errorData?.error === "Workout no encontrado" ||
+            errorData?.error === "Workout no encontrado o no autorizado"
             ? "No tienes permiso para ver este workout o no existe."
-            : errorData?.error || "Error al cargar el workout."
+            : errorData?.error || "Error al cargar el workout.",
         );
         setWorkout(null);
       }
@@ -105,7 +106,7 @@ export default function WorkouPage() {
     } catch (error) {
       console.error("Error deleting workout:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al eliminar el workout"
+        error instanceof Error ? error.message : "Error al eliminar el workout",
       );
     } finally {
       setIsDeleting(false);
@@ -117,7 +118,12 @@ export default function WorkouPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[300px] text-center gap-4">
         <h2 className="text-lg font-semibold text-destructive">{error}</h2>
-        <Button variant="outline" onClick={() => router.push("/dashboard/workout")}>Volver a la lista de entrenamientos</Button>
+        <Button
+          variant="outline"
+          onClick={() => router.push("/dashboard/workout")}
+        >
+          Volver a la lista de entrenamientos
+        </Button>
       </div>
     );
   }
@@ -133,7 +139,8 @@ export default function WorkouPage() {
           size="sm"
           onClick={() => router.push("/dashboard/workout")}
         >
-          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" /> Volver a la lista
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+          Volver a la lista
         </Button>
         <span className="flex flex-row gap-2 text-xs w-full md:w-auto">
           <StartWorkout workout={workout} />

@@ -4,12 +4,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -31,15 +26,26 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Activity01Icon, ArrangeByLettersAZIcon, ArrowLeft02Icon, Clock01Icon, Dollar02Icon, EyeIcon, FireIcon, MoreHorizontalIcon, Search01Icon, Target02Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
 import {
-Select,
-SelectContent,
-SelectItem,
-SelectTrigger,
-SelectValue,
+  Activity01Icon,
+  ArrangeByLettersAZIcon,
+  ArrowLeft02Icon,
+  Clock01Icon,
+  Dollar02Icon,
+  EyeIcon,
+  FireIcon,
+  MoreHorizontalIcon,
+  Search01Icon,
+  Target02Icon,
+  UserGroupIcon,
+} from "@hugeicons/core-free-icons";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select";
-
 
 interface StudentData {
   id: string;
@@ -325,7 +331,10 @@ export default function StudentsListPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Alumnos</CardTitle>
-            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={UserGroupIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -338,7 +347,10 @@ export default function StudentsListPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Activos Hoy</CardTitle>
-            <HugeiconsIcon icon={ArrangeByLettersAZIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={ArrangeByLettersAZIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -360,7 +372,10 @@ export default function StudentsListPage() {
             <CardTitle className="text-sm font-medium">
               Racha Promedio
             </CardTitle>
-            <HugeiconsIcon icon={FireIcon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={FireIcon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -375,7 +390,10 @@ export default function StudentsListPage() {
             <CardTitle className="text-sm font-medium">
               Ingresos Mensuales
             </CardTitle>
-            <HugeiconsIcon icon={Dollar02Icon} className="h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Dollar02Icon}
+              className="h-4 w-4 text-muted-foreground"
+            />
           </CardHeader>
           <CardContent>
             <div className="text-2xl sont-semibold">
@@ -387,11 +405,14 @@ export default function StudentsListPage() {
       </div>
 
       {/* Filters */}
-      <Card>        
+      <Card>
         <CardContent>
           <div className="flex flex-col gap-4 md:flex-row">
             <div className="relative flex-1 max-w-sm">
-              <HugeiconsIcon icon={Search01Icon} className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <HugeiconsIcon
+                icon={Search01Icon}
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+              />
               <Input
                 placeholder="Buscar por nombre o email..."
                 value={searchTerm}
@@ -488,7 +509,10 @@ export default function StudentsListPage() {
                           <p className="font-semibold text-sm sm:text-base truncate max-w-[180px] sm:max-w-none">
                             {student.name || "Sin nombre"}
                           </p>
-                          <Badge variant={activityStatus.variant} className="text-xs">
+                          <Badge
+                            variant={activityStatus.variant}
+                            className="text-xs"
+                          >
                             {activityStatus.text}
                           </Badge>
                         </div>
@@ -505,8 +529,10 @@ export default function StudentsListPage() {
                             <Badge
                               variant="outline"
                               className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
-                            >                              
-                              <span className="hidden sm:inline">Entrenamiento</span>
+                            >
+                              <span className="hidden sm:inline">
+                                Entrenamiento
+                              </span>
                               <span className="sm:hidden">Entr.</span>
                             </Badge>
                           )}
@@ -515,8 +541,13 @@ export default function StudentsListPage() {
                               variant="outline"
                               className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
                             >
-                              <HugeiconsIcon icon={Activity01Icon} className="h-3 w-3 mr-1" />
-                              <span className="hidden sm:inline">Nutrición</span>
+                              <HugeiconsIcon
+                                icon={Activity01Icon}
+                                className="h-3 w-3 mr-1"
+                              />
+                              <span className="hidden sm:inline">
+                                Nutrición
+                              </span>
                               <span className="sm:hidden">Nutr.</span>
                             </Badge>
                           )}
@@ -534,8 +565,14 @@ export default function StudentsListPage() {
                       {/* Stats */}
                       <div className="text-right space-y-1 min-w-[100px]">
                         <div className="flex items-center justify-end gap-2">
-                          <Badge variant={streakVariant} className="gap-1 text-xs">
-                            <HugeiconsIcon icon={FireIcon} className="h-3 w-3" />
+                          <Badge
+                            variant={streakVariant}
+                            className="gap-1 text-xs"
+                          >
+                            <HugeiconsIcon
+                              icon={FireIcon}
+                              className="h-3 w-3"
+                            />
                             {student.currentWorkoutStreak}
                           </Badge>
                           <span className="text-xs text-muted-foreground hidden sm:inline">
@@ -549,17 +586,29 @@ export default function StudentsListPage() {
                           {student.lastWorkoutAt ? (
                             isToday(new Date(student.lastWorkoutAt)) ? (
                               <span className="text-emerald-600 font-medium flex items-center justify-end gap-1">
-                                <HugeiconsIcon icon={Clock01Icon} className="h-3 w-3" />
-                                <span className="hidden sm:inline">Entrenó hoy</span>
+                                <HugeiconsIcon
+                                  icon={Clock01Icon}
+                                  className="h-3 w-3"
+                                />
+                                <span className="hidden sm:inline">
+                                  Entrenó hoy
+                                </span>
                                 <span className="sm:hidden">Hoy</span>
                               </span>
                             ) : (
                               <span className="whitespace-nowrap">
-                                Últ: {format(new Date(student.lastWorkoutAt), "d MMM", { locale: es })}
+                                Últ:{" "}
+                                {format(
+                                  new Date(student.lastWorkoutAt),
+                                  "d MMM",
+                                  { locale: es },
+                                )}
                               </span>
                             )
                           ) : (
-                            <span className="whitespace-nowrap">Sin entrenos</span>
+                            <span className="whitespace-nowrap">
+                              Sin entrenos
+                            </span>
                           )}
                         </p>
                       </div>
@@ -572,7 +621,10 @@ export default function StudentsListPage() {
                             size="sm"
                             className="h-8 w-8 p-0 ml-auto sm:ml-0"
                           >
-                            <HugeiconsIcon icon={MoreHorizontalIcon} className="h-4 w-4" />
+                            <HugeiconsIcon
+                              icon={MoreHorizontalIcon}
+                              className="h-4 w-4"
+                            />
                             <span className="sr-only">Abrir menú</span>
                           </Button>
                         </DropdownMenuTrigger>
@@ -590,7 +642,10 @@ export default function StudentsListPage() {
                             }}
                             className="cursor-pointer"
                           >
-                            <HugeiconsIcon icon={Target02Icon} className="h-4 w-4 mr-2" />
+                            <HugeiconsIcon
+                              icon={Target02Icon}
+                              className="h-4 w-4 mr-2"
+                            />
                             Asignar Rutina
                           </DropdownMenuItem>
                           {/* Elimino el render del modal aquí */}
@@ -599,7 +654,10 @@ export default function StudentsListPage() {
                               href={`/dashboard/students/list/${student.id}`}
                               className="w-full flex items-center"
                             >
-                              <HugeiconsIcon icon={EyeIcon} className="h-4 w-4 mr-2" />
+                              <HugeiconsIcon
+                                icon={EyeIcon}
+                                className="h-4 w-4 mr-2"
+                              />
                               Ver perfil completo
                             </Link>
                           </DropdownMenuItem>
@@ -611,7 +669,10 @@ export default function StudentsListPage() {
                               toast.info("Funcionalidad en desarrollo");
                             }}
                           >
-                            <HugeiconsIcon icon={UserGroupIcon} className="h-4 w-4 mr-2" />
+                            <HugeiconsIcon
+                              icon={UserGroupIcon}
+                              className="h-4 w-4 mr-2"
+                            />
                             Remover alumno
                           </DropdownMenuItem>
                         </DropdownMenuContent>

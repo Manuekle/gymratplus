@@ -41,12 +41,12 @@ export default function InstructorsPage() {
   const fetchInstructors = async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/instructors');
+      const res = await fetch("/api/instructors");
       if (!res.ok) throw new Error("Error al cargar instructores");
       const data = await res.json();
       setInstructors(data);
     } catch (error) {
-      console.error('Error fetching instructors:', error);
+      console.error("Error fetching instructors:", error);
       setInstructors([]);
     } finally {
       setLoading(false);
@@ -89,10 +89,16 @@ export default function InstructorsPage() {
           ) : (
             <div className="grid grid-cols-1 gap-4">
               {instructors.map((instructor: Instructor) => (
-                <Card key={instructor.id} className="overflow-hidden flex flex-col h-full">
+                <Card
+                  key={instructor.id}
+                  className="overflow-hidden flex flex-col h-full"
+                >
                   <CardHeader className="flex flex-row items-start space-x-4 pb-3">
                     <Avatar className="h-16 w-16 mt-1">
-                      <AvatarImage src={instructor.image || ''} alt={instructor.name || 'Instructor'} />
+                      <AvatarImage
+                        src={instructor.image || ""}
+                        alt={instructor.name || "Instructor"}
+                      />
                       <AvatarFallback>
                         {instructor.name
                           ?.split(" ")
@@ -121,27 +127,40 @@ export default function InstructorsPage() {
                             </span>
                           )}
                           {instructor.instructorProfile?.isRemote && (
-                            <Badge variant="outline" className="text-xs ml-2">Remoto</Badge>
+                            <Badge variant="outline" className="text-xs ml-2">
+                              Remoto
+                            </Badge>
                           )}
                         </div>
                       )}
                       {instructor.instructorProfile?.pricePerMonth && (
                         <div className="text-sm font-medium">
-                          ${instructor.instructorProfile.pricePerMonth.toFixed(2)}/mes
+                          $
+                          {instructor.instructorProfile.pricePerMonth.toFixed(
+                            2,
+                          )}
+                          /mes
                         </div>
                       )}
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1">
                     <p className="text-sm text-muted-foreground line-clamp-3 mb-4">
-                      {instructor.instructorProfile?.bio || 'Instructor certificado con experiencia en entrenamiento personalizado.'}
+                      {instructor.instructorProfile?.bio ||
+                        "Instructor certificado con experiencia en entrenamiento personalizado."}
                     </p>
                     <div className="flex flex-wrap gap-2 mb-4">
-                      {instructor.instructorProfile?.tags?.slice(0, 4).map((tag: string, idx: number) => (
-                        <Badge key={`${tag}-${idx}`} variant="outline" className="text-xs">
-                          {tag}
-                        </Badge>
-                      ))}
+                      {instructor.instructorProfile?.tags
+                        ?.slice(0, 4)
+                        .map((tag: string, idx: number) => (
+                          <Badge
+                            key={`${tag}-${idx}`}
+                            variant="outline"
+                            className="text-xs"
+                          >
+                            {tag}
+                          </Badge>
+                        ))}
                     </div>
                   </CardContent>
                   <CardFooter className="pt-0">

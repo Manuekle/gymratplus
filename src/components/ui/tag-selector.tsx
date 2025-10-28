@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Check, ChevronsUpDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Command,
   CommandEmpty,
@@ -11,13 +11,13 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from '@/components/ui/command';
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from '@/components/ui/popover';
-import { Badge } from '@/components/ui/badge';
+} from "@/components/ui/popover";
+import { Badge } from "@/components/ui/badge";
 export interface Tag {
   id: string;
   name: string;
@@ -28,7 +28,7 @@ export function TagSelector({
   selectedTags,
   onTagSelect,
   availableTags,
-  placeholder = 'Select tags...',
+  placeholder = "Select tags...",
   className,
 }: {
   selectedTags: string[];
@@ -38,7 +38,7 @@ export function TagSelector({
   className?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
 
   const handleTagToggle = (tagId: string) => {
     const newSelectedTags = selectedTags.includes(tagId)
@@ -48,11 +48,11 @@ export function TagSelector({
   };
 
   const filteredTags = availableTags.filter((tag) =>
-    tag.name.toLowerCase().includes(search.toLowerCase())
+    tag.name.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <div className={cn('space-y-2', className)}>
+    <div className={cn("space-y-2", className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
@@ -66,7 +66,9 @@ export function TagSelector({
                 {selectedTags.length} seleccionados
               </span>
             ) : (
-              <span className="text-muted-foreground text-xs">{placeholder}</span>
+              <span className="text-muted-foreground text-xs">
+                {placeholder}
+              </span>
             )}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -79,9 +81,7 @@ export function TagSelector({
               onValueChange={setSearch}
             />
             <CommandList>
-              <CommandEmpty>
-                No se encontraron tags
-              </CommandEmpty>
+              <CommandEmpty>No se encontraron tags</CommandEmpty>
               <CommandGroup>
                 {filteredTags.map((tag) => {
                   const isSelected = selectedTags.includes(tag.id);
@@ -92,13 +92,13 @@ export function TagSelector({
                     >
                       <div
                         className={cn(
-                          'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
+                          "mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary",
                           isSelected
-                            ? 'bg-primary text-primary-foreground'
-                            : 'opacity-50 [&_svg]:invisible'
+                            ? "bg-primary text-primary-foreground"
+                            : "opacity-50 [&_svg]:invisible",
                         )}
                       >
-                        <Check className={cn('h-4 w-4')} />
+                        <Check className={cn("h-4 w-4")} />
                       </div>
                       <span>{tag.name}</span>
                       {tag.description && (
@@ -114,7 +114,7 @@ export function TagSelector({
           </Command>
         </PopoverContent>
       </Popover>
-      
+
       {selectedTags.length > 0 && (
         <div className="flex flex-wrap gap-2">
           {selectedTags.map((tagId) => {

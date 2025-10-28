@@ -67,7 +67,10 @@ export async function POST(req: NextRequest) {
 
     const userId = (session.user as { id: string }).id;
     if (!userId) {
-      return NextResponse.json({ error: "No se encontró el userId" }, { status: 400 });
+      return NextResponse.json(
+        { error: "No se encontró el userId" },
+        { status: 400 },
+      );
     }
     const data = await req.json();
 

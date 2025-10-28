@@ -93,11 +93,11 @@ export async function POST(req: NextRequest) {
       } = {
         status: "pending",
       };
-      
+
       if (agreedPrice !== undefined) {
         updateData.agreedPrice = agreedPrice;
       }
-      
+
       const updatedRequest = await prisma.studentInstructor.update({
         where: { id: existingRecord.id },
         data: updateData,
@@ -137,11 +137,11 @@ export async function POST(req: NextRequest) {
       instructorProfileId,
       status: "pending", // Estado inicial de la solicitud
     };
-    
+
     if (agreedPrice !== undefined) {
       createData.agreedPrice = agreedPrice;
     }
-    
+
     const studentInstructorRequest = await prisma.studentInstructor.create({
       data: createData,
       include: {

@@ -133,7 +133,10 @@ export function NewProgress({ onSuccess, initialData }: ProgressProps) {
                     !date && "text-muted-foreground",
                   )}
                 >
-                  <HugeiconsIcon icon={Calendar02Icon} className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={Calendar02Icon}
+                    className="mr-2 h-4 w-4"
+                  />
                   {date ? (
                     format(date, "PPP", { locale: es })
                   ) : (

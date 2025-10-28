@@ -104,7 +104,9 @@ export function useInstructorWorkouts() {
         const data = await res.json();
         // Filtrar workouts huérfanos: solo mostrar los que tienen assignedToId o type !== 'personal'
         type AssignedWorkoutWithType = AssignedWorkout & { type?: string };
-        const filtered = (data as AssignedWorkoutWithType[]).filter((w) => w.assignedToId || w.type !== 'personal');
+        const filtered = (data as AssignedWorkoutWithType[]).filter(
+          (w) => w.assignedToId || w.type !== "personal",
+        );
         globalAssignedWorkouts = filtered;
         setAssignedWorkouts(filtered);
         notifySubscribers();

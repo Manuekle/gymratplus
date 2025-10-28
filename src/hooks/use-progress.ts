@@ -233,7 +233,10 @@ export const useProgress = () => {
 
   // Obtener estadísticas de progreso (diferencia desde el inicio, promedio, etc.)
   const getProgressStats = useCallback(
-    (data: ProgressRecord[] | undefined, type: "weight" | "bodyFat" | "muscle") => {
+    (
+      data: ProgressRecord[] | undefined,
+      type: "weight" | "bodyFat" | "muscle",
+    ) => {
       // Handle undefined or empty data
       if (!data || data.length === 0) {
         return {
@@ -242,12 +245,13 @@ export const useProgress = () => {
           average: 0,
         };
       }
-      
+
       // Filter out any undefined or invalid records
-      const validData = data.filter((record): record is ProgressRecord => 
-        record !== undefined && record.date !== undefined
+      const validData = data.filter(
+        (record): record is ProgressRecord =>
+          record !== undefined && record.date !== undefined,
       );
-      
+
       if (validData.length < 2) {
         const firstRecord = validData[0];
         const firstValue = firstRecord ? getValue(firstRecord, type) : 0;

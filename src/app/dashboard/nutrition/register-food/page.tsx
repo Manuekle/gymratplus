@@ -76,6 +76,7 @@ type SelectedItem = {
   type: "food" | "recipe";
   data: Food | Recipe;
   quantity: number;
+  unit: string;
 };
 
 export default function RegistrarComidaPage() {
@@ -89,7 +90,6 @@ export default function RegistrarComidaPage() {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [notes, setNotes] = useState("");
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
 
   useEffect(() => {
@@ -136,13 +136,13 @@ export default function RegistrarComidaPage() {
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType)
+      recipe.mealType.includes(mealType),
   );
 
   const handleSubmit = async () => {
@@ -167,7 +167,6 @@ export default function RegistrarComidaPage() {
           mealType,
           consumedAt: localDate.toISOString(),
           quantity: quantity,
-          notes: notes || null,
           ...(selectedItem.type === "food"
             ? { foodId: selectedItem.id }
             : { recipeId: selectedItem.id }),
@@ -190,7 +189,7 @@ export default function RegistrarComidaPage() {
       });
 
       await Promise.all(promises);
-      router.push("/");
+      router.push("/dashboard/nutrition");
       toast.success("Comidas registradas correctamente");
     } catch (error) {
       console.error("Error adding meal logs:", error);
@@ -207,10 +206,10 @@ export default function RegistrarComidaPage() {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe"
+    type: "food" | "recipe",
   ) => {
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type
+      (selected) => selected.id === item.id && selected.type === type,
     );
 
     if (existingIndex >= 0) {
@@ -218,13 +217,15 @@ export default function RegistrarComidaPage() {
       newSelectedItems.splice(existingIndex, 1);
       setSelectedItems(newSelectedItems);
     } else {
+      const defaultUnit = type === "food" ? "g" : "porción";
       setSelectedItems([
         ...selectedItems,
         {
           id: item.id,
           type,
           data: item,
-          quantity: 1,
+          quantity: type === "food" ? (item as Food).serving : 1,
+          unit: defaultUnit,
         },
       ]);
     }
@@ -254,6 +255,59 @@ export default function RegistrarComidaPage() {
     setSelectedItems(newSelectedItems);
   };
 
+  const updateItemUnit = (index: number, newUnit: string) => {
+    setSelectedItems((prevItems) => {
+      const newItems = [...prevItems];
+      const currentItem = newItems[index];
+      if (currentItem) {
+        const defaultQuantity =
+          newUnit === "g" && currentItem.type === "food"
+            ? (currentItem.data as Food).serving
+            : 1;
+
+        newItems[index] = {
+          ...currentItem,
+          unit: newUnit,
+          quantity: defaultQuantity,
+        };
+      }
+      return newItems;
+    });
+  };
+
+  const getAvailableUnits = (item: SelectedItem) => {
+    if (item.type === "recipe") {
+      return [
+        { value: "porción", label: "Porción" },
+        { value: "unidad", label: "Unidad" },
+      ];
+    }
+
+    const food = item.data as Food;
+    const category = food.category?.toLowerCase() || "";
+
+    const baseUnits = [
+      { value: "g", label: "Gramos (g)" },
+      { value: "porción", label: "Porción" },
+      { value: "unidad", label: "Unidad" },
+    ];
+
+    if (
+      category.includes("bebida") ||
+      category.includes("liquido") ||
+      category.includes("líquido")
+    ) {
+      return [
+        ...baseUnits,
+        { value: "ml", label: "Mililitros (ml)" },
+        { value: "L", label: "Litros (L)" },
+        { value: "taza", label: "Taza" },
+      ];
+    }
+
+    return baseUnits;
+  };
+
   const calculateTotals = () => {
     return selectedItems.reduce(
       (acc, item) => {
@@ -264,7 +318,18 @@ export default function RegistrarComidaPage() {
             ? (data as Food).serving
             : (data as Recipe).servings;
 
-        const ratio = quantity / serving;
+        let ratio = 1;
+
+        if (item.unit === "g" || item.unit === "ml") {
+          ratio = quantity / serving;
+        } else if (item.unit === "kg" || item.unit === "L") {
+          ratio = (quantity * 1000) / serving;
+        } else if (item.unit === "taza") {
+          ratio = (quantity * 240) / serving;
+        } else if (item.unit === "porción" || item.unit === "unidad") {
+          ratio = quantity;
+        }
+
         const calories = Math.round(data.calories * ratio);
         const protein = Number.parseFloat((data.protein * ratio).toFixed(1));
         const carbs = Number.parseFloat((data.carbs * ratio).toFixed(1));
@@ -277,7 +342,7 @@ export default function RegistrarComidaPage() {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0 },
     );
   };
 
@@ -310,7 +375,7 @@ export default function RegistrarComidaPage() {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe"
+            activeTab === "foods" ? "food" : "recipe",
           );
 
           const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
@@ -327,7 +392,7 @@ export default function RegistrarComidaPage() {
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe"
+                  activeTab === "foods" ? "food" : "recipe",
                 )
               }
               className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm ${
@@ -338,9 +403,7 @@ export default function RegistrarComidaPage() {
             >
               <div className="flex items-start sm:items-center justify-between gap-3">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm sm:text-base font-medium line-clamp-1">
-                    {item.name}
-                  </h3>
+                  <h3 className="text-xs font-medium">{item.name}</h3>
                   <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
                     {activeTab === "foods"
                       ? `${(item as Food).serving}g`
@@ -443,7 +506,7 @@ export default function RegistrarComidaPage() {
       <div className="mb-4 flex justify-between w-full items-center">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs bg-transparent"
           size="sm"
           onClick={() => router.push("/dashboard/nutrition")}
         >
@@ -512,20 +575,7 @@ export default function RegistrarComidaPage() {
                 onChange={(time) => setMealTime(time)}
               />
             </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">
-                Notas (opcional)
-              </Label>
-              <Input
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                placeholder="Ej: Comida casera"
-                className="h-10 text-sm"
-              />
-            </div>
           </div>
-
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             {/* Left column - Browse foods */}
             <div className="lg:col-span-2 space-y-3 sm:space-y-4">
@@ -706,9 +756,26 @@ export default function RegistrarComidaPage() {
                                   item.type === "food"
                                     ? (data as Food).serving
                                     : (data as Recipe).servings;
-                                const ratio = quantity / serving;
+
+                                let ratio = 1;
+                                if (item.unit === "g" || item.unit === "ml") {
+                                  ratio = quantity / serving;
+                                } else if (
+                                  item.unit === "kg" ||
+                                  item.unit === "L"
+                                ) {
+                                  ratio = (quantity * 1000) / serving;
+                                } else if (item.unit === "taza") {
+                                  ratio = (quantity * 240) / serving;
+                                } else if (
+                                  item.unit === "porción" ||
+                                  item.unit === "unidad"
+                                ) {
+                                  ratio = quantity;
+                                }
+
                                 const calories = Math.round(
-                                  data.calories * ratio
+                                  data.calories * ratio,
                                 );
 
                                 return (
@@ -738,53 +805,115 @@ export default function RegistrarComidaPage() {
                                       </Button>
                                     </div>
 
-                                    <div className="flex items-center gap-2">
-                                      <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-7 w-7 flex-shrink-0 bg-transparent"
-                                        onClick={() =>
-                                          updateItemQuantity(
-                                            index,
-                                            Math.max(0.1, item.quantity - 0.5)
-                                          )
+                                    <div className="space-y-2">
+                                      <Select
+                                        value={item.unit}
+                                        onValueChange={(value) =>
+                                          updateItemUnit(index, value)
                                         }
                                       >
-                                        <HugeiconsIcon
-                                          icon={MinusSignIcon}
-                                          className="h-3 w-3"
-                                        />
-                                      </Button>
-                                      <Input
-                                        type="number"
-                                        min="0.1"
-                                        step="0.1"
-                                        value={item.quantity}
-                                        onChange={(e) =>
-                                          updateItemQuantity(
-                                            index,
-                                            Number.parseFloat(e.target.value) ||
-                                              0.1
-                                          )
-                                        }
-                                        className="h-7 text-center text-sm flex-1 min-w-0"
-                                      />
-                                      <Button
-                                        variant="outline"
-                                        size="icon"
-                                        className="h-7 w-7 flex-shrink-0 bg-transparent"
-                                        onClick={() =>
-                                          updateItemQuantity(
-                                            index,
-                                            item.quantity + 0.5
-                                          )
-                                        }
-                                      >
-                                        <HugeiconsIcon
-                                          icon={PlusSignIcon}
-                                          className="h-3 w-3"
-                                        />
-                                      </Button>
+                                        <SelectTrigger className="h-8 text-xs">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                          {getAvailableUnits(item).map(
+                                            (unit) => (
+                                              <SelectItem
+                                                key={unit.value}
+                                                value={unit.value}
+                                              >
+                                                {unit.label}
+                                              </SelectItem>
+                                            ),
+                                          )}
+                                        </SelectContent>
+                                      </Select>
+
+                                      <div className="flex items-center gap-2">
+                                        <Button
+                                          variant="outline"
+                                          size="icon"
+                                          className="h-7 w-7 flex-shrink-0 bg-transparent"
+                                          onClick={() =>
+                                            updateItemQuantity(
+                                              index,
+                                              Math.max(
+                                                0.1,
+                                                item.quantity - 0.5,
+                                              ),
+                                            )
+                                          }
+                                        >
+                                          <HugeiconsIcon
+                                            icon={MinusSignIcon}
+                                            className="h-3 w-3"
+                                          />
+                                        </Button>
+                                        <div className="flex-1">
+                                          <Input
+                                            type="number"
+                                            min="1"
+                                            step="1"
+                                            value={item.quantity || ""}
+                                            onChange={(e) => {
+                                              const value = e.target.value;
+                                              if (value === "") {
+                                                updateItemQuantity(index, 0);
+                                              } else {
+                                                const numValue =
+                                                  Number.parseFloat(value);
+                                                if (
+                                                  !isNaN(numValue) &&
+                                                  numValue >= 1
+                                                ) {
+                                                  updateItemQuantity(
+                                                    index,
+                                                    Math.max(
+                                                      1,
+                                                      Math.floor(numValue),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            }}
+                                            onBlur={(e) => {
+                                              if (
+                                                !e.target.value ||
+                                                Number(e.target.value) < 1
+                                              ) {
+                                                toast.error(
+                                                  "La cantidad mínima es 1",
+                                                  {
+                                                    description:
+                                                      "Por favor ingresa un número mayor o igual a 1",
+                                                    position: "top-center",
+                                                    duration: 2000,
+                                                  },
+                                                );
+                                                updateItemQuantity(index, 1);
+                                              }
+                                            }}
+                                            className="h-7 text-center text-sm w-full"
+                                            placeholder="Cantidad"
+                                          />
+                                        </div>
+                                        <Button
+                                          variant="outline"
+                                          size="icon"
+                                          className="h-7 w-7 flex-shrink-0 bg-transparent"
+                                          onClick={() =>
+                                            updateItemQuantity(
+                                              index,
+                                              item.quantity + 0.5,
+                                            )
+                                          }
+                                        >
+                                          <HugeiconsIcon
+                                            icon={PlusSignIcon}
+                                            className="h-3 w-3"
+                                          />
+                                        </Button>
+                                      </div>
                                     </div>
                                   </div>
                                 );

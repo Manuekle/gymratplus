@@ -66,20 +66,20 @@ export function useWorkouts() {
         const data = await res.json();
         // Filtrar según el rol del usuario
         let filtered = data;
-        if (session?.user && typeof session.user.isInstructor !== 'undefined') {
+        if (session?.user && typeof session.user.isInstructor !== "undefined") {
           if (session.user.isInstructor) {
             // Instructor: solo los que creó y que NO están asignados
             filtered = (data as Workout[]).filter(
               (w) =>
                 w.createdById === session.user.id &&
-                (!w.assignedToId || w.type === "personal")
+                (!w.assignedToId || w.type === "personal"),
             );
           } else {
             // Alumno: los que creó o le asignaron
             filtered = (data as Workout[]).filter(
               (w) =>
                 w.createdById === session.user.id ||
-                w.assignedToId === session.user.id
+                w.assignedToId === session.user.id,
             );
           }
         }

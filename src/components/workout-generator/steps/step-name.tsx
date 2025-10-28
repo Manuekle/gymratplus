@@ -10,7 +10,6 @@ import { Label } from "@/components/ui/label";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { File01Icon } from "@hugeicons/core-free-icons";
 
-
 interface StepNameProps {
   value: string;
   onChange: (value: string) => void;

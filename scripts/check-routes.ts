@@ -336,7 +336,13 @@ class NextJSRouteChecker {
 
       // Verificar si se usan tipos correctos para Request/Response
       if (line.includes("Request") && !line.includes("NextRequest")) {
-        if (line.includes("export") && (line.includes("GET") || line.includes("POST") || line.includes("PUT") || line.includes("DELETE"))) {
+        if (
+          line.includes("export") &&
+          (line.includes("GET") ||
+            line.includes("POST") ||
+            line.includes("PUT") ||
+            line.includes("DELETE"))
+        ) {
           this.addError(
             filePath,
             lineNumber,
@@ -377,24 +383,30 @@ class NextJSRouteChecker {
         console.log("✅ La verificación de tipos se completó sin errores");
       } catch (error) {
         const getErrorMessage = (err: unknown): string => {
-          if (err && typeof err === 'object') {
-            if ('message' in err && typeof err.message === 'string') {
+          if (err && typeof err === "object") {
+            if ("message" in err && typeof err.message === "string") {
               return err.message;
             }
-            if ('stderr' in err && typeof err.stderr === 'string') {
+            if ("stderr" in err && typeof err.stderr === "string") {
               return err.stderr;
             }
-            if ('stdout' in err && typeof err.stdout === 'string') {
+            if ("stdout" in err && typeof err.stdout === "string") {
               return err.stdout;
             }
           }
-          return 'Unknown error occurred';
+          return "Unknown error occurred";
         };
-        
+
         const output = getErrorMessage(error);
         const errors = this.parseTypeScriptErrors(output);
         errors.forEach((err) => {
-          this.addError(err.file, err.line, err.column, err.message, err.severity);
+          this.addError(
+            err.file,
+            err.line,
+            err.column,
+            err.message,
+            err.severity,
+          );
         });
       } finally {
         resolve();
@@ -418,14 +430,14 @@ class NextJSRouteChecker {
       if (file && this.isRouteFile(file)) {
         errors.push({
           file: relative(this.projectRoot, file),
-          line: parseInt(line || '1'),
-          column: parseInt(column || '1'),
-          message: message || 'Error desconocido',
-          severity: (severity as "error" | "warning") || 'error',
+          line: parseInt(line || "1"),
+          column: parseInt(column || "1"),
+          message: message || "Error desconocido",
+          severity: (severity as "error" | "warning") || "error",
         });
       }
     }
-    
+
     return errors;
   }
 
@@ -511,7 +523,6 @@ class NextJSRouteChecker {
       console.log("\n⚠️  Se encontraron advertencias. Considera revisarlas.");
     }
   }
-
 }
 
 // Ejecutar el script

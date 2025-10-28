@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { HugeiconsIcon } from '@hugeicons/react'
-import {ArrowLeft01Icon, ArrowRight01Icon } from '@hugeicons/core-free-icons'
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 import { DayPicker } from "react-day-picker";
 
@@ -64,13 +64,17 @@ function Calendar({
       components={{
         IconLeft: ({ className, ...props }) => (
           <HugeiconsIcon
-          icon={ArrowLeft01Icon}
-          className={cn("size-4", className)} {...props} />
+            icon={ArrowLeft01Icon}
+            className={cn("size-4", className)}
+            {...props}
+          />
         ),
         IconRight: ({ className, ...props }) => (
           <HugeiconsIcon
-          icon={ArrowRight01Icon}
-          className={cn("size-4", className)} {...props} />
+            icon={ArrowRight01Icon}
+            className={cn("size-4", className)}
+            {...props}
+          />
         ),
       }}
       {...props}

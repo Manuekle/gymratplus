@@ -10,11 +10,14 @@ export async function GET(request: NextRequest) {
   try {
     const url = new URL(request.url);
     const id = url.pathname.split("/").pop();
-    
+
     if (!id) {
-      return NextResponse.json({ error: "Meal log ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Meal log ID is required" },
+        { status: 400 },
+      );
     }
-    
+
     const mealLogId = id;
 
     const session = await getServerSession(authOptions);
@@ -62,7 +65,10 @@ export async function DELETE(request: NextRequest) {
     const id = url.pathname.split("/").pop();
 
     if (!id) {
-      return NextResponse.json({ error: "Meal log ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Meal log ID is required" },
+        { status: 400 },
+      );
     }
 
     const session = await getServerSession(authOptions);

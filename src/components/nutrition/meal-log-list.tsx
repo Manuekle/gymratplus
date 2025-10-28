@@ -38,10 +38,7 @@ type MealLogListProps = {
   selectedDate?: Date;
 };
 
-export function MealLogList({
-  mealLogs,
-  loading,
-}: MealLogListProps) {
+export function MealLogList({ mealLogs, loading }: MealLogListProps) {
   // Removed unused deletingId state
 
   const getMealTypeLabel = (mealType: string) => {
@@ -125,7 +122,7 @@ export function MealLogList({
   const mealsByType: Record<string, MealLog[]> = {};
 
   mealLogs.forEach((meal) => {
-    const mealType = meal.mealType || 'other';
+    const mealType = meal.mealType || "other";
     if (!mealsByType[mealType]) {
       mealsByType[mealType] = [];
     }

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
       return NextResponse.json(
         { error: "Blob storage token not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 

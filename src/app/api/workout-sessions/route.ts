@@ -29,19 +29,23 @@ const exerciseDataSchema = z.object({
 
 const createWorkoutSessionSchema = z.object({
   date: z.string().or(z.date()),
-  exercises: z.array(exerciseDataSchema).min(1, "Debe haber al menos un ejercicio"),
+  exercises: z
+    .array(exerciseDataSchema)
+    .min(1, "Debe haber al menos un ejercicio"),
   notes: z.string().optional(),
   workoutId: z.string().min(1, "El ID del entrenamiento es requerido"),
 });
 
-export async function GET(request: NextRequest): Promise<NextResponse<unknown>> {
+export async function GET(
+  request: NextRequest,
+): Promise<NextResponse<unknown>> {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No autorizado. Inicia sesión para continuar." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -61,7 +65,10 @@ export async function GET(request: NextRequest): Promise<NextResponse<unknown>> 
       const start = startDate ? new Date(startDate) : null;
       const end = endDate ? new Date(endDate) : null;
 
-      if ((start && Number.isNaN(start.getTime())) || (end && Number.isNaN(end.getTime()))) {
+      if (
+        (start && Number.isNaN(start.getTime())) ||
+        (end && Number.isNaN(end.getTime()))
+      ) {
         throw new Error("Formato de fecha inválido");
       }
 
@@ -160,14 +167,16 @@ export async function GET(request: NextRequest): Promise<NextResponse<unknown>> 
   }
 }
 
-export async function POST(request: NextRequest): Promise<NextResponse<unknown>> {
+export async function POST(
+  request: NextRequest,
+): Promise<NextResponse<unknown>> {
   try {
     const session = await getServerSession(authOptions);
 
     if (!session?.user?.id) {
       return NextResponse.json(
         { error: "No autorizado. Inicia sesión para continuar." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -177,7 +186,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
     } catch (error) {
       return NextResponse.json(
         { error: "El cuerpo de la solicitud no es un JSON válido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -189,15 +198,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
         .join(", ");
       return NextResponse.json(
         { error: `Datos inválidos: ${errorMessage}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { 
-      date: sessionDate, 
-      exercises: exerciseData, 
-      notes: sessionNotes, 
-      workoutId, 
+    const {
+      date: sessionDate,
+      exercises: exerciseData,
+      notes: sessionNotes,
+      workoutId,
     } = validation.data;
 
     // Verify workout exists and belongs to user
@@ -209,13 +218,15 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
     if (!workout) {
       return NextResponse.json(
         { error: "El entrenamiento especificado no existe" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     if (workout.createdById !== session.user.id) {
       return NextResponse.json(
-        { error: "No tienes permiso para agregar sesiones a este entrenamiento" },
+        {
+          error: "No tienes permiso para agregar sesiones a este entrenamiento",
+        },
         { status: 403 },
       );
     }
@@ -230,7 +241,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
           throw new Error(`Ejercicio "${exercise.name}" no encontrado`);
         }
         return { ...exercise, exerciseId: record.id };
-      })
+      }),
     );
 
     // Create workout session
@@ -273,23 +284,28 @@ export async function POST(request: NextRequest): Promise<NextResponse<unknown>>
       id: workoutSession.id,
       date: workoutSession.date,
       notes: workoutSession.notes,
-      exercises: (workoutSession as any).exercises?.reduce(
-        (acc: Record<string, { weight: number; reps: number }>, exerciseSession: any) => {
-          const lastSet = exerciseSession.sets?.[exerciseSession.sets.length - 1];
-          acc[exerciseSession.exercise.name] = {
-            weight: lastSet?.weight ?? 0,
-            reps: lastSet?.reps ?? 0,
-          };
-          return acc;
-        },
-        {} as Record<string, { weight: number; reps: number }>,
-      ) ?? {},
+      exercises:
+        (workoutSession as any).exercises?.reduce(
+          (
+            acc: Record<string, { weight: number; reps: number }>,
+            exerciseSession: any,
+          ) => {
+            const lastSet =
+              exerciseSession.sets?.[exerciseSession.sets.length - 1];
+            acc[exerciseSession.exercise.name] = {
+              weight: lastSet?.weight ?? 0,
+              reps: lastSet?.reps ?? 0,
+            };
+            return acc;
+          },
+          {} as Record<string, { weight: number; reps: number }>,
+        ) ?? {},
     };
 
     return NextResponse.json(transformedSession, { status: 201 });
   } catch (error) {
     console.error("[WORKOUT_SESSIONS_POST]", error);
-    
+
     if (error instanceof Error) {
       if (error.message.includes("Record to update not found")) {
         return NextResponse.json(

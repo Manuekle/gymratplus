@@ -22,7 +22,6 @@ import {
 import { HugeiconsIcon } from "@hugeicons/react";
 import { BirthdayCakeIcon } from "@hugeicons/core-free-icons";
 
-
 interface BirthDatePickerProps {
   value: Date | string | undefined;
   onValueChange: (date: string) => void;

@@ -15,7 +15,10 @@ export async function POST(request: NextRequest) {
     const id = url.pathname.split("/").pop();
 
     if (!id) {
-      return NextResponse.json({ error: "Workout session ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Workout session ID is required" },
+        { status: 400 },
+      );
     }
 
     const workoutSession = await prisma.workoutSession.findUnique({

@@ -8,7 +8,7 @@ import { JWT } from "next-auth/jwt";
 import { AdapterUser } from "next-auth/adapters";
 import { redis } from "@/lib/redis";
 
-declare module 'next-auth' {
+declare module "next-auth" {
   interface Session {
     user: {
       id?: string;
@@ -25,7 +25,7 @@ declare module 'next-auth' {
         profile?: any;
         instructorProfile?: any;
       };
-    } & DefaultSession['user'];
+    } & DefaultSession["user"];
   }
 
   interface User {
@@ -35,7 +35,7 @@ declare module 'next-auth' {
   }
 }
 
-declare module 'next-auth/jwt' {
+declare module "next-auth/jwt" {
   interface JWT {
     id?: string;
     isInstructor?: boolean;
@@ -214,9 +214,9 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({ token, user, trigger = 'default' }) {
+    async jwt({ token, user, trigger = "default" }) {
       // Si es una actualización del token (trigger === 'update') o es un nuevo login (user existe)
-      if (user || trigger === 'update') {
+      if (user || trigger === "update") {
         const userId = user?.id || token.id;
         if (!userId) return token;
 
@@ -224,8 +224,8 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.findUnique({
           where: { id: userId },
           include: {
-            profile: true
-          }
+            profile: true,
+          },
         });
 
         if (dbUser) {
@@ -241,27 +241,29 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       try {
         if (!session.user) return session;
-        
+
         // Establecer valores por defecto
         session.user.id = typeof token.id === "string" ? token.id : "";
-        
+
         // 1. Obtener datos del usuario desde la base de datos (sin caché para asegurar datos frescos)
-        const userFromDB = await prisma.user.findUnique({
-          where: { id: session.user.id },
-          select: {
-            name: true,
-            email: true,
-            experienceLevel: true,
-            image: true,
-            isInstructor: true,
-            instructorProfile: {
-              select: { 
-                id: true,
-                isPaid: true
-              }
-            }
-          },
-        }).catch(() => null);
+        const userFromDB = await prisma.user
+          .findUnique({
+            where: { id: session.user.id },
+            select: {
+              name: true,
+              email: true,
+              experienceLevel: true,
+              image: true,
+              isInstructor: true,
+              instructorProfile: {
+                select: {
+                  id: true,
+                  isPaid: true,
+                },
+              },
+            },
+          })
+          .catch(() => null);
 
         // 2. Determinar si el usuario es instructor (directamente desde la base de datos)
         const isInstructor = Boolean(userFromDB?.isInstructor);
@@ -270,30 +272,37 @@ export const authOptions: NextAuthOptions = {
         if (userFromDB && userFromDB.isInstructor !== isInstructor) {
           await prisma.user.update({
             where: { id: session.user.id },
-            data: { isInstructor }
+            data: { isInstructor },
           });
         }
 
         // 4. Obtener perfil de instructor si es necesario
         let instructorProfile = null;
         if (isInstructor) {
-          instructorProfile = await prisma.instructorProfile.findUnique({
-            where: { userId: session.user.id },
-          }).catch(() => null);
+          instructorProfile = await prisma.instructorProfile
+            .findUnique({
+              where: { userId: session.user.id },
+            })
+            .catch(() => null);
         }
 
         // 5. Obtener datos en caché (solo para valores por defecto)
-        const cachedUserData = await getUserDataWithCache(session.user.id).catch(() => ({} as Record<string, string>));
-        
+        const cachedUserData = await getUserDataWithCache(
+          session.user.id,
+        ).catch(() => ({}) as Record<string, string>);
+
         // 6. Preparar datos seguros para la sesión
         const safeUserData = {
-          name: userFromDB?.name || (cachedUserData?.name || ""),
-          email: userFromDB?.email || (cachedUserData?.email || ""),
-          experienceLevel: userFromDB?.experienceLevel || (cachedUserData?.experienceLevel || ""),
-          image: userFromDB?.image || (cachedUserData?.image || ""),
-          isInstructor
+          name: userFromDB?.name || cachedUserData?.name || "",
+          email: userFromDB?.email || cachedUserData?.email || "",
+          experienceLevel:
+            userFromDB?.experienceLevel ||
+            cachedUserData?.experienceLevel ||
+            "",
+          image: userFromDB?.image || cachedUserData?.image || "",
+          isInstructor,
         };
-        
+
         // 7. Establecer el estado en la sesión
         session.user.isInstructor = isInstructor;
 
@@ -301,18 +310,21 @@ export const authOptions: NextAuthOptions = {
         let profile = null;
         try {
           const cachedProfile = await redis.get(`profile:${session.user.id}`);
-          profile = cachedProfile && typeof cachedProfile === 'string' ? JSON.parse(cachedProfile) : null;
-          
+          profile =
+            cachedProfile && typeof cachedProfile === "string"
+              ? JSON.parse(cachedProfile)
+              : null;
+
           if (!profile) {
             profile = await prisma.profile.findUnique({
               where: { userId: session.user.id },
             });
-            
+
             if (profile) {
               await redis.set(
-                `profile:${session.user.id}`, 
+                `profile:${session.user.id}`,
                 JSON.stringify(profile),
-                { ex: 60 * 60 * 24 } // 24 horas
+                { ex: 60 * 60 * 24 }, // 24 horas
               );
             }
           }
@@ -331,9 +343,9 @@ export const authOptions: NextAuthOptions = {
             _localStorage: {
               ...safeUserData,
               profile: profile || null,
-              instructorProfile: instructorProfile || null
-            }
-          }
+              instructorProfile: instructorProfile || null,
+            },
+          },
         };
       } catch (error) {
         console.error("Error en la sesión:", error);
@@ -356,12 +368,11 @@ export const authOptions: NextAuthOptions = {
               isInstructor: false,
               experienceLevel: "",
               profile: null,
-              instructorProfile: null
-            }
-          }
+              instructorProfile: null,
+            },
+          },
         };
       }
-
     },
     async redirect({ url, baseUrl }) {
       // Si viene de un login, siempre manda al dashboard

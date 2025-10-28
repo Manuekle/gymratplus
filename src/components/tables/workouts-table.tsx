@@ -102,7 +102,7 @@ export default function WorkoutsTable() {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging || totalSlides <= 1 || !e.touches[0]) return;
-    
+
     setCurrentX(e.touches[0].clientX);
   };
 

@@ -170,7 +170,7 @@ export function WeightChart() {
 
     const firstItem = filteredData[0];
     const lastItem = filteredData[filteredData.length - 1];
-    
+
     if (!firstItem || !lastItem) return null;
 
     const firstWeight = firstItem.weight;

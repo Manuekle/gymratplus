@@ -14,7 +14,13 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { toast } from "sonner";
 import { Icons } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
@@ -54,23 +60,23 @@ export default function ProfilePage() {
   useEffect(() => {
     if (session?.user) {
       const user = session.user;
-      
+
       // Set form fields from user data
       if (user) {
-        setName(user.name || '');
-        setPhone(user.profile?.phone || '');
-        setBirthdate(user.profile?.birthdate?.toString() || '');
-        setExperienceLevel(user.experienceLevel || '');
-        setPreferredWorkoutTime(user.profile?.preferredWorkoutTime || '');
-        setDailyActivity(user.profile?.dailyActivity || '');
-        setGoal(user.profile?.goal || '');
-        setDietaryPreference(user.profile?.dietaryPreference || '');
+        setName(user.name || "");
+        setPhone(user.profile?.phone || "");
+        setBirthdate(user.profile?.birthdate?.toString() || "");
+        setExperienceLevel(user.experienceLevel || "");
+        setPreferredWorkoutTime(user.profile?.preferredWorkoutTime || "");
+        setDailyActivity(user.profile?.dailyActivity || "");
+        setGoal(user.profile?.goal || "");
+        setDietaryPreference(user.profile?.dietaryPreference || "");
         setMonthsTraining(user.profile?.monthsTraining || 0);
       }
-      
+
       // Load user tags
-      fetch('/api/users/me/tags')
-        .then(res => res.json())
+      fetch("/api/users/me/tags")
+        .then((res) => res.json())
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
@@ -82,40 +88,40 @@ export default function ProfilePage() {
   const [name, setName] = useState(session?.user?.name || "");
 
   const [phone, setPhone] = useState(
-    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || "",
   );
 
   const [birthdate, setBirthdate] = useState<string>(
     (session?.user as { profile?: { birthdate?: string } })?.profile
-      ?.birthdate || ""
+      ?.birthdate || "",
   );
 
   const [experienceLevel, setExperienceLevel] = useState(
-    session?.user?.experienceLevel || ""
+    session?.user?.experienceLevel || "",
   );
 
   const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
     (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
-      ?.preferredWorkoutTime || ""
+      ?.preferredWorkoutTime || "",
   );
   const [dailyActivity, setDailyActivity] = useState(
     (session?.user as { profile?: { dailyActivity?: string } })?.profile
-      ?.dailyActivity || ""
+      ?.dailyActivity || "",
   );
 
   const [goal, setGoal] = useState(
-    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || "",
   );
 
   const [dietaryPreference, setDietaryPreference] = useState(
     (session?.user as { profile?: { dietaryPreference?: string } })?.profile
-      ?.dietaryPreference || ""
+      ?.dietaryPreference || "",
   );
 
   // Estado para monthsTraining
   const [monthsTraining, setMonthsTraining] = useState(
     (session?.user as { profile?: { monthsTraining?: number } })?.profile
-      ?.monthsTraining || 0
+      ?.monthsTraining || 0,
   );
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1011,9 +1017,12 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="tracking-heading font-semibold text-2xl">Tus intereses</CardTitle>
+            <CardTitle className="tracking-heading font-semibold text-2xl">
+              Tus intereses
+            </CardTitle>
             <CardDescription>
-              Selecciona los temas que te interesan para encontrar instructores y contenido relevante.
+              Selecciona los temas que te interesan para encontrar instructores
+              y contenido relevante.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -1022,7 +1031,7 @@ export default function ProfilePage() {
               onTagSelect={handleTagChange}
               availableTags={SPECIALTIES}
               placeholder="Selecciona tus intereses..."
-            />           
+            />
           </CardContent>
         </Card>
 
@@ -1094,8 +1103,8 @@ export default function ProfilePage() {
                 </label>
               </div>
 
-              <InstructorRegistrationForm 
-                open={isRegistrationOpen} 
+              <InstructorRegistrationForm
+                open={isRegistrationOpen}
                 onOpenChange={(open) => {
                   setIsRegistrationOpen(open);
                   if (!open) {

@@ -1,16 +1,16 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import readline from 'readline';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import readline from "readline";
 
 // Emula __dirname en ESM
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const COMPONENTS_DIR = path.join(__dirname, '../src/components');
-const PROJECT_ROOT = path.join(__dirname, '../src');
+const COMPONENTS_DIR = path.join(__dirname, "../src/components");
+const PROJECT_ROOT = path.join(__dirname, "../src");
 
-function getAllComponentFiles(dir: string, basePath = 'components'): string[] {
+function getAllComponentFiles(dir: string, basePath = "components"): string[] {
   const files = fs.readdirSync(dir);
   let results: string[] = [];
 
@@ -21,8 +21,8 @@ function getAllComponentFiles(dir: string, basePath = 'components'): string[] {
 
     if (stat.isDirectory()) {
       results = results.concat(getAllComponentFiles(fullPath, relativePath));
-    } else if (file.endsWith('.tsx') || file.endsWith('.ts')) {
-      results.push(relativePath.replace(/\\/g, '/'));
+    } else if (file.endsWith(".tsx") || file.endsWith(".ts")) {
+      results.push(relativePath.replace(/\\/g, "/"));
     }
   }
 
@@ -37,10 +37,15 @@ function getAllProjectFiles(dir: string): string[] {
     const fullPath = path.join(dir, entry.name);
     if (
       entry.isDirectory() &&
-      !['node_modules', '.git', '.next', 'dist', 'out', 'public'].includes(entry.name)
+      !["node_modules", ".git", ".next", "dist", "out", "public"].includes(
+        entry.name,
+      )
     ) {
       files = files.concat(getAllProjectFiles(fullPath));
-    } else if (entry.isFile() && (entry.name.endsWith('.tsx') || entry.name.endsWith('.ts'))) {
+    } else if (
+      entry.isFile() &&
+      (entry.name.endsWith(".tsx") || entry.name.endsWith(".ts"))
+    ) {
       files.push(fullPath);
     }
   }
@@ -49,11 +54,14 @@ function getAllProjectFiles(dir: string): string[] {
 }
 
 function checkUsage(component: string, projectFiles: string[]): boolean {
-  const componentName = path.basename(component).replace(/\.(tsx|ts)$/, '');
-  const regex = new RegExp(`\\b${componentName}\\b|['"\`]${componentName}['"\`]`, 'i');
+  const componentName = path.basename(component).replace(/\.(tsx|ts)$/, "");
+  const regex = new RegExp(
+    `\\b${componentName}\\b|['"\`]${componentName}['"\`]`,
+    "i",
+  );
 
-  return projectFiles.some(file => {
-    const content = fs.readFileSync(file, 'utf8');
+  return projectFiles.some((file) => {
+    const content = fs.readFileSync(file, "utf8");
     return regex.test(content);
   });
 }
@@ -64,11 +72,17 @@ async function promptConfirmDelete(): Promise<boolean> {
     output: process.stdout,
   });
 
-  return new Promise(resolve => {
-    rl.question('¿Deseas BORRAR los componentes no usados? (sí/no): ', answer => {
-      rl.close();
-      resolve(answer.trim().toLowerCase() === 'sí' || answer.trim().toLowerCase() === 'si');
-    });
+  return new Promise((resolve) => {
+    rl.question(
+      "¿Deseas BORRAR los componentes no usados? (sí/no): ",
+      (answer) => {
+        rl.close();
+        resolve(
+          answer.trim().toLowerCase() === "sí" ||
+            answer.trim().toLowerCase() === "si",
+        );
+      },
+    );
   });
 }
 
@@ -87,21 +101,24 @@ async function main() {
   }
 
   console.log(`✅ Componentes usados (${used.length}):`);
-  used.forEach(comp => console.log('  -', comp));
+  used.forEach((comp) => console.log("  -", comp));
 
   console.log(`\n⚠️ Componentes NO usados (${unused.length}):`);
-  unused.forEach(comp => console.log('  -', comp));
+  unused.forEach((comp) => console.log("  -", comp));
 
   if (unused.length === 0) return;
 
   const confirm = await promptConfirmDelete();
   if (!confirm) {
-    console.log('\n❌ Cancelado. No se borró ningún componente.');
+    console.log("\n❌ Cancelado. No se borró ningún componente.");
     return;
   }
 
   for (const unusedComponent of unused) {
-    const fullPath = path.join(COMPONENTS_DIR, unusedComponent.replace('components/', ''));
+    const fullPath = path.join(
+      COMPONENTS_DIR,
+      unusedComponent.replace("components/", ""),
+    );
     if (fs.existsSync(fullPath)) {
       fs.unlinkSync(fullPath);
       console.log(`🗑️ Eliminado: ${unusedComponent}`);

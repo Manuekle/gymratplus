@@ -48,17 +48,21 @@ export function ThemeToggle() {
       className="relative h-9 w-9"
       aria-label="Toggle theme"
     >
-      <HugeiconsIcon 
-        icon={Sun02Icon} 
+      <HugeiconsIcon
+        icon={Sun02Icon}
         className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
-          isLight ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-50"
+          isLight
+            ? "opacity-100 rotate-0 scale-100"
+            : "opacity-0 -rotate-90 scale-50"
         }`}
         aria-hidden={!isLight}
       />
-      <HugeiconsIcon 
-        icon={Moon02Icon} 
+      <HugeiconsIcon
+        icon={Moon02Icon}
         className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
-          isDark ? "opacity-100 rotate-0 scale-100" : "opacity-0 rotate-90 scale-50"
+          isDark
+            ? "opacity-100 rotate-0 scale-100"
+            : "opacity-0 rotate-90 scale-50"
         }`}
         aria-hidden={!isDark}
       />

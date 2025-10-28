@@ -176,13 +176,13 @@ export async function createWorkoutPlan(
 function getSetsAndRepsForGoal(goal: string, exerciseType = "compound") {
   // Helper function to get the first number from a rep range string
   const getRepsNumber = (reps: string | number): number => {
-    if (typeof reps === 'number') return reps;
+    if (typeof reps === "number") return reps;
     const match = String(reps).match(/\d+/);
     return match ? parseInt(match[0], 10) : 8; // Default to 8 if parsing fails
   };
 
   let settings;
-  
+
   switch (goal) {
     case "strength":
       settings = {
@@ -232,7 +232,7 @@ function getSetsAndRepsForGoal(goal: string, exerciseType = "compound") {
   // Ensure reps is a number
   return {
     ...settings,
-    reps: getRepsNumber(settings.reps)
+    reps: getRepsNumber(settings.reps),
   };
 }
 
@@ -914,14 +914,17 @@ export async function createWeiderSplit(
   for (let day = 1; day <= workoutDays; day++) {
     const muscleGroupIndex = (day - 1) % muscleGroups.length;
     const muscleGroup = muscleGroups[muscleGroupIndex];
-    
+
     // Ensure muscle group exists before destructuring
     if (!muscleGroup) {
-      console.warn(`No se encontró el grupo muscular en el índice ${muscleGroupIndex}`);
+      console.warn(
+        `No se encontró el grupo muscular en el índice ${muscleGroupIndex}`,
+      );
       continue;
     }
-    
-    const { name: muscleGroupName, exercises: muscleGroupExercises } = muscleGroup;
+
+    const { name: muscleGroupName, exercises: muscleGroupExercises } =
+      muscleGroup;
 
     // Ensure we have exercises to work with
     if (!muscleGroupExercises.length) {
@@ -934,16 +937,18 @@ export async function createWeiderSplit(
     // Get sets and reps based on goal with fallbacks
     // Convert string reps to number by taking the first number in the range
     const parseReps = (reps: string | number): number => {
-      if (typeof reps === 'number') return reps;
+      if (typeof reps === "number") return reps;
       const match = String(reps).match(/\d+/);
       return match ? parseInt(match[0], 10) : 8; // Default to 8 if parsing fails
     };
-    
-    const defaultCompound = { sets: 3, reps: '8-12', restTime: 90 };
-    const defaultIsolation = { sets: 3, reps: '10-15', restTime: 60 };
-    
-    const compoundSettings = getSetsAndRepsForGoal(goal, "compound") || defaultCompound;
-    const isolationSettings = getSetsAndRepsForGoal(goal, "isolation") || defaultIsolation;
+
+    const defaultCompound = { sets: 3, reps: "8-12", restTime: 90 };
+    const defaultIsolation = { sets: 3, reps: "10-15", restTime: 60 };
+
+    const compoundSettings =
+      getSetsAndRepsForGoal(goal, "compound") || defaultCompound;
+    const isolationSettings =
+      getSetsAndRepsForGoal(goal, "isolation") || defaultIsolation;
 
     // Select exercises for this muscle group (4-6 exercises per muscle group)
     const targetExercises = muscleGroupName === "Core" ? 4 : 5;
@@ -961,10 +966,12 @@ export async function createWeiderSplit(
     for (let i = 0; i < numExercises; i++) {
       const exerciseIndex = (i + cycleIndex) % muscleGroupExercises.length;
       const exercise = muscleGroupExercises[exerciseIndex];
-      
+
       // Skip if exercise is undefined
       if (!exercise) {
-        console.warn(`Undefined exercise at index ${exerciseIndex} for ${muscleGroupName}`);
+        console.warn(
+          `Undefined exercise at index ${exerciseIndex} for ${muscleGroupName}`,
+        );
         continue;
       }
 
@@ -974,7 +981,7 @@ export async function createWeiderSplit(
       dayExercises.push({
         exercise,
         sets: settings.sets || 3,
-        reps: parseReps(settings.reps || (isCompound ? '8-12' : '10-15')),
+        reps: parseReps(settings.reps || (isCompound ? "8-12" : "10-15")),
         restTime: settings.restTime || (isCompound ? 90 : 60),
         notes: `${muscleGroupName} - ${
           i === 0
@@ -1000,10 +1007,12 @@ export async function createWeiderSplit(
         if (Array.isArray(result)) {
           finalExercises = result;
         } else {
-          console.warn('applyMethodology did not return an array, using default exercises');
+          console.warn(
+            "applyMethodology did not return an array, using default exercises",
+          );
         }
       } catch (error) {
-        console.error('Error applying methodology:', error);
+        console.error("Error applying methodology:", error);
       }
     }
 

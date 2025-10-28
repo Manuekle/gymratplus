@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
-
 export default function RecommendationsPage() {
   const router = useRouter();
 

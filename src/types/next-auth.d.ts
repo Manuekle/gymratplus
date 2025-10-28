@@ -38,10 +38,10 @@ declare module "next-auth" {
         instructorProfile?: unknown;
       };
     } & DefaultSession["user"];
-      phone?: string;
-      birthdate?: Date | string;
-      height?: string;
-      currentWeight?: string;
+    phone?: string;
+    birthdate?: Date | string;
+    height?: string;
+    currentWeight?: string;
   }
 
   interface User {

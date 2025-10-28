@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MinusSignIcon, PlusSignIcon } from "@hugeicons/core-free-icons";
 
-
 interface WaterControlsProps {
   intake: number;
   onAdd: () => void;

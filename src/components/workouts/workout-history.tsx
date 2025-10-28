@@ -9,7 +9,11 @@ import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight01Icon, Clock01Icon, ArrowLeft01Icon,  } from "@hugeicons/core-free-icons";
+import {
+  ArrowRight01Icon,
+  Clock01Icon,
+  ArrowLeft01Icon,
+} from "@hugeicons/core-free-icons";
 
 export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
@@ -82,7 +86,8 @@ export default function WorkoutSummary() {
           href="workout/history"
           className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
         >
-          Ver todos <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+          Ver todos{" "}
+          <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
         </Link>
       </div>
 
@@ -133,7 +138,10 @@ export default function WorkoutSummary() {
                 </div>
                 <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                   <div className="flex items-center">
-                    <HugeiconsIcon icon={Clock01Icon} className="h-3 w-3 mr-1 text-foreground" />
+                    <HugeiconsIcon
+                      icon={Clock01Icon}
+                      className="h-3 w-3 mr-1 text-foreground"
+                    />
                     <span>
                       {session.duration ? `${session.duration} min` : "N/A"}
                     </span>
@@ -173,7 +181,10 @@ export default function WorkoutSummary() {
                     disabled={currentPage === totalPages - 1}
                     className="h-8 w-8 p-0"
                   >
-                    <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+                    <HugeiconsIcon
+                      icon={ArrowRight01Icon}
+                      className="h-4 w-4"
+                    />
                   </Button>
                 </div>
               </div>

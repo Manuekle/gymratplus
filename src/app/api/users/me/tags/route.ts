@@ -8,7 +8,7 @@ export async function GET() {
   try {
     const session = await getServerSession(authOptions);
     if (!session?.user) {
-      return new NextResponse('Unauthorized', { status: 401 });
+      return new NextResponse("Unauthorized", { status: 401 });
     }
 
     const user = await prisma.user.findUnique({
@@ -18,10 +18,10 @@ export async function GET() {
 
     return NextResponse.json(user?.interests ?? []);
   } catch (error) {
-    console.error('Error fetching user interests:', error);
+    console.error("Error fetching user interests:", error);
     return NextResponse.json(
-      { error: 'Error fetching user interests' },
-      { status: 500 }
+      { error: "Error fetching user interests" },
+      { status: 500 },
     );
   }
 }

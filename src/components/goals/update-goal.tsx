@@ -37,7 +37,9 @@ interface GoalProps {
 
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
-  const [value, setValue] = useState<string>(goal.currentValue?.toString() || "");
+  const [value, setValue] = useState<string>(
+    goal.currentValue?.toString() || "",
+  );
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,14 +49,17 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const { data: session } = useSession();
 
   // Chequeo de dueño
-  const isOwner = session?.user?.id && goal.userId && session.user.id === goal.userId;
+  const isOwner =
+    session?.user?.id && goal.userId && session.user.id === goal.userId;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
     if (!isOwner) {
-      setError("No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.");
+      setError(
+        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.",
+      );
       return;
     }
     // Validación básica
@@ -93,11 +98,17 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       console.error("Error al guardar:", error);
       if (error instanceof Error) {
         if (error.message === "Objetivo no encontrado") {
-          setError("No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.");
+          setError(
+            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.",
+          );
         } else if (error.message === "ID de objetivo inválido") {
-          setError("ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.");
+          setError(
+            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.",
+          );
         } else {
-          setError("Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.");
+          setError(
+            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.",
+          );
         }
       } else {
         setError("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.");
@@ -133,7 +144,10 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                     !date && "text-muted-foreground",
                   )}
                 >
-                  <HugeiconsIcon icon={Calendar01Icon} className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={Calendar01Icon}
+                    className="mr-2 h-4 w-4"
+                  />
                   {date ? (
                     format(date, "PPP", { locale: es })
                   ) : (

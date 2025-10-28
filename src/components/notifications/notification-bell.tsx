@@ -83,7 +83,10 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <HugeiconsIcon icon={Notification01Icon} className="h-10 w-10 text-muted-foreground opacity-40" />
+                <HugeiconsIcon
+                  icon={Notification01Icon}
+                  className="h-10 w-10 text-muted-foreground opacity-40"
+                />
                 <p className="text-xs text-muted-foreground text-center">
                   No tienes notificaciones
                 </p>
@@ -110,7 +113,10 @@ export function NotificationBell() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center p-6 space-y-2">
-                <HugeiconsIcon icon={Notification01Icon} className="h-10 w-10 text-muted-foreground opacity-40" />
+                <HugeiconsIcon
+                  icon={Notification01Icon}
+                  className="h-10 w-10 text-muted-foreground opacity-40"
+                />
                 <p className="text-xs md:text-sm text-muted-foreground text-center">
                   No tienes notificaciones sin leer
                 </p>

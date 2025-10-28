@@ -166,8 +166,8 @@ export function ExerciseProgressChart() {
   // Filtrar los datos según los ejercicios seleccionados
   const filteredData = formattedData.filter((record) =>
     selectedExercises.some(
-      (exercise) => record.exercises[exercise] !== undefined
-    )
+      (exercise) => record.exercises[exercise] !== undefined,
+    ),
   );
 
   // Calcular el progreso para cada ejercicio seleccionado
@@ -196,7 +196,7 @@ export function ExerciseProgressChart() {
       {} as Record<
         string,
         { change: number; first: number; last: number; reps: number }
-      >
+      >,
     );
   };
 
@@ -271,7 +271,7 @@ export function ExerciseProgressChart() {
                           setSelectedExercises((prev) =>
                             prev.includes(exercise)
                               ? prev.filter((item) => item !== exercise)
-                              : [...prev, exercise]
+                              : [...prev, exercise],
                           );
                         }}
                       >
@@ -281,7 +281,7 @@ export function ExerciseProgressChart() {
                             "mr-2 h-4 w-4",
                             selectedExercises.includes(exercise)
                               ? "opacity-100"
-                              : "opacity-0"
+                              : "opacity-0",
                           )}
                         />
                         {exercise}
@@ -337,7 +337,7 @@ export function ExerciseProgressChart() {
                       const record = filteredData.find(
                         (d) =>
                           d.exercises[name] &&
-                          d.exercises[name].weight === value
+                          d.exercises[name].weight === value,
                       );
 
                       const reps = record?.exercises[name]?.reps;
@@ -386,7 +386,7 @@ export function ExerciseProgressChart() {
                             ? "text-green-500"
                             : data.change < 0
                               ? "text-red-500"
-                              : "text-muted-foreground"
+                              : "text-muted-foreground",
                         )}
                       >
                         {data.change > 0 ? "+" : ""}
@@ -396,7 +396,7 @@ export function ExerciseProgressChart() {
                         ({data.reps} reps)
                       </span>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             )}

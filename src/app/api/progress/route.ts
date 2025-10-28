@@ -139,19 +139,23 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       weight: weight ? Number.parseFloat(weight) : 0,
       date: new Date(date),
-      bodyFatPercentage: bodyFatPercentage ? Number.parseFloat(bodyFatPercentage) : undefined,
-      muscleMassPercentage: muscleMassPercentage ? Number.parseFloat(muscleMassPercentage) : undefined,
+      bodyFatPercentage: bodyFatPercentage
+        ? Number.parseFloat(bodyFatPercentage)
+        : undefined,
+      muscleMassPercentage: muscleMassPercentage
+        ? Number.parseFloat(muscleMassPercentage)
+        : undefined,
       notes: notes || undefined,
     };
-    
+
     if (bodyFatPercentage !== undefined) {
       createData.bodyFatPercentage = Number.parseFloat(bodyFatPercentage);
     }
-    
+
     if (muscleMassPercentage !== undefined) {
       createData.muscleMassPercentage = Number.parseFloat(muscleMassPercentage);
     }
-    
+
     if (notes !== undefined) {
       createData.notes = notes;
     }

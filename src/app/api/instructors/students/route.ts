@@ -85,7 +85,8 @@ export async function GET() {
           const lastSession = rel.student.workoutSessions[0];
           if (firstSession && lastSession) {
             const diff =
-              (new Date(lastSession.date).getTime() - new Date(firstSession.date).getTime()) /
+              (new Date(lastSession.date).getTime() -
+                new Date(firstSession.date).getTime()) /
               (1000 * 60 * 60 * 24 * 7);
             weeks = Math.max(1, Math.round(diff));
           }

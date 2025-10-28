@@ -53,7 +53,9 @@ export const useExerciseProgress = () => {
 
       // Validar que si se proporciona alguna fecha, ambas deben estar presentes
       if ((startDate && !endDate) || (!startDate && endDate)) {
-        throw new Error("Debes proporcionar tanto la fecha de inicio como la de fin");
+        throw new Error(
+          "Debes proporcionar tanto la fecha de inicio como la de fin",
+        );
       }
 
       // Crear una clave de caché basada en los parámetros
@@ -321,18 +323,22 @@ export const useExerciseProgress = () => {
             reps: exerciseData.reps,
           };
         })
-        .filter((record): record is { date: Date; weight: number; reps: number } => record !== null)
+        .filter(
+          (record): record is { date: Date; weight: number; reps: number } =>
+            record !== null,
+        )
         .sort((a, b) => a.date.getTime() - b.date.getTime());
 
       if (exerciseData.length < 2) return null;
 
       const first = exerciseData[0];
       const last = exerciseData[exerciseData.length - 1];
-      
+
       if (!first || !last) return null;
-      
+
       const change = last.weight - first.weight;
-      const percentageChange = first.weight > 0 ? (change / first.weight) * 100 : 0;
+      const percentageChange =
+        first.weight > 0 ? (change / first.weight) * 100 : 0;
 
       return {
         first: first.weight,

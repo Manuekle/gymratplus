@@ -17,13 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-
 import { useState, useEffect } from "react";
 import { WeightChart } from "@/components/weight-chart";
 import { useSession } from "next-auth/react";
 import { WaterIntakeTracker } from "@/components/water/water-intake-tracker";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Activity01Icon, ArrowDown01Icon, ArrowRight01Icon, ArrowUp01Icon, RulerIcon, WeightScaleIcon,  } from "@hugeicons/core-free-icons";
+import {
+  Activity01Icon,
+  ArrowDown01Icon,
+  ArrowRight01Icon,
+  ArrowUp01Icon,
+  RulerIcon,
+  WeightScaleIcon,
+} from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
@@ -105,7 +111,10 @@ export default function HealthPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <div className="flex items-center font-semibold tracking-heading text-sm text-muted-foreground">
-                  <HugeiconsIcon icon={WeightScaleIcon} className="mr-1 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={WeightScaleIcon}
+                    className="mr-1 h-4 w-4"
+                  />
                   Peso Actual
                 </div>
                 <div className="text-2xl font-semibold ">
@@ -126,7 +135,10 @@ export default function HealthPage() {
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center text-sm text-muted-foreground">
-                  <HugeiconsIcon icon={Activity01Icon} className="mr-1 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={Activity01Icon}
+                    className="mr-1 h-4 w-4"
+                  />
                   IMC (Índice de Masa Corporal)
                 </div>
                 <span className="text-sm font-medium">{bmi.toFixed(0)}</span>
@@ -163,64 +175,74 @@ export default function HealthPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="space-y-6">
-            <div className="flex flex-col space-y-2">
-              <label className="text-sm font-medium">Objetivo</label>
-              <Select disabled value={user?.goal ?? ""}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tu objetivo" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="lose-weight">
-                    <div className="flex items-center">
-                      <HugeiconsIcon icon={ArrowDown01Icon} className="mr-2 h-4 w-4 text-red-500" />
-                      Perder peso
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="maintain">
-                    <div className="flex items-center">
-                      <HugeiconsIcon icon={ArrowRight01Icon} className="mr-2 h-4 w-4 text-amber-500" />
-                      Mantener peso
-                    </div>
-                  </SelectItem>
-                  <SelectItem value="gain-muscle">
-                    <div className="flex items-center">
-                      <HugeiconsIcon icon={ArrowUp01Icon} className="mr-2 h-4 w-4 text-green-500" />
-                      Ganar músculo
-                    </div>
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <div className="space-y-2">
+            <div className="flex flex-col md:flex-row gap-4">
+              <div className="flex flex-col space-y-2 w-full">
+                <label className="text-sm font-medium">Objetivo</label>
+                <Select disabled value={user?.goal ?? ""}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona tu objetivo" />
+                  </SelectTrigger>
+                  <SelectContent className="w-full">
+                    <SelectItem value="lose-weight">
+                      <div className="flex items-center">
+                        <HugeiconsIcon
+                          icon={ArrowDown01Icon}
+                          className="mr-2 h-4 w-4 text-red-500"
+                        />
+                        Perder peso
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="maintain">
+                      <div className="flex items-center">
+                        <HugeiconsIcon
+                          icon={ArrowRight01Icon}
+                          className="mr-2 h-4 w-4 text-amber-500"
+                        />
+                        Mantener peso
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="gain-muscle">
+                      <div className="flex items-center">
+                        <HugeiconsIcon
+                          icon={ArrowUp01Icon}
+                          className="mr-2 h-4 w-4 text-green-500"
+                        />
+                        Ganar músculo
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-            <div className="flex flex-col space-y-2">
-              <label className="text-sm font-medium">
-                Nivel de actividad física
-              </label>
-              <Select value={user?.dailyActivity ?? ""} disabled>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecciona tu nivel de actividad" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="office-work">
-                    Trabajo de oficina (sedentario)
-                  </SelectItem>
-                  <SelectItem value="light-physical">
-                    Trabajo físico ligero
-                  </SelectItem>
-                  <SelectItem value="moderate-physical">
-                    Trabajo físico moderado
-                  </SelectItem>
-                  <SelectItem value="heavy-physical">
-                    Trabajo físico pesado
-                  </SelectItem>
-                  <SelectItem value="very-heavy-physical">
-                    Trabajo físico muy pesado
-                  </SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col space-y-2 w-full">
+                <label className="text-sm font-medium">
+                  Nivel de actividad física
+                </label>
+                <Select value={user?.dailyActivity ?? ""} disabled>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecciona tu nivel de actividad" />
+                  </SelectTrigger>
+                  <SelectContent className="w-full">
+                    <SelectItem value="office-work">
+                      Trabajo de oficina (sedentario)
+                    </SelectItem>
+                    <SelectItem value="light-physical">
+                      Trabajo físico ligero
+                    </SelectItem>
+                    <SelectItem value="moderate-physical">
+                      Trabajo físico moderado
+                    </SelectItem>
+                    <SelectItem value="heavy-physical">
+                      Trabajo físico pesado
+                    </SelectItem>
+                    <SelectItem value="very-heavy-physical">
+                      Trabajo físico muy pesado
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
             <div className="pt-4">
               <WeightChart />
             </div>

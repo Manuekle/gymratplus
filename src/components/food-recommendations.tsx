@@ -24,7 +24,15 @@ import {
 import { Skeleton } from "./ui/skeleton";
 import { Button } from "./ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, ChocolateIcon, EggsIcon, FrenchFries02Icon, NoodlesIcon, RiceBowl01Icon, SteakIcon,  } from "@hugeicons/core-free-icons";
+import {
+  ArrowLeft01Icon,
+  ChocolateIcon,
+  EggsIcon,
+  FrenchFries02Icon,
+  NoodlesIcon,
+  RiceBowl01Icon,
+  SteakIcon,
+} from "@hugeicons/core-free-icons";
 // cambiar todo
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
@@ -266,7 +274,8 @@ export default function FoodRecommendations() {
         </CardHeader>
         <CardContent>
           <p className="text-center py-8 text-muted-foreground text-xs">
-            Genera un plan de nutrición para ver las recomendaciones de alimentos.
+            Genera un plan de nutrición para ver las recomendaciones de
+            alimentos.
           </p>
         </CardContent>
       </Card>
@@ -287,19 +296,43 @@ export default function FoodRecommendations() {
   const mealTypes = {
     breakfast: {
       label: "Desayuno",
-      icon: <HugeiconsIcon icon={EggsIcon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={EggsIcon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     lunch: {
       label: "Almuerzo",
-      icon: <HugeiconsIcon icon={NoodlesIcon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={NoodlesIcon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     dinner: {
       label: "Cena",
-      icon: <HugeiconsIcon icon={RiceBowl01Icon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={RiceBowl01Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     snack: {
       label: "Snacks",
-      icon: <HugeiconsIcon icon={ChocolateIcon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={ChocolateIcon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
   };
 
@@ -312,7 +345,8 @@ export default function FoodRecommendations() {
           size="sm"
           onClick={() => router.push("/dashboard/nutrition")}
         >
-          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" /> Volver a la lista
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+          Volver a la lista
         </Button>
       </div>
 
@@ -368,7 +402,10 @@ export default function FoodRecommendations() {
                     </h2>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
-                    <HugeiconsIcon icon={SteakIcon} className="h-6 w-6 text-pink-600 dark:text-pink-300" />
+                    <HugeiconsIcon
+                      icon={SteakIcon}
+                      className="h-6 w-6 text-pink-600 dark:text-pink-300"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -389,7 +426,10 @@ export default function FoodRecommendations() {
                     </h2>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
-                    <HugeiconsIcon icon={RiceBowl01Icon} className="h-6 w-6 text-sky-600 dark:text-sky-300" />
+                    <HugeiconsIcon
+                      icon={RiceBowl01Icon}
+                      className="h-6 w-6 text-sky-600 dark:text-sky-300"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -408,7 +448,10 @@ export default function FoodRecommendations() {
                     </h2>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
-                    <HugeiconsIcon icon={FrenchFries02Icon} className="h-6 w-6 text-amber-600 dark:text-amber-300" />
+                    <HugeiconsIcon
+                      icon={FrenchFries02Icon}
+                      className="h-6 w-6 text-amber-600 dark:text-amber-300"
+                    />
                   </div>
                 </div>
               </CardContent>

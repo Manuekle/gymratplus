@@ -18,7 +18,11 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "react-i18next";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { FrenchFries02Icon, RiceBowl01Icon, SteakIcon } from "@hugeicons/core-free-icons";
+import {
+  FrenchFries02Icon,
+  RiceBowl01Icon,
+  SteakIcon,
+} from "@hugeicons/core-free-icons";
 
 // import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 
@@ -140,7 +144,10 @@ export function MealPlan({
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-pink-100 flex items-center justify-center dark:bg-pink-800">
-                    <HugeiconsIcon icon={SteakIcon} className="h-6 w-6 text-pink-600 dark:text-pink-300" />
+                    <HugeiconsIcon
+                      icon={SteakIcon}
+                      className="h-6 w-6 text-pink-600 dark:text-pink-300"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -157,7 +164,10 @@ export function MealPlan({
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
-                    <HugeiconsIcon icon={RiceBowl01Icon} className="h-6 w-6 text-sky-600 dark:text-sky-300" />
+                    <HugeiconsIcon
+                      icon={RiceBowl01Icon}
+                      className="h-6 w-6 text-sky-600 dark:text-sky-300"
+                    />
                   </div>
                 </div>
               </CardContent>
@@ -172,7 +182,10 @@ export function MealPlan({
                     </p>
                   </div>
                   <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
-                    <HugeiconsIcon icon={FrenchFries02Icon} className="h-6 w-6 text-amber-600 dark:text-amber-300" />
+                    <HugeiconsIcon
+                      icon={FrenchFries02Icon}
+                      className="h-6 w-6 text-amber-600 dark:text-amber-300"
+                    />
                   </div>
                 </div>
               </CardContent>

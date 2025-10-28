@@ -5,8 +5,11 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowDown01Icon, ArrowUp01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
-
+import {
+  ArrowDown01Icon,
+  ArrowUp01Icon,
+  Tick01Icon,
+} from "@hugeicons/core-free-icons";
 
 function Select({
   ...props

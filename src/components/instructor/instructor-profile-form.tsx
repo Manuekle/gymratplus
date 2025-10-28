@@ -48,8 +48,6 @@ interface InstructorProfileFormProps {
   onSuccess?: () => void;
 }
 
-
-
 export function InstructorProfileForm({
   onSuccess,
 }: InstructorProfileFormProps) {
@@ -57,12 +55,15 @@ export function InstructorProfileForm({
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
-  
+
   // In-memory cache for user data
-  const userDataCache = new Map<string, { 
-    data: Record<string, string | undefined>; 
-    timestamp: number 
-  }>();
+  const userDataCache = new Map<
+    string,
+    {
+      data: Record<string, string | undefined>;
+      timestamp: number;
+    }
+  >();
 
   const form = useForm<InstructorProfileValues>({
     resolver: zodResolver(instructorProfileSchema),
@@ -148,10 +149,10 @@ export function InstructorProfileForm({
       // 5. Redirect to profile and refresh
       router.push("/dashboard/profile");
       router.refresh();
-      
+
       toast.success("Plan cancelado exitosamente");
       setIsCancelDialogOpen(false);
-      
+
       if (onSuccess) {
         onSuccess();
       }
@@ -385,30 +386,26 @@ export function InstructorProfileForm({
         <Separator />
         <div className="flex justify-end">
           <div className="flex gap-4">
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              size="lg"
-            >
+            <Button type="submit" disabled={isLoading} size="lg">
               {isLoading ? (
                 <>
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   Guardando...
                 </>
               ) : (
-                'Guardar Cambios'
+                "Guardar Cambios"
               )}
             </Button>
-            <Button 
-              type="button" 
-              variant="outline" 
+            <Button
+              type="button"
+              variant="outline"
               disabled={isLoading}
               size="lg"
               onClick={() => setIsCancelDialogOpen(true)}
             >
               Cancelar Plan
             </Button>
-            <CancelPlanDialog 
+            <CancelPlanDialog
               open={isCancelDialogOpen}
               onOpenChange={setIsCancelDialogOpen}
               onSuccess={handleCancelSuccess}
