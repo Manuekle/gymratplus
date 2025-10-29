@@ -124,11 +124,11 @@ export function MealLogList({
   if (mealLogs.length === 0) {
     return (
       <div className="text-center py-14">
-        <h3 className="text-sm font-medium mb-2">
+        <h3 className="text-xs font-medium mb-2">
           No hay comidas registradas para el{" "}
           {selectedDate ? formatDate(selectedDate) : "día seleccionado"}.
         </h3>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           Registra tus comidas para llevar un seguimiento de tu alimentación
         </p>
       </div>
@@ -145,7 +145,7 @@ export function MealLogList({
   });
 
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b),
+    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b)
   );
 
   return (
