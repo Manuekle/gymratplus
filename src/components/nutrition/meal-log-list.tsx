@@ -1,13 +1,13 @@
 "use client";
 
-// import { useState } from "react";
+import { useState } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { toast } from "sonner";
-
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import { Trash2 } from "lucide-react";
 
 type MealLog = {
   id: string;
@@ -38,67 +38,84 @@ type MealLogListProps = {
   selectedDate?: Date;
 };
 
-export function MealLogList({ mealLogs, loading }: MealLogListProps) {
-  // Removed unused deletingId state
+const MEAL_TYPE_CONFIG = {
+  desayuno: "Desayuno",
+  almuerzo: "Almuerzo",
+  cena: "Cena",
+  snack: "Snack",
+} as const;
+
+const MEAL_TYPE_ORDER = ["desayuno", "almuerzo", "cena", "snack"];
+
+export function MealLogList({
+  mealLogs,
+  loading,
+  selectedDate,
+  onMealLogDeleted,
+}: MealLogListProps) {
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const getMealTypeLabel = (mealType: string) => {
-    switch (mealType) {
-      case "desayuno":
-        return "Desayuno";
-      case "almuerzo":
-        return "Almuerzo";
-      case "cena":
-        return "Cena";
-      case "snack":
-        return "Snack";
-      default:
-        return mealType;
+    return (
+      MEAL_TYPE_CONFIG[mealType as keyof typeof MEAL_TYPE_CONFIG] || mealType
+    );
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id);
+    try {
+      const response = await fetch(`/api/meal-logs/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el registro");
+      }
+
+      onMealLogDeleted(id);
+    } catch (error) {
+      console.error("Error al eliminar el registro:", error);
+      toast.error("❌ No se pudo eliminar la comida. Intenta de nuevo.", {
+        duration: 3000,
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
-  // const deleteMealLog = async (id: string) => {
-  //   if (!confirm("¿Estás seguro de que quieres eliminar este registro?")) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const response = await fetch(`/api/meal-logs/${id}`, {
-  //       method: "DELETE",
-  //     });
-
-  //     if (!response.ok) {
-  //       throw new Error("Error al eliminar el registro");
-  //     }
-
-  //     onMealLogDeleted(id);
-
-  //     toast.success("Registro eliminado", {
-  //       description: "El registro de comida ha sido eliminado correctamente",
-  //     });
-  //   } catch (error) {
-  //     console.error("Error deleting meal log:", error);
-  //     toast.error("Error", {
-  //       description: "No se pudo eliminar el registro de comida",
-  //     });
-  //   } finally {
-  //     setDeletingId(null);
-  //   }
-  // };
+  const formatDate = (date: Date) => {
+    return new Intl.DateTimeFormat("es-ES", {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(date);
+  };
 
   if (loading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         {[...Array(3)].map((_, i) => (
-          <Card key={i}>
-            <CardHeader className="pb-2">
-              <Skeleton className="h-5 w-1/3" />
-              <Skeleton className="h-4 w-1/4" />
-            </CardHeader>
-            <CardContent>
-              <Skeleton className="h-4 w-full mb-2" />
-              <Skeleton className="h-4 w-2/3" />
-            </CardContent>
-          </Card>
+          <div
+            key={i}
+            className="md:p-4 p-0 md:border border-0 rounded-lg space-y-3"
+          >
+            <Skeleton className="h-6 w-32" />
+            {[...Array(2)].map((_, j) => (
+              <div key={j} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="h-5 w-16" />
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-full" />
+                </div>
+              </div>
+            ))}
+          </div>
         ))}
       </div>
     );
@@ -107,20 +124,18 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
   if (mealLogs.length === 0) {
     return (
       <div className="text-center py-14">
-        <h3 className="text-xs font-medium mb-2">
-          No hay comidas registradas para esta fecha.
+        <h3 className="text-sm font-medium mb-2">
+          No hay comidas registradas para el{" "}
+          {selectedDate ? formatDate(selectedDate) : "día seleccionado"}.
         </h3>
-        <p className="text-xs text-muted-foreground mb-6">
+        <p className="text-sm text-muted-foreground">
           Registra tus comidas para llevar un seguimiento de tu alimentación
         </p>
-        {/* <AddMealLogButton selectedDate={selectedDate} /> */}
       </div>
     );
   }
 
-  // Group meal logs by meal type
   const mealsByType: Record<string, MealLog[]> = {};
-
   mealLogs.forEach((meal) => {
     const mealType = meal.mealType || "other";
     if (!mealsByType[mealType]) {
@@ -129,10 +144,8 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
     mealsByType[mealType].push(meal);
   });
 
-  // Sort meal types in a specific order
-  const mealTypeOrder = ["desayuno", "almuerzo", "cena", "snack"];
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => mealTypeOrder.indexOf(a) - mealTypeOrder.indexOf(b)
+    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b),
   );
 
   return (
@@ -140,59 +153,57 @@ export function MealLogList({ mealLogs, loading }: MealLogListProps) {
       {sortedMealTypes.map((mealType) => (
         <div
           key={mealType}
-          className="md:p-4 p-0 md:border border-0 rounded-lg"
+          className="md:p-4 p-0 md:border border-0 rounded-lg space-y-3"
         >
-          <div className="flex items-baseline justify-between">
-            <h3 className="font-semibold  tracking-heading text-lg">
-              {getMealTypeLabel(mealType)}
-            </h3>
-          </div>
+          <h3 className="font-semibold tracking-tight text-lg">
+            {getMealTypeLabel(mealType)}
+          </h3>
 
-          {mealsByType[mealType]?.map((meal) => (
-            <div key={meal.id}>
-              <div className="flex items-baseline justify-between text-xs py-2">
-                <span className="text-muted-foreground text-xs">
-                  {format(new Date(meal.consumedAt), "HH:mm", { locale: es })}
-                </span>
-                <span className="flex flex-row gap-1 items-center">
-                  {" "}
-                  <Badge variant="outline" className="text-xs">
-                    {meal.calories}
-                    kcal
-                  </Badge>
-                  {/* <Button
-                    variant="default"
-                    size="sm"
-                    onClick={() => deleteMealLog(meal.id)}
-                    disabled={deletingId === meal.id}
-                  >
-                    {deletingId === meal.id ? (
-                      <Skeleton className="h-4 w-4 rounded-full" />
-                    ) : (
-                      <Delete02Icon size={18} className="text-muted" />
-                    )}
-                    <span className="sr-only">Eliminar</span>
-                  </Button> */}
-                </span>
-              </div>
-              <div>
-                <div className="grid grid-cols-4 text-xs md:text-xs items-center">
-                  <div className="col-span-1">
+          <div className="space-y-3">
+            {mealsByType[mealType]?.map((meal) => (
+              <div key={meal.id} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-xs tabular-nums">
+                    {format(new Date(meal.consumedAt), "HH:mm", { locale: es })}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs font-medium">
+                      {meal.calories} kcal
+                    </Badge>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      onClick={() => handleDelete(meal.id)}
+                      disabled={deletingId === meal.id}
+                      aria-label="Eliminar"
+                    >
+                      {deletingId === meal.id ? (
+                        <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-2 text-xs">
+                  <div className="col-span-1 truncate font-medium">
                     {meal.food?.name || meal.recipe?.name}
                   </div>
-                  <div className="col-span-1 text-right">
-                    {meal.quantity} {meal.food ? `g` : `porción`}
+                  <div className="col-span-1 text-right text-muted-foreground">
+                    {meal.quantity} {meal.food ? "g" : "porción"}
                   </div>
-                  <div className="col-span-1 text-right">
+                  <div className="col-span-1 text-right text-muted-foreground">
                     {meal.protein.toFixed(1)}g P
                   </div>
-                  <div className="col-span-1 text-right">
+                  <div className="col-span-1 text-right text-muted-foreground">
                     {meal.carbs.toFixed(1)}g C / {meal.fat.toFixed(1)}g G
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       ))}
     </div>

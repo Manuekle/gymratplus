@@ -121,7 +121,7 @@ const ProfileCheck = () => {
           } else {
             // Check if any required fields are missing or empty
             const missingFields = requiredProfileFields.filter(
-              (field) => !profile[field] || profile[field] === ""
+              (field) => !profile[field] || profile[field] === "",
             );
 
             console.log("Profile check debug:", {

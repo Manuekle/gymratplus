@@ -48,6 +48,15 @@ import {
   Search01Icon,
 } from "@hugeicons/core-free-icons";
 
+type MealType = "desayuno" | "almuerzo" | "cena" | "snack";
+
+const mealTypeLabels = {
+  desayuno: "Desayuno",
+  almuerzo: "Almuerzo",
+  cena: "Cena",
+  snack: "Snack",
+} as const;
+
 type Food = {
   id: string;
   name: string;
@@ -56,7 +65,7 @@ type Food = {
   carbs: number;
   fat: number;
   serving: number;
-  category: "breakfast" | "lunch" | "dinner" | "snack" | "other";
+  category: MealType;
   isFavorite?: boolean;
 };
 
@@ -77,12 +86,18 @@ type SelectedItem = {
   data: Food | Recipe;
   quantity: number;
   unit: string;
+  _inputValue?: string;
 };
 
-export default function RegistrarComidaPage() {
+// Helper function to validate meal type
+const validateMealType = (type: string): MealType => {
+  return type in mealTypeLabels ? (type as MealType) : "desayuno";
+};
+
+export default function RegisterFoodPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState("foods");
-  const [mealType, setMealType] = useState("desayuno");
+  const [mealType, setMealType] = useState<MealType>("desayuno");
   const [mealTime, setMealTime] = useState(format(new Date(), "HH:mm"));
   const [mealDate, setMealDate] = useState<Date>(new Date());
   const [searchQuery, setSearchQuery] = useState("");
@@ -92,11 +107,6 @@ export default function RegistrarComidaPage() {
   const [submitting, setSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
 
-  useEffect(() => {
-    fetchFoods();
-    fetchRecipes();
-  }, []);
-
   const fetchFoods = async () => {
     setLoading(true);
     try {
@@ -105,16 +115,30 @@ export default function RegistrarComidaPage() {
         throw new Error("Error al cargar los alimentos");
       }
       const data = await response.json();
-      setFoods(data);
+
+      // Convert meal types in the food data
+      const foodsWithConvertedMealTypes = data.map(
+        (food: Food & { mealType?: string | string[] }) => ({
+          ...food,
+          mealType: Array.isArray(food.mealType)
+            ? food.mealType.map((mt: string) => validateMealType(mt))
+            : [],
+        }),
+      );
+
+      setFoods(foodsWithConvertedMealTypes);
     } catch (error) {
       console.error("Error fetching foods:", error);
-      toast.error("Error", {
-        description: "No se pudieron cargar los alimentos",
-      });
+      toast.error("Error al cargar los alimentos");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchFoods();
+    fetchRecipes();
+  }, []);
 
   const fetchRecipes = async () => {
     setLoading(true);
@@ -136,16 +160,18 @@ export default function RegistrarComidaPage() {
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType)
+      recipe.mealType.includes(mealType),
   );
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
     if (selectedItems.length === 0) {
       toast.error("Error", {
         description: "Debes seleccionar al menos un alimento o receta",
@@ -156,17 +182,18 @@ export default function RegistrarComidaPage() {
     setSubmitting(true);
 
     try {
+      // Usamos directamente el tipo de comida en español
+      const apiMealType = mealType;
       const localDate = new Date(mealDate);
       const [hours = 0, minutes = 0] = mealTime.split(":").map(Number);
       localDate.setHours(hours || 0, minutes || 0, 0, 0);
 
       const promises = selectedItems.map(async (selectedItem) => {
-        const quantity = selectedItem.quantity;
-
+        // La cantidad ya está en gramos/ml (unidad base)
         const payload = {
-          mealType,
+          mealType: apiMealType, // Use the Spanish meal type for API
           consumedAt: localDate.toISOString(),
-          quantity: quantity,
+          quantity: selectedItem.quantity,
           ...(selectedItem.type === "food"
             ? { foodId: selectedItem.id }
             : { recipeId: selectedItem.id }),
@@ -182,22 +209,22 @@ export default function RegistrarComidaPage() {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.error || "Error al registrar las comidas");
+          throw new Error(errorData.message || "Error al registrar la comida");
         }
-
         return response.json();
       });
 
       await Promise.all(promises);
+
+      toast.success("Comida registrada exitosamente");
       router.push("/dashboard/nutrition");
-      toast.success("Comidas registradas correctamente");
     } catch (error) {
-      console.error("Error adding meal logs:", error);
+      console.error("Error submitting form:", error);
       toast.error("Error", {
         description:
           error instanceof Error
             ? error.message
-            : "No se pudieron registrar las comidas",
+            : "Error al registrar la comida",
       });
     } finally {
       setSubmitting(false);
@@ -206,10 +233,10 @@ export default function RegistrarComidaPage() {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe"
+    type: "food" | "recipe",
   ) => {
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type
+      (selected) => selected.id === item.id && selected.type === type,
     );
 
     if (existingIndex >= 0) {
@@ -218,13 +245,14 @@ export default function RegistrarComidaPage() {
       setSelectedItems(newSelectedItems);
     } else {
       const defaultUnit = type === "food" ? "g" : "porción";
+      const defaultQuantity = type === "food" ? (item as Food).serving : 1;
       setSelectedItems([
         ...selectedItems,
         {
           id: item.id,
           type,
           data: item,
-          quantity: type === "food" ? (item as Food).serving : 1,
+          quantity: defaultQuantity,
           unit: defaultUnit,
         },
       ]);
@@ -244,6 +272,7 @@ export default function RegistrarComidaPage() {
           ...currentItem,
           quantity: Math.max(0.1, newQuantity),
         };
+        delete newItems[index]._inputValue;
       }
       return newItems;
     });
@@ -260,80 +289,113 @@ export default function RegistrarComidaPage() {
       const newItems = [...prevItems];
       const currentItem = newItems[index];
       if (currentItem) {
-        const defaultQuantity =
-          newUnit === "g" && currentItem.type === "food"
-            ? (currentItem.data as Food).serving
-            : 1;
+        const serving =
+          currentItem.type === "food" ? (currentItem.data as Food).serving : 1;
+
+        let defaultQuantity: number;
+
+        switch (newUnit) {
+          case "g":
+          case "ml":
+            defaultQuantity = serving;
+            break;
+          case "kg":
+          case "L":
+            defaultQuantity = 100;
+            break;
+          case "taza":
+          case "vaso":
+            defaultQuantity = 240;
+            break;
+          case "unidad":
+          case "porción":
+            defaultQuantity = serving;
+            break;
+          default:
+            defaultQuantity = serving;
+        }
 
         newItems[index] = {
           ...currentItem,
           unit: newUnit,
           quantity: defaultQuantity,
         };
+        delete newItems[index]._inputValue;
       }
       return newItems;
     });
   };
 
   const getAvailableUnits = (item: SelectedItem) => {
+    // For recipes, only show "porción"
     if (item.type === "recipe") {
-      return [
-        { value: "porción", label: "Porción" },
-        { value: "unidad", label: "Unidad" },
-      ];
+      return [{ value: "porción", label: "Porción" }];
     }
 
     const food = item.data as Food;
     const category = food.category?.toLowerCase() || "";
 
-    const baseUnits = [
-      { value: "g", label: "Gramos (g)" },
-      { value: "porción", label: "Porción" },
-      { value: "unidad", label: "Unidad" },
+    // Categories that should show liquid units
+    const liquidCategories = [
+      "bebida",
+      "liquido",
+      "líquido",
+      "leche",
+      "jugo",
+      "agua",
+      "infusión",
+      "café",
+      "té",
+      "batido",
+      "licuado",
+      "smoothie",
     ];
 
-    if (
-      category.includes("bebida") ||
-      category.includes("liquido") ||
-      category.includes("líquido")
-    ) {
-      return [
-        ...baseUnits,
-        { value: "ml", label: "Mililitros (ml)" },
-        { value: "L", label: "Litros (L)" },
-        { value: "taza", label: "Taza" },
-      ];
-    }
+    const isLiquid = liquidCategories.some((liquidCat) =>
+      category.includes(liquidCat),
+    );
 
-    return baseUnits;
+    // For liquid foods, show liquid units
+    // For solid foods, show solid units
+    return isLiquid
+      ? [
+          { value: "ml", label: "Mililitros (ml)" },
+          { value: "L", label: "Litros (L)" },
+          { value: "taza", label: "Taza (240ml)" },
+          { value: "vaso", label: "Vaso (240ml)" },
+          { value: "porción", label: "Porción" },
+        ]
+      : [
+          { value: "g", label: "Gramos (g)" },
+          { value: "kg", label: "Kilogramos (kg)" },
+          { value: "unidad", label: "Unidad" },
+          { value: "porción", label: "Porción" },
+        ];
   };
 
   const calculateTotals = () => {
     return selectedItems.reduce(
       (acc, item) => {
         const data = item.data;
-        const quantity = item.quantity;
-        const serving =
-          item.type === "food"
-            ? (data as Food).serving
-            : (data as Recipe).servings;
+        const quantityInGrams = item.quantity;
 
-        let ratio = 1;
+        const servingSize = item.type === "food" ? (data as Food).serving : 1;
 
-        if (item.unit === "g" || item.unit === "ml") {
-          ratio = quantity / serving;
-        } else if (item.unit === "kg" || item.unit === "L") {
-          ratio = (quantity * 1000) / serving;
-        } else if (item.unit === "taza") {
-          ratio = (quantity * 240) / serving;
-        } else if (item.unit === "porción" || item.unit === "unidad") {
-          ratio = quantity;
-        }
+        const ratio = quantityInGrams / servingSize;
 
         const calories = Math.round(data.calories * ratio);
-        const protein = Number.parseFloat((data.protein * ratio).toFixed(1));
-        const carbs = Number.parseFloat((data.carbs * ratio).toFixed(1));
-        const fat = Number.parseFloat((data.fat * ratio).toFixed(1));
+        const protein = Math.max(
+          0,
+          Number.parseFloat((data.protein * ratio).toFixed(1)),
+        );
+        const carbs = Math.max(
+          0,
+          Number.parseFloat((data.carbs * ratio).toFixed(1)),
+        );
+        const fat = Math.max(
+          0,
+          Number.parseFloat((data.fat * ratio).toFixed(1)),
+        );
 
         return {
           calories: acc.calories + calories,
@@ -342,7 +404,7 @@ export default function RegistrarComidaPage() {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0 },
     );
   };
 
@@ -375,7 +437,7 @@ export default function RegistrarComidaPage() {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe"
+            activeTab === "foods" ? "food" : "recipe",
           );
 
           const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
@@ -389,10 +451,11 @@ export default function RegistrarComidaPage() {
           return (
             <button
               key={item.id}
+              type="button"
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe"
+                  activeTab === "foods" ? "food" : "recipe",
                 )
               }
               className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm ${
@@ -411,16 +474,22 @@ export default function RegistrarComidaPage() {
                   </p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                     <span className="flex items-center">
-                      <span className="text-muted-foreground mr-1">P:</span>
-                      {item.protein}g
+                      <span className="text-red-500 dark:text-red-400 font-medium mr-1">
+                        P:
+                      </span>
+                      <span className="text-foreground">{item.protein}g</span>
                     </span>
                     <span className="flex items-center">
-                      <span className="text-muted-foreground mr-1">C:</span>
-                      {item.carbs}g
+                      <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
+                        C:
+                      </span>
+                      <span className="text-foreground">{item.carbs}g</span>
                     </span>
                     <span className="flex items-center">
-                      <span className="text-muted-foreground mr-1">G:</span>
-                      {item.fat}g
+                      <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
+                        G:
+                      </span>
+                      <span className="text-foreground">{item.fat}g</span>
                     </span>
                   </div>
                 </div>
@@ -444,7 +513,7 @@ export default function RegistrarComidaPage() {
                         cy="18"
                         r="16"
                         fill="none"
-                        className="stroke-blue-500"
+                        className="stroke-red-500"
                         strokeWidth="2.5"
                         strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
                         strokeLinecap="round"
@@ -454,7 +523,7 @@ export default function RegistrarComidaPage() {
                         cy="18"
                         r="16"
                         fill="none"
-                        className="stroke-amber-500"
+                        className="stroke-blue-500"
                         strokeWidth="2.5"
                         strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
                         strokeDashoffset={-proteinPercentage}
@@ -465,7 +534,7 @@ export default function RegistrarComidaPage() {
                         cy="18"
                         r="16"
                         fill="none"
-                        className="stroke-rose-500"
+                        className="stroke-yellow-500"
                         strokeWidth="2.5"
                         strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
                         strokeDashoffset={
@@ -493,29 +562,45 @@ export default function RegistrarComidaPage() {
   };
 
   const totals = calculateTotals();
-  const totalMacros = totals.protein * 4 + totals.carbs * 4 + totals.fat * 9;
+
+  const totalCaloriesFromMacros =
+    totals.protein * 4 + totals.carbs * 4 + totals.fat * 9;
+
+  const totalCalories = Math.max(totals.calories, totalCaloriesFromMacros);
+
   const proteinPercentage =
-    totalMacros > 0 ? ((totals.protein * 4) / totalMacros) * 100 : 0;
+    totalCalories > 0 ? ((totals.protein * 4) / totalCalories) * 100 : 0;
   const carbsPercentage =
-    totalMacros > 0 ? ((totals.carbs * 4) / totalMacros) * 100 : 0;
+    totalCalories > 0 ? ((totals.carbs * 4) / totalCalories) * 100 : 0;
   const fatPercentage =
-    totalMacros > 0 ? ((totals.fat * 9) / totalMacros) * 100 : 0;
+    totalCalories > 0 ? ((totals.fat * 9) / totalCalories) * 100 : 0;
+
+  const totalPercentage = proteinPercentage + carbsPercentage + fatPercentage;
+  const adjustFactor = totalPercentage > 0 ? 100 / totalPercentage : 1;
+
+  const adjustedProtein =
+    Math.max(0, Math.min(100, proteinPercentage * adjustFactor)) || 0;
+  const adjustedCarbs =
+    Math.max(0, Math.min(100, carbsPercentage * adjustFactor)) || 0;
+  const adjustedFat =
+    Math.max(0, Math.min(100, 100 - adjustedProtein - adjustedCarbs)) || 0;
 
   return (
-    <div className="pb-20 md:pb-6">
-      <div className="mb-4 flex justify-between w-full items-center">
+    <div>
+      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs bg-transparent"
+          className="text-xs"
           size="sm"
           onClick={() => router.push("/dashboard/nutrition")}
         >
-          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
-          <span className="hidden sm:inline">Volver a la lista</span>
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+          Volver a la lista
         </Button>
       </div>
 
       <Card className="w-full overflow-hidden">
+        {/* <AddFoodsButton /> */}
         <CardHeader className="pb-4">
           <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
             Registrar Comida
@@ -530,15 +615,19 @@ export default function RegistrarComidaPage() {
               <Label className="text-xs text-muted-foreground">
                 Tipo de comida
               </Label>
-              <Select value={mealType} onValueChange={setMealType}>
+              <Select
+                value={mealType}
+                onValueChange={(value: MealType) => setMealType(value)}
+              >
                 <SelectTrigger className="h-10 w-full text-xs">
-                  <SelectValue />
+                  <SelectValue placeholder="Selecciona un tipo de comida" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="desayuno">Desayuno</SelectItem>
-                  <SelectItem value="almuerzo">Almuerzo</SelectItem>
-                  <SelectItem value="cena">Cena</SelectItem>
-                  <SelectItem value="snack">Snack</SelectItem>
+                  {Object.entries(mealTypeLabels).map(([value, label]) => (
+                    <SelectItem key={value} value={value}>
+                      {label}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -561,6 +650,7 @@ export default function RegistrarComidaPage() {
                 <PopoverContent className="w-auto p-0" align="start">
                   <CalendarComponent
                     mode="single"
+                    locale={es}
                     selected={mealDate}
                     onSelect={(date) => date && setMealDate(date)}
                   />
@@ -577,7 +667,6 @@ export default function RegistrarComidaPage() {
             </div>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-            {/* Left column - Browse foods */}
             <div className="lg:col-span-2 space-y-3 sm:space-y-4">
               <div className="relative">
                 <HugeiconsIcon
@@ -636,7 +725,6 @@ export default function RegistrarComidaPage() {
               </ScrollArea>
             </div>
 
-            {/* Right column - Selected items summary */}
             <div className="lg:col-span-1">
               <div className="sticky top-4 sm:top-6 space-y-3 sm:space-y-4">
                 <Card className="border-muted/50">
@@ -666,9 +754,20 @@ export default function RegistrarComidaPage() {
                                 cy="18"
                                 r="16"
                                 fill="none"
+                                className="stroke-red-500"
+                                strokeWidth="2.5"
+                                strokeDasharray={`${adjustedProtein} ${100 - adjustedProtein}`}
+                                strokeLinecap="round"
+                              />
+                              <circle
+                                cx="18"
+                                cy="18"
+                                r="16"
+                                fill="none"
                                 className="stroke-blue-500"
                                 strokeWidth="2.5"
-                                strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
+                                strokeDasharray={`${adjustedCarbs} ${100 - adjustedCarbs}`}
+                                strokeDashoffset={-adjustedProtein}
                                 strokeLinecap="round"
                               />
                               <circle
@@ -676,22 +775,11 @@ export default function RegistrarComidaPage() {
                                 cy="18"
                                 r="16"
                                 fill="none"
-                                className="stroke-amber-500"
+                                className="stroke-yellow-500"
                                 strokeWidth="2.5"
-                                strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
-                                strokeDashoffset={-proteinPercentage}
-                                strokeLinecap="round"
-                              />
-                              <circle
-                                cx="18"
-                                cy="18"
-                                r="16"
-                                fill="none"
-                                className="stroke-rose-500"
-                                strokeWidth="2.5"
-                                strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
+                                strokeDasharray={`${adjustedFat} ${100 - adjustedFat}`}
                                 strokeDashoffset={
-                                  -(proteinPercentage + carbsPercentage)
+                                  -(adjustedProtein + adjustedCarbs)
                                 }
                                 strokeLinecap="round"
                               />
@@ -708,24 +796,24 @@ export default function RegistrarComidaPage() {
                         </div>
 
                         <div className="grid grid-cols-3 gap-2 mb-4">
-                          <div className="text-center p-2 rounded-lg bg-blue-500/10">
-                            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
+                          <div className="text-center p-2 rounded-lg bg-red-500/10">
+                            <div className="text-xs font-semibold text-red-600 dark:text-red-400">
                               {totals.protein.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
                               Proteína
                             </div>
                           </div>
-                          <div className="text-center p-2 rounded-lg bg-amber-500/10">
-                            <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">
+                          <div className="text-center p-2 rounded-lg bg-blue-500/10">
+                            <div className="text-xs font-semibold text-blue-600 dark:text-blue-400">
                               {totals.carbs.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
-                              Carbos
+                              Carbohidratos
                             </div>
                           </div>
-                          <div className="text-center p-2 rounded-lg bg-rose-500/10">
-                            <div className="text-xs font-semibold text-rose-600 dark:text-rose-400">
+                          <div className="text-center p-2 rounded-lg bg-yellow-500/10">
+                            <div className="text-xs font-semibold text-yellow-600 dark:text-yellow-400">
                               {totals.fat.toFixed(1)}g
                             </div>
                             <div className="text-xs text-muted-foreground">
@@ -755,27 +843,11 @@ export default function RegistrarComidaPage() {
                                 const serving =
                                   item.type === "food"
                                     ? (data as Food).serving
-                                    : (data as Recipe).servings;
+                                    : 1;
 
-                                let ratio = 1;
-                                if (item.unit === "g" || item.unit === "ml") {
-                                  ratio = quantity / serving;
-                                } else if (
-                                  item.unit === "kg" ||
-                                  item.unit === "L"
-                                ) {
-                                  ratio = (quantity * 1000) / serving;
-                                } else if (item.unit === "taza") {
-                                  ratio = (quantity * 240) / serving;
-                                } else if (
-                                  item.unit === "porción" ||
-                                  item.unit === "unidad"
-                                ) {
-                                  ratio = quantity;
-                                }
-
+                                const ratio = quantity / serving;
                                 const calories = Math.round(
-                                  data.calories * ratio
+                                  data.calories * ratio,
                                 );
 
                                 return (
@@ -795,7 +867,7 @@ export default function RegistrarComidaPage() {
                                       <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-6 w-6 flex-shrink-0"
+                                        className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-destructive"
                                         onClick={() => removeItem(index)}
                                       >
                                         <HugeiconsIcon
@@ -824,7 +896,7 @@ export default function RegistrarComidaPage() {
                                               >
                                                 {unit.label}
                                               </SelectItem>
-                                            )
+                                            ),
                                           )}
                                         </SelectContent>
                                       </Select>
@@ -834,12 +906,83 @@ export default function RegistrarComidaPage() {
                                           variant="outline"
                                           size="icon"
                                           className="h-7 w-7 flex-shrink-0 bg-transparent"
-                                          onClick={() =>
+                                          onClick={() => {
+                                            const currentDisplay = (() => {
+                                              if (item.unit === "g")
+                                                return item.quantity;
+                                              if (item.unit === "kg")
+                                                return item.quantity / 1000;
+                                              if (item.unit === "ml")
+                                                return item.quantity;
+                                              if (item.unit === "L")
+                                                return item.quantity / 1000;
+                                              if (
+                                                item.unit === "vaso" ||
+                                                item.unit === "taza"
+                                              )
+                                                return item.quantity / 240;
+                                              if (
+                                                item.unit === "unidad" ||
+                                                item.unit === "porción"
+                                              ) {
+                                                const itemServing =
+                                                  item.type === "food"
+                                                    ? (item.data as Food)
+                                                        .serving
+                                                    : 1;
+                                                return (
+                                                  item.quantity / itemServing
+                                                );
+                                              }
+                                              return item.quantity;
+                                            })();
+
+                                            const step =
+                                              item.unit === "g" ||
+                                              item.unit === "unidad" ||
+                                              item.unit === "porción"
+                                                ? 1
+                                                : 0.1;
+                                            const newDisplay = Math.max(
+                                              step,
+                                              currentDisplay - step,
+                                            );
+
+                                            let newQuantity = 0;
+                                            const itemServing =
+                                              item.type === "food"
+                                                ? (item.data as Food).serving
+                                                : 1;
+
+                                            switch (item.unit) {
+                                              case "g":
+                                              case "ml":
+                                                newQuantity =
+                                                  Math.round(newDisplay);
+                                                break;
+                                              case "kg":
+                                              case "L":
+                                                newQuantity = newDisplay * 1000;
+                                                break;
+                                              case "taza":
+                                              case "vaso":
+                                                newQuantity = newDisplay * 240;
+                                                break;
+                                              case "unidad":
+                                              case "porción":
+                                                newQuantity =
+                                                  Math.round(newDisplay) *
+                                                  itemServing;
+                                                break;
+                                              default:
+                                                newQuantity = newDisplay;
+                                            }
+
                                             updateItemQuantity(
                                               index,
-                                              Math.max(0.1, item.quantity - 0.5)
-                                            )
-                                          }
+                                              newQuantity,
+                                            );
+                                          }}
                                         >
                                           <HugeiconsIcon
                                             icon={MinusSignIcon}
@@ -849,61 +992,346 @@ export default function RegistrarComidaPage() {
                                         <div className="flex-1">
                                           <Input
                                             type="number"
-                                            min="1"
-                                            step="1"
-                                            value={item.quantity || ""}
+                                            min="0"
+                                            step={
+                                              [
+                                                "g",
+                                                "unidad",
+                                                "porción",
+                                                "vaso",
+                                              ].includes(item.unit)
+                                                ? "1"
+                                                : "0.1"
+                                            }
+                                            value={(() => {
+                                              if (
+                                                item._inputValue !== undefined
+                                              ) {
+                                                return item._inputValue;
+                                              }
+
+                                              if (item.unit === "g") {
+                                                return Math.round(
+                                                  item.quantity,
+                                                ).toString();
+                                              } else if (item.unit === "kg") {
+                                                const kg = item.quantity / 1000;
+                                                return kg % 1 === 0
+                                                  ? kg.toString()
+                                                  : kg.toFixed(1);
+                                              } else if (item.unit === "ml") {
+                                                return item.quantity % 1 === 0
+                                                  ? item.quantity.toString()
+                                                  : item.quantity.toFixed(1);
+                                              } else if (item.unit === "L") {
+                                                const L = item.quantity / 1000;
+                                                return L % 1 === 0
+                                                  ? L.toString()
+                                                  : L.toFixed(1);
+                                              } else if (
+                                                item.unit === "vaso" ||
+                                                item.unit === "taza"
+                                              ) {
+                                                const vasos =
+                                                  item.quantity / 240;
+                                                return vasos % 1 === 0
+                                                  ? vasos.toString()
+                                                  : vasos.toFixed(1);
+                                              } else if (
+                                                item.unit === "unidad" ||
+                                                item.unit === "porción"
+                                              ) {
+                                                const itemServing =
+                                                  item.type === "food"
+                                                    ? (item.data as Food)
+                                                        .serving
+                                                    : 1;
+                                                return Math.round(
+                                                  item.quantity / itemServing,
+                                                ).toString();
+                                              }
+                                              return item.quantity.toString();
+                                            })()}
                                             onChange={(e) => {
                                               const value = e.target.value;
+
                                               if (value === "") {
-                                                updateItemQuantity(index, 0);
-                                              } else {
-                                                const numValue =
-                                                  Number.parseFloat(value);
-                                                if (
-                                                  !isNaN(numValue) &&
-                                                  numValue >= 1
-                                                ) {
-                                                  updateItemQuantity(
-                                                    index,
-                                                    Math.max(
-                                                      1,
-                                                      Math.floor(numValue)
-                                                    )
-                                                  );
-                                                }
+                                                setSelectedItems((prev) => {
+                                                  const newItems = [...prev];
+                                                  newItems[index] = {
+                                                    ...newItems[index],
+                                                    _inputValue: "",
+                                                    quantity: 0,
+                                                  };
+                                                  return newItems;
+                                                });
+                                                return;
                                               }
+
+                                              const isWholeNumberUnit = [
+                                                "g",
+                                                "unidad",
+                                                "porción",
+                                              ].includes(item.unit);
+                                              const numberRegex =
+                                                isWholeNumberUnit
+                                                  ? /^\d+$/
+                                                  : /^\d*\.?\d*$/;
+
+                                              if (!numberRegex.test(value)) {
+                                                return;
+                                              }
+
+                                              const numValue =
+                                                parseFloat(value);
+
+                                              if (
+                                                value.endsWith(".") ||
+                                                value.endsWith(".0") ||
+                                                numValue === 0
+                                              ) {
+                                                setSelectedItems((prev) => {
+                                                  const newItems = [...prev];
+                                                  newItems[index] = {
+                                                    ...newItems[index],
+                                                    _inputValue: value,
+                                                  };
+                                                  return newItems;
+                                                });
+                                                return;
+                                              }
+
+                                              if (
+                                                isNaN(numValue) ||
+                                                numValue < 0
+                                              ) {
+                                                return;
+                                              }
+
+                                              setSelectedItems((prev) => {
+                                                const newItems = [...prev];
+                                                newItems[index] = {
+                                                  ...newItems[index],
+                                                  _inputValue: value,
+                                                };
+                                                return newItems;
+                                              });
+
+                                              let quantity = 0;
+                                              const itemServing =
+                                                item.type === "food"
+                                                  ? (item.data as Food).serving
+                                                  : 1;
+
+                                              switch (item.unit) {
+                                                case "g":
+                                                  quantity =
+                                                    Math.round(numValue);
+                                                  break;
+                                                case "kg":
+                                                  quantity = numValue * 1000;
+                                                  break;
+                                                case "ml":
+                                                  quantity = numValue;
+                                                  break;
+                                                case "L":
+                                                  quantity = numValue * 1000;
+                                                  break;
+                                                case "taza":
+                                                case "vaso":
+                                                  quantity = numValue * 240;
+                                                  break;
+                                                case "unidad":
+                                                case "porción":
+                                                  quantity =
+                                                    Math.round(numValue) *
+                                                    itemServing;
+                                                  break;
+                                                default:
+                                                  quantity = numValue;
+                                              }
+
+                                              updateItemQuantity(
+                                                index,
+                                                quantity,
+                                              );
                                             }}
                                             onBlur={(e) => {
+                                              const value = e.target.value;
+
+                                              setSelectedItems((prev) => {
+                                                const newItems = [...prev];
+                                                delete newItems[index]
+                                                  ._inputValue;
+                                                return newItems;
+                                              });
+
                                               if (
-                                                !e.target.value ||
-                                                Number(e.target.value) < 1
+                                                !value ||
+                                                value === "." ||
+                                                parseFloat(value) === 0
                                               ) {
+                                                const itemServing =
+                                                  item.type === "food"
+                                                    ? (item.data as Food)
+                                                        .serving
+                                                    : 1;
+
+                                                const defaultQuantity =
+                                                  {
+                                                    g: 100,
+                                                    kg: 100,
+                                                    ml: 100,
+                                                    L: 100,
+                                                    vaso: 240,
+                                                    taza: 240,
+                                                    unidad: itemServing,
+                                                    porción: itemServing,
+                                                  }[item.unit] || 100;
+
+                                                updateItemQuantity(
+                                                  index,
+                                                  defaultQuantity,
+                                                );
+
                                                 toast.error(
-                                                  "La cantidad mínima es 1",
+                                                  "Cantidad inválida",
                                                   {
                                                     description:
-                                                      "Por favor ingresa un número mayor o igual a 1",
+                                                      "Se estableció la cantidad por defecto",
                                                     position: "top-center",
                                                     duration: 2000,
-                                                  }
+                                                  },
                                                 );
-                                                updateItemQuantity(index, 1);
+                                                return;
+                                              }
+
+                                              const numValue =
+                                                parseFloat(value);
+                                              if (numValue < 0) {
+                                                const itemServing =
+                                                  item.type === "food"
+                                                    ? (item.data as Food)
+                                                        .serving
+                                                    : 1;
+                                                const defaultQuantity =
+                                                  item.unit === "g"
+                                                    ? 100
+                                                    : itemServing;
+                                                updateItemQuantity(
+                                                  index,
+                                                  defaultQuantity,
+                                                );
+
+                                                toast.error(
+                                                  "Cantidad inválida",
+                                                  {
+                                                    description:
+                                                      "Por favor ingresa un número mayor a 0",
+                                                    position: "top-center",
+                                                    duration: 2000,
+                                                  },
+                                                );
                                               }
                                             }}
                                             className="h-7 text-center text-xs w-full"
-                                            placeholder="Cantidad"
+                                            placeholder={
+                                              item.unit === "g"
+                                                ? "Gramos"
+                                                : item.unit === "kg"
+                                                  ? "Kilogramos"
+                                                  : item.unit === "ml"
+                                                    ? "Mililitros"
+                                                    : item.unit === "L"
+                                                      ? "Litros"
+                                                      : item.unit ===
+                                                            "unidad" ||
+                                                          item.unit ===
+                                                            "porción"
+                                                        ? "Unidades"
+                                                        : "Cantidad"
+                                            }
                                           />
                                         </div>
                                         <Button
                                           variant="outline"
                                           size="icon"
                                           className="h-7 w-7 flex-shrink-0 bg-transparent"
-                                          onClick={() =>
+                                          onClick={() => {
+                                            const currentDisplay = (() => {
+                                              if (item.unit === "g")
+                                                return item.quantity;
+                                              if (item.unit === "kg")
+                                                return item.quantity / 1000;
+                                              if (item.unit === "ml")
+                                                return item.quantity;
+                                              if (item.unit === "L")
+                                                return item.quantity / 1000;
+                                              if (
+                                                item.unit === "vaso" ||
+                                                item.unit === "taza"
+                                              )
+                                                return item.quantity / 240;
+                                              if (
+                                                item.unit === "unidad" ||
+                                                item.unit === "porción"
+                                              ) {
+                                                const itemServing =
+                                                  item.type === "food"
+                                                    ? (item.data as Food)
+                                                        .serving
+                                                    : 1;
+                                                return (
+                                                  item.quantity / itemServing
+                                                );
+                                              }
+                                              return item.quantity;
+                                            })();
+
+                                            const step =
+                                              item.unit === "g" ||
+                                              item.unit === "unidad" ||
+                                              item.unit === "porción"
+                                                ? 1
+                                                : 0.1;
+                                            const newDisplay =
+                                              currentDisplay + step;
+
+                                            let newQuantity = 0;
+                                            const itemServing =
+                                              item.type === "food"
+                                                ? (item.data as Food).serving
+                                                : 1;
+
+                                            switch (item.unit) {
+                                              case "g":
+                                              case "ml":
+                                                newQuantity =
+                                                  Math.round(newDisplay);
+                                                break;
+                                              case "kg":
+                                              case "L":
+                                                newQuantity = newDisplay * 1000;
+                                                break;
+                                              case "taza":
+                                              case "vaso":
+                                                newQuantity = newDisplay * 240;
+                                                break;
+                                              case "unidad":
+                                              case "porción":
+                                                newQuantity =
+                                                  Math.round(newDisplay) *
+                                                  itemServing;
+                                                break;
+                                              default:
+                                                newQuantity = newDisplay;
+                                            }
+
                                             updateItemQuantity(
                                               index,
-                                              item.quantity + 0.5
-                                            )
-                                          }
+                                              newQuantity,
+                                            );
+                                          }}
                                         >
                                           <HugeiconsIcon
                                             icon={PlusSignIcon}

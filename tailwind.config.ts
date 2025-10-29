@@ -55,6 +55,10 @@ const config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        mealLog: {
+          DEFAULT: "hsl(var(--meal-log))",
+          foreground: "hsl(var(--meal-log-foreground))",
+        },
         // Colores específicos para la app de fitness
         fitness: {
           primary: "#4F46E5",

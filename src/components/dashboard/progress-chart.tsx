@@ -89,7 +89,7 @@ export default function ProgressChart() {
         );
       });
     },
-    []
+    [],
   );
 
   const loadData = useCallback(async () => {
@@ -114,7 +114,7 @@ export default function ProgressChart() {
         // Ordenar por fecha
         const sortedData: ProgressRecord[] = formattedData.sort(
           (a: ProgressRecord, b: ProgressRecord) =>
-            a.originalDate.getTime() - b.originalDate.getTime()
+            a.originalDate.getTime() - b.originalDate.getTime(),
         );
 
         setChartData(sortedData);
@@ -139,7 +139,7 @@ export default function ProgressChart() {
               ? "weight"
               : dataType === "bodyFat"
                 ? "bodyFat"
-                : "muscle"
+                : "muscle",
           );
 
           setProgressStats(stats);
@@ -158,7 +158,7 @@ export default function ProgressChart() {
       setError(
         error instanceof Error
           ? error.message
-          : "Error desconocido al cargar datos"
+          : "Error desconocido al cargar datos",
       );
     } finally {
       setIsLoading(false);

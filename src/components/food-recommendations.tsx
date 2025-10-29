@@ -369,7 +369,7 @@ export default function FoodRecommendations() {
                   value={selectedRecommendation.id}
                   onChange={(e) => {
                     const selected = recommendations.find(
-                      (r) => r.id === e.target.value
+                      (r) => r.id === e.target.value,
                     );
                     if (selected) {
                       setSelectedRecommendation(selected);

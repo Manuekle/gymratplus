@@ -2,7 +2,7 @@
 
 // icons
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 
 // sonner
@@ -106,6 +106,23 @@ export default function NutritionPage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [todayData, setTodayData] = useState<TodayData | null>(null);
   const [weekData, setWeekData] = useState<WeekData | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  // Función para recargar los datos
+  const reloadData = useCallback(() => {
+    analyticsData("today");
+    weeklyData("week");
+  }, []);
+
+  // Efecto para recargar los datos cuando cambia la clave de actualización
+  useEffect(() => {
+    reloadData();
+  }, [reloadData, refreshKey]);
+
+  // Función para forzar la actualización de los datos
+  const refreshData = useCallback(() => {
+    setRefreshKey((prev) => prev + 1);
+  }, []);
 
   const analyticsData = async (type: string) => {
     // setLoading(true);
@@ -235,7 +252,7 @@ export default function NutritionPage() {
                 </CardDescription>
               </span>
               <div className="flex flex-row gap-2 items-center">
-                <CalorieCalculator />
+                <CalorieCalculator onGoalsUpdated={refreshData} />
               </div>
             </CardHeader>
             <CardContent>
@@ -295,8 +312,8 @@ export default function NutritionPage() {
                         Math.round(
                           ((todayData?.todayTotals.calories ?? 0) /
                             (user?.nutrition.calorieTarget ?? 1)) *
-                            100
-                        )
+                            100,
+                        ),
                       )}
                       %
                     </span>
@@ -453,7 +470,7 @@ export default function NutritionPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <MealLogCalendar />
+              <MealLogCalendar onMealDeleted={refreshData} />
             </CardContent>
           </Card>
         </div>

@@ -134,7 +134,7 @@ export function WorkoutPersonalize() {
   const handleDeleteDay = (dayToDelete: string) => {
     setDays(days.filter((day) => day !== dayToDelete));
     setSelectedExercises(
-      selectedExercises.filter((ex) => ex.day !== dayToDelete)
+      selectedExercises.filter((ex) => ex.day !== dayToDelete),
     );
     if (currentDay === dayToDelete) {
       setCurrentDay("");
@@ -148,12 +148,12 @@ export function WorkoutPersonalize() {
     }
 
     const existingIndex = selectedExercises.findIndex(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
 
     if (existingIndex >= 0) {
       setSelectedExercises(
-        selectedExercises.filter((_, index) => index !== existingIndex)
+        selectedExercises.filter((_, index) => index !== existingIndex),
       );
     } else {
       setSelectedExercises([
@@ -217,7 +217,7 @@ export function WorkoutPersonalize() {
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(
-          errorData.details || "Failed to create personalized workout"
+          errorData.details || "Failed to create personalized workout",
         );
       }
 
@@ -234,7 +234,7 @@ export function WorkoutPersonalize() {
 
   const isExerciseSelected = (exerciseId: string) => {
     return selectedExercises.some(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
   };
 
@@ -454,7 +454,7 @@ export function WorkoutPersonalize() {
                       }
                       acc[muscleGroup].push(exercise);
                       return acc;
-                    }, {})
+                    }, {}),
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
                       <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
@@ -540,7 +540,7 @@ export function WorkoutPersonalize() {
                         .filter((ex) => ex.day === day)
                         .map((ex) => {
                           const exercise = exercises.find(
-                            (e) => e.id === ex.exerciseId
+                            (e) => e.id === ex.exerciseId,
                           );
                           return (
                             <div

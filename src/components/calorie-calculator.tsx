@@ -49,7 +49,11 @@ type FormData = {
   dietaryPreference: "no-preference" | "vegetarian" | "keto";
 };
 
-export function CalorieCalculator() {
+interface CalorieCalculatorProps {
+  onGoalsUpdated?: () => void;
+}
+
+export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -160,6 +164,11 @@ export function CalorieCalculator() {
 
       setIsSaved(true);
       toast.success("Tus objetivos calóricos han sido actualizados");
+
+      // Call the onGoalsUpdated callback if provided
+      if (onGoalsUpdated) {
+        onGoalsUpdated();
+      }
 
       setTimeout(() => {
         setIsSaved(false);

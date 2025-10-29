@@ -48,7 +48,7 @@ export default function WorkoutHistoryPage() {
             const totalExercises = data.reduce(
               (acc: number, session: WorkoutSession) =>
                 acc + session.exercises.length,
-              0
+              0,
             );
             const totalSets = data.reduce(
               (acc: number, session: WorkoutSession) => {
@@ -56,16 +56,16 @@ export default function WorkoutHistoryPage() {
                   acc +
                   session.exercises.reduce(
                     (exAcc: number, ex: Exercise) => exAcc + ex.sets.length,
-                    0
+                    0,
                   )
                 );
               },
-              0
+              0,
             );
             const totalDuration = data.reduce(
               (acc: number, session: WorkoutSession) =>
                 acc + (session.duration || 0),
-              0
+              0,
             );
 
             setStats({
@@ -100,12 +100,12 @@ export default function WorkoutHistoryPage() {
   const calculateSessionProgress = (session: WorkoutSession) => {
     const totalSets = session.exercises.reduce(
       (acc: number, ex: Exercise) => acc + ex.sets.length,
-      0
+      0,
     );
     const completedSets = session.exercises.reduce(
       (acc: number, ex: Exercise) =>
         acc + ex.sets.filter((set: Set) => set.completed).length,
-      0
+      0,
     );
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
   };
@@ -363,7 +363,7 @@ export default function WorkoutHistoryPage() {
                           (acc: number, ex: Exercise) =>
                             acc +
                             ex.sets.filter((set: Set) => set.completed).length,
-                          0
+                          0,
                         )}
                       </p>
                     </div>

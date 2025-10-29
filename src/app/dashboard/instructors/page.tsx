@@ -137,7 +137,7 @@ export default function InstructorsPage() {
                         <div className="text-xs font-medium">
                           $
                           {instructor.instructorProfile.pricePerMonth.toFixed(
-                            2
+                            2,
                           )}
                           /mes
                         </div>

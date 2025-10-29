@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick01Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { Tick02Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 
 export default function AddFoodsButton() {
   const [loading, setLoading] = useState(false);
@@ -40,7 +40,7 @@ export default function AddFoodsButton() {
           <span className="flex items-center gap-2">Procesando...</span>
         ) : (
           <span className="flex items-center gap-2">
-            <HugeiconsIcon icon={Tick01Icon} className="text-green-600" />
+            <HugeiconsIcon icon={Tick02Icon} className="text-green-600" />
             Subir alimentos base
           </span>
         )}
@@ -51,7 +51,7 @@ export default function AddFoodsButton() {
           className="w-full mt-2"
         >
           {messageType === "success" && (
-            <HugeiconsIcon icon={Tick01Icon} className="text-green-600" />
+            <HugeiconsIcon icon={Tick02Icon} className="text-green-600" />
           )}
           {messageType === "error" && (
             <HugeiconsIcon icon={Cancel01Icon} className="text-red-600" />

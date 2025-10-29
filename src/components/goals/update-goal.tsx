@@ -38,7 +38,7 @@ interface GoalProps {
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [value, setValue] = useState<string>(
-    goal.currentValue?.toString() || ""
+    goal.currentValue?.toString() || "",
   );
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,7 +58,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
 
     if (!isOwner) {
       setError(
-        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión."
+        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.",
       );
       return;
     }
@@ -99,15 +99,15 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       if (error instanceof Error) {
         if (error.message === "Objetivo no encontrado") {
           setError(
-            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo."
+            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.",
           );
         } else if (error.message === "ID de objetivo inválido") {
           setError(
-            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo."
+            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.",
           );
         } else {
           setError(
-            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo."
+            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.",
           );
         }
       } else {
@@ -141,7 +141,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal text-xs md:text-xs",
-                    !date && "text-muted-foreground"
+                    !date && "text-muted-foreground",
                   )}
                 >
                   <HugeiconsIcon

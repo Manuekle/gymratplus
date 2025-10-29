@@ -38,20 +38,29 @@ type MealLog = {
   } | null;
 };
 
-export function MealLogCalendar() {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+interface MealLogCalendarProps {
+  onMealDeleted?: () => void;
+}
+
+export function MealLogCalendar({ onMealDeleted }: MealLogCalendarProps) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Normalize to start of day
+
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const [currentMonth, setCurrentMonth] = useState<Date>(today);
   const [mealLogs, setMealLogs] = useState<MealLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [datesWithMeals, setDatesWithMeals] = useState<Date[]>([]);
 
+  // Cargar los logs del mes actual y los de la fecha seleccionada
   useEffect(() => {
-    fetchMealLogsForMonth(currentMonth);
-  }, [currentMonth]);
+    const loadData = async () => {
+      await fetchMealLogsForMonth(currentMonth);
+      await fetchMealLogsForDate(selectedDate);
+    };
 
-  useEffect(() => {
-    fetchMealLogsForDate(selectedDate);
-  }, [selectedDate]);
+    loadData();
+  }, [currentMonth, selectedDate]);
 
   const fetchMealLogsForMonth = async (date: Date) => {
     setLoading(true);
@@ -104,9 +113,10 @@ export function MealLogCalendar() {
   const fetchMealLogsForDate = async (date: Date) => {
     setLoading(true);
     try {
-      // Asegurarnos de que la fecha esté en formato ISO pero solo la parte de la fecha
-      const formattedDate = date.toISOString().split("T")[0];
-      console.log("Fetching logs for date:", formattedDate);
+      // Crear una copia de la fecha para no modificar la original
+      const dateCopy = new Date(date);
+      // Asegurarnos de que la fecha esté en formato YYYY-MM-DD
+      const formattedDate = dateCopy.toISOString().split("T")[0];
 
       const response = await fetch(`/api/meal-logs?date=${formattedDate}`);
 
@@ -115,22 +125,21 @@ export function MealLogCalendar() {
       }
 
       const data = await response.json();
-      console.log("Logs received:", data);
 
       // Ordenar los logs por hora
-      data.sort((a: MealLog, b: MealLog) => {
+      const sortedData = [...data].sort((a: MealLog, b: MealLog) => {
         const dateA = new Date(a.consumedAt);
         const dateB = new Date(b.consumedAt);
         return dateA.getTime() - dateB.getTime();
       });
 
-      setMealLogs(data);
+      setMealLogs(sortedData);
     } catch (error) {
       console.error("Error fetching meal logs for date:", error);
-
       toast.error("Error", {
         description: "No se pudieron cargar los registros de comidas",
       });
+      setMealLogs([]); // Asegurarse de que no hay datos antiguos mostrándose
     } finally {
       setLoading(false);
     }
@@ -152,6 +161,12 @@ export function MealLogCalendar() {
 
   const onMealLogDeleted = (id: string) => {
     setMealLogs(mealLogs.filter((log) => log.id !== id));
+    toast.success("Comida eliminada");
+
+    // Call the onMealDeleted callback if provided
+    if (onMealDeleted) {
+      onMealDeleted();
+    }
 
     // Check if we need to update the calendar
     const remainingLogsForDate = mealLogs.filter(
@@ -200,7 +215,7 @@ export function MealLogCalendar() {
                 hasMeal: {
                   backgroundColor: "hsl(var(--primary) / 0.1)",
                   fontWeight: "bold",
-                  color: "hsl(var(--primary))",
+                  color: "oklch(80.15% 0.17 73.59)",
                   borderRadius: "100%",
                   border: "1px solid hsl(var(--primary) / 0.5)",
                 },
@@ -246,7 +261,6 @@ export function MealLogCalendar() {
                 mealLogs={mealLogs}
                 loading={loading}
                 onMealLogDeleted={onMealLogDeleted}
-                selectedDate={selectedDate}
               />
             </CardContent>
           </Card>

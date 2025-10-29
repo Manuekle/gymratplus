@@ -28,11 +28,14 @@ import {
   ArrowRight01Icon,
   ArrowUp01Icon,
   RulerIcon,
+  SmileIcon,
+  TapeMeasureIcon,
   WeightScaleIcon,
 } from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
+  birthdate: string;
   gender: string;
   height: number;
   currentWeight: number;
@@ -51,7 +54,6 @@ interface UserProfile {
 
 export default function HealthPage() {
   const { data: session } = useSession();
-  console.log(session);
 
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -64,6 +66,7 @@ export default function HealthPage() {
 
     setUser({
       id: profile.id,
+      birthdate: profile.birthdate,
       gender: profile.gender,
       height: Number(profile.height),
       currentWeight: Number(profile.currentWeight),
@@ -88,7 +91,6 @@ export default function HealthPage() {
   // Modified: use optional chaining to access user.weight.current safely.
   const weight = user?.currentWeight;
   const bmi = weight && heightInMeters ? weight / heightInMeters ** 2 : 0;
-  console.log(bmi);
   const bodyFat = 18;
 
   const minIMC = 15;
@@ -108,7 +110,20 @@ export default function HealthPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div className="space-y-2">
+                <div className="flex items-center font-semibold tracking-heading text-xs text-muted-foreground">
+                  <HugeiconsIcon icon={SmileIcon} className="mr-1 h-4 w-4" />
+                  Edad
+                </div>
+                <div className="text-2xl font-semibold">
+                  {user?.birthdate
+                    ? new Date().getFullYear() -
+                      new Date(user.birthdate).getFullYear()
+                    : "--"}{" "}
+                  años
+                </div>
+              </div>
               <div className="space-y-2">
                 <div className="flex items-center font-semibold tracking-heading text-xs text-muted-foreground">
                   <HugeiconsIcon
@@ -118,7 +133,6 @@ export default function HealthPage() {
                   Peso Actual
                 </div>
                 <div className="text-2xl font-semibold ">
-                  {/* Modified: access weight.current safely */}
                   {user?.currentWeight} kg
                 </div>
               </div>
@@ -154,9 +168,13 @@ export default function HealthPage() {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
+                <div className="flex items-center text-xs text-muted-foreground">
+                  <HugeiconsIcon
+                    icon={TapeMeasureIcon}
+                    className="mr-1 h-4 w-4"
+                  />
                   Porcentaje de grasa corporal
-                </span>
+                </div>
                 <span className="text-xs font-medium">{bodyFat}%</span>
               </div>
               <Progress value={bodyFat * 3} className="h-2" />

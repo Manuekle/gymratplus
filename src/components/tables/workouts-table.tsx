@@ -54,7 +54,7 @@ export default function WorkoutsTable() {
 
   // Ordenar workouts por fecha de creación (más recientes primero)
   const sortedWorkouts = workouts.sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
 
   const totalSlides = Math.ceil(sortedWorkouts.length / cardsPerView);
@@ -73,7 +73,7 @@ export default function WorkoutsTable() {
       // Reset transition flag after animation
       setTimeout(() => setIsTransitioning(false), 300);
     },
-    [isTransitioning]
+    [isTransitioning],
   );
 
   const handlePrevious = useCallback(() => {

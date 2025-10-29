@@ -59,7 +59,7 @@ export default function ActiveWorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
-    null
+    null,
   );
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -85,7 +85,7 @@ export default function ActiveWorkoutPage() {
     reps?: string | undefined;
   }
   const [inputValues, setInputValues] = useState<Record<string, InputValue>>(
-    {}
+    {},
   );
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
 
@@ -142,12 +142,12 @@ export default function ActiveWorkoutPage() {
 
     const totalSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.length,
-      0
+      0,
     );
 
     const completedSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.filter((set) => set.completed).length,
-      0
+      0,
     );
 
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
@@ -179,7 +179,7 @@ export default function ActiveWorkoutPage() {
   const updateSet = async (
     setId: string,
     data: Partial<Set>,
-    immediate = false
+    immediate = false,
   ) => {
     // Cancelar cualquier temporizador existente para este setId
     if (debounceTimers[setId]) {
@@ -249,12 +249,12 @@ export default function ActiveWorkoutPage() {
           // Si se marca como completado, iniciar temporizador de descanso
           if (data.completed) {
             const exercise = workoutSession?.exercises.find((ex) =>
-              ex.sets.some((set) => set.id === setId)
+              ex.sets.some((set) => set.id === setId),
             );
 
             if (exercise) {
               const exerciseData = workoutSession!.exercises.find(
-                (ex) => ex.id === exercise.id
+                (ex) => ex.id === exercise.id,
               );
               const restTime = exerciseData?.exercise?.restTime || 60;
               startRestTimer(exercise.id, restTime);

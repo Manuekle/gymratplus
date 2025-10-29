@@ -47,7 +47,7 @@ export default function InstructorSearchClient() {
 
   const [country, setCountry] = useState<string>("");
   const [isRemote, setIsRemote] = useState(
-    searchParams.get("isRemote") === "true"
+    searchParams.get("isRemote") === "true",
   );
   const [isVerified, setIsVerified] = useState(false);
   const [maxPrice, setMaxPrice] = useState("");
@@ -59,7 +59,7 @@ export default function InstructorSearchClient() {
   >(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   // Hook para países
@@ -72,7 +72,7 @@ export default function InstructorSearchClient() {
       if (response.ok) {
         const requests = await response.json();
         const requestIds = requests.map(
-          (req: { instructorProfileId: string }) => req.instructorProfileId
+          (req: { instructorProfileId: string }) => req.instructorProfileId,
         );
         setRequestedInstructors(new Set(requestIds));
       }
@@ -182,7 +182,7 @@ export default function InstructorSearchClient() {
 
         // Agregar el instructor a la lista de solicitados
         setRequestedInstructors((prev) =>
-          new Set(prev).add(instructorProfileId)
+          new Set(prev).add(instructorProfileId),
         );
 
         toast.success("Solicitud enviada", {
@@ -202,12 +202,12 @@ export default function InstructorSearchClient() {
         setRequestingInstructorId(null);
       }
     },
-    [requestedInstructors]
+    [requestedInstructors],
   );
 
   const handleSpecialtyToggle = (spec: string) => {
     setSelectedSpecialties((prev) =>
-      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec]
+      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec],
     );
   };
 
@@ -372,7 +372,7 @@ export default function InstructorSearchClient() {
           ) : (
             instructors.map((instructor) => {
               const countryData = countries.find(
-                (c) => c.cca2 === instructor.instructorProfile?.country
+                (c) => c.cca2 === instructor.instructorProfile?.country,
               );
               return (
                 <Card
@@ -424,7 +424,7 @@ export default function InstructorSearchClient() {
                         <div className="text-xs font-medium">
                           $
                           {instructor.instructorProfile.pricePerMonth.toFixed(
-                            2
+                            2,
                           )}
                           /mes
                         </div>

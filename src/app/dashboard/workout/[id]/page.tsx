@@ -78,7 +78,7 @@ export default function WorkouPage() {
           errorData?.error === "Workout no encontrado" ||
             errorData?.error === "Workout no encontrado o no autorizado"
             ? "No tienes permiso para ver este workout o no existe."
-            : errorData?.error || "Error al cargar el workout."
+            : errorData?.error || "Error al cargar el workout.",
         );
         setWorkout(null);
       }
@@ -106,7 +106,7 @@ export default function WorkouPage() {
     } catch (error) {
       console.error("Error deleting workout:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al eliminar el workout"
+        error instanceof Error ? error.message : "Error al eliminar el workout",
       );
     } finally {
       setIsDeleting(false);

@@ -89,7 +89,9 @@ export function CalorieChart({ chartData }: CalorieChartProps) {
           {/* <Legend /> */}
           <Bar
             dataKey="calories"
-            fill={isDark ? "#eee" : "#000"}
+            fill={
+              isDark ? "oklch(80.15% 0.17 73.59)" : "oklch(80.15% 0.17 73.59)"
+            }
             radius={[4, 4, 0, 0]}
             name="Calorías"
           ></Bar>

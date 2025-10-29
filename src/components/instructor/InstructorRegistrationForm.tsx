@@ -151,7 +151,7 @@ export function InstructorRegistrationForm({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || "Error al registrar como instructor"
+          errorData.error || "Error al registrar como instructor",
         );
       }
       // Update the session with the new instructor status

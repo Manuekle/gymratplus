@@ -124,7 +124,7 @@ export function ExpiredDatePicker({
               variant="outline"
               className={cn(
                 "w-full justify-start text-left font-normal text-xs md:text-xs",
-                !value && "text-muted-foreground"
+                !value && "text-muted-foreground",
               )}
               aria-haspopup="dialog"
               aria-expanded={isCalendarOpen}

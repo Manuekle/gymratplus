@@ -56,7 +56,7 @@ export function NotificationItem({
       onClick={handleClick}
       className={cn(
         "flex items-start p-4 hover:bg-muted/30 cursor-pointer transition-colors",
-        notification.read ? "bg-background" : "bg-muted/20"
+        notification.read ? "bg-background" : "bg-muted/20",
       )}
     >
       <div className="flex-shrink-0 mr-3 text-xl">{getTypeIcon()}</div>
@@ -64,7 +64,7 @@ export function NotificationItem({
         <h4
           className={cn(
             "text-xs",
-            notification.read ? "font-medium" : "font-semibold"
+            notification.read ? "font-medium" : "font-semibold",
           )}
         >
           {notification.title}

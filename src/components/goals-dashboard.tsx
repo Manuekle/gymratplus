@@ -60,7 +60,7 @@ export function GoalsDashboard() {
     await fetchGoals(
       activeTab === "all" ? undefined : activeTab,
       undefined,
-      true
+      true,
     );
   };
 

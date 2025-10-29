@@ -170,7 +170,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       if (!completeResponse.ok) {
         const errorData = await completeResponse.json();
         throw new Error(
-          errorData.error || "Error al finalizar el entrenamiento activo"
+          errorData.error || "Error al finalizar el entrenamiento activo",
         );
       }
 
@@ -188,7 +188,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       if (!startResponse.ok) {
         const errorData = await startResponse.json();
         throw new Error(
-          errorData.error || "Error al iniciar nuevo entrenamiento"
+          errorData.error || "Error al iniciar nuevo entrenamiento",
         );
       }
 

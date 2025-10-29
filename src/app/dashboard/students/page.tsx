@@ -63,7 +63,7 @@ export default function InstructorDashboardPage() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [students, setStudents] = useState<StudentData[]>([]);
   const [pendingRequests, setPendingRequests] = useState<PendingRequestData[]>(
-    []
+    [],
   );
   const [isLoadingStudents, setIsLoadingStudents] = useState(false);
   const [stats, setStats] = useState<{
@@ -86,10 +86,10 @@ export default function InstructorDashboardPage() {
 
       const activeStudents = data.filter(
         (item): item is StudentData =>
-          item.status === "accepted" || item.status === "active"
+          item.status === "accepted" || item.status === "active",
       );
       const pRequests = data.filter(
-        (item): item is PendingRequestData => item.status === "pending"
+        (item): item is PendingRequestData => item.status === "pending",
       );
 
       setStudents(activeStudents);
@@ -147,7 +147,7 @@ export default function InstructorDashboardPage() {
         `/api/student-instructor-requests/${requestId}/accept`,
         {
           method: "PUT",
-        }
+        },
       );
       if (!response.ok) {
         const errorData = await response.json();

@@ -148,7 +148,7 @@ export function WorkoutAssignmentDialog({
   const handleDeleteDay = (dayToDelete: string) => {
     setDays(days.filter((day) => day !== dayToDelete));
     setSelectedExercises(
-      selectedExercises.filter((ex) => ex.day !== dayToDelete)
+      selectedExercises.filter((ex) => ex.day !== dayToDelete),
     );
     if (currentDay === dayToDelete) {
       setCurrentDay("");
@@ -162,12 +162,12 @@ export function WorkoutAssignmentDialog({
     }
 
     const existingIndex = selectedExercises.findIndex(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
 
     if (existingIndex >= 0) {
       setSelectedExercises(
-        selectedExercises.filter((_, index) => index !== existingIndex)
+        selectedExercises.filter((_, index) => index !== existingIndex),
       );
     } else {
       setSelectedExercises([
@@ -265,7 +265,7 @@ export function WorkoutAssignmentDialog({
 
   const isExerciseSelected = (exerciseId: string) => {
     return selectedExercises.some(
-      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay
+      (ex) => ex.exerciseId === exerciseId && ex.day === currentDay,
     );
   };
 
@@ -475,8 +475,8 @@ export function WorkoutAssignmentDialog({
                       }
                       return acc;
                     },
-                    {}
-                  )
+                    {},
+                  ),
                 ).map(([muscleGroup, groupExercises]) => (
                   <div key={muscleGroup} className="space-y-2">
                     <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
@@ -558,7 +558,7 @@ export function WorkoutAssignmentDialog({
                       .filter((ex) => ex.day === day)
                       .map((ex) => {
                         const exercise = exercises.find(
-                          (e) => e.id === ex.exerciseId
+                          (e) => e.id === ex.exerciseId,
                         );
                         return (
                           <div
