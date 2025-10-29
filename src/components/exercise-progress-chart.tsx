@@ -10,10 +10,11 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { useExerciseProgress } from "@/hooks/use-exercise-progress";
+import { ExerciseGroupSelect } from "./exercise-group-select";
 import {
   Select,
   SelectContent,
@@ -24,15 +25,6 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons";
 
 const COLORS = [
   "#A0C4E7", // Soft Sky Blue
@@ -130,27 +122,70 @@ export function ExerciseProgressChart() {
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
-  const [timeRange, setTimeRange] = useState("30");
+  const [timeRange, setTimeRange] = useState("all");
   const [open, setOpen] = useState(false);
   const { progressData, fetchExerciseProgressData } = useExerciseProgress();
 
   useEffect(() => {
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - parseInt(timeRange));
-    fetchExerciseProgressData("all", startDate.toISOString());
+    const formatDateForAPI = (date: Date) => {
+      return date.toISOString().split("T")[0]; // YYYY-MM-DD format
+    };
+
+    // Si el rango de tiempo es 'all', obtener todos los ejercicios sin filtrar por fecha
+    if (timeRange === "all") {
+      console.log("Fetching all exercises without date filter");
+      fetchExerciseProgressData("all")
+        .then(() => console.log("All exercises data fetched successfully"))
+        .catch((error) =>
+          console.error("Error fetching all exercises:", error),
+        );
+    } else {
+      // Si se selecciona un rango de tiempo específico, aplicar el filtro
+      const endDate = new Date();
+      const startDate = new Date();
+      startDate.setDate(endDate.getDate() - parseInt(timeRange));
+
+      const formattedStartDate = formatDateForAPI(startDate);
+      const formattedEndDate = formatDateForAPI(endDate);
+
+      console.log("Fetching data with date range:", {
+        startDate: formattedStartDate,
+        endDate: formattedEndDate,
+        timeRange,
+      });
+
+      fetchExerciseProgressData("all", formattedStartDate, formattedEndDate)
+        .then(() => console.log("Filtered data fetched successfully"))
+        .catch((error) =>
+          console.error("Error fetching filtered data:", error),
+        );
+    }
   }, [timeRange, fetchExerciseProgressData]);
 
-  // Obtener la lista de ejercicios disponibles
-  const availableExercises = progressData
-    .reduce((acc, record) => {
-      Object.keys(record.exercises).forEach((exercise) => {
-        if (!acc.includes(exercise)) {
-          acc.push(exercise);
+  // Obtener todos los ejercicios únicos con sus grupos musculares
+  const allExercises = useMemo(() => {
+    const exerciseMap: Record<
+      string,
+      { muscleGroup: string; exerciseId: string }
+    > = {};
+
+    progressData.forEach((session) => {
+      if (!session?.exercises) return;
+
+      Object.entries(session.exercises).forEach(([name, data]) => {
+        if (!exerciseMap[name] && data) {
+          exerciseMap[name] = {
+            muscleGroup: (data as any).muscleGroup || "Otros",
+            exerciseId: (data as any).exerciseId || name,
+          };
         }
       });
-      return acc;
-    }, [] as string[])
-    .sort();
+    });
+
+    return exerciseMap;
+  }, [progressData]);
+
+  console.log("All exercises with groups:", allExercises);
 
   // Formatear los datos para el gráfico
   const formattedData: FormattedRecord[] = progressData
@@ -205,18 +240,21 @@ export function ExerciseProgressChart() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex flex-row flex-wrap gap-4 xl:gap-8">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-2">
           <div className="flex flex-col gap-2">
             <Label className="text-xs">Rango de tiempo</Label>
             <Select
               value={timeRange}
               onValueChange={(value) => setTimeRange(value)}
             >
-              <SelectTrigger className="w-[180px] text-xs md:text-xs">
+              <SelectTrigger className="w-full text-xs md:text-xs">
                 <SelectValue placeholder="Selecciona el rango" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem className="text-xs md:text-xs" value="all">
+                  Todos los ejercicios
+                </SelectItem>
                 <SelectItem className="text-xs md:text-xs" value="7">
                   Última semana
                 </SelectItem>
@@ -236,66 +274,20 @@ export function ExerciseProgressChart() {
             </Select>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
-          <Label className="text-xs">
-            Selecciona los ejercicios a mostrar:
-          </Label>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <Button
-                variant="outline"
-                role="combobox"
-                aria-expanded={open}
-                className="w-full justify-between text-xs md:text-xs"
-              >
-                {selectedExercises.length === 0
-                  ? "Seleccionar ejercicios..."
-                  : `${selectedExercises.length} ejercicio${
-                      selectedExercises.length === 1 ? "" : "s"
-                    } seleccionado${selectedExercises.length === 1 ? "" : "s"}`}
-                <HugeiconsIcon
-                  icon={UnfoldMoreIcon}
-                  className="ml-2 h-4 w-4 shrink-0 opacity-50"
-                />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-full p-0">
-              <Command>
-                <CommandGroup className="max-h-[200px] overflow-auto">
-                  {availableExercises.length > 0 ? (
-                    availableExercises.map((exercise) => (
-                      <CommandItem
-                        className="text-xs md:text-xs"
-                        key={exercise}
-                        onSelect={() => {
-                          setSelectedExercises((prev) =>
-                            prev.includes(exercise)
-                              ? prev.filter((item) => item !== exercise)
-                              : [...prev, exercise],
-                          );
-                        }}
-                      >
-                        <HugeiconsIcon
-                          icon={Tick02Icon}
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            selectedExercises.includes(exercise)
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {exercise}
-                      </CommandItem>
-                    ))
-                  ) : (
-                    <div className="p-6 text-center text-xs text-muted-foreground">
-                      No hay ejercicios disponibles para mostrar
-                    </div>
-                  )}
-                </CommandGroup>
-              </Command>
-            </PopoverContent>
-          </Popover>
+        <div className="flex flex-col gap-2 w-full">
+          <Label className="text-xs">Selecciona los ejercicios a mostrar</Label>
+          <ExerciseGroupSelect
+            exercises={allExercises}
+            selectedExercises={selectedExercises}
+            onExerciseSelect={(exerciseName) => {
+              setSelectedExercises((prev) =>
+                prev.includes(exerciseName)
+                  ? prev.filter((item) => item !== exerciseName)
+                  : [...prev, exerciseName],
+              );
+            }}
+            className="w-full text-xs md:text-xs"
+          />
         </div>
       </div>
 

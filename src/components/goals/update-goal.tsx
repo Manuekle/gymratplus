@@ -30,6 +30,7 @@ import { cn } from "@/lib/utils";
 import { Icons } from "../icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar01Icon } from "@hugeicons/core-free-icons";
+import { toast } from "sonner";
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -62,57 +63,66 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       );
       return;
     }
+
     // Validación básica
     if (!date) {
       setError("La fecha es obligatoria");
       return;
     }
-    if (!value) {
-      setError("El valor es obligatorio");
+    if (!value || isNaN(Number(value))) {
+      setError("Por favor ingresa un valor numérico válido");
       return;
     }
-    // LOGS DE DEPURACIÓN
-    console.log("goal.id:", goal.id);
-    console.log("goal.userId:", goal.userId);
-    console.log("session.user.id:", session?.user?.id);
-    console.log("Body enviado:", {
-      value: Number.parseFloat(value),
-      date: date?.toISOString(),
-      notes,
-    });
+
     setIsSubmitting(true);
+
     try {
       if (!goal.id) {
         throw new Error("ID de objetivo inválido");
       }
+
       const result = await addProgressUpdate(goal.id, {
         value: Number.parseFloat(value),
         date: date.toISOString(),
-        notes,
+        notes: notes || "",
       });
+
       if (result) {
-        setOpen(false); // Cierra el diálogo
-        onSuccess(); // Refresca la lista
+        // Mostrar mensaje de éxito
+        toast.success("Progreso actualizado correctamente");
+
+        // Cerrar el diálogo después de un breve retraso
+        setTimeout(() => {
+          setOpen(false);
+          // Resetear el formulario
+          setValue(goal.currentValue?.toString() || "");
+          setNotes("");
+          setDate(new Date());
+        }, 1000);
+
+        // Notificar al componente padre para actualizar la lista
+        onSuccess();
       }
     } catch (error: unknown) {
       console.error("Error al guardar:", error);
+      let errorMessage =
+        "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.";
+
       if (error instanceof Error) {
         if (error.message === "Objetivo no encontrado") {
-          setError(
-            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.",
-          );
+          errorMessage =
+            "No se pudo encontrar el objetivo. Por favor, recarga la página e intenta de nuevo.";
         } else if (error.message === "ID de objetivo inválido") {
-          setError(
-            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.",
-          );
-        } else {
-          setError(
-            "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.",
-          );
+          errorMessage =
+            "ID de objetivo inválido. Por favor, recarga la página e intenta de nuevo.";
+        } else if (error.message.includes("Network Error")) {
+          errorMessage =
+            "Error de conexión. Por favor, verifica tu conexión a internet.";
         }
-      } else {
-        setError("Ocurrió un error inesperado. Por favor, inténtalo de nuevo.");
       }
+
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -188,7 +198,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
             </Label>
             <Textarea
               id="notes"
-              className="text-xs md:text-xs"
+              className="text-xs md:text-xs resize-none"
               placeholder="Observaciones adicionales..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}

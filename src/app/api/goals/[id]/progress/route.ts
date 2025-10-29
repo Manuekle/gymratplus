@@ -90,53 +90,47 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Actualizar el valor actual y el progreso del objetivo
-    let progress = goal.progress || 0;
+    // Update current value and calculate progress
+    let progress = 0;
     let goalAchieved = false;
-
-    if (
-      goal.initialValue != null &&
-      goal.targetValue != null &&
-      goal.initialValue !== goal.targetValue
-    ) {
-      const diff = Math.abs(value - goal.initialValue);
-      const totalDiff = Math.abs(goal.targetValue - goal.initialValue);
-
-      // Si el objetivo es reducir y el valor actual es menor que el inicial
-      if (goal.targetValue < goal.initialValue && value < goal.initialValue) {
-        progress = Math.min(100, (diff / totalDiff) * 100);
-      }
-      // Si el objetivo es aumentar y el valor actual es mayor que el inicial
-      else if (
-        goal.targetValue > goal.initialValue &&
-        value > goal.initialValue
-      ) {
-        progress = Math.min(100, (diff / totalDiff) * 100);
-      }
-      // Si vamos en dirección contraria al objetivo
-      else {
-        progress = 0;
-      }
-    }
-
-    // Verificar si se ha alcanzado el objetivo
     let status = goal.status;
     let completedDate = goal.completedDate;
 
+    // Only calculate progress if we have all required values
     if (
-      (goal.initialValue !== null &&
-        goal.targetValue !== null &&
-        goal.targetValue < goal.initialValue &&
-        value <= goal.targetValue) ||
-      (goal.initialValue !== null &&
-        goal.targetValue !== null &&
-        goal.targetValue > goal.initialValue &&
-        value >= goal.targetValue)
+      goal.initialValue !== null &&
+      goal.initialValue !== undefined &&
+      goal.targetValue !== null &&
+      goal.targetValue !== undefined
     ) {
-      status = "completed";
-      completedDate = new Date();
-      progress = 100;
-      goalAchieved = true;
+      const initial = parseFloat(goal.initialValue.toString());
+      const target = parseFloat(goal.targetValue.toString());
+      const current = parseFloat(value.toString());
+
+      // Calculate progress based on goal direction
+      if (initial === target) {
+        // If initial and target are the same, progress is 100% when current matches
+        progress = current === initial ? 100 : 0;
+      } else {
+        // Calculate progress as a percentage between initial and target
+        const progressValue = ((current - initial) / (target - initial)) * 100;
+        progress = Math.min(100, Math.max(0, progressValue));
+      }
+
+      // Check if goal is achieved
+      const isDecreasingGoal = target < initial;
+      const isIncreasingGoal = target > initial;
+
+      if (
+        (isDecreasingGoal && current <= target) ||
+        (isIncreasingGoal && current >= target) ||
+        current === target
+      ) {
+        status = "completed";
+        completedDate = new Date();
+        progress = 100;
+        goalAchieved = true;
+      }
     }
 
     // Actualizar el objetivo

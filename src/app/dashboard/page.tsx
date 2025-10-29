@@ -1,23 +1,27 @@
-import type { Metadata } from "next";
+"use client";
 
+import { useState } from "react";
 import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
-export const metadata: Metadata = {
-  title: "Dashboard - GymRat+",
-  description: "Panel principal con el resumen de tu actividad y progreso",
-  keywords: "dashboard, panel, resumen, actividad, progreso",
-};
-
 export default function DashboardPage() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRecordAdded = () => {
+    setRefreshKey((prev) => prev + 1);
+  };
+
   return (
     <AnimatedLayout>
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ProgressChart />
+          <ProgressChart
+            refreshKey={refreshKey}
+            onRecordAdded={handleRecordAdded}
+          />
           <GoalProgress />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

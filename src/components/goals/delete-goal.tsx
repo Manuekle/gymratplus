@@ -15,9 +15,7 @@ import {
 import { useGoals, type Goal } from "@/hooks/use-goals";
 import { Icons } from "../icons";
 
-import { AlertDescription, AlertTitle } from "../ui/alert";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { AlertCircleIcon } from "@hugeicons/core-free-icons";
+import { AlertDescription } from "../ui/alert";
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -65,43 +63,37 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
-            <span className="flex items-center gap-2 pb-1 text-destructive">
-              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-              <AlertTitle className="text-xs">¡Cuidado!</AlertTitle>
-            </span>
-            <AlertDescription className="text-xs text-destructive">
-              ¿Estás seguro de que deseas eliminar este progreso? Esta acción no
-              se puede deshacer.
-            </AlertDescription>
-            <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
-              <DialogClose asChild>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                  disabled={loading}
-                >
-                  Cancelar
-                </Button>
-              </DialogClose>
+          <AlertDescription className="text-xs text-destructive">
+            ¿Estás seguro de que deseas eliminar este progreso? Esta acción no
+            se puede deshacer.
+          </AlertDescription>
+          <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
+            <DialogClose asChild>
               <Button
+                variant="outline"
                 size="sm"
-                className="text-xs px-4"
-                type="submit"
-                variant="destructive"
-                disabled={isSubmitting}
+                className="text-xs"
+                disabled={loading}
               >
-                {isSubmitting ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Eliminando
-                  </>
-                ) : (
-                  "Eliminar"
-                )}
+                Cancelar
               </Button>
-            </div>
+            </DialogClose>
+            <Button
+              size="sm"
+              className="text-xs px-4"
+              type="submit"
+              variant="destructive"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Eliminando
+                </>
+              ) : (
+                "Eliminar"
+              )}
+            </Button>
           </div>
         </form>
       </DialogContent>

@@ -145,18 +145,30 @@ export async function GET(
             acc[exerciseSession.exercise.name] = {
               weight: maxWeightSet.weight || 0,
               reps: maxWeightSet.reps || 0,
+              muscleGroup: exerciseSession.exercise.muscleGroup || "Otros", // Add muscle group
+              exerciseId: exerciseSession.exercise.id, // Add exercise ID
             };
           } else {
             // Si no hay sets con datos, usar valores por defecto
             acc[exerciseSession.exercise.name] = {
               weight: 0,
               reps: 0,
+              muscleGroup: exerciseSession.exercise.muscleGroup || "Otros",
+              exerciseId: exerciseSession.exercise.id,
             };
           }
 
           return acc;
         },
-        {} as Record<string, { weight: number; reps: number }>,
+        {} as Record<
+          string,
+          {
+            weight: number;
+            reps: number;
+            muscleGroup: string;
+            exerciseId: string;
+          }
+        >,
       ),
     }));
 
@@ -287,7 +299,15 @@ export async function POST(
       exercises:
         (workoutSession as any).exercises?.reduce(
           (
-            acc: Record<string, { weight: number; reps: number }>,
+            acc: Record<
+              string,
+              {
+                weight: number;
+                reps: number;
+                muscleGroup: string;
+                exerciseId: string;
+              }
+            >,
             exerciseSession: any,
           ) => {
             const lastSet =
@@ -295,10 +315,20 @@ export async function POST(
             acc[exerciseSession.exercise.name] = {
               weight: lastSet?.weight ?? 0,
               reps: lastSet?.reps ?? 0,
+              muscleGroup: exerciseSession.exercise.muscleGroup || "Otros",
+              exerciseId: exerciseSession.exercise.id,
             };
             return acc;
           },
-          {} as Record<string, { weight: number; reps: number }>,
+          {} as Record<
+            string,
+            {
+              weight: number;
+              reps: number;
+              muscleGroup: string;
+              exerciseId: string;
+            }
+          >,
         ) ?? {},
     };
 

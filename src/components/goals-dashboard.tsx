@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import { NewGoal } from "./goals/new-goal";
 import { UpdateGoal } from "./goals/update-goal";
 import ProgressSkeleton from "./skeleton/progress-skeleton";
 import { DeleteGoal } from "./goals/delete-goal";
@@ -28,12 +27,13 @@ import {
   Target02Icon,
   WeightScaleIcon,
 } from "@hugeicons/core-free-icons";
+import Link from "next/link";
+import { Button } from "./ui/button";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [activeTab, setActiveTab] = useState<GoalType | "all">("all");
-  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
 
   const { isLoading, goals, fetchGoals } = useGoals();
 
@@ -56,7 +56,6 @@ export function GoalsDashboard() {
   }, [mounted, loadGoals]);
 
   const handleFormSuccess = async () => {
-    setEditingGoal(null);
     await fetchGoals(
       activeTab === "all" ? undefined : activeTab,
       undefined,
@@ -224,10 +223,12 @@ export function GoalsDashboard() {
             <TabsTrigger value="measurement">Medidas</TabsTrigger>
             <TabsTrigger value="activity">Actividad</TabsTrigger>
           </TabsList>
-          <NewGoal
-            onSuccess={handleFormSuccess}
-            initialData={editingGoal || undefined}
-          />
+
+          <Link href="/dashboard/health/goal">
+            <Button size="sm" className="text-xs" variant="default">
+              Nuevo objetivo
+            </Button>
+          </Link>
         </div>
 
         <TabsContent value={activeTab} className="mt-0">

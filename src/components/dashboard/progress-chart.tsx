@@ -37,7 +37,15 @@ import { ProgressRecord } from "@/types/progress"; // Import the type definition
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
 
-export default function ProgressChart() {
+interface ProgressChartProps {
+  refreshKey?: number;
+  onRecordAdded?: () => void;
+}
+
+export default function ProgressChart({
+  refreshKey = 0,
+  onRecordAdded,
+}: ProgressChartProps) {
   const { theme, systemTheme } = useTheme();
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
@@ -45,16 +53,14 @@ export default function ProgressChart() {
   const [dataType, setDataType] = useState("weight");
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [chartData, setChartData] = useState<ProgressRecord[]>([]);
   const [filteredData, setFilteredData] = useState<ProgressRecord[]>([]);
   const [progressStats, setProgressStats] = useState({
     change: 0,
     percentChange: 0,
   });
-  const [error, setError] = useState<string | null>(null);
 
-  // Usar una referencia para evitar que fetchProgressData y getProgressStats
-  // se recreen en cada renderizado
   const { fetchProgressData, getProgressStats } = useProgress();
 
   // Función para filtrar datos según el período de tiempo seleccionado
@@ -174,7 +180,7 @@ export default function ProgressChart() {
   // Usar useEffect con la función loadData como dependencia
   useEffect(() => {
     loadData();
-  }, [dataType, timePeriod, loadData]);
+  }, [dataType, timePeriod, loadData, refreshKey]);
 
   const getChartConfig = () => {
     switch (dataType) {
@@ -196,7 +202,7 @@ export default function ProgressChart() {
         return {
           dataKey: "muscleMassPercentage",
           color: "#DE3163",
-          unit: "%",
+          unit: "kg",
           title: "Masa Muscular",
         };
       default:
@@ -232,9 +238,9 @@ export default function ProgressChart() {
     } else {
       message =
         change > 0
-          ? `Has ganado ${change.toFixed(1)}% de masa muscular`
+          ? `Has ganado ${change.toFixed(1)}kg de masa muscular`
           : change < 0
-            ? `Has perdido ${Math.abs(change).toFixed(1)}% de masa muscular`
+            ? `Has perdido ${Math.abs(change).toFixed(1)}kg de masa muscular`
             : "Tu masa muscular se ha mantenido estable";
     }
 
@@ -302,7 +308,7 @@ export default function ProgressChart() {
           </Button>
         </div>
 
-        <div className="flex flex-row gap-2 w-full sm:w-auto">
+        <div className="flex flex-row gap-2 w-full sm:w-auto items-center">
           <Select
             value={timePeriod}
             onValueChange={(value) => setTimePeriod(value as TimePeriod)}
@@ -328,6 +334,7 @@ export default function ProgressChart() {
           <NewProgress
             onSuccess={() => {
               loadData();
+              if (onRecordAdded) onRecordAdded();
             }}
           />
         </div>

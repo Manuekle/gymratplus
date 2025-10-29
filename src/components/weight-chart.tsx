@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import ChartSkeleton from "./skeleton/charts-skeleton";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -187,7 +188,7 @@ export function WeightChart() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-start md:justify-end">
+      <div className="flex justify-start md:justify-end gap-2 items-center">
         <Select
           value={timePeriod}
           onValueChange={(value) => setTimePeriod(value as TimePeriod)}
@@ -210,6 +211,11 @@ export function WeightChart() {
             </SelectItem>
           </SelectContent>
         </Select>
+        <Link href="/dashboard/health/history">
+          <Button size="sm" className="text-xs" variant="default">
+            Historial
+          </Button>
+        </Link>
       </div>
 
       <div className="w-full h-[200px]">

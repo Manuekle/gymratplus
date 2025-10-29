@@ -9,17 +9,15 @@ export type ProgressRecord = {
   bodyFatPercentage?: number;
   muscleMassPercentage?: number;
   date: Date | string;
+  originalDate?: Date | string; // Added for compatibility with ProgressChart
   notes?: string;
 };
 
 export const useProgress = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [progressData, setProgressData] = useState<ProgressRecord[]>([]);
-
-  // Usar useRef para el caché para evitar recreaciones
   const dataCacheRef = useRef<Record<string, ProgressRecord[]>>({});
 
-  // Usar useCallback para evitar recreaciones de funciones
   const fetchProgressData = useCallback(
     async (
       type: "weight" | "bodyFat" | "muscle" | "all" = "all",
@@ -27,11 +25,8 @@ export const useProgress = () => {
       endDate?: string,
     ) => {
       setIsLoading(true);
-
-      // Crear una clave de caché basada en los parámetros
       const cacheKey = `${type}-${startDate || ""}-${endDate || ""}`;
 
-      // Verificar si ya tenemos datos en caché para esta consulta
       if (dataCacheRef.current[cacheKey]) {
         setProgressData(dataCacheRef.current[cacheKey]);
         setIsLoading(false);
@@ -40,26 +35,16 @@ export const useProgress = () => {
 
       try {
         let url = `/api/progress?type=${type}`;
-
-        if (startDate) {
-          url += `&startDate=${startDate}`;
-        }
-
-        if (endDate) {
-          url += `&endDate=${endDate}`;
-        }
+        if (startDate) url += `&startDate=${startDate}`;
+        if (endDate) url += `&endDate=${endDate}`;
 
         const response = await fetch(url);
-
-        // Verificar el tipo de contenido de la respuesta
         const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          // Si no es JSON, lanzar un error más descriptivo
+
+        if (!contentType?.includes("application/json")) {
           const text = await response.text();
           console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
-          throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
-          );
+          throw new Error("La respuesta del servidor no es JSON válido");
         }
 
         if (!response.ok) {
@@ -71,11 +56,15 @@ export const useProgress = () => {
 
         const data = await response.json();
 
-        // Guardar en caché usando la referencia
-        dataCacheRef.current[cacheKey] = data;
+        // Ensure all records have originalDate for compatibility
+        const processedData = data.map((record: ProgressRecord) => ({
+          ...record,
+          originalDate: record.date,
+        }));
 
-        setProgressData(data);
-        return data;
+        dataCacheRef.current[cacheKey] = processedData;
+        setProgressData(processedData);
+        return processedData;
       } catch (error) {
         console.error("Error al cargar datos de progreso:", error);
         toast.error("No se pudieron cargar los datos de progreso");
@@ -87,157 +76,100 @@ export const useProgress = () => {
     [],
   );
 
-  // Crear nuevo registro de progreso
+  const clearCache = useCallback(() => {
+    dataCacheRef.current = {};
+    setProgressData([]);
+  }, []);
+
   const createProgressRecord = useCallback(
-    async (recordData: ProgressRecord) => {
+    async (recordData: Omit<ProgressRecord, "id">) => {
       setIsLoading(true);
       try {
         const response = await fetch("/api/progress", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(recordData),
         });
 
-        // Verificar el tipo de contenido de la respuesta
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          // Si no es JSON, lanzar un error más descriptivo
-          const text = await response.text();
-          console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
-          throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
-          );
-        }
-
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.error || "Error al crear registro de progreso",
-          );
+          throw new Error(errorData.error || "Error al crear el registro");
         }
 
+        clearCache();
         const newRecord = await response.json();
-
-        // Limpiar caché después de crear un nuevo registro
-        dataCacheRef.current = {};
-
-        toast.success("Registro guardado correctamente");
-        setProgressData((prevProgressData) => [...prevProgressData, newRecord]);
+        toast.success("Registro guardado exitosamente");
         return newRecord;
       } catch (error) {
         console.error("Error al crear registro de progreso:", error);
-        toast.error("No se pudo guardar el registro");
-        return null;
+        toast.error("Error al guardar el registro");
+        throw error;
       } finally {
         setIsLoading(false);
       }
     },
-    [],
+    [clearCache],
   );
 
-  // Actualizar registro de progreso
   const updateProgressRecord = useCallback(
-    async (id: string, recordData: ProgressRecord) => {
+    async (id: string, recordData: Partial<ProgressRecord>) => {
       setIsLoading(true);
       try {
         const response = await fetch(`/api/progress/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(recordData),
         });
 
-        // Verificar el tipo de contenido de la respuesta
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          // Si no es JSON, lanzar un error más descriptivo
-          const text = await response.text();
-          console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
-          throw new Error(
-            "La respuesta del servidor no es JSON válido. Posible problema de autenticación o ruta incorrecta.",
-          );
-        }
-
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.error || "Error al actualizar registro de progreso",
-          );
+          throw new Error(errorData.error || "Error al actualizar el registro");
         }
 
+        clearCache();
         const updatedRecord = await response.json();
-
-        // Limpiar caché después de actualizar un registro
-        dataCacheRef.current = {};
-
-        toast.success("Registro actualizado correctamente");
-        setProgressData((prevProgressData) =>
-          prevProgressData.map((record) =>
-            record.id === updatedRecord.id ? updatedRecord : record,
-          ),
-        );
+        toast.success("Registro actualizado exitosamente");
         return updatedRecord;
       } catch (error) {
         console.error("Error al actualizar registro de progreso:", error);
-        toast.error("No se pudo actualizar el registro");
-        return null;
+        toast.error("Error al actualizar el registro");
+        throw error;
       } finally {
         setIsLoading(false);
       }
     },
-    [],
+    [clearCache],
   );
 
-  // Eliminar registro de progreso
-  const deleteProgressRecord = useCallback(async (id: string) => {
-    setIsLoading(true);
-    try {
-      const response = await fetch(`/api/progress/${id}`, {
-        method: "DELETE",
-      });
+  const deleteProgressRecord = useCallback(
+    async (id: string) => {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/progress/${id}`, {
+          method: "DELETE",
+        });
 
-      if (!response.ok) {
-        // Verificar el tipo de contenido de la respuesta
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
+        if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(
-            errorData.error || "Error al eliminar registro de progreso",
-          );
-        } else {
-          const text = await response.text();
-          console.error("Respuesta no JSON:", text.substring(0, 150) + "...");
-          throw new Error("La respuesta del servidor no es JSON válido");
+          throw new Error(errorData.error || "Error al eliminar el registro");
         }
+
+        clearCache();
+        toast.success("Registro eliminado exitosamente");
+        return true;
+      } catch (error) {
+        console.error("Error al eliminar registro de progreso:", error);
+        toast.error("Error al eliminar el registro");
+        throw error;
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [clearCache],
+  );
 
-      // Limpiar caché después de eliminar un registro
-      dataCacheRef.current = {};
-
-      toast.success("Registro eliminado correctamente");
-      setProgressData((prevProgressData) =>
-        prevProgressData.filter((record) => record.id !== id),
-      );
-      return true;
-    } catch (error) {
-      console.error("Error al eliminar registro de progreso:", error);
-      toast.error("No se pudo eliminar el registro");
-      return false;
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  // Obtener estadísticas de progreso (diferencia desde el inicio, promedio, etc.)
   const getProgressStats = useCallback(
-    (
-      data: ProgressRecord[] | undefined,
-      type: "weight" | "bodyFat" | "muscle",
-    ) => {
-      // Handle undefined or empty data
+    (data: ProgressRecord[], type: "weight" | "bodyFat" | "muscle") => {
       if (!data || data.length === 0) {
         return {
           change: 0,
@@ -246,33 +178,18 @@ export const useProgress = () => {
         };
       }
 
-      // Filter out any undefined or invalid records
       const validData = data.filter(
-        (record): record is ProgressRecord =>
-          record !== undefined && record.date !== undefined,
+        (record) =>
+          record !== undefined &&
+          record.date !== undefined &&
+          (type === "weight"
+            ? record.weight !== undefined
+            : type === "bodyFat"
+              ? record.bodyFatPercentage !== undefined
+              : record.muscleMassPercentage !== undefined),
       );
 
-      if (validData.length < 2) {
-        const firstRecord = validData[0];
-        const firstValue = firstRecord ? getValue(firstRecord, type) : 0;
-        return {
-          change: 0,
-          percentChange: 0,
-          average: firstValue,
-        };
-      }
-
-      // Sort the valid data
-      const sortedData = [...validData].sort(
-        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
-      );
-
-      // Get first and last records (we know they exist since we have at least 2 items)
-      const first = sortedData[0];
-      const last = sortedData[sortedData.length - 1];
-
-      // Add safety checks in case the type system doesn't recognize our array bounds check
-      if (!first || !last) {
+      if (validData.length === 0) {
         return {
           change: 0,
           percentChange: 0,
@@ -280,17 +197,33 @@ export const useProgress = () => {
         };
       }
 
+      const sortedData = [...validData].sort(
+        (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+      );
+
+      const first = sortedData[0];
+      const last = sortedData[sortedData.length - 1];
+
+      const getValue = (record: ProgressRecord, t: typeof type): number => {
+        switch (t) {
+          case "weight":
+            return record.weight || 0;
+          case "bodyFat":
+            return record.bodyFatPercentage || 0;
+          case "muscle":
+            return record.muscleMassPercentage || 0;
+          default:
+            return 0;
+        }
+      };
+
       const firstValue = getValue(first, type);
       const lastValue = getValue(last, type);
-
-      // Calcular promedio
       const sum = sortedData.reduce(
-        (acc, record) => acc + (getValue(record, type) || 0),
+        (acc, record) => acc + getValue(record, type),
         0,
       );
       const average = sum / sortedData.length;
-
-      // Calcular cambio
       const change = lastValue - firstValue;
       const percentChange = firstValue !== 0 ? (change / firstValue) * 100 : 0;
 
@@ -298,35 +231,21 @@ export const useProgress = () => {
         change,
         percentChange,
         average,
+        current: lastValue,
+        isPositive: type === "muscle" ? change > 0 : change < 0,
       };
     },
     [],
   );
 
-  // Función auxiliar para obtener el valor correspondiente según el tipo
-  const getValue = (
-    record: ProgressRecord,
-    type: "weight" | "bodyFat" | "muscle",
-  ) => {
-    switch (type) {
-      case "weight":
-        return record.weight || 0;
-      case "bodyFat":
-        return record.bodyFatPercentage || 0;
-      case "muscle":
-        return record.muscleMassPercentage || 0;
-      default:
-        return 0;
-    }
-  };
-
   return {
-    isLoading,
     progressData,
+    isLoading,
     fetchProgressData,
     createProgressRecord,
     updateProgressRecord,
     deleteProgressRecord,
     getProgressStats,
+    clearCache,
   };
 };
