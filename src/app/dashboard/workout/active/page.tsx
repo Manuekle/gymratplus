@@ -66,7 +66,7 @@ export default function ActiveWorkoutPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
-    null,
+    null
   );
   const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
@@ -85,7 +85,7 @@ export default function ActiveWorkoutPage() {
   // Solo se necesita el estado para indicar al usuario que se está actualizando
   const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
   const [inputValues, setInputValues] = useState<Record<string, InputValue>>(
-    {},
+    {}
   );
 
   // Cargar la sesión de entrenamiento activa
@@ -138,7 +138,7 @@ export default function ActiveWorkoutPage() {
   useEffect(() => {
     return () => {
       Object.values(debounceTimers.current).forEach((timer) =>
-        clearTimeout(timer),
+        clearTimeout(timer)
       );
     };
   }, []);
@@ -171,12 +171,12 @@ export default function ActiveWorkoutPage() {
 
     const totalSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.length,
-      0,
+      0
     );
 
     const completedSets = workoutSession.exercises.reduce(
       (acc, ex) => acc + ex.sets.filter((set) => set.completed).length,
-      0,
+      0
     );
 
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
@@ -196,7 +196,7 @@ export default function ActiveWorkoutPage() {
   const updateSet = async (
     setId: string,
     exerciseId: string,
-    data: Partial<Set>,
+    data: Partial<Set>
   ) => {
     setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
@@ -216,17 +216,17 @@ export default function ActiveWorkoutPage() {
             exercises: prev.exercises.map((ex) => ({
               ...ex,
               sets: ex.sets.map((set) =>
-                set.id === setId ? { ...set, ...data } : set,
+                set.id === setId ? { ...set, ...data } : set
               ),
             })),
           };
 
           // Lógica para marcar como completado si hay peso o reps
           const currentExercise = newWorkoutSession.exercises.find(
-            (ex) => ex.id === exerciseId,
+            (ex) => ex.id === exerciseId
           );
           const currentSet = currentExercise?.sets.find(
-            (set) => set.id === setId,
+            (set) => set.id === setId
           );
           const setCompleted = !!(
             currentSet?.weight !== null &&
@@ -251,9 +251,9 @@ export default function ActiveWorkoutPage() {
               (ex) => ({
                 ...ex,
                 sets: ex.sets.map((set) =>
-                  set.id === setId ? { ...set, completed: true } : set,
+                  set.id === setId ? { ...set, completed: true } : set
                 ),
-              }),
+              })
             );
 
             // toast.success("Set guardado y completado", {
@@ -282,7 +282,7 @@ export default function ActiveWorkoutPage() {
       setId: string,
       exerciseId: string,
       field: "weight" | "reps",
-      value: string,
+      value: string
     ) => {
       // 1. Limpiar el timer anterior si existe
       if (debounceTimers.current[setId]) {
@@ -326,7 +326,7 @@ export default function ActiveWorkoutPage() {
 
       debounceTimers.current[setId] = newTimer;
     },
-    [inputValues], // Dependencia de inputValues para obtener los valores cruzados
+    [inputValues] // Dependencia de inputValues para obtener los valores cruzados
   );
 
   // Completar un ejercicio
@@ -626,20 +626,21 @@ export default function ActiveWorkoutPage() {
                         </div>
                         <div className="col-span-1">
                           <Input
-                            type="text" // Usar text para manejar el punto decimal más fácilmente
+                            type="text"
+                            inputMode="decimal"
+                            pattern="[0-9]*[.,]?[0-9]*"
                             placeholder="Peso"
                             min="0"
-                            // Usar el valor del estado local
                             value={inputValues[set.id]?.weight ?? ""}
                             onChange={(e) => {
                               const value = e.target.value;
                               // Permite: número, string vacío, o número seguido de un punto (para decimales)
-                              if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                              if (value === "" || /^\d*[.,]?\d*$/.test(value)) {
                                 handleInputChange(
                                   set.id,
                                   exercise.id,
                                   "weight",
-                                  value,
+                                  value.replace(",", ".") // Asegurar punto como separador decimal
                                 );
                               }
                             }}
@@ -649,10 +650,11 @@ export default function ActiveWorkoutPage() {
                         </div>
                         <div className="col-span-1">
                           <Input
-                            type="number" // Para repeticiones, 'number' es generalmente más seguro (sin decimales)
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
                             placeholder="Reps"
                             min="0"
-                            // Usar el valor del estado local
                             value={inputValues[set.id]?.reps ?? ""}
                             onChange={(e) => {
                               const value = e.target.value;
@@ -662,7 +664,7 @@ export default function ActiveWorkoutPage() {
                                   set.id,
                                   exercise.id,
                                   "reps",
-                                  value,
+                                  value
                                 );
                               }
                             }}
