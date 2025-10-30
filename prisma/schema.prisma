@@ -38,39 +38,39 @@ model Session {
 }
 
 model User {
-  id                   String               @id @default(cuid())
-  name                 String?
-  email                String?              @unique
-  experienceLevel      String?
-  emailVerified        DateTime?
-  image                String?
-  password             String?
-  isInstructor         Boolean              @default(false)
-  interests            String[]             @default([])
-  instructorProfile    InstructorProfile?
-  accounts             Account[]
-  sessions             Session[]
-  profile              Profile?
+  id                 String             @id @default(cuid())
+  name               String?
+  email              String?            @unique
+  experienceLevel    String?
+  emailVerified      DateTime?
+  image              String?
+  password           String?
+  isInstructor       Boolean            @default(false)
+  interests          String[]           @default([])
+  instructorProfile  InstructorProfile?
+  accounts           Account[]
+  sessions           Session[]
+  profile            Profile?
   // Rutinas creadas por este usuario (alumno o instructor)
-  createdWorkouts      Workout[]            @relation("WorkoutCreator")
+  createdWorkouts    Workout[]          @relation("WorkoutCreator")
   // Rutinas creadas como instructor
-  instructorWorkouts   Workout[]            @relation("WorkoutInstructor")
+  instructorWorkouts Workout[]          @relation("WorkoutInstructor")
   // Rutinas asignadas a este usuario (como alumno)
-  assignedWorkouts     Workout[]            @relation("AssignedWorkouts")
-  workoutSessions      WorkoutSession[]
-  notifications        Notification[]
-  customFoods          Food[]
-  customRecipes        Recipe[]
-  mealLogs             MealLog[]
-  weights              Weight[]
-  workoutStreak        WorkoutStreak?
+  assignedWorkouts   Workout[]          @relation("AssignedWorkouts")
+  workoutSessions    WorkoutSession[]
+  notifications      Notification[]
+  customFoods        Food[]
+  customRecipes      Recipe[]
+  mealLogs           MealLog[]
+  weights            Weight[]
+  workoutStreak      WorkoutStreak?
   // Subscription fields
-  subscriptionStatus   String?              @default("inactive") // 'inactive', 'trialing', 'active', 'past_due', 'canceled', or 'unpaid'
-  planType             String?              @default("free")     // 'free', 'monthly', 'annual'
-  trialEndsAt          DateTime?                                  // Fecha de finalización del período de prueba
-  currentPeriodEnd     DateTime?                                  // Fecha de finalización del período de pago actual
-  cancelAtPeriodEnd    Boolean              @default(false)       // Si es true, la suscripción se cancelará al final del período actual
-  
+  subscriptionStatus String?            @default("inactive") // 'inactive', 'trialing', 'active', 'past_due', 'canceled', or 'unpaid'
+  planType           String?            @default("free") // 'free', 'monthly', 'annual'
+  trialEndsAt        DateTime? // Fecha de finalización del período de prueba
+  currentPeriodEnd   DateTime? // Fecha de finalización del período de pago actual
+  cancelAtPeriodEnd  Boolean            @default(false) // Si es true, la suscripción se cancelará al final del período actual
+
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
   Goal                 Goal[]
