@@ -158,6 +158,9 @@ export default function InstructorRegistrationPage() {
   const handlePaymentConfirm = async () => {
     setIsLoading(true);
     try {
+      // Simulate payment processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       const values = form.getValues();
       const curriculum = values.specialties?.join(", ") || "";
       const payload = {
@@ -169,27 +172,47 @@ export default function InstructorRegistrationPage() {
         country: values.country,
         city: values.city,
         isRemote: values.isRemote,
+        planType: isAnnual ? "annual" : "monthly",
+        trialEndDate: new Date(
+          Date.now() + 14 * 24 * 60 * 60 * 1000
+        ).toISOString(), // 14 days from now
       };
 
-      const response = await fetch("/api/instructors/register", {
+      // In a real app, you would send this to your payment processing API
+      const response = await fetch("/api/payment/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({
+          ...payload,
+          cardData, // In a real app, make sure to handle card data securely (preferably with Stripe Elements or similar)
+        }),
       });
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || "Error al registrar como instructor"
+          errorData.error ||
+            "Error al procesar el pago. Por favor, verifica tus datos."
         );
       }
 
-      toast.success("¡Registro exitoso!", {
-        description: "Ahora eres un instructor en nuestra plataforma.",
+      setStep(3); // Move to success step
+
+      // In a real app, you might want to update the user's subscription status in your database
+      await fetch("/api/instructors/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      toast.success("¡Pago procesado exitosamente!", {
+        description: "Tu suscripción ha sido activada con éxito.",
       });
     } catch (error) {
       console.error("Error:", error);
-      toast.error("Error al procesar el registro");
+      toast.error(
+        error instanceof Error ? error.message : "Error al procesar el pago"
+      );
     } finally {
       setIsLoading(false);
     }
@@ -539,7 +562,7 @@ export default function InstructorRegistrationPage() {
                     <div className="w-full max-w-[24rem] bg-gradient-to-br from-primary/5 to-primary/10 p-6 rounded-lg border border-zinc-200 dark:border-zinc-800">
                       <div className="flex flex-col items-center text-center">
                         <div className="flex items-baseline gap-1.5">
-                          <span className="text-3xl font-bold">
+                          <span className="text-3xl font-semibold tracking-tight">
                             ${currentPlan.price}
                           </span>
                           <span className="text-sm text-muted-foreground">
@@ -547,13 +570,30 @@ export default function InstructorRegistrationPage() {
                           </span>
                         </div>
 
-                        {isAnnual && (
+                        {/* {isAnnual && (
                           <div className="mt-3 inline-flex items-center px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
                             <HugeiconsIcon
                               icon={SparklesIcon}
                               className="mr-1.5 h-3.5 w-3.5"
                             />
                             <span>Ahorra $21.88</span>
+                          </div>
+                        )} */}
+                        {!isAnnual ? (
+                          <div className="mt-3 inline-flex items-center px-3 py-1 dark:bg-primary/10 border border-zinc-300 dark:border-primary/10 bg-zinc-200 text-primary text-xs font-medium rounded-full">
+                            <HugeiconsIcon
+                              icon={SparklesIcon}
+                              className="mr-1.5 h-3.5 w-3.5 text-green-500 dark:text-green-400"
+                            />
+                            <span className="text-xs font-medium text-green-500 dark:text-green-400">
+                              14 días de prueba gratis
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="mt-3 inline-flex items-center px-3 py-1 dark:bg-primary/10 border border-zinc-300 dark:border-primary/10 bg-zinc-200 text-primary text-xs font-medium rounded-full">
+                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                              Ahorra $21.88 con el plan anual
+                            </span>
                           </div>
                         )}
 
@@ -739,10 +779,14 @@ export default function InstructorRegistrationPage() {
                   {isLoading ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      Procesando pago...
+                      {isAnnual ? "Procesando pago..." : "Iniciando prueba..."}
                     </>
                   ) : (
-                    <>Confirmar Pago ${currentPlan.price}</>
+                    <>
+                      {isAnnual
+                        ? `Confirmar Pago $${currentPlan.price}`
+                        : `Comenzar prueba gratis`}
+                    </>
                   )}
                 </Button>
               </div>

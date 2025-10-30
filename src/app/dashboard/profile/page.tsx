@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +13,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import {
   Card,
@@ -28,7 +28,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
-import { InstructorRegistrationForm } from "@/components/instructor/InstructorRegistrationForm";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BirthdayCakeIcon,
@@ -42,7 +41,6 @@ import {
   StarIcon,
   SteakIcon,
   Target02Icon,
-  Tick02Icon,
   WorkoutGymnasticsIcon,
 } from "@hugeicons/core-free-icons";
 
@@ -50,8 +48,6 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [isInstructorMode, setIsInstructorMode] = useState(false);
-  const [isRegistrationOpen, setIsRegistrationOpen] = useState(false);
 
   const { data: session, update } = useSession();
   const isInstructor = session?.user?.isInstructor || false;
@@ -88,40 +84,40 @@ export default function ProfilePage() {
   const [name, setName] = useState(session?.user?.name || "");
 
   const [phone, setPhone] = useState(
-    (session?.user as { profile?: { phone?: string } })?.profile?.phone || "",
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
   );
 
   const [birthdate, setBirthdate] = useState<string>(
     (session?.user as { profile?: { birthdate?: string } })?.profile
-      ?.birthdate || "",
+      ?.birthdate || ""
   );
 
   const [experienceLevel, setExperienceLevel] = useState(
-    session?.user?.experienceLevel || "",
+    session?.user?.experienceLevel || ""
   );
 
   const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
     (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
-      ?.preferredWorkoutTime || "",
+      ?.preferredWorkoutTime || ""
   );
   const [dailyActivity, setDailyActivity] = useState(
     (session?.user as { profile?: { dailyActivity?: string } })?.profile
-      ?.dailyActivity || "",
+      ?.dailyActivity || ""
   );
 
   const [goal, setGoal] = useState(
-    (session?.user as { profile?: { goal?: string } })?.profile?.goal || "",
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
   );
 
   const [dietaryPreference, setDietaryPreference] = useState(
     (session?.user as { profile?: { dietaryPreference?: string } })?.profile
-      ?.dietaryPreference || "",
+      ?.dietaryPreference || ""
   );
 
   // Estado para monthsTraining
   const [monthsTraining, setMonthsTraining] = useState(
     (session?.user as { profile?: { monthsTraining?: number } })?.profile
-      ?.monthsTraining || 0,
+      ?.monthsTraining || 0
   );
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -360,53 +356,7 @@ export default function ProfilePage() {
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
                 <div className="flex items-center text-muted-foreground text-xs">
                   <HugeiconsIcon icon={KidIcon} className="h-4 w-4 mr-1" />
-                  {/* <div className="mr-1">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      width={16}
-                      height={16}
-                      color="currentColor"
-                      fill={"none"}
-                    >
-                      <path
-                        d="M19.9504 10.8961C19.5049 14.8926 16.1153 18 12 18C7.88465 18 4.49508 14.8926 4.04963 10.8961C3.87943 10.9632 3.69402 11 3.5 11C2.67157 11 2 10.3284 2 9.5C2 8.67157 2.67157 8 3.5 8C3.75626 8 3.99751 8.06426 4.20851 8.17754C5.03332 4.63736 8.20867 2 12 2C15.7913 2 18.9667 4.63736 19.7915 8.17755C20.0025 8.06426 20.2437 8 20.5 8C21.3284 8 22 8.67157 22 9.5C22 10.3284 21.3284 11 20.5 11C20.306 11 20.1206 10.9632 19.9504 10.8961Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M12 15C12.5523 15 13 14.5523 13 14H11C11 14.5523 11.4477 15 12 15Z"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinejoin="round"
-                      />
-                      <path
-                        d="M18 22C18 20.208 17.2144 18.5994 15.9687 17.5M6 22C6 20.208 6.78563 18.5994 8.03126 17.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M12 2C13 2 14 2.89543 14 4C14 5.10457 13 6 12 6C11.5 6 10.9246 5.81669 10.5 5.5"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M9 10V10.01"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M15 10V10.01"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                  </div> */}
+
                   <span>
                     {(() => {
                       const birthdate = (
@@ -587,6 +537,27 @@ export default function ProfilePage() {
                       onValueChange={setBirthdate}
                     />
                   </div>
+                  {!isInstructor && (
+                    <div className="space-y-2">
+                      <Button
+                        asChild
+                        variant="outline"
+                        className="w-full text-xs"
+                        size="sm"
+                      >
+                        <Link href="/dashboard/profile/payment">
+                          <HugeiconsIcon
+                            icon={StarIcon}
+                            className="h-4 w-4 mr-2"
+                          />
+                          Convertirme en instructor
+                        </Link>
+                      </Button>
+                      <p className="text-xs text-muted-foreground text-center">
+                        Accede a beneficios exclusivos
+                      </p>
+                    </div>
+                  )}
                   <div className="space-y-2">
                     <Label
                       className="text-xs md:text-xs"
@@ -1034,92 +1005,6 @@ export default function ProfilePage() {
             />
           </CardContent>
         </Card>
-
-        {/* Nueva sección para el rol de instructor */}
-        {!isInstructor && (
-          <Card>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-2xl font-semibold tracking-heading">
-                Rol de instructor
-              </CardTitle>
-              <CardDescription className="text-xs text-muted-foreground">
-                Activa tu rol de instructor y empieza a conectar con alumnos.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Beneficios visuales */}
-              <div className="space-y-4 mb-8">
-                <ul className="space-y-2">
-                  {[
-                    {
-                      icon: Tick02Icon,
-                      text: "Gana dinero compartiendo tu experiencia",
-                    },
-                    {
-                      icon: StarIcon,
-                      text: "Accede a una comunidad de alumnos motivados",
-                    },
-                    {
-                      icon: StarIcon,
-                      text: "Mejora tu reputación y recibe valoraciones",
-                    },
-                    {
-                      icon: StarIcon,
-                      text: "Gestiona tus precios y disponibilidad",
-                    },
-                  ].map((benefit, index) => (
-                    <li key={index} className="flex items-center gap-3">
-                      <span className="w-5 h-5 text-muted-foreground flex items-center justify-center">
-                        <HugeiconsIcon
-                          icon={benefit.icon}
-                          className="w-full h-full"
-                        />
-                      </span>
-                      <span className="text-xs font-medium">
-                        {benefit.text}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex items-center gap-4 mb-8">
-                <Switch
-                  checked={isInstructorMode}
-                  onCheckedChange={(checked) => {
-                    setIsInstructorMode(checked);
-                    if (checked) {
-                      setIsRegistrationOpen(true);
-                    }
-                  }}
-                  id="instructor-switch"
-                  className="data-[state=checked]:bg-primary"
-                />
-                <label
-                  htmlFor="instructor-switch"
-                  className="text-xs font-medium select-none cursor-pointer flex-1"
-                >
-                  ¿Quieres convertirte en instructor?
-                </label>
-              </div>
-
-              <InstructorRegistrationForm
-                open={isRegistrationOpen}
-                onOpenChange={(open) => {
-                  setIsRegistrationOpen(open);
-                  if (!open) {
-                    // Reset the switch if dialog is closed without completing registration
-                    setIsInstructorMode(false);
-                  }
-                }}
-                onSuccess={() => {
-                  setIsRegistrationOpen(false);
-                  // The switch will remain on since registration was successful
-                }}
-              />
-            </CardContent>
-          </Card>
-        )}
       </div>
     </div>
   );
