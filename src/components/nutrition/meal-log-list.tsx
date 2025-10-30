@@ -146,7 +146,7 @@ export function MealLogList({
   });
 
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b)
+    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b),
   );
 
   return (

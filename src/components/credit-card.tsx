@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CreditCardIcon } from "@hugeicons/core-free-icons";
+import { MasterCardIcon } from "@hugeicons/core-free-icons";
 
 interface CreditCardProps {
   cardNumber: string;
@@ -25,6 +26,24 @@ export function CreditCard({
     return formatted.padEnd(19, "•");
   };
 
+  const getCardType = (
+    number: string,
+  ): {
+    type: "visa" | "mastercard" | "unknown";
+    icon: typeof CreditCardIcon | typeof MasterCardIcon;
+  } => {
+    const firstDigit = number.replace(/\s/g, "").charAt(0);
+    if (firstDigit === "4") {
+      return { type: "visa", icon: CreditCardIcon };
+    } else if (["2", "5"].includes(firstDigit)) {
+      return { type: "mastercard", icon: MasterCardIcon };
+    }
+    return { type: "unknown", icon: CreditCardIcon };
+  };
+
+  const cardType = getCardType(cardNumber);
+  const cardLabel = cardType.type === "mastercard" ? "MASTERCARD" : "VISA";
+
   return (
     <div className="perspective-1000 w-full max-w-sm mx-auto mb-6">
       <div
@@ -35,34 +54,41 @@ export function CreditCard({
         onMouseLeave={() => setIsFlipped(false)}
       >
         {/* Front of card */}
-        <div className="absolute inset-0 backface-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6 shadow-xl border border-slate-700/50">
+        <div className="absolute inset-0 backface-hidden rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-neutral-900 dark:to-neutral-800 p-6 shadow-xl border border-slate-200/50 dark:border-neutral-700/50">
           <div className="flex flex-col h-full justify-between">
             <div className="flex justify-between items-start">
-              <HugeiconsIcon icon={CreditCardIcon} className="mr-2 h-12 w-12" />
-              <div className="text-sm font-bold text-slate-300 tracking-wider">
-                VISA
+              <HugeiconsIcon
+                icon={cardType.icon}
+                className={`h-12 w-12 ${
+                  cardType.type === "mastercard"
+                    ? "text-slate-800 dark:text-neutral-100"
+                    : "text-slate-800 dark:text-neutral-300"
+                }`}
+              />
+              <div className="text-sm font-bold text-slate-700 dark:text-neutral-300 tracking-wider">
+                {cardLabel}
               </div>
             </div>
 
             <div className="space-y-5">
-              <div className="text-slate-100 text-xl font-mono tracking-widest">
+              <div className="text-slate-800 dark:text-neutral-100 text-xl font-mono tracking-widest">
                 {formatCardNumber(cardNumber || "")}
               </div>
 
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider font-medium">
+                  <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Titular
                   </div>
-                  <div className="text-sm font-semibold text-slate-200 uppercase tracking-wide">
+                  <div className="text-sm font-semibold text-slate-800 dark:text-neutral-200 uppercase tracking-wide truncate max-w-[180px]">
                     {cardHolder || "NOMBRE APELLIDO"}
                   </div>
                 </div>
                 <div className="space-y-1 text-right">
-                  <div className="text-[9px] text-slate-500 uppercase tracking-wider font-medium">
+                  <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Vence
                   </div>
-                  <div className="text-sm font-semibold text-slate-200 tracking-wide">
+                  <div className="text-sm font-semibold text-slate-800 dark:text-neutral-200 tracking-wide">
                     {expiryDate || "MM/YY"}
                   </div>
                 </div>
@@ -72,15 +98,15 @@ export function CreditCard({
         </div>
 
         {/* Back of card */}
-        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 shadow-xl border border-slate-700/50 overflow-hidden">
-          <div className="w-full h-12 bg-slate-950 mt-6" />
+        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 dark:from-neutral-900 dark:to-neutral-800 shadow-xl border border-slate-200/50 dark:border-neutral-700/50 overflow-hidden">
+          <div className="w-full h-12 bg-slate-300 dark:bg-neutral-950 mt-6" />
           <div className="p-6 space-y-4">
-            <div className="bg-slate-700 h-10 rounded flex items-center justify-end px-4">
-              <span className="text-slate-900 font-mono font-bold text-xs tracking-wider">
+            <div className="bg-slate-300 dark:bg-neutral-700 h-10 rounded flex items-center justify-end px-4">
+              <span className="text-slate-900 dark:text-neutral-200 font-mono font-bold text-xs tracking-wider">
                 {cvv || "•••"}
               </span>
             </div>
-            <div className="text-[9px] text-slate-500 text-right uppercase tracking-wider font-medium">
+            <div className="text-[9px] text-slate-500 dark:text-neutral-400 text-right uppercase tracking-wider font-medium">
               CVV
             </div>
           </div>

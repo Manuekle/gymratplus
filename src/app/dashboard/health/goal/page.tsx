@@ -145,7 +145,7 @@ export default function GoalPage() {
     .map((group) => ({
       ...group,
       items: group.items.filter((item) =>
-        item.label.toLowerCase().includes(unitSearchValue.toLowerCase())
+        item.label.toLowerCase().includes(unitSearchValue.toLowerCase()),
       ),
     }))
     .filter((group) => group.items.length > 0);
@@ -216,7 +216,7 @@ export default function GoalPage() {
       items: group.items.filter(
         (item) =>
           item.label.toLowerCase().includes(searchValue.toLowerCase()) ||
-          item.value.toLowerCase().includes(searchValue.toLowerCase())
+          item.value.toLowerCase().includes(searchValue.toLowerCase()),
       ),
     }))
     .filter((group) => group.items.length > 0);
@@ -291,7 +291,7 @@ export default function GoalPage() {
     } catch (error) {
       console.error("Error al guardar:", error);
       setError(
-        "Ocurrió un error al guardar el objetivo. Por favor, intenta de nuevo."
+        "Ocurrió un error al guardar el objetivo. Por favor, intenta de nuevo.",
       );
     } finally {
       setIsSubmitting(false);
@@ -361,7 +361,7 @@ export default function GoalPage() {
                       "flex flex-col items-center border border-zinc-200 dark:border-zinc-800 justify-center p-3 rounded-lg transition-all h-full min-h-[100px]",
                       type === t
                         ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
-                        : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
+                        : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70",
                     )}
                   >
                     <span className="text-2xl mb-1">{getTypeIcon(t)}</span>
@@ -485,7 +485,7 @@ export default function GoalPage() {
                                   value={item.value}
                                   onSelect={() => {
                                     setUnit(
-                                      item.value === unit ? "" : item.value
+                                      item.value === unit ? "" : item.value,
                                     );
                                     setUnitOpen(false);
                                     setUnitSearchValue("");
@@ -498,7 +498,7 @@ export default function GoalPage() {
                                       "mr-2 h-4 w-4",
                                       unit === item.value
                                         ? "opacity-100"
-                                        : "opacity-0"
+                                        : "opacity-0",
                                     )}
                                   />
                                   {item.label}
@@ -557,13 +557,15 @@ export default function GoalPage() {
                           {exercises.filter((ex) =>
                             ex.label
                               .toLowerCase()
-                              .includes(exerciseSearch?.toLowerCase() || "")
+                              .includes(exerciseSearch?.toLowerCase() || ""),
                           ).length > 0 ? (
                             exercises
                               .filter((ex) =>
                                 ex.label
                                   .toLowerCase()
-                                  .includes(exerciseSearch?.toLowerCase() || "")
+                                  .includes(
+                                    exerciseSearch?.toLowerCase() || "",
+                                  ),
                               )
                               .map((exercise) => (
                                 <CommandItem
@@ -573,7 +575,7 @@ export default function GoalPage() {
                                     setExerciseType(
                                       exercise.value === exerciseType
                                         ? ""
-                                        : exercise.value
+                                        : exercise.value,
                                     );
                                     setExerciseOpen(false);
                                     setExerciseSearch("");
@@ -586,7 +588,7 @@ export default function GoalPage() {
                                       "mr-2 h-4 w-4",
                                       exerciseType === exercise.value
                                         ? "opacity-100"
-                                        : "opacity-0"
+                                        : "opacity-0",
                                     )}
                                   />
                                   {exercise.label}
@@ -662,7 +664,7 @@ export default function GoalPage() {
                                       "mr-2 h-4 w-4",
                                       measurementType === item.value
                                         ? "opacity-100"
-                                        : "opacity-0"
+                                        : "opacity-0",
                                     )}
                                   />
                                   {item.label}
@@ -690,7 +692,7 @@ export default function GoalPage() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal text-xs",
-                        !startDate && "text-muted-foreground"
+                        !startDate && "text-muted-foreground",
                       )}
                     >
                       <HugeiconsIcon
@@ -726,7 +728,7 @@ export default function GoalPage() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal text-xs",
-                        !targetDate && "text-muted-foreground"
+                        !targetDate && "text-muted-foreground",
                       )}
                     >
                       <HugeiconsIcon

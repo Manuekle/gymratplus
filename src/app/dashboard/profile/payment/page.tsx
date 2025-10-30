@@ -27,10 +27,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
   SparklesIcon,
-  MasterCardIcon,
   CreditCardIcon,
   AlertCircleIcon,
   SquareLock01Icon,
+  CalendarIcon,
 } from "@hugeicons/core-free-icons";
 
 import { CreditCard } from "@/components/credit-card";
@@ -632,7 +632,7 @@ export default function InstructorRegistrationPage() {
                         }}
                       />
                       <HugeiconsIcon
-                        icon={MasterCardIcon}
+                        icon={CreditCardIcon}
                         className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                       />
                     </div>
@@ -662,7 +662,7 @@ export default function InstructorRegistrationPage() {
                           }}
                         />
                         <HugeiconsIcon
-                          icon={CreditCardIcon}
+                          icon={CalendarIcon}
                           className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
                         />
                       </div>
@@ -719,21 +719,22 @@ export default function InstructorRegistrationPage() {
               </div>
 
               {/* Form Actions */}
-              <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <div className="flex flex-col sm:flex-row gap-2 pt-2 h-24 md:h-full">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
-                  className="h-9 text-sm flex-1"
+                  size="default"
+                  className="text-sm flex-1"
                 >
                   Volver
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="h-9 text-sm flex-1 gap-1.5"
-                  size="lg"
+                  className="text-sm flex-1 gap-1.5"
+                  size="default"
                 >
                   {isLoading ? (
                     <>

@@ -62,10 +62,10 @@ export function ExerciseGroupSelect({
           .map(([group, exercises]) => [
             group,
             exercises.filter((ex) =>
-              ex.name.toLowerCase().includes(searchTerm.toLowerCase())
+              ex.name.toLowerCase().includes(searchTerm.toLowerCase()),
             ),
           ])
-          .filter(([_, exercises]) => exercises.length > 0)
+          .filter(([_, exercises]) => exercises.length > 0),
       )
     : exercisesByGroup;
 
