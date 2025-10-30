@@ -47,6 +47,8 @@ import {
   PlusSignIcon,
   Search01Icon,
 } from "@hugeicons/core-free-icons";
+// import AddFoodsButton from "@/components/config/add-foods-button";
+// import AddExerciseButton from "@/components/config/add-exercise-button";
 
 type MealType = "desayuno" | "almuerzo" | "cena" | "snack";
 
@@ -83,7 +85,7 @@ type Recipe = {
 type SelectedItem = {
   id: string;
   type: "food" | "recipe";
-  data: Food | Recipe;
+  data: Food;
   quantity: number;
   unit: string;
   _inputValue?: string;
@@ -96,7 +98,7 @@ const validateMealType = (type: string): MealType => {
 
 export default function RegisterFoodPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState("foods");
+  const [activeTab, setActiveTab] = useState<"foods" | "favorites">("foods");
   const [mealType, setMealType] = useState<MealType>("desayuno");
   const [mealTime, setMealTime] = useState(format(new Date(), "HH:mm"));
   const [mealDate, setMealDate] = useState<Date>(new Date());
@@ -106,6 +108,7 @@ export default function RegisterFoodPage() {
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const [favoriteFoods, setFavoriteFoods] = useState<Set<string>>(new Set());
 
   const fetchFoods = async () => {
     setLoading(true);
@@ -123,10 +126,18 @@ export default function RegisterFoodPage() {
           mealType: Array.isArray(food.mealType)
             ? food.mealType.map((mt: string) => validateMealType(mt))
             : [],
-        }),
+        })
       );
 
-      setFoods(foodsWithConvertedMealTypes);
+      // Merge with favorites data
+      const foodsWithFavorites = foodsWithConvertedMealTypes.map(
+        (food: Food) => ({
+          ...food,
+          isFavorite: favoriteFoods.has(food.id),
+        })
+      );
+
+      setFoods(foodsWithFavorites);
     } catch (error) {
       console.error("Error fetching foods:", error);
       toast.error("Error al cargar los alimentos");
@@ -137,36 +148,57 @@ export default function RegisterFoodPage() {
 
   useEffect(() => {
     fetchFoods();
-    fetchRecipes();
   }, []);
 
-  const fetchRecipes = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/api/recipes");
-      if (!response.ok) {
-        throw new Error("Error al cargar las recetas");
+  useEffect(() => {
+    // Load favorites from localStorage
+    if (typeof window !== "undefined") {
+      const savedFavorites = localStorage.getItem("favoriteFoods");
+      if (savedFavorites) {
+        setFavoriteFoods(new Set(JSON.parse(savedFavorites)));
       }
-      const data = await response.json();
-      setRecipes(data);
-    } catch (error) {
-      console.error("Error fetching recipes:", error);
-      toast.error("Error", {
-        description: "No se pudieron cargar las recetas",
-      });
-    } finally {
-      setLoading(false);
     }
+  }, []);
+
+  // Toggle favorite status for a food item
+  const toggleFavorite = (foodId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    setFavoriteFoods((prev) => {
+      const newFavorites = new Set(prev);
+      if (newFavorites.has(foodId)) {
+        newFavorites.delete(foodId);
+      } else {
+        newFavorites.add(foodId);
+      }
+      // Save to localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "favoriteFoods",
+          JSON.stringify(Array.from(newFavorites))
+        );
+      }
+      return newFavorites;
+    });
+
+    // Update the foods state to reflect the favorite status
+    setFoods((prevFoods) =>
+      prevFoods.map((food) =>
+        food.id === foodId ? { ...food, isFavorite: !food.isFavorite } : food
+      )
+    );
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
+    food.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredRecipes = recipes.filter(
-    (recipe) =>
-      recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType),
+  const favoriteFoodsList = filteredFoods.filter((food) =>
+    favoriteFoods.has(food.id)
+  );
+  const nonFavoriteFoods = filteredFoods.filter(
+    (food) => !favoriteFoods.has(food.id)
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -233,10 +265,10 @@ export default function RegisterFoodPage() {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe",
+    type: "food" | "recipe"
   ) => {
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type,
+      (selected) => selected.id === item.id && selected.type === type
     );
 
     if (existingIndex >= 0) {
@@ -352,7 +384,7 @@ export default function RegisterFoodPage() {
     ];
 
     const isLiquid = liquidCategories.some((liquidCat) =>
-      category.includes(liquidCat),
+      category.includes(liquidCat)
     );
 
     // For liquid foods, show liquid units
@@ -386,15 +418,15 @@ export default function RegisterFoodPage() {
         const calories = Math.round(data.calories * ratio);
         const protein = Math.max(
           0,
-          Number.parseFloat((data.protein * ratio).toFixed(1)),
+          Number.parseFloat((data.protein * ratio).toFixed(1))
         );
         const carbs = Math.max(
           0,
-          Number.parseFloat((data.carbs * ratio).toFixed(1)),
+          Number.parseFloat((data.carbs * ratio).toFixed(1))
         );
         const fat = Math.max(
           0,
-          Number.parseFloat((data.fat * ratio).toFixed(1)),
+          Number.parseFloat((data.fat * ratio).toFixed(1))
         );
 
         return {
@@ -404,7 +436,7 @@ export default function RegisterFoodPage() {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 },
+      { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
   };
 
@@ -418,7 +450,7 @@ export default function RegisterFoodPage() {
       );
     }
 
-    const items = activeTab === "foods" ? filteredFoods : filteredRecipes;
+    const items = activeTab === "favorites" ? favoriteFoodsList : filteredFoods;
 
     if (items.length === 0) {
       return (
@@ -437,7 +469,7 @@ export default function RegisterFoodPage() {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe",
+            activeTab === "foods" ? "food" : "recipe"
           );
 
           const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
@@ -455,7 +487,7 @@ export default function RegisterFoodPage() {
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe",
+                  activeTab === "foods" ? "food" : "recipe"
                 )
               }
               className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm ${
@@ -495,6 +527,21 @@ export default function RegisterFoodPage() {
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <button
+                    type="button"
+                    onClick={(e) => toggleFavorite(item.id, e)}
+                    className="p-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    aria-label={
+                      favoriteFoods.has(item.id)
+                        ? "Quitar de favoritos"
+                        : "Añadir a favoritos"
+                    }
+                  >
+                    <HugeiconsIcon
+                      icon={FavouriteIcon}
+                      className={`h-4 w-4 sm:h-5 sm:w-5 ${favoriteFoods.has(item.id) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`}
+                    />
+                  </button>
                   <div className="relative w-12 h-12 sm:w-16 sm:h-16">
                     <svg
                       className="w-full h-full -rotate-90"
@@ -600,7 +647,8 @@ export default function RegisterFoodPage() {
       </div>
 
       <Card className="w-full overflow-hidden">
-        {/* <AddFoodsButton /> */}
+        {/* <AddFoodsButton />
+        <AddExerciseButton /> */}
         <CardHeader className="pb-4">
           <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
             Registrar Comida
@@ -693,29 +741,19 @@ export default function RegisterFoodPage() {
 
               <Tabs
                 value={activeTab}
-                onValueChange={setActiveTab}
+                onValueChange={(value) =>
+                  setActiveTab(value as "foods" | "favorites")
+                }
                 className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-2 h-10">
-                  <TabsTrigger
-                    value="foods"
-                    className="gap-1 sm:gap-2 text-xs sm:text-xs"
-                  >
-                    <HugeiconsIcon
-                      icon={FishFoodIcon}
-                      className="h-4 w-4 flex-shrink-0"
-                    />
-                    <span>Alimentos</span>
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="recipes"
-                    className="gap-1 sm:gap-2 text-xs sm:text-xs"
-                  >
+                  <TabsTrigger value="foods">Todos</TabsTrigger>
+                  <TabsTrigger value="favorites" className="gap-1 sm:gap-2">
                     <HugeiconsIcon
                       icon={FavouriteIcon}
                       className="h-4 w-4 flex-shrink-0"
                     />
-                    <span>Recetas</span>
+                    <span>Favoritos</span>
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -847,7 +885,7 @@ export default function RegisterFoodPage() {
 
                                 const ratio = quantity / serving;
                                 const calories = Math.round(
-                                  data.calories * ratio,
+                                  data.calories * ratio
                                 );
 
                                 return (
@@ -896,7 +934,7 @@ export default function RegisterFoodPage() {
                                               >
                                                 {unit.label}
                                               </SelectItem>
-                                            ),
+                                            )
                                           )}
                                         </SelectContent>
                                       </Select>
@@ -945,7 +983,7 @@ export default function RegisterFoodPage() {
                                                 : 0.1;
                                             const newDisplay = Math.max(
                                               step,
-                                              currentDisplay - step,
+                                              currentDisplay - step
                                             );
 
                                             let newQuantity = 0;
@@ -980,7 +1018,7 @@ export default function RegisterFoodPage() {
 
                                             updateItemQuantity(
                                               index,
-                                              newQuantity,
+                                              newQuantity
                                             );
                                           }}
                                         >
@@ -1012,7 +1050,7 @@ export default function RegisterFoodPage() {
 
                                               if (item.unit === "g") {
                                                 return Math.round(
-                                                  item.quantity,
+                                                  item.quantity
                                                 ).toString();
                                               } else if (item.unit === "kg") {
                                                 const kg = item.quantity / 1000;
@@ -1047,7 +1085,7 @@ export default function RegisterFoodPage() {
                                                         .serving
                                                     : 1;
                                                 return Math.round(
-                                                  item.quantity / itemServing,
+                                                  item.quantity / itemServing
                                                 ).toString();
                                               }
                                               return item.quantity.toString();
@@ -1153,7 +1191,7 @@ export default function RegisterFoodPage() {
 
                                               updateItemQuantity(
                                                 index,
-                                                quantity,
+                                                quantity
                                               );
                                             }}
                                             onBlur={(e) => {
@@ -1191,7 +1229,7 @@ export default function RegisterFoodPage() {
 
                                                 updateItemQuantity(
                                                   index,
-                                                  defaultQuantity,
+                                                  defaultQuantity
                                                 );
 
                                                 toast.error(
@@ -1201,7 +1239,7 @@ export default function RegisterFoodPage() {
                                                       "Se estableció la cantidad por defecto",
                                                     position: "top-center",
                                                     duration: 2000,
-                                                  },
+                                                  }
                                                 );
                                                 return;
                                               }
@@ -1220,7 +1258,7 @@ export default function RegisterFoodPage() {
                                                     : itemServing;
                                                 updateItemQuantity(
                                                   index,
-                                                  defaultQuantity,
+                                                  defaultQuantity
                                                 );
 
                                                 toast.error(
@@ -1230,7 +1268,7 @@ export default function RegisterFoodPage() {
                                                       "Por favor ingresa un número mayor a 0",
                                                     position: "top-center",
                                                     duration: 2000,
-                                                  },
+                                                  }
                                                 );
                                               }
                                             }}
@@ -1329,7 +1367,7 @@ export default function RegisterFoodPage() {
 
                                             updateItemQuantity(
                                               index,
-                                              newQuantity,
+                                              newQuantity
                                             );
                                           }}
                                         >

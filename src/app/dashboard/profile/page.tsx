@@ -3,6 +3,14 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -43,8 +51,11 @@ import {
   Target02Icon,
   WorkoutGymnasticsIcon,
 } from "@hugeicons/core-free-icons";
+import { Loader2 } from "lucide-react";
 
 export default function ProfilePage() {
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [isCanceling, setIsCanceling] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
@@ -537,7 +548,95 @@ export default function ProfilePage() {
                       onValueChange={setBirthdate}
                     />
                   </div>
-                  {!isInstructor && (
+                  {isInstructor ? (
+                    <div className="space-y-2">
+                      <Button
+                        variant="outline"
+                        className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+                        size="sm"
+                        onClick={() => setShowCancelDialog(true)}
+                      >
+                        <HugeiconsIcon
+                          icon={StarIcon}
+                          className="h-4 w-4 mr-2"
+                        />
+                        Cancelar suscripción
+                      </Button>
+
+                      <Dialog
+                        open={showCancelDialog}
+                        onOpenChange={setShowCancelDialog}
+                      >
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle className="text-xl tracking-heading font-semibold">
+                              Confirmar cancelación
+                            </DialogTitle>
+                            <DialogDescription className="text-xs md:text-xs">
+                              ¿Estás seguro de que deseas cancelar tu
+                              suscripción de instructor? Tus datos se
+                              conservarán para futuras suscripciones.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <DialogFooter className="sm:justify-start gap-2">
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setShowCancelDialog(false)}
+                              disabled={isCanceling}
+                            >
+                              Volver
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              onClick={async () => {
+                                try {
+                                  setIsCanceling(true);
+                                  const response = await fetch(
+                                    "/api/instructors/cancel-subscription",
+                                    { method: "POST" }
+                                  );
+
+                                  if (response.ok) {
+                                    await update();
+                                    setShowCancelDialog(false);
+                                    toast.success(
+                                      "Suscripción cancelada correctamente"
+                                    );
+                                  } else {
+                                    throw new Error(
+                                      "Error al cancelar la suscripción"
+                                    );
+                                  }
+                                } catch (error) {
+                                  console.error("Error:", error);
+                                  toast.error(
+                                    "Error al cancelar la suscripción"
+                                  );
+                                } finally {
+                                  setIsCanceling(false);
+                                }
+                              }}
+                              disabled={isCanceling}
+                            >
+                              {isCanceling ? (
+                                <>
+                                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                  Cancelando...
+                                </>
+                              ) : (
+                                "Confirmar cancelación"
+                              )}
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                      <p className="text-xs text-muted-foreground text-center">
+                        Podrás reactivarla cuando quieras
+                      </p>
+                    </div>
+                  ) : (
                     <div className="space-y-2">
                       <Button
                         asChild

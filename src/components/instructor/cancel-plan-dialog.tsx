@@ -16,9 +16,11 @@ import {
 export function CancelPlanDialog({
   open,
   onOpenChange,
+  onSuccess,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onSuccess?: () => Promise<void> | void;
 }) {
   const [isLoading, setIsLoading] = useState(false);
   const { data: session, update } = useSession();
@@ -46,7 +48,12 @@ export function CancelPlanDialog({
         credentials: "include",
       });
 
-      // 3. Update the local session
+      // 3. Call onSuccess callback if provided
+      if (onSuccess) {
+        await onSuccess();
+      }
+
+      // 4. Update the local session
       if (session?.user) {
         await update();
       }

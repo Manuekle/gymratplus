@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -69,9 +69,11 @@ type InstructorFormValues = z.infer<typeof instructorFormSchema>;
 
 export default function InstructorRegistrationPage() {
   const { data: session } = useSession();
-  const [isLoading, setIsLoading] = useState(false);
-  const [step, setStep] = useState(1);
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasSubscription, setHasSubscription] = useState(false);
+  const [step, setStep] = useState(1);
+  const [countdown, setCountdown] = useState(10);
   const [isAnnual, setIsAnnual] = useState(true);
   const [cardData, setCardData] = useState({
     cardNumber: "",
@@ -79,6 +81,33 @@ export default function InstructorRegistrationPage() {
     expiryDate: "",
     cvv: "",
   });
+
+  const form = useForm<InstructorFormValues>({
+    resolver: zodResolver(instructorFormSchema),
+    defaultValues: {
+      bio: "",
+      specialties: [],
+      newSpecialty: "",
+      pricePerMonth: 50,
+      contactEmail: "",
+      contactPhone: "",
+      country: "",
+      city: "",
+      isRemote: false,
+      curriculum: "",
+    },
+    mode: "onChange",
+  });
+
+  // Check if all payment form fields are filled
+  const isPaymentFormValid = useMemo(() => {
+    return (
+      cardData.cardNumber.replace(/\s/g, "").length >= 16 &&
+      cardData.cardHolder.trim().length > 0 &&
+      cardData.expiryDate.length === 5 &&
+      cardData.cvv.length >= 3
+    );
+  }, [cardData]);
 
   // Function to format date as DD/MM/YYYY
   const formatDate = (date: Date): string => {
@@ -88,6 +117,65 @@ export default function InstructorRegistrationPage() {
       year: "numeric",
     });
   };
+
+  // Countdown effect for auto-redirect
+  useEffect(() => {
+    if (step === 3) {
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            router.push("/dashboard/profile");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(timer);
+    }
+  }, [step, router]);
+
+  // Check if user is already an instructor or has an active subscription
+  useEffect(() => {
+    const checkInstructorStatus = async () => {
+      try {
+        if (!session?.user) return;
+
+        const isInstructor = session.user.isInstructor || false;
+        const instructorProfile = session.user.instructorProfile || null;
+        const hasActiveSubscription = instructorProfile?.isPaid || false;
+
+        setHasSubscription(hasActiveSubscription);
+
+        if (isInstructor && hasActiveSubscription) {
+          // If user is an active instructor, redirect to profile
+          router.push("/dashboard/profile");
+          return;
+        } else if (instructorProfile) {
+          // If user has an instructor profile but no active subscription, pre-fill the form
+          form.reset({
+            bio: instructorProfile.bio || "",
+            specialties: instructorProfile.curriculum?.split(", ") || [],
+            pricePerMonth: instructorProfile.pricePerMonth || 50,
+            contactEmail:
+              instructorProfile.contactEmail || session.user.email || "",
+            contactPhone: instructorProfile.contactPhone || "",
+            country: instructorProfile.country || "",
+            city: instructorProfile.city || "",
+            isRemote: instructorProfile.isRemote || false,
+            curriculum: instructorProfile.curriculum || "",
+          });
+        }
+      } catch (error) {
+        console.error("Error checking instructor status:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkInstructorStatus();
+  }, [session, form, router]);
 
   // Calculate next payment date (today + 1 month for monthly, +1 year for annual)
   const getNextPaymentDate = (isAnnualPlan: boolean): string => {
@@ -120,23 +208,6 @@ export default function InstructorRegistrationPage() {
     },
   };
   const currentPlan = isAnnual ? planDetails.annual : planDetails.monthly;
-
-  const form = useForm<InstructorFormValues>({
-    resolver: zodResolver(instructorFormSchema),
-    defaultValues: {
-      bio: "",
-      specialties: [],
-      newSpecialty: "",
-      pricePerMonth: 50,
-      contactEmail: "",
-      contactPhone: "",
-      country: "",
-      city: "",
-      isRemote: false,
-      curriculum: "",
-    },
-    mode: "onChange",
-  });
 
   useEffect(() => {
     if (session?.user) {
@@ -178,8 +249,8 @@ export default function InstructorRegistrationPage() {
         ).toISOString(), // 14 days from now
       };
 
-      // In a real app, you would send this to your payment processing API
-      const response = await fetch("/api/payment/process", {
+      // Process payment
+      const paymentResponse = await fetch("/api/payment/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -188,26 +259,44 @@ export default function InstructorRegistrationPage() {
         }),
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
+      if (!paymentResponse.ok) {
+        const errorData = await paymentResponse.json().catch(() => ({}));
         throw new Error(
           errorData.error ||
             "Error al procesar el pago. Por favor, verifica tus datos."
         );
       }
 
-      setStep(3); // Move to success step
-
-      // In a real app, you might want to update the user's subscription status in your database
-      await fetch("/api/instructors/register", {
+      // Register instructor after successful payment
+      const registrationResponse = await fetch("/api/instructors/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
-      toast.success("¡Pago procesado exitosamente!", {
-        description: "Tu suscripción ha sido activada con éxito.",
-      });
+      if (!registrationResponse.ok) {
+        const errorData = await registrationResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || "Error al registrar el instructor");
+      }
+
+      // Show success step and reset countdown
+      setStep(3);
+      setCountdown(10);
+
+      // Start countdown for redirect
+      const timer = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            clearInterval(timer);
+            router.push("/dashboard/profile");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      // Cleanup interval on component unmount
+      return () => clearInterval(timer);
     } catch (error) {
       console.error("Error:", error);
       toast.error(
@@ -217,6 +306,111 @@ export default function InstructorRegistrationPage() {
       setIsLoading(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // If user is already an instructor with active subscription
+  if (session?.user?.isInstructor) {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center p-4 bg-background">
+        <div className="text-center max-w-md w-full">
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+            <svg
+              className="h-8 w-8 text-green-600 dark:text-green-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold tracking-heading mb-2">
+            ¡Ya eres instructor!
+          </h2>
+          <p className="text-muted-foreground text-xs mb-6">
+            Disfruta de todos los beneficios de tu suscripción activa.
+          </p>
+          <Button onClick={() => router.push("/dashboard/profile")}>
+            Ir a mi perfil
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  if (hasSubscription || step === 3) {
+    return (
+      <div>
+        <div className="mb-4">
+          <Button
+            variant="outline"
+            className="text-xs"
+            size="sm"
+            onClick={() => router.push("/dashboard/profile")}
+          >
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
+            Volver al perfil
+          </Button>
+        </div>
+        <Card className="w-full overflow-hidden">
+          <CardHeader className="pb-4">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+              {hasSubscription
+                ? "¡Suscripción Activa!"
+                : "¡Ya eres instructor!"}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-xs">
+              {hasSubscription
+                ? "Ya cuentas con una suscripción activa."
+                : "Ya estás registrado como instructor en nuestra plataforma."}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="text-center py-8">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
+              <svg
+                className="h-8 w-8 text-green-600 dark:text-green-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h3 className="text-xl font-semibold tracking-heading mb-2">
+              {hasSubscription ? "Suscripción activa" : "Registro completo"}
+            </h3>
+            <p className="text-muted-foreground text-xs mb-6">
+              {hasSubscription
+                ? "Disfruta de todos los beneficios de tu plan de entrenador."
+                : "Puedes comenzar a ofrecer tus servicios como entrenador."}
+            </p>
+            <p className="text-xs text-muted-foreground mb-6">
+              Serás redirigido a tu perfil en {countdown} segundos...
+            </p>
+            <Button onClick={() => router.push("/dashboard/profile")}>
+              Ir a mi perfil
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -520,6 +714,41 @@ export default function InstructorRegistrationPage() {
             </Form>
           )}
 
+          {step === 3 && (
+            <div className="text-center py-8">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                <svg
+                  className="h-8 w-8 text-green-600 dark:text-green-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+              <h3 className="mt-4 text-lg font-semibold">¡Pago exitoso!</h3>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Tu suscripción ha sido activada correctamente.
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Redirigiendo a tu perfil en {countdown} segundos...
+              </p>
+              <div className="mt-6">
+                <Button
+                  onClick={() => router.push("/dashboard/profile")}
+                  className="px-6"
+                >
+                  Ir a mi perfil ahora
+                </Button>
+              </div>
+            </div>
+          )}
+
           {step === 2 && (
             <form
               onSubmit={async (e) => {
@@ -539,7 +768,7 @@ export default function InstructorRegistrationPage() {
                   </div>
 
                   <div className="flex items-center justify-center mb-4">
-                    <div className="flex items-center bg-muted/30 p-0.5 rounded-full text-sm">
+                    <div className="flex items-center bg-muted/30 p-0.5 rounded-full text-xs">
                       <button
                         type="button"
                         onClick={() => setIsAnnual(false)}
@@ -565,7 +794,7 @@ export default function InstructorRegistrationPage() {
                           <span className="text-3xl font-semibold tracking-tight">
                             ${currentPlan.price}
                           </span>
-                          <span className="text-sm text-muted-foreground">
+                          <span className="text-xs text-muted-foreground">
                             {isAnnual ? "/año" : "/mes"}
                           </span>
                         </div>
@@ -597,7 +826,7 @@ export default function InstructorRegistrationPage() {
                           </div>
                         )}
 
-                        <p className="mt-2 text-sm text-muted-foreground">
+                        <p className="mt-2 text-xs text-muted-foreground">
                           Próximo pago: {currentPlan.nextPayment}
                         </p>
                       </div>
@@ -637,7 +866,7 @@ export default function InstructorRegistrationPage() {
                       type="text"
                       placeholder="Ej: MARIA GONZALEZ"
                       disabled={isLoading}
-                      className="h-9 text-sm"
+                      className="h-9 text-xs"
                       value={cardData.cardHolder}
                       onChange={(e) =>
                         setCardData({
@@ -661,7 +890,7 @@ export default function InstructorRegistrationPage() {
                         type="text"
                         placeholder="0000 0000 0000 0000"
                         disabled={isLoading}
-                        className="pl-9 text-sm font-mono tracking-wider"
+                        className="pl-9 text-xs font-mono tracking-wider"
                         maxLength={19}
                         value={cardData.cardNumber}
                         onChange={(e) => {
@@ -766,26 +995,25 @@ export default function InstructorRegistrationPage() {
                   onClick={() => setStep(1)}
                   disabled={isLoading}
                   size="default"
-                  className="text-sm flex-1"
+                  className="text-xs flex-1"
                 >
                   Volver
                 </Button>
                 <Button
                   type="submit"
-                  disabled={isLoading}
-                  className="text-sm flex-1 gap-1.5"
-                  size="default"
+                  className="w-full gap-2"
+                  disabled={isLoading || !isPaymentFormValid}
                 >
                   {isLoading ? (
                     <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      {isAnnual ? "Procesando pago..." : "Iniciando prueba..."}
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Procesando...
                     </>
                   ) : (
                     <>
-                      {isAnnual
-                        ? `Confirmar Pago $${currentPlan.price}`
-                        : `Comenzar prueba gratis`}
+                      {isPaymentFormValid
+                        ? "Comenzar prueba gratis"
+                        : "Complete los datos de pago"}
                     </>
                   )}
                 </Button>

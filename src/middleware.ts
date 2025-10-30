@@ -79,6 +79,19 @@ export async function middleware(req: NextRequest) {
 
   // Manejo de rutas de instructores
   if (token && isDashboardRoute && path.startsWith("/dashboard/students")) {
+    // Si el usuario acaba de suscribirse, forzar la actualización del token
+    if (req.nextUrl.searchParams.get("subscribed") === "true") {
+      const response = NextResponse.next();
+      // Forzar la actualización del token
+      response.cookies.set({
+        name: "__Secure-next-auth.session-token",
+        value: "",
+        maxAge: -1,
+        path: "/",
+      });
+      return response;
+    }
+
     // Solo instructores pueden acceder a /dashboard/students
     if (!token.isInstructor) {
       return NextResponse.redirect(new URL("/dashboard", req.url));

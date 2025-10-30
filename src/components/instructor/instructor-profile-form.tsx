@@ -26,9 +26,14 @@ import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Icons } from "../icons";
+import { TagSelector } from "@/components/ui/tag-selector";
+import { SPECIALTIES } from "@/data/specialties";
 
 const instructorProfileSchema = z.object({
   bio: z.string().optional(),
+  specialties: z
+    .array(z.string())
+    .min(1, "Debes seleccionar al menos una especialidad"),
   curriculum: z.string().optional(),
   pricePerMonth: z.coerce.number().optional().nullable(),
   contactEmail: z
@@ -95,9 +100,14 @@ export function InstructorProfileForm({
           return;
         }
         const data = await response.json();
+        const specialties = data.curriculum
+          ? data.curriculum.split(/\s*,\s*/).filter(Boolean)
+          : [];
+
         form.reset({
           bio: data.bio || "",
           curriculum: data.curriculum || "",
+          specialties: specialties,
           pricePerMonth: data.pricePerMonth ?? undefined,
           contactEmail: data.contactEmail || "",
           contactPhone: data.contactPhone || "",
@@ -237,20 +247,26 @@ export function InstructorProfileForm({
 
             <FormField
               control={form.control}
-              name="curriculum"
+              name="specialties"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Currículum / Especialidades</FormLabel>
+                  <FormLabel>Especialidades</FormLabel>
                   <FormControl>
-                    <Textarea
-                      placeholder="Detalla tus certificaciones, especialidades o el tipo de entrenamiento que ofreces."
-                      className="resize-none text-xs"
-                      {...field}
-                      rows={4}
+                    <TagSelector
+                      selectedTags={field.value || []}
+                      onTagSelect={(tags) => {
+                        field.onChange(tags);
+                        form.setValue("curriculum", tags.join(", "), {
+                          shouldValidate: true,
+                        });
+                      }}
+                      availableTags={SPECIALTIES}
+                      placeholder="Buscar especialidades..."
+                      className="min-h-[40px]"
                     />
                   </FormControl>
                   <FormDescription>
-                    Información relevante sobre tus cualificaciones.
+                    Selecciona al menos una especialidad
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -398,7 +414,7 @@ export function InstructorProfileForm({
             </Button>
             <Button
               type="button"
-              variant="outline"
+              variant="destructive"
               disabled={isLoading}
               size="lg"
               onClick={() => setIsCancelDialogOpen(true)}

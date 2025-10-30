@@ -61,15 +61,15 @@ export async function PUT() {
 
     // Insertar todos los alimentos de foodsToCreate
     const foods = await Promise.all(
-      foodsToCreate.map((food) =>
+      foodsToCreate.map(({ isFavorite, ...foodData }) =>
         prisma.food.create({
           data: {
-            ...food,
-            mealType: getMealTypesForCategory(food.category),
+            ...foodData,
+            mealType: getMealTypesForCategory(foodData.category),
             userId: null, // Alimentos base del sistema
           },
-        }),
-      ),
+        })
+      )
     );
 
     return NextResponse.json({
@@ -83,7 +83,7 @@ export async function PUT() {
         error: "Error al cargar los alimentos",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 },
+      { status: 500 }
     );
   } finally {
     await prisma.$disconnect();
