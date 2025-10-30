@@ -300,7 +300,7 @@ export default function ProgressChart({
             onClick={() => setDataType("muscle")}
             className={`px-3 py-1 text-xs rounded-md ${
               dataType === "muscle"
-                ? "bg-[#DE3163] text-white dark:text-[#DE3163]"
+                ? "bg-destructive text-white dark:text-destructive"
                 : "text-muted-foreground"
             }`}
           >

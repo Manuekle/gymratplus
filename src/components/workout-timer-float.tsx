@@ -237,7 +237,7 @@ export default function WorkoutTimerFloat({
 
               <Button
                 size="sm"
-                className="text-xs px-4 bg-destructive dark:bg-[#DE3163] dark:text-white"
+                className="text-xs px-4 bg-destructive dark:bg-[#BB020B] dark:text-white hover:bg-destructive/80"
                 onClick={() => setShowConfirmDialog(true)}
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={16} />
@@ -295,7 +295,7 @@ export default function WorkoutTimerFloat({
             </Button>
             <Button
               size="sm"
-              className="bg-[#DE3163] text-white hover:bg-[#DE3163]/80 text-xs"
+              className="bg-destructive text-white hover:bg-destructive/80 text-xs"
               onClick={discardWorkout}
               disabled={loading}
             >

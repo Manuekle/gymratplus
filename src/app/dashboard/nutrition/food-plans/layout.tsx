@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Nutrición - Planes de Alimentación - GymRat+",
+  title: "Planes de Alimentación - GymRat+",
   description: "Crea y sigue planes de alimentación personalizados",
   keywords:
     "nutrición, dieta, alimentos, calorías, macronutrientes, alimentación, planes de alimentación",

@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Nutrición - Registro de Alimentos - GymRat+",
+  title: "Registro de Alimentos - GymRat+",
   description: "Registro de alimentos",
   keywords:
     "nutrición, dieta, alimentos, calorías, macronutrientes, alimentación",

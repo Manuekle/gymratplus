@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Notificaciones - Dashboard - GymRat+",
+  title: "Notificaciones - GymRat+",
   description: "Revisa tus alertas, mensajes y actualizaciones importantes",
   keywords: "notificaciones, alertas, mensajes, actualizaciones, avisos",
   openGraph: {

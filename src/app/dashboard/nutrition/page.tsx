@@ -367,7 +367,7 @@ export default function NutritionPage() {
                     className={`h-2 ${
                       (todayData?.todayTotals.protein ?? 0) >
                       (user?.nutrition.proteinTarget ?? 0)
-                        ? "bg-[#DE3163]"
+                        ? "bg-destructive"
                         : ""
                     }`}
                   />

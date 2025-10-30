@@ -2,6 +2,11 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+
+const truncateText = (text: string, maxLength: number = 20): string => {
+  if (text.length <= maxLength) return text;
+  return `${text.substring(0, maxLength)}...`;
+};
 import {
   Dialog,
   DialogContent,
@@ -13,13 +18,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 
@@ -222,7 +220,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline">
+        <Button size="sm" variant="default" className="w-full">
           Comenzar rutina
         </Button>
       </DialogTrigger>
@@ -232,7 +230,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
             Selecciona el día de entrenamiento
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
-            {workout.name}
+            Empieza tu rutina con el día de la semana que prefieras
           </DialogDescription>
         </DialogHeader>
 
@@ -275,72 +273,51 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           </div>
         ) : (
           <>
-            <div className="flex flex-col space-y-2">
-              <Select value={selectedDay} onValueChange={setSelectedDay}>
-                <SelectTrigger className="text-xs md:text-xs">
-                  <SelectValue placeholder="Selecciona tu entrenamiento" />
-                </SelectTrigger>
-                <SelectContent>
-                  {days.map((day: Day) => (
-                    <SelectItem
-                      className="text-xs md:text-xs"
-                      key={day.day}
-                      value={day.day}
-                    >
-                      <div className="flex items-center">{day.day}</div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+            <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
+              <div className="flex flex-nowrap overflow-x-auto pb-1 gap-1.5 hide-scrollbar">
+                {days.map((day: Day) => (
+                  <button
+                    key={day.day}
+                    onClick={() => setSelectedDay(day.day)}
+                    className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${
+                      selectedDay === day.day
+                        ? "bg-primary/80 dark:bg-primary/20 border-primary/20 text-white dark:text-white font-medium"
+                        : "border-border/50 text-black dark:text-white hover:bg-muted/50"
+                    }`}
+                  >
+                    {day.day}
+                  </button>
+                ))}
+              </div>
             </div>
             {selectedDay && (
-              <ScrollArea className="max-h-[300px] p-2">
-                <div className="grid md:grid-cols-2 gap-6">
+              <ScrollArea className="max-h-[400px] w-full">
+                <div className="space-y-1 pr-2">
                   {days
                     .find((day: Day) => day.day === selectedDay)
                     ?.exercises.map((exercise: Exercise) => (
                       <div
                         key={exercise.id}
-                        className="border rounded-lg shadow-sm"
+                        className="flex flex-col border-b py-2 last:border-0"
                       >
-                        <div className="flex items-center p-4 border-b">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-xs">
-                              {exercise.name}
-                            </h4>
-                            {exercise.notes && (
-                              <p className="text-xs text-muted-foreground">
-                                {exercise.notes}
-                              </p>
-                            )}
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
+                            {truncateText(exercise.name)}
+                          </h4>
+                          <div className="flex items-center gap-3 text-xs flex-shrink-0">
+                            <span className="text-muted-foreground whitespace-nowrap">
+                              {exercise.sets}×{exercise.reps || "Tiempo"}
+                            </span>
+                            <span className="font-medium whitespace-nowrap">
+                              ⏱️{exercise.restTime}s
+                            </span>
                           </div>
                         </div>
-                        <div className="p-4 grid grid-cols-3 gap-4 text-center">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Sets
-                            </p>
-                            <p className="font-semibold text-xs">
-                              {exercise.sets}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Reps
-                            </p>
-                            <p className="font-semibold text-xs">
-                              {exercise.reps || "Tiempo"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Descanso
-                            </p>
-                            <p className="font-semibold flex items-center justify-center gap-1 text-xs">
-                              {exercise.restTime}s
-                            </p>
-                          </div>
-                        </div>
+                        {exercise.notes && (
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {exercise.notes}
+                          </p>
+                        )}
                       </div>
                     ))}
                 </div>
@@ -350,8 +327,8 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
               <Button
                 onClick={handleStartWorkout}
                 disabled={loading || !selectedDay}
-                className="text-xs"
-                size="sm"
+                className="text-xs w-full"
+                size="lg"
               >
                 {loading ? (
                   <span className="flex flex-row items-center gap-2">

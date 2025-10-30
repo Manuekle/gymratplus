@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Salud - Objetivos - GymRat+",
+  title: "Objetivos - GymRat+",
   description: "Monitorea tus métricas de salud y bienestar general",
   keywords: "salud, métricas, bienestar, seguimiento médico, indicadores",
 };

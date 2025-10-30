@@ -4,7 +4,7 @@ import ProfileCheck from "@/components/alerts/profile-check";
 import { DashboardHeader } from "@/components/dashboard-header";
 
 export const metadata = {
-  title: "Entrenamiento - Dashboard - GymRat+",
+  title: "GymRat+",
   description:
     "Planifica y registra tus rutinas de ejercicio y progreso físico",
   keywords:

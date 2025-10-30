@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Historial de Entrenamientos - Dashboard - GymRat+",
+  title: "Historial de Entrenamientos - Entrenamiento - GymRat+",
   description: "Revisa tu historial de entrenamientos",
   keywords:
     "entrenamiento, ejercicio, rutinas, fitness, progreso físico, workout, historial de entrenamientos",

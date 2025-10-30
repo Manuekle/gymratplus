@@ -250,7 +250,7 @@ export default function RecommendationsComponent() {
           </div>
         ) : error ? (
           <div className="text-center py-8">
-            <p className="text-[#DE3163] text-xs pb-14">{error}</p>
+            <p className="text-destructive text-xs pb-14">{error}</p>
             <Button
               variant="outline"
               onClick={() => router.push("/dashboard/profile")}

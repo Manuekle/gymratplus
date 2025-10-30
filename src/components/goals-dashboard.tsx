@@ -225,7 +225,7 @@ export function GoalsDashboard() {
           </TabsList>
 
           <Link href="/dashboard/health/goal">
-            <Button size="sm" className="text-xs" variant="default">
+            <Button size="sm" className="text-xs w-full" variant="default">
               Nuevo objetivo
             </Button>
           </Link>
@@ -238,7 +238,7 @@ export function GoalsDashboard() {
               <ProgressSkeleton />
             </div>
           ) : goals.length === 0 ? (
-            <div className="text-center py-20">
+            <div className="text-center py-28">
               <h3 className="text-xs font-medium mb-2">No hay objetivos</h3>
               <p className="text-muted-foreground text-xs mb-4">
                 Establece objetivos para hacer seguimiento de tu progreso

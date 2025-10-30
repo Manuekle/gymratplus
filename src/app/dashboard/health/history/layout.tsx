@@ -1,7 +1,7 @@
 import AnimatedLayout from "@/components/layouts/animated-layout";
 
 export const metadata = {
-  title: "Salud - Historial - GymRat+",
+  title: "Historial - GymRat+",
   description: "Revisa y gestiona tu historial de mediciones",
   keywords: "salud, métricas, bienestar, seguimiento médico, indicadores",
 };
