@@ -7,7 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
-import { Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Delete02Icon } from "@hugeicons/core-free-icons";
 
 type MealLog = {
   id: string;
@@ -145,7 +146,7 @@ export function MealLogList({
   });
 
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b),
+    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b)
   );
 
   return (
@@ -181,7 +182,10 @@ export function MealLogList({
                       {deletingId === meal.id ? (
                         <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
                       ) : (
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <HugeiconsIcon
+                          icon={Delete02Icon}
+                          className="h-3.5 w-3.5"
+                        />
                       )}
                     </Button>
                   </div>

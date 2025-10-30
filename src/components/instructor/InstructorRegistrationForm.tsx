@@ -151,7 +151,7 @@ export function InstructorRegistrationForm({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || "Error al registrar como instructor",
+          errorData.error || "Error al registrar como instructor"
         );
       }
       // Update the session with the new instructor status
@@ -448,7 +448,7 @@ export function InstructorRegistrationForm({
                       render={({ field }) => (
                         <FormItem className="flex flex-row items-center justify-between p-4 border rounded-lg">
                           <div className="space-y-0.5">
-                            <FormLabel className="text-base">
+                            <FormLabel className="text-xs">
                               Clases Remotas
                             </FormLabel>
                             <FormDescription>

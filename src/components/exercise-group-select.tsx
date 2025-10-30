@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick02Icon, UnfoldMoreIcon } from "@hugeicons/core-free-icons";
+
 import { Button } from "@/components/ui/button";
 import {
   Command,
@@ -60,10 +62,10 @@ export function ExerciseGroupSelect({
           .map(([group, exercises]) => [
             group,
             exercises.filter((ex) =>
-              ex.name.toLowerCase().includes(searchTerm.toLowerCase()),
+              ex.name.toLowerCase().includes(searchTerm.toLowerCase())
             ),
           ])
-          .filter(([_, exercises]) => exercises.length > 0),
+          .filter(([_, exercises]) => exercises.length > 0)
       )
     : exercisesByGroup;
 
@@ -79,7 +81,11 @@ export function ExerciseGroupSelect({
           {selectedExercises.length > 0
             ? `${selectedExercises.length} ejercicio${selectedExercises.length === 1 ? "" : "s"} seleccionado${selectedExercises.length === 1 ? "" : "s"}`
             : "Seleccionar ejercicios"}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+
+          <HugeiconsIcon
+            icon={UnfoldMoreIcon}
+            className="ml-2 h-4 w-4 shrink-0 opacity-50"
+          />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-full p-0" align="start">
@@ -106,7 +112,10 @@ export function ExerciseGroupSelect({
                     >
                       <span className="truncate">{exercise.name}</span>
                       {selectedExercises.includes(exercise.name) && (
-                        <Check className="ml-2 h-4 w-4 text-primary" />
+                        <HugeiconsIcon
+                          icon={Tick02Icon}
+                          className="ml-2 h-4 w-4 text-primary"
+                        />
                       )}
                     </CommandItem>
                   ))}

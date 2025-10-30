@@ -17,10 +17,6 @@ import WorkoutTimerFloat from "@/components/workout-timer-float";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
-// Asegúrate de importar HugeiconsIcon desde donde la tengas definida si es un wrapper
-// Si no, puedes usar la flecha directamente o una alternativa como Lucide React.
-// Por simplicidad y para corregir la importación original:
-// import { HugeiconsIcon } from "@hugeicons/react"; // Comentado si no está disponible, usando el core-free-icon directamente en el Button
 
 const Spinner = () => (
   <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
