@@ -283,7 +283,9 @@ export function InstructorProfileForm({
                   <FormControl>
                     <Input
                       className="text-xs"
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       placeholder="Ej: 50.00"
                       {...field}
                       value={field.value ?? ""}

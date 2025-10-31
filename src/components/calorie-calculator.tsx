@@ -303,7 +303,9 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                   <Input
                     className="text-xs md:text-xs"
                     id="age"
-                    type="number"
+                    type="text"
+                    inputMode="numeric"
+                    pattern="[0-9]*"
                     {...register("age", {
                       required: true,
                       min: 15,
@@ -326,8 +328,9 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     <Input
                       className="text-xs md:text-xs"
                       id="weight"
-                      type="number"
-                      step="0.1"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       {...register("weight", {
                         required: true,
                         min: 30,
@@ -349,7 +352,9 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     <Input
                       className="text-xs md:text-xs"
                       id="height"
-                      type="number"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
                       {...register("height", {
                         required: true,
                         min: 100,
@@ -390,7 +395,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           | "light"
                           | "moderate"
                           | "active"
-                          | "very_active",
+                          | "very_active"
                       )
                     }
                   >
@@ -625,7 +630,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           width: `${Math.round(
                             ((calculatedValues.dailyProteinTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.1 }}
@@ -648,7 +653,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           width: `${Math.round(
                             ((calculatedValues.dailyCarbTarget * 4) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.2 }}
@@ -671,7 +676,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           width: `${Math.round(
                             ((calculatedValues.dailyFatTarget * 9) /
                               calculatedValues.dailyCalorieTarget) *
-                              100,
+                              100
                           )}%`,
                         }}
                         transition={{ duration: 1, delay: 0.3 }}

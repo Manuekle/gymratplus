@@ -129,9 +129,6 @@ export function MealLogList({
           No hay comidas registradas para el{" "}
           {selectedDate ? formatDate(selectedDate) : "día seleccionado"}.
         </h3>
-        <p className="text-xs text-muted-foreground">
-          Registra tus comidas para llevar un seguimiento de tu alimentación
-        </p>
       </div>
     );
   }
@@ -146,7 +143,7 @@ export function MealLogList({
   });
 
   const sortedMealTypes = Object.keys(mealsByType).sort(
-    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b),
+    (a, b) => MEAL_TYPE_ORDER.indexOf(a) - MEAL_TYPE_ORDER.indexOf(b)
   );
 
   return (

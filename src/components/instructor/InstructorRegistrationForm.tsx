@@ -151,7 +151,7 @@ export function InstructorRegistrationForm({
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.error || "Error al registrar como instructor",
+          errorData.error || "Error al registrar como instructor"
         );
       }
       // Update the session with the new instructor status
@@ -422,7 +422,9 @@ export function InstructorRegistrationForm({
                                 $
                               </span>
                               <Input
-                                type="number"
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
                                 min="10"
                                 max="1000"
                                 step="5"

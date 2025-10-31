@@ -39,7 +39,7 @@ interface GoalProps {
 export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [value, setValue] = useState<string>(
-    goal.currentValue?.toString() || "",
+    goal.currentValue?.toString() || ""
   );
   const [notes, setNotes] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -59,7 +59,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
 
     if (!isOwner) {
       setError(
-        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión.",
+        "No tienes permiso para actualizar este objetivo. Por favor, revisa tu sesión."
       );
       return;
     }
@@ -151,7 +151,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal text-xs md:text-xs",
-                    !date && "text-muted-foreground",
+                    !date && "text-muted-foreground"
                   )}
                 >
                   <HugeiconsIcon
@@ -184,8 +184,9 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
             <Input
               className="text-xs md:text-xs"
               id="value"
-              type="number"
-              step="0.1"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               placeholder={`Ej: ${goal.targetValue || ""}`}
               value={value}
               onChange={(e) => setValue(e.target.value)}

@@ -266,7 +266,9 @@ export default function InstructorSearchContent() {
             </Label>
             <Input
               id="maxPrice"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               min={0}
               placeholder="Ej: 100"
               value={maxPrice}
