@@ -214,7 +214,11 @@ export default function InstructorPage() {
           </CardContent>
         </Card>
       </div>
-
+      <div className="flex justify-end">
+        <Button asChild>
+          <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
+        </Button>
+      </div>
       {/* Instructors Grid */}
       {instructors.length === 0 ? (
         <Card>
