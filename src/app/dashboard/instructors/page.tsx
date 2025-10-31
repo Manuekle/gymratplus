@@ -231,9 +231,6 @@ export default function InstructorPage() {
               para que puedas gestionar tu entrenamiento y mantenerte en
               contacto.
             </p>
-            <Link href="/dashboard/instructors/search">
-              <Button variant="default">Buscar Instructores</Button>
-            </Link>
           </CardContent>
         </Card>
       ) : (

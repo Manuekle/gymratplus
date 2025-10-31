@@ -35,20 +35,22 @@ export function Navbar() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 border-b border-border/40 transition-all duration-300 ${
+      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-500 ease-in-out ${
         scrolled
-          ? "bg-background/80 backdrop-blur-md shadow-sm"
-          : "bg-background/0 backdrop-blur-0 shadow-none"
+          ? "bg-background/90 backdrop-blur-md shadow-lg border-border/20"
+          : "bg-background/50 backdrop-blur-sm border-transparent"
       }`}
     >
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
-          <div className="flex flex-row items-center space-x-2">
-            <h1 className="text-xl font-semibold tracking-heading">GymRat+</h1>
+          <div className="flex flex-row items-center space-x-2 [&>*]:transition-all [&>*]:duration-200 [&>*:hover]:scale-105 [&>*]:active:scale-95">
+            <h1 className="text-xl font-semibold tracking-heading transition-colors hover:text-primary">
+              GymRat+
+            </h1>
           </div>
           <div className="flex flex-row items-center space-x-2">
             {session?.user?.id && (
-              <div className="">
+              <div className="transition-all duration-200 hover:scale-105">
                 <WorkoutStreak userId={session.user.id} />
               </div>
             )}
@@ -58,7 +60,7 @@ export function Navbar() {
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
+                  className="relative h-8 w-8 rounded-full transition-all duration-200 hover:bg-accent/50 hover:scale-105 active:scale-95"
                 >
                   {(session?.user?.image && (
                     <Avatar className="h-8 w-8">
@@ -84,7 +86,12 @@ export function Navbar() {
                   )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuContent
+                className="w-56 border border-border/20 bg-background/95 backdrop-blur-lg shadow-xl rounded-lg overflow-hidden transition-all duration-200 ease-out"
+                align="end"
+                forceMount
+                sideOffset={8}
+              >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">
                     <p className="text-xs font-medium leading-none">
@@ -102,6 +109,7 @@ export function Navbar() {
                 </DropdownMenuItem> */}
                 <DropdownMenuItem
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
+                  className="text-destructive focus:text-destructive focus:bg-destructive/10 transition-colors"
                 >
                   <HugeiconsIcon icon={Door01Icon} className="mr-2 h-4 w-4" />
                   <span className="text-xs">Cerrar sesión</span>

@@ -250,7 +250,7 @@ export default function InstructorSearchContent() {
             Encuentra al instructor ideal para ti.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 md:pb-0 pb-3">
           <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1">
             <CountrySelector
               value={country}
