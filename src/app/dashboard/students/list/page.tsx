@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
@@ -9,32 +7,22 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import Link from "next/link";
+
 import { format, isToday, isYesterday, isThisWeek } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import {} from "@/components/ui/dropdown-menu";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Activity01Icon,
   ArrangeByLettersAZIcon,
-  ArrowLeft02Icon,
   Clock01Icon,
   Dollar02Icon,
   EyeIcon,
   FireIcon,
-  MoreHorizontalIcon,
   Search01Icon,
   Target02Icon,
   UserGroupIcon,
@@ -46,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Link from "next/link";
 
 interface StudentData {
   id: string;
@@ -87,6 +76,20 @@ export default function StudentsListPage() {
     avgStreak: number;
     totalRevenue: number;
   } | null>(null);
+
+  const hasActiveFilters =
+    searchTerm !== "" || statusFilter !== "all" || activityFilter !== "all";
+
+  const formatDate = (date: Date | null | undefined): string => {
+    if (!date) return "";
+    return format(new Date(date), "dd/MM/yy", { locale: es });
+  };
+
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("all");
+    setActivityFilter("all");
+  };
 
   const fetchStudents = async () => {
     setIsLoading(true);
@@ -150,7 +153,7 @@ export default function StudentsListPage() {
       filtered = filtered.filter(
         (student) =>
           student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+          student.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -165,26 +168,26 @@ export default function StudentsListPage() {
         case "active_today":
           filtered = filtered.filter(
             (student) =>
-              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt)),
+              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt))
           );
           break;
         case "active_week":
           filtered = filtered.filter(
             (student) =>
               student.lastWorkoutAt &&
-              isThisWeek(new Date(student.lastWorkoutAt)),
+              isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "inactive":
           filtered = filtered.filter(
             (student) =>
               !student.lastWorkoutAt ||
-              !isThisWeek(new Date(student.lastWorkoutAt)),
+              !isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "high_streak":
           filtered = filtered.filter(
-            (student) => student.currentWorkoutStreak >= 7,
+            (student) => student.currentWorkoutStreak >= 7
           );
           break;
       }
@@ -217,58 +220,52 @@ export default function StudentsListPage() {
     return { status: "old", text: "Inactivo", variant: "destructive" as const };
   };
 
-  const getStreakVariant = (streak: number) => {
-    if (streak >= 7) return "default";
-    if (streak >= 3) return "secondary";
-    return "outline";
-  };
-
   // Calcular estadísticas
   const totalStudents = students.length;
   const activeToday = students.filter(
-    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt)),
+    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt))
   ).length;
   const activeThisWeek = students.filter(
-    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt)),
+    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt))
   ).length;
   const avgStreak =
     totalStudents > 0
       ? Math.round(
           students.reduce((acc, s) => acc + s.currentWorkoutStreak, 0) /
-            totalStudents,
+            totalStudents
         )
       : 0;
   const totalRevenue = students.reduce(
     (acc, s) => acc + (s.agreedPrice || 0),
-    0,
+    0
   );
 
   if (isLoading) {
     return (
       <div>
-        <div className="space-y-6">
+        <div className="space-y-4">
           {/* Header Skeleton */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-8 w-20" />
-              <div className="space-y-2">
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-4 w-32" />
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-7 w-16" />
+              <div className="space-y-1.5">
+                <Skeleton className="h-6 w-40" />
+                <Skeleton className="h-3 w-28" />
               </div>
             </div>
           </div>
 
           {/* Stats Skeleton */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
             {Array.from({ length: 4 }).map((_, i) => (
               <Card key={i}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <Skeleton className="h-4 w-24" />
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
+                  <Skeleton className="h-3 w-20" />
                   <Skeleton className="h-4 w-4" />
                 </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-8 w-12 mb-1" />
-                  <Skeleton className="h-3 w-20" />
+                <CardContent className="py-3">
+                  <Skeleton className="h-6 w-10 mb-1" />
+                  <Skeleton className="h-2.5 w-16" />
                 </CardContent>
               </Card>
             ))}
@@ -276,31 +273,31 @@ export default function StudentsListPage() {
 
           {/* Filters Skeleton */}
           <Card>
-            <CardContent className="p-6">
-              <div className="flex gap-4">
-                <Skeleton className="h-10 flex-1 max-w-sm" />
-                <Skeleton className="h-10 w-32" />
-                <Skeleton className="h-10 w-40" />
+            <CardContent className="p-4">
+              <div className="flex gap-3">
+                <Skeleton className="h-8 flex-1 max-w-sm" />
+                <Skeleton className="h-8 w-28" />
+                <Skeleton className="h-8 w-36" />
               </div>
             </CardContent>
           </Card>
 
           {/* Students List Skeleton */}
-          <div className="space-y-4">
+          <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <Card key={i}>
-                <CardContent className="p-6">
+                <CardContent className="p-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="h-12 w-12 rounded-full" />
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-32" />
-                        <Skeleton className="h-3 w-48" />
+                    <div className="flex items-center space-x-3">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-1.5">
+                        <Skeleton className="h-3 w-28" />
+                        <Skeleton className="h-2.5 w-40" />
                       </div>
                     </div>
-                    <div className="flex items-center space-x-4">
-                      <Skeleton className="h-6 w-16" />
-                      <Skeleton className="h-8 w-8" />
+                    <div className="flex items-center space-x-3">
+                      <Skeleton className="h-5 w-14" />
+                      <Skeleton className="h-7 w-7" />
                     </div>
                   </div>
                 </CardContent>
@@ -313,31 +310,19 @@ export default function StudentsListPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" asChild>
-            <Link href="/dashboard/students">
-              <HugeiconsIcon icon={ArrowLeft02Icon} className="h-4 w-4 mr-2" />
-              Volver
-            </Link>
-          </Button>
-        </div>
-      </div>
-
+    <div className="space-y-4">
       {/* Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
             <CardTitle className="text-xs font-medium">Total Alumnos</CardTitle>
             <HugeiconsIcon
               icon={UserGroupIcon}
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
+          <CardContent className="py-3">
+            <div className="text-2xl font-semibold">
               {stats?.totalStudents || totalStudents}
             </div>
             <p className="text-xs text-muted-foreground">alumnos activos</p>
@@ -345,15 +330,15 @@ export default function StudentsListPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
             <CardTitle className="text-xs font-medium">Activos Hoy</CardTitle>
             <HugeiconsIcon
               icon={ArrangeByLettersAZIcon}
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
+          <CardContent className="py-3">
+            <div className="text-2xl font-semibold">
               {stats?.activeToday || activeToday}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -368,7 +353,7 @@ export default function StudentsListPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
             <CardTitle className="text-xs font-medium">
               Racha Promedio
             </CardTitle>
@@ -377,8 +362,8 @@ export default function StudentsListPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
+          <CardContent className="py-3">
+            <div className="text-2xl font-semibold">
               {stats?.avgStreak || avgStreak}
             </div>
             <p className="text-xs text-muted-foreground">días consecutivos</p>
@@ -386,7 +371,7 @@ export default function StudentsListPage() {
         </Card>
 
         <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
             <CardTitle className="text-xs font-medium">
               Ingresos Mensuales
             </CardTitle>
@@ -395,8 +380,8 @@ export default function StudentsListPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
+          <CardContent className="py-3">
+            <div className="text-2xl font-semibold">
               ${stats?.totalRevenue || totalRevenue}
             </div>
             <p className="text-xs text-muted-foreground">total estimado</p>
@@ -404,279 +389,182 @@ export default function StudentsListPage() {
         </Card>
       </div>
 
-      {/* Filters */}
-      <Card>
-        <CardContent>
-          <div className="flex flex-col gap-4 md:flex-row">
-            <div className="relative flex-1 max-w-sm">
-              <HugeiconsIcon
-                icon={Search01Icon}
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
-              />
-              <Input
-                placeholder="Buscar por nombre o email..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 text-xs"
-              />
-            </div>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Estado" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Todos los estados</SelectItem>
-                <SelectItem value="active">Activos</SelectItem>
-                <SelectItem value="inactive">Inactivos</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select value={activityFilter} onValueChange={setActivityFilter}>
-              <SelectTrigger className="w-48">
-                <SelectValue placeholder="Actividad" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toda actividad</SelectItem>
-                <SelectItem value="active_today">Activos hoy</SelectItem>
-                <SelectItem value="active_week">Activos esta semana</SelectItem>
-                <SelectItem value="inactive">Inactivos</SelectItem>
-                <SelectItem value="high_streak">
-                  Racha alta (7+ días)
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex flex-col gap-3 md:flex-row">
+        <div className="relative flex-1 max-w-sm">
+          <HugeiconsIcon
+            icon={Search01Icon}
+            className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"
+          />
+          <Input
+            placeholder="Buscar por nombre o email"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8 text-xs"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Estado" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos los estados</SelectItem>
+            <SelectItem value="active">Activos</SelectItem>
+            <SelectItem value="inactive">Inactivos</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={activityFilter} onValueChange={setActivityFilter}>
+          <SelectTrigger className="h-8 text-xs">
+            <SelectValue placeholder="Actividad" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Toda actividad</SelectItem>
+            <SelectItem value="active_today">Activos hoy</SelectItem>
+            <SelectItem value="active_week">Activos esta semana</SelectItem>
+            <SelectItem value="inactive">Inactivos</SelectItem>
+            <SelectItem value="high_streak">Racha alta (7+ días)</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       {/* Students List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {filteredStudents.length === 0 ? (
-          <Card>
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-              <h3 className="text-xs font-medium mb-2">
-                No se encontraron alumnos
-              </h3>
-              <p className="text-muted-foreground text-xs max-w-md">
-                {searchTerm ||
-                statusFilter !== "all" ||
-                activityFilter !== "all"
-                  ? "Intenta ajustar los filtros de búsqueda para encontrar a tus alumnos."
-                  : "No tienes alumnos activos en este momento. Cuando aceptes solicitudes, aparecerán aquí."}
-              </p>
-              {(searchTerm ||
-                statusFilter !== "all" ||
-                activityFilter !== "all") && (
-                <Button
-                  variant="outline"
-                  className="mt-4 bg-transparent"
-                  onClick={() => {
-                    setSearchTerm("");
-                    setStatusFilter("all");
-                    setActivityFilter("all");
-                  }}
-                >
-                  Limpiar filtros
-                </Button>
-              )}
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <h3 className="text-xs font-medium mb-1.5">
+              No se encontraron alumnos
+            </h3>
+            <p className="text-muted-foreground text-xs max-w-md">
+              {hasActiveFilters
+                ? "Intenta ajustar los filtros de búsqueda para encontrar a tus alumnos."
+                : "No tienes alumnos activos en este momento. Cuando aceptes solicitudes, aparecerán aquí."}
+            </p>
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 h-7 text-xs bg-transparent"
+                onClick={clearFilters}
+              >
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
         ) : (
           filteredStudents.map((student) => {
             const activityStatus = getActivityStatus(student.lastWorkoutAt);
-            const streakVariant = getStreakVariant(
-              student.currentWorkoutStreak,
-            );
 
             return (
-              <Card
-                key={student.id}
-                className="hover:shadow-md transition-shadow"
-              >
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex items-start sm:items-center gap-3 w-full sm:w-auto">
-                      <Avatar className="h-10 w-10 sm:h-12 sm:w-12 border-2 border-background shadow-sm flex-shrink-0">
+              <Card key={student.id}>
+                <CardContent className="p-3">
+                  <div className="flex items-start gap-3">
+                    {/* Avatar */}
+                    <Avatar className="h-10 w-10 border-2 border-background">
+                      {student.image ? (
                         <AvatarImage
-                          src={student.image || "/placeholder-avatar.jpg"}
-                          alt={student.name || "Alumno"}
+                          src={student.image}
+                          alt={student.name || ""}
                         />
-                        <AvatarFallback className="font-semibold text-xs sm:text-xs">
-                          {student.name?.charAt(0).toUpperCase() || "A"}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0 space-y-1">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-semibold text-xs sm:text-xs truncate max-w-[180px] sm:max-w-none">
-                            {student.name || "Sin nombre"}
+                      ) : null}
+                      <AvatarFallback className="font-medium bg-muted">
+                        {student.name?.charAt(0).toUpperCase() || "?"}
+                      </AvatarFallback>
+                    </Avatar>
+
+                    {/* Main Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-xs truncate">
+                            {student.name}
                           </p>
                           <Badge
                             variant={activityStatus.variant}
-                            className="text-xs"
+                            className="text-[10px] h-5"
                           >
                             {activityStatus.text}
                           </Badge>
                         </div>
-                        <p className="text-xs sm:text-xs text-muted-foreground truncate max-w-[240px] sm:max-w-none">
-                          {student.email}
-                        </p>
-                        {student.agreedPrice && (
-                          <p className="text-xs text-muted-foreground font-medium">
-                            ${student.agreedPrice}/mes
-                          </p>
-                        )}
-                        <div className="flex flex-wrap gap-1.5 mt-1">
-                          {student.hasActiveWorkoutPlan && (
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
-                            >
-                              <span className="hidden sm:inline">
-                                Entrenamiento
-                              </span>
-                              <span className="sm:hidden">Entr.</span>
-                            </Badge>
-                          )}
-                          {student.hasActiveMealPlan && (
-                            <Badge
-                              variant="outline"
-                              className="text-[10px] sm:text-xs justify-center px-1.5 py-0.5"
+                        <div className="flex items-center gap-1">
+                          <Link href={`/dashboard/students/list/${student.id}`}>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7"
+                              title="Ver perfil"
                             >
                               <HugeiconsIcon
-                                icon={Activity01Icon}
-                                className="h-3 w-3 mr-1"
+                                icon={EyeIcon}
+                                className="h-3.5 w-3.5"
                               />
-                              <span className="hidden sm:inline">
-                                Nutrición
-                              </span>
-                              <span className="sm:hidden">Nutr.</span>
-                            </Badge>
-                          )}
-                          {!student.hasActiveWorkoutPlan &&
-                            !student.hasActiveMealPlan && (
-                              <span className="text-xs text-muted-foreground">
-                                Sin planes
-                              </span>
-                            )}
-                        </div>
-                      </div>
-                    </div>
+                            </Button>
+                          </Link>
 
-                    <div className="flex items-center justify-between w-full sm:w-auto sm:justify-end gap-2 sm:gap-6">
-                      {/* Stats */}
-                      <div className="text-right space-y-1 min-w-[100px]">
-                        <div className="flex items-center justify-end gap-2">
-                          <Badge
-                            variant={streakVariant}
-                            className="gap-1 text-xs"
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            title="Asignar rutina"
+                            onClick={() => {
+                              setSelectedStudent(student);
+                              setIsDialogOpen(true);
+                            }}
                           >
                             <HugeiconsIcon
-                              icon={FireIcon}
-                              className="h-3 w-3"
+                              icon={Target02Icon}
+                              className="h-3.5 w-3.5"
                             />
-                            {student.currentWorkoutStreak}
-                          </Badge>
-                          <span className="text-xs text-muted-foreground hidden sm:inline">
-                            {student.completedWorkoutsLast7Days}/sem
-                          </span>
-                          <span className="text-xs text-muted-foreground sm:hidden">
-                            {student.completedWorkoutsLast7Days}s
-                          </span>
+                          </Button>
                         </div>
-                        <p className="text-xs text-muted-foreground">
+                      </div>
+
+                      <p className="text-xs text-muted-foreground truncate">
+                        {student.email}
+                      </p>
+
+                      <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1">
+                          <HugeiconsIcon icon={FireIcon} className="h-3 w-3" />
+                          <span>{student.currentWorkoutStreak} días</span>
+                        </div>
+                        <div className="h-3 w-px bg-border" />
+                        <div>
                           {student.lastWorkoutAt ? (
                             isToday(new Date(student.lastWorkoutAt)) ? (
-                              <span className="text-emerald-600 font-medium flex items-center justify-end gap-1">
+                              <span className="text-emerald-600 font-medium flex items-center gap-1">
                                 <HugeiconsIcon
                                   icon={Clock01Icon}
                                   className="h-3 w-3"
                                 />
-                                <span className="hidden sm:inline">
-                                  Entrenó hoy
-                                </span>
-                                <span className="sm:hidden">Hoy</span>
+                                <span>Hoy</span>
                               </span>
                             ) : (
-                              <span className="whitespace-nowrap">
-                                Últ:{" "}
-                                {format(
-                                  new Date(student.lastWorkoutAt),
-                                  "d MMM",
-                                  { locale: es },
-                                )}
+                              <span>
+                                Últ: {formatDate(student.lastWorkoutAt)}
                               </span>
                             )
                           ) : (
-                            <span className="whitespace-nowrap">
-                              Sin entrenos
-                            </span>
+                            <span>Sin entrenos</span>
                           )}
-                        </p>
+                        </div>
                       </div>
 
-                      {/* Actions */}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="h-8 w-8 p-0 ml-auto sm:ml-0"
-                          >
-                            <HugeiconsIcon
-                              icon={MoreHorizontalIcon}
-                              className="h-4 w-4"
-                            />
-                            <span className="sr-only">Abrir menú</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuLabel>Acciones</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() => {
-                              setSelectedStudent({
-                                id: student.id,
-                                studentId: student.studentId,
-                                name: student.name || "Estudiante",
-                              });
-                              setIsDialogOpen(true);
-                            }}
-                            className="cursor-pointer"
-                          >
-                            <HugeiconsIcon
-                              icon={Target02Icon}
-                              className="h-4 w-4 mr-2"
-                            />
-                            Asignar Rutina
-                          </DropdownMenuItem>
-                          {/* Elimino el render del modal aquí */}
-                          <DropdownMenuItem asChild>
-                            <Link
-                              href={`/dashboard/students/list/${student.id}`}
-                              className="w-full flex items-center"
-                            >
-                              <HugeiconsIcon
-                                icon={EyeIcon}
-                                className="h-4 w-4 mr-2"
-                              />
-                              Ver perfil completo
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-destructive"
-                            onClick={() => {
-                              // TODO: Implementar lógica para remover alumno
-                              toast.info("Funcionalidad en desarrollo");
-                            }}
-                          >
-                            <HugeiconsIcon
-                              icon={UserGroupIcon}
-                              className="h-4 w-4 mr-2"
-                            />
-                            Remover alumno
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      <div className="mt-2 flex items-center gap-2">
+                        {student.hasActiveWorkoutPlan && (
+                          <Badge variant="outline" className="text-[10px] h-5">
+                            Entrenamiento
+                          </Badge>
+                        )}
+                        {student.hasActiveMealPlan && (
+                          <Badge variant="outline" className="text-[10px] h-5">
+                            Nutrición
+                          </Badge>
+                        )}
+                        {student.agreedPrice && (
+                          <span className="text-xs font-medium">
+                            ${student.agreedPrice.toLocaleString()}/mes
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -688,21 +576,20 @@ export default function StudentsListPage() {
 
       {/* Summary */}
       {filteredStudents.length > 0 && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <span>
-                Mostrando {filteredStudents.length} de {totalStudents} alumnos
-              </span>
-              <div className="flex items-center gap-4">
-                <span>Activos esta semana: {activeThisWeek}</span>
-                <Separator orientation="vertical" className="h-4" />
-                <span>Racha promedio: {avgStreak} días</span>
-              </div>
+        <div className="text-xs text-muted-foreground py-2 px-4 border rounded-lg">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span>
+              Mostrando {filteredStudents.length} de {totalStudents} alumnos
+            </span>
+            <div className="flex items-center gap-3">
+              <span>Activos esta semana: {activeThisWeek}</span>
+              <Separator orientation="vertical" className="h-3" />
+              <span>Racha promedio: {avgStreak} días</span>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
+
       {/* Diálogo para asignar rutina */}
       {selectedStudent && (
         <WorkoutAssignmentDialog

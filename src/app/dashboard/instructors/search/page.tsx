@@ -394,7 +394,7 @@ export default function InstructorSearchPage() {
                       </AvatarFallback>
                     </Avatar>
                     <div className="space-y-0.5 flex-1 min-w-0">
-                      <CardTitle className="text-sm leading-tight">
+                      <CardTitle className="text-xs leading-tight">
                         {instructor.name}
                       </CardTitle>
                       {(instructor.instructorProfile?.city ||

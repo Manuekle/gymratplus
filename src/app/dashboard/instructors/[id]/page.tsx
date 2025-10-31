@@ -323,7 +323,7 @@ export default function InstructorProfilePage() {
                     </div>
                   )}
                 {instructor.isRemote && (
-                  <Badge variant="outline" className="text-xs">
+                  <Badge variant="default" className="text-xs">
                     Clases en línea
                   </Badge>
                 )}
@@ -333,7 +333,7 @@ export default function InstructorProfilePage() {
               {/* Compact Stats Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {instructor.pricePerMonth !== null && (
-                  <div className="flex flex-col p-2 rounded bg-muted/50">
+                  <div className="flex flex-col p-2 rounded-md bg-muted/50">
                     <span className="text-muted-foreground">Precio/mes</span>
                     <span className="font-semibold text-xs ">
                       ${instructor.pricePerMonth}
@@ -341,7 +341,7 @@ export default function InstructorProfilePage() {
                   </div>
                 )}
                 {instructor.experienceYears !== null && (
-                  <div className="flex flex-col p-2 rounded bg-muted/50">
+                  <div className="flex flex-col p-2 rounded-md bg-muted/50">
                     <span className="text-muted-foreground">Experiencia</span>
                     <span className="font-semibold text-xs">
                       {instructor.experienceYears} años
@@ -349,7 +349,7 @@ export default function InstructorProfilePage() {
                   </div>
                 )}
                 {instructor.totalStudents !== undefined && (
-                  <div className="flex flex-col p-2 rounded bg-muted/50">
+                  <div className="flex flex-col p-2 rounded-md bg-muted/50">
                     <span className="text-muted-foreground">Estudiantes</span>
                     <span className="font-semibold text-xs flex items-center gap-1">
                       <HugeiconsIcon icon={UserGroupIcon} className="h-3 w-3" />
@@ -359,7 +359,7 @@ export default function InstructorProfilePage() {
                 )}
                 {instructor.rating !== undefined &&
                   instructor.rating !== null && (
-                    <div className="flex flex-col p-2 rounded bg-muted/50">
+                    <div className="flex flex-col p-2 rounded-md bg-muted/50">
                       <span className="text-muted-foreground">
                         Calificación
                       </span>
@@ -461,30 +461,6 @@ export default function InstructorProfilePage() {
               })()}
             </CardContent>
           </Card>
-
-          {/* Compact Availability */}
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xl tracking-heading flex items-center gap-1.5">
-                <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4" />
-                Disponibilidad
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Lun - Vie</span>
-                <span className="font-medium">9:00 AM - 8:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Sábados</span>
-                <span className="font-medium">10:00 AM - 4:00 PM</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-muted-foreground">Domingos</span>
-                <span className="font-medium">Cerrado</span>
-              </div>
-            </CardContent>
-          </Card>
         </div>
 
         {/* Main Content - Compact */}
@@ -504,19 +480,17 @@ export default function InstructorProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-xs">Sobre Mí</CardTitle>
+              <CardTitle className="text-lg tracking-heading">
+                Sobre Mí
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {instructor.bio ? (
-                <div className="text-xs text-muted-foreground space-y-2">
-                  {instructor.bio
-                    .split("\n")
-                    .map((paragraph, index) =>
-                      paragraph.trim() ? <p key={index}>{paragraph}</p> : null
-                    )}
+                <div className="whitespace-pre-line break-words text-sm text-muted-foreground">
+                  {instructor.bio}
                 </div>
               ) : (
-                <p className="text-xs text-muted-foreground italic">
+                <p className="text-sm text-muted-foreground italic">
                   Sin biografía disponible.
                 </p>
               )}
@@ -524,8 +498,10 @@ export default function InstructorProfilePage() {
           </Card>
 
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs">Especialidades</CardTitle>
+            <CardHeader>
+              <CardTitle className="text-lg tracking-heading">
+                Especialidades
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {instructor.curriculum ? (
@@ -553,8 +529,10 @@ export default function InstructorProfilePage() {
           </Card>
 
           <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-xs">Métodos de Enseñanza</CardTitle>
+            <CardHeader>
+              <CardTitle className="text-lg tracking-heading">
+                Métodos de Enseñanza
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid gap-2 sm:grid-cols-2">

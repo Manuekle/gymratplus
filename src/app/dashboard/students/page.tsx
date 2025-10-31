@@ -359,9 +359,9 @@ export default function InstructorDashboardPage() {
             </div>
             <Link
               href="/dashboard/students/list"
-              className="text-xs text-muted-foreground flex items-center gap-1 w-full md:w-1/6 justify-end mt-2 md:mt-0"
+              className="text-xs text-muted-foreground hover:underline flex items-center gap-1 w-full md:w-1/6 justify-end mt-2 md:mt-0"
             >
-              Ver todos{" "}
+              Ver todos
               <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
             </Link>
           </div>

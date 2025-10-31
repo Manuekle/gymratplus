@@ -27,7 +27,7 @@ export function CreditCard({
   };
 
   const getCardType = (
-    number: string,
+    number: string
   ): {
     type: "visa" | "mastercard" | "unknown";
     icon: typeof CreditCardIcon | typeof MasterCardIcon;
@@ -65,7 +65,7 @@ export function CreditCard({
                     : "text-slate-800 dark:text-neutral-300"
                 }`}
               />
-              <div className="text-sm font-bold text-slate-700 dark:text-neutral-300 tracking-wider">
+              <div className="text-xs font-bold text-slate-700 dark:text-neutral-300 tracking-wider">
                 {cardLabel}
               </div>
             </div>
@@ -80,7 +80,7 @@ export function CreditCard({
                   <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Titular
                   </div>
-                  <div className="text-sm font-semibold text-slate-800 dark:text-neutral-200 uppercase tracking-wide truncate max-w-[180px]">
+                  <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 uppercase tracking-wide truncate max-w-[180px]">
                     {cardHolder || "NOMBRE APELLIDO"}
                   </div>
                 </div>
@@ -88,7 +88,7 @@ export function CreditCard({
                   <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Vence
                   </div>
-                  <div className="text-sm font-semibold text-slate-800 dark:text-neutral-200 tracking-wide">
+                  <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 tracking-wide">
                     {expiryDate || "MM/YY"}
                   </div>
                 </div>
