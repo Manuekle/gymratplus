@@ -24,7 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 import { Icons } from "../icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -49,14 +49,14 @@ export function NewProgress({
 }: ProgressProps) {
   const isEditing = !!initialData?.id;
   const [date, setDate] = useState<Date | undefined>(
-    initialData?.date || new Date()
+    initialData?.date || new Date(),
   );
   const [weight, setWeight] = useState<number | undefined>(initialData?.weight);
   const [bodyFat, setBodyFat] = useState<number | undefined>(
-    initialData?.bodyFatPercentage
+    initialData?.bodyFatPercentage,
   );
   const [muscleMass, setMuscleMass] = useState<number | undefined>(
-    initialData?.muscleMassPercentage
+    initialData?.muscleMassPercentage,
   );
   const [notes, setNotes] = useState(initialData?.notes || "");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -72,7 +72,7 @@ export function NewProgress({
   const validateNumberInput = (
     value: string,
     min: number = 0,
-    max: number = 1000
+    max: number = 1000,
   ): number | null => {
     const num = parseFloat(value);
     if (isNaN(num)) return null;
@@ -83,7 +83,7 @@ export function NewProgress({
   const handleNumberChange = (
     value: string,
     setter: React.Dispatch<React.SetStateAction<number | undefined>>,
-    fieldName: string
+    fieldName: string,
   ) => {
     if (value === "") {
       setter(undefined);
@@ -102,7 +102,7 @@ export function NewProgress({
   // Check if a progress record of the same type already exists for the selected date
   const checkForDuplicate = (
     type: string,
-    value: string | number | undefined
+    value: string | number | undefined,
   ): boolean => {
     if (!value) return false;
 
@@ -202,7 +202,7 @@ export function NewProgress({
     } catch (error) {
       console.error("Error al guardar:", error);
       setError(
-        "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo."
+        "Ocurrió un error al guardar los datos. Por favor, inténtalo de nuevo.",
       );
     } finally {
       setIsSubmitting(false);
@@ -284,7 +284,7 @@ export function NewProgress({
                   variant="outline"
                   className={cn(
                     "w-full justify-start text-left font-normal text-xs md:text-xs",
-                    !date && "text-muted-foreground"
+                    !date && "text-muted-foreground",
                   )}
                 >
                   <HugeiconsIcon
@@ -350,7 +350,7 @@ export function NewProgress({
                   handleNumberChange(
                     e.target.value,
                     setBodyFat,
-                    "el porcentaje de grasa corporal"
+                    "el porcentaje de grasa corporal",
                   )
                 }
               />
@@ -375,7 +375,7 @@ export function NewProgress({
                   handleNumberChange(
                     e.target.value,
                     setMuscleMass,
-                    "la masa muscular"
+                    "la masa muscular",
                   )
                 }
               />

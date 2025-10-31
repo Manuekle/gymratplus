@@ -1,5 +1,5 @@
-import { publishNotification } from "@/lib/redis";
-import { createNotification } from "@/lib/notification-service";
+import { publishNotification } from "@/lib/database/redis";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 export const GOAL_CHANNEL = "goal-notifications";
 

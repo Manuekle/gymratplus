@@ -15,8 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icons } from "@/components/icons";
 
 import { useRouter } from "next/navigation";
-import { WorkoutPlan } from "./workouts/workout-plan";
-import { MealPlan } from "./nutrition/meal-plan";
+import { WorkoutPlan } from "@/components/workouts/workout-plan";
+import { MealPlan } from "@/components/nutrition/meal-plan";
 
 export type Recommendations = {
   workoutPlan: {
@@ -169,7 +169,7 @@ export default function RecommendationsComponent() {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setError(
-          "No se encontró un perfil. Por favor, complete su perfil primero.",
+          "No se encontró un perfil. Por favor, complete su perfil primero."
         );
         return null;
       }
@@ -184,7 +184,7 @@ export default function RecommendationsComponent() {
     }
 
     const fetchRecommendations = async (
-      profileData: ProfileData,
+      profileData: ProfileData
     ): Promise<void> => {
       if (!profileData) return;
 
@@ -209,7 +209,7 @@ export default function RecommendationsComponent() {
       } catch (error: unknown) {
         console.error("Error fetching recommendations:", error);
         setError(
-          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde.",
+          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde."
         );
         toast.error("Failed to generate recommendations", {
           description: "Please try again later",
@@ -268,8 +268,8 @@ export default function RecommendationsComponent() {
           >
             <Tabs defaultValue="workout" className="w-full">
               <TabsList className="grid w-full grid-cols-2 mb-8 ">
-                <TabsTrigger value="workout">Plan de Entrenamiento</TabsTrigger>
-                <TabsTrigger value="nutrition">Plan Nutricional</TabsTrigger>
+                <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
+                <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
               </TabsList>
 
               <TabsContent value="workout" className="mt-0">
@@ -287,18 +287,6 @@ export default function RecommendationsComponent() {
                 />
               </TabsContent>
             </Tabs>
-            {/* <div className="flex justify-end mt-6">
-              <Button
-                onClick={handleSavePlan}
-                disabled={saving}
-                className="flex items-center gap-2"
-              >
-                {saving ? (
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
-                {saving ? "Guardando" : "Guardar"}
-              </Button>
-            </div> */}
           </motion.div>
         ) : null}
       </CardContent>

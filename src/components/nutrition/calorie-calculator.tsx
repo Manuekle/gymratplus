@@ -26,7 +26,7 @@ import {
 import { useSession } from "next-auth/react";
 
 import { toast } from "sonner";
-import { Icons } from "./icons";
+import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BroccoliIcon,

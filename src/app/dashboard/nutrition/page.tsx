@@ -19,11 +19,11 @@ import {
 
 // components
 import { Progress } from "@/components/ui/progress";
-import { CalorieChart } from "@/components/calorie-chart";
-import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
+import { CalorieChart } from "@/components/nutrition/calorie-chart";
+import { MealLogCalendar } from "@/components/nutrition/meal/meal-log-calendar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { CalorieCalculator } from "@/components/calorie-calculator";
+import { CalorieCalculator } from "@/components/nutrition/calorie-calculator";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Bread04Icon,

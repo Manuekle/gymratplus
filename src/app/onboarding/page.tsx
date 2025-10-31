@@ -1,7 +1,7 @@
 "use client";
 
 import { CustomSonner } from "@/components/custom-sonner";
-import StepOnboarding1 from "@/components/onboarding/step-1";
+import StepOnboarding from "@/components/onboarding/step-onboarding";
 import { useSession } from "next-auth/react";
 import { DefaultSession } from "next-auth";
 import { useRouter } from "next/navigation";
@@ -9,11 +9,11 @@ import { useEffect } from "react";
 
 interface CustomSession {
   user: {
-    id: string; // ✅ Ahora es obligatorio
+    id: string;
     name?: string | null;
     email?: string | null;
     image?: string | null;
-    profile?: unknown; // Define mejor este tipo si lo conoces
+    profile?: unknown;
   } & DefaultSession["user"];
 }
 
@@ -34,7 +34,7 @@ export default function OnboardingPage() {
   return (
     <main className="flex justify-center items-center min-h-screen p-4 md:p-8">
       <CustomSonner position="top-center" />
-      <StepOnboarding1 />
+      <StepOnboarding />
     </main>
   );
 }

@@ -5,7 +5,7 @@ import { OTPInput, OTPInputContext } from "input-otp";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MinusSignIcon } from "@hugeicons/core-free-icons";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 function InputOTP({
   className,

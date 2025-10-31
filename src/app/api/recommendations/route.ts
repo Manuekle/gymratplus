@@ -1,14 +1,19 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-import { calculateExperienceLevel } from "@/lib/workout-utils";
+import { calculateExperienceLevel } from "@/lib/workout/workout-utils";
+import {
+  createNutritionPlan,
+  type NutritionPlan,
+} from "@/lib/nutrition/nutrition-utils";
 
 interface ProfileData {
   goal: "gain-muscle" | "lose-weight" | "maintain";
   experienceLevel: "beginner" | "intermediate" | "advanced";
   currentWeight: number;
   height: number;
+  dietaryPreference?: "vegetarian" | "keto" | "no-preference";
 }
 
 interface Exercise {
@@ -31,24 +36,6 @@ interface PrismaExercise {
   notes: string | null;
 }
 
-interface Macros {
-  protein: string;
-  carbs: string;
-  fat: string;
-  description: string;
-}
-
-interface FoodRecommendation {
-  macros: Macros;
-  meals: {
-    breakfast: string[];
-    lunch: string[];
-    dinner: string[];
-    snacks: string[];
-  };
-  calorieTarget: number;
-}
-
 interface ResponseData {
   success: boolean;
   workoutPlan: {
@@ -60,7 +47,7 @@ interface ResponseData {
       exercises: Exercise[];
     }>;
   };
-  foodRecommendation: FoodRecommendation;
+  foodRecommendation: NutritionPlan;
   recommendations: string[];
 }
 
@@ -102,7 +89,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
 
         experienceLevel = calculateExperienceLevel(
-          experienceData,
+          experienceData
         ) as ProfileData["experienceLevel"];
       }
     }
@@ -112,7 +99,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           error:
             "No se pudo calcular tu nivel de experiencia. Por favor, completa tu perfil con tu frecuencia de entrenamiento y meses entrenando.",
         },
-        { status: 400 },
+        { status: 400 }
       );
     }
     profileData.experienceLevel = experienceLevel;
@@ -120,7 +107,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Validar los otros campos requeridos
     const requiredFields = ["goal", "currentWeight", "height"] as const;
     const missingFields = requiredFields.filter(
-      (field) => !profileData[field as keyof ProfileData],
+      (field) => !profileData[field as keyof ProfileData]
     );
     if (missingFields.length > 0) {
       return NextResponse.json({
@@ -155,7 +142,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     if (exercises.length === 0) {
       return NextResponse.json(
         { error: "No exercises available" },
-        { status: 500 },
+        { status: 500 }
       );
     }
 
@@ -191,33 +178,65 @@ export async function POST(req: Request): Promise<NextResponse> {
       exercises: PrismaExercise[];
     };
 
-    // Create a personalized food recommendation
-    const calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
-    const macros: Macros = {
-      protein: Math.round((calorieTarget * 0.3) / 4).toString(),
-      carbs: Math.round((calorieTarget * 0.5) / 4).toString(),
-      fat: Math.round((calorieTarget * 0.2) / 9).toString(),
-      description: `Calorías: ${calorieTarget}`,
-    };
+    // Calculate calorie target based on goal and weight
+    let calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
 
+    // Adjust calories based on goal
+    if (profileData.goal === "lose-weight") {
+      calorieTarget = Math.round(calorieTarget * 0.85); // 15% deficit
+    } else if (profileData.goal === "gain-muscle") {
+      calorieTarget = Math.round(calorieTarget * 1.1); // 10% surplus
+    }
+
+    // Calculate macros based on goal
+    let proteinPercentage = 0.3;
+    let carbsPercentage = 0.5;
+    let fatPercentage = 0.2;
+
+    if (profileData.goal === "gain-muscle") {
+      proteinPercentage = 0.35;
+      carbsPercentage = 0.45;
+      fatPercentage = 0.2;
+    } else if (profileData.goal === "lose-weight") {
+      proteinPercentage = 0.35;
+      carbsPercentage = 0.35;
+      fatPercentage = 0.3;
+    }
+
+    // Adjust for dietary preferences
+    if (profileData.dietaryPreference === "keto") {
+      proteinPercentage = 0.3;
+      carbsPercentage = 0.1;
+      fatPercentage = 0.6;
+    }
+
+    const dailyProteinTarget = Math.round(
+      (calorieTarget * proteinPercentage) / 4
+    );
+    const dailyCarbTarget = Math.round((calorieTarget * carbsPercentage) / 4);
+    const dailyFatTarget = Math.round((calorieTarget * fatPercentage) / 9);
+
+    // Create nutrition plan using nutrition-utils
+    const nutritionPlan = await createNutritionPlan({
+      userId,
+      goal: profileData.goal,
+      dietaryPreference: profileData.dietaryPreference || "no-preference",
+      dailyCalorieTarget: calorieTarget,
+      dailyProteinTarget,
+      dailyCarbTarget,
+      dailyFatTarget,
+    });
+
+    // Save the food recommendation to the database
     const foodRecommendation = await prisma.foodRecommendation.create({
       data: {
-        userId: userId,
-        macros: JSON.stringify(macros),
+        userId,
+        macros: JSON.stringify(nutritionPlan.macros),
         meals: JSON.stringify({
-          breakfast:
-            profileData.goal === "gain-muscle"
-              ? ["Batido de proteínas", "Avena con frutos secos"]
-              : ["Yogur natural", "Fruta fresca"],
-          lunch:
-            profileData.goal === "gain-muscle"
-              ? ["Pechuga de pollo", "Arroz integral", "Batata"]
-              : ["Pescado blanco", "Verduras", "Ensalada"],
-          dinner:
-            profileData.goal === "gain-muscle"
-              ? ["Salmón", "Quinoa", "Verduras"]
-              : ["Huevo revuelto", "Verduras"],
-          snacks: ["Yogur griego", "Frutos secos"],
+          breakfast: nutritionPlan.meals.breakfast.entries.map((e) => e.foodId),
+          lunch: nutritionPlan.meals.lunch.entries.map((e) => e.foodId),
+          dinner: nutritionPlan.meals.dinner.entries.map((e) => e.foodId),
+          snacks: nutritionPlan.meals.snacks.entries.map((e) => e.foodId),
         }),
         calorieTarget,
       },
@@ -232,7 +251,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       await prisma.weight.create({
         data: {
           userId,
-          weight: Number(profileData.currentWeight), // Convert to number
+          weight: Number(profileData.currentWeight),
           date: new Date(),
         },
       });
@@ -255,7 +274,7 @@ export async function POST(req: Request): Promise<NextResponse> {
                 reps: exerciseData.reps,
                 restTime: exerciseData.restTime || 0,
                 notes: exerciseData.notes || "",
-              }),
+              })
             ),
           },
           {
@@ -268,7 +287,7 @@ export async function POST(req: Request): Promise<NextResponse> {
                 reps: exerciseData.reps,
                 restTime: exerciseData.restTime || 0,
                 notes: exerciseData.notes || "",
-              }),
+              })
             ),
           },
           {
@@ -281,27 +300,21 @@ export async function POST(req: Request): Promise<NextResponse> {
                 reps: exerciseData.reps,
                 restTime: exerciseData.restTime || 0,
                 notes: exerciseData.notes || "",
-              }),
+              })
             ),
           },
         ],
       },
       foodRecommendation: {
-        macros: {
-          protein: Math.round((calorieTarget * 0.3) / 4).toString() + "g",
-          carbs: Math.round((calorieTarget * 0.5) / 4).toString() + "g",
-          fat: Math.round((calorieTarget * 0.2) / 9).toString() + "g",
-          description: `Plan nutricional personalizado con ${calorieTarget} calorías diarias. Distribución equilibrada de macronutrientes para ${profileData.goal === "gain-muscle" ? "ganar masa muscular" : profileData.goal === "lose-weight" ? "perder peso" : "mantener peso"}.`,
-        },
-        meals: JSON.parse(foodRecommendation.meals as string),
-        calorieTarget: foodRecommendation.calorieTarget,
+        ...nutritionPlan,
+        id: foodRecommendation.id,
       },
       recommendations: [
         `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === "gain-muscle" ? "de fuerza" : "cardio"}`,
-        `Consume proteína de alta calidad después del entrenamiento`,
-        `Descansa lo suficiente entre sesiones`,
-        `Mantén una hidratación adecuada`,
-        `Ajusta las calorías según ${profileData.goal === "gain-muscle" ? "ganar masa muscular" : "perder grasa"}`,
+        `Consume ${dailyProteinTarget}g de proteína de alta calidad diariamente`,
+        `Descansa lo suficiente entre sesiones (48-72 horas por grupo muscular)`,
+        `Mantén una hidratación adecuada (2-3 litros de agua al día)`,
+        `${profileData.goal === "gain-muscle" ? "Consume un superávit calórico moderado" : profileData.goal === "lose-weight" ? "Mantén un déficit calórico controlado" : "Mantén tu ingesta calórica estable"}`,
       ],
     };
 
@@ -313,7 +326,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         error: "Error generating recommendations",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

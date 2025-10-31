@@ -9,7 +9,7 @@ import {
   CircleIcon,
 } from "@hugeicons/core-free-icons";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 function Menubar({
   className,

@@ -123,9 +123,9 @@ export function MealPlan({
 
   return (
     <div className="space-y-4">
-      <Card>
+      <Card className="shadow-none">
         <CardHeader>
-          <CardTitle className="font-semibold  tracking-heading">
+          <CardTitle className="font-semibold text-lg tracking-heading">
             Plan Nutricional
           </CardTitle>
           <CardDescription className="text-xs">

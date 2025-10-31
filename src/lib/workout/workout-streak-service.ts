@@ -1,5 +1,5 @@
-import { prisma } from "@/lib/prisma";
-import { createNotification } from "@/lib/notification-service";
+import { prisma } from "@/lib/database/prisma";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 export class WorkoutStreakService {
   async getOrCreateStreak(userId: string) {

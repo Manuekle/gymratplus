@@ -1,8 +1,11 @@
 import { NextResponse, NextRequest } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-import { getOrCreateExercises, createWorkoutPlan } from "@/lib/workout-utils";
+import {
+  getOrCreateExercises,
+  createWorkoutPlan,
+} from "@/lib/workout/workout-utils";
 
 export async function POST(request: NextRequest) {
   try {

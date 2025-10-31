@@ -6,7 +6,7 @@ import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 import { DayPicker } from "react-day-picker";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 function Calendar({

@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/auth/auth";
 import { startOfDay, endOfDay, parseISO } from "date-fns";
 
 const prisma = new PrismaClient();

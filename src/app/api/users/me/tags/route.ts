@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 
 // GET /api/users/me/tags - Get current user's interests
 export async function GET() {
@@ -44,7 +44,7 @@ export async function PUT(req: NextRequest) {
 
   // Limpiar caché de usuario si usas Redis
   try {
-    const { redis } = await import("@/lib/redis");
+    const { redis } = await import("@/lib/database/redis");
     await redis.del(`user:${session.user.id}:data`);
     await redis.del(`session:${session.user.id}`);
   } catch {}

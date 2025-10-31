@@ -1,4 +1,4 @@
-import AnimatedLayout from "@/components/layouts/animated-layout";
+import AnimatedLayout from "@/components/layout/animated-layout";
 
 // app/onboarding/layout.js
 export const metadata = {

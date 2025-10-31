@@ -4,7 +4,7 @@ import * as React from "react";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import { Button } from "@/components/ui/button";
 import {
   Command,

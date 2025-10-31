@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { createNotificationByEmail } from "@/lib/notification-service";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
+import { createNotificationByEmail } from "@/lib/notifications/notification-service";
 
 export async function PUT(req: NextRequest) {
   try {

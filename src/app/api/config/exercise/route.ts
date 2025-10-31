@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 // Archivo: app/api/config/exercise/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
 import { exercises } from "@/data/exercises";
 

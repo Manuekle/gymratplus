@@ -1,8 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
-import { redis } from "@/lib/redis";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { redis } from "@/lib/database/redis";
 
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 

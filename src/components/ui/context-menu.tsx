@@ -8,7 +8,7 @@ import {
   Tick02Icon,
   CircleIcon,
 } from "@hugeicons/core-free-icons";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 function ContextMenu({
   ...props

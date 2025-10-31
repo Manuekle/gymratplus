@@ -8,7 +8,7 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { redis } from "@/lib/redis";
+import { redis } from "@/lib/database/redis";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CountrySelector } from "@/components/country-selector";

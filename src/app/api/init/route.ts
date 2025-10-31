@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { initNotificationSubscriber } from "@/lib/redis-subscriber";
+import { initNotificationSubscriber } from "@/lib/database/redis-subscriber";
 
 // This route will be called when the app starts
 export async function GET() {

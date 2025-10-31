@@ -1,11 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth/auth";
 import { getServerSession } from "next-auth/next";
 import {
   createWorkoutStartedNotification,
   publishWorkoutNotification,
-} from "@/lib/workout-notifications";
+} from "@/lib/notifications/workout-notifications";
 
 export async function POST(req: NextRequest) {
   try {

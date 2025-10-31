@@ -20,11 +20,12 @@ export default function RecommendationsPage() {
   }, [router]);
 
   return (
-    <main className="min-h-screen p-4 md:p-8">
+    <main className="w-full max-w-4xl mx-auto mt-6 p-4">
       <CustomSonner position="top-center" />
       <div className="mb-6">
         <Button
           size="sm"
+          variant="outline"
           onClick={() => router.push("/dashboard/profile")}
           className="flex items-center text-xs"
         >

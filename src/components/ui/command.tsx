@@ -5,7 +5,7 @@ import { Command as CommandPrimitive } from "cmdk";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Search01Icon } from "@hugeicons/core-free-icons";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 import {
   Dialog,
   DialogContent,

@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import {
   storeWaterIntake,
   getWaterIntake,
   publishNotification,
   publishWaterIntake,
-} from "@/lib/redis";
+} from "@/lib/database/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/create-system-notifications";
 import { startOfDay } from "date-fns";
 

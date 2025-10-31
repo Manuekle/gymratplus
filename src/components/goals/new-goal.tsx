@@ -32,7 +32,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 import { Icons } from "../icons";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -45,30 +45,30 @@ interface GoalProps {
 export function NewGoal({ onSuccess, initialData }: GoalProps) {
   const isEditing = !!initialData?.id;
   const [type, setType] = useState<GoalType>(
-    (initialData?.type as GoalType) || "weight"
+    (initialData?.type as GoalType) || "weight",
   );
   const [title, setTitle] = useState(initialData?.title || "");
   const [description, setDescription] = useState(
-    initialData?.description || ""
+    initialData?.description || "",
   );
   const [initialValue, setInitialValue] = useState<string>(
-    initialData?.initialValue?.toString() || ""
+    initialData?.initialValue?.toString() || "",
   );
   const [targetValue, setTargetValue] = useState<string>(
-    initialData?.targetValue?.toString() || ""
+    initialData?.targetValue?.toString() || "",
   );
   const [unit, setUnit] = useState(initialData?.unit || "");
   const [exerciseType, setExerciseType] = useState(
-    initialData?.exerciseType || ""
+    initialData?.exerciseType || "",
   );
   const [measurementType, setMeasurementType] = useState(
-    initialData?.measurementType || ""
+    initialData?.measurementType || "",
   );
   const [startDate, setStartDate] = useState<Date | undefined>(
-    initialData?.startDate ? new Date(initialData.startDate) : new Date()
+    initialData?.startDate ? new Date(initialData.startDate) : new Date(),
   );
   const [targetDate, setTargetDate] = useState<Date | undefined>(
-    initialData?.targetDate ? new Date(initialData.targetDate) : undefined
+    initialData?.targetDate ? new Date(initialData.targetDate) : undefined,
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -351,7 +351,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal text-xs md:text-xs",
-                      !startDate && "text-muted-foreground"
+                      !startDate && "text-muted-foreground",
                     )}
                   >
                     <HugeiconsIcon
@@ -387,7 +387,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal text-xs md:text-xs",
-                      !targetDate && "text-muted-foreground"
+                      !targetDate && "text-muted-foreground",
                     )}
                   >
                     <HugeiconsIcon

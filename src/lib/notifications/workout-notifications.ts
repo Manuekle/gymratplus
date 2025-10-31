@@ -1,5 +1,5 @@
-import { publishWorkout } from "@/lib/redis";
-import { createNotification } from "@/lib/notification-service";
+import { publishWorkout } from "@/lib/database/redis";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 export type WorkoutAction = "started" | "completed" | "progress" | "cancelled";
 

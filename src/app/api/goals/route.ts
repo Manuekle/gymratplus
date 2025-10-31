@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { Prisma } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth";
 import {
   createGoalCreatedNotification,
   publishGoalNotification,
-} from "@/lib/goal-notifications";
+} from "@/lib/notifications/goal-notifications";
 
 // GET /api/goals - Obtener objetivos del usuario
 export async function GET(req: NextRequest) {

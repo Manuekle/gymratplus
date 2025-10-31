@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import {
   createGoalCompletedNotification,
   publishGoalNotification,
-} from "@/lib/goal-notifications";
-import { createNotification } from "@/lib/notification-service";
+} from "@/lib/notifications/goal-notifications";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
 export async function PUT(request: NextRequest) {

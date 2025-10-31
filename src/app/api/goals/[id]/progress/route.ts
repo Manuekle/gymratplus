@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import {
   createGoalAchievedNotification,
   createGoalProgressUpdatedNotification,
   publishGoalNotification,
-} from "@/lib/goal-notifications";
+} from "@/lib/notifications/goal-notifications";
 
 // POST /api/goals/[id]/progress - Añadir una actualización de progreso
 export async function POST(request: NextRequest) {

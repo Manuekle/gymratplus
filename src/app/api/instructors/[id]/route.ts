@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { Prisma, User } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 
 // Extend the User type to include instructorProfile with students count
 type UserWithInstructorProfile = User & {

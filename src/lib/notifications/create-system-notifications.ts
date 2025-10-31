@@ -1,4 +1,4 @@
-import { createNotification } from "@/lib/notification-service";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 // Workout notifications
 export async function createWorkoutReminderNotification(

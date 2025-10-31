@@ -1,12 +1,12 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/database/prisma";
+import { authOptions } from "@/lib/auth/auth/auth";
 import { getServerSession } from "next-auth/next";
 import {
   createWorkoutCompletedNotification,
   publishWorkoutNotification,
-} from "@/lib/workout-notifications";
-import { WorkoutStreakService } from "@/lib/workout-streak-service";
+} from "@/lib/notifications/workout-notifications";
+import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
 
 export async function PUT(req: NextRequest) {
   try {

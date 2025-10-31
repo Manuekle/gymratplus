@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { redis } from "@/lib/redis";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { redis } from "@/lib/database/redis";
+import { prisma } from "@/lib/database/prisma";
 
 export async function POST(request: NextRequest) {
   try {

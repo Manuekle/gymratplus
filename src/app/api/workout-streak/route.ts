@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/auth/auth";
 import { WorkoutStreakService } from "@/lib/workout-streak-service";
 
 export async function GET(request: NextRequest) {

@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
-import { createNotification } from "@/lib/notification-service";
+import { createNotification } from "@/lib/notifications/notification-service";
 
 const instructorRegisterSchema = z.object({
   bio: z.string().optional(),
@@ -87,7 +87,7 @@ export async function POST(req: NextRequest) {
 
     // Limpiar cache de usuario en Redis
     try {
-      const { redis } = await import("@/lib/redis");
+      const { redis } = await import("@/lib/database/redis");
       const cacheKeys = [
         `user:${session.user.id}:data`,
         `profile:${session.user.id}`,

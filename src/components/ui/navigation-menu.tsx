@@ -4,7 +4,7 @@ import { cva } from "class-variance-authority";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 function NavigationMenu({
   className,

@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import {
   DefaultSession,
   NextAuthOptions,
@@ -10,7 +10,7 @@ import { JWT as NextAuthJWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { redis } from "@/lib/redis"; // Se mantiene por si es usada en otra parte del proyecto
+import { redis } from "@/lib/database/redis"; // Se mantiene por si es usada en otra parte del proyecto
 
 // --- 1. Extensión de Tipos para NextAuth ---
 
@@ -129,7 +129,7 @@ export const authOptions: NextAuthOptions = {
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password
+          user.password,
         );
 
         if (!isPasswordValid) {

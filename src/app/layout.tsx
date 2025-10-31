@@ -4,7 +4,7 @@ import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
-import { ThemeProvider } from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/layout/theme/theme-provider";
 import { AuthProvider } from "@/providers/auth-provider";
 import RedisInitializer from "@/components/init/redis-initializer";
 import { motion, AnimatePresence } from "framer-motion";

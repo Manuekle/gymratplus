@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
-import { deleteNotification } from "@/lib/notification-service";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { deleteNotification } from "@/lib/notifications/notification-service";
+import { prisma } from "@/lib/database/prisma";
 
 export async function PATCH(request: NextRequest) {
   try {

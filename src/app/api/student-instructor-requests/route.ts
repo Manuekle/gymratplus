@@ -1,9 +1,9 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { authOptions } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
-import { createNotificationByEmail } from "@/lib/notification-service";
+import { createNotificationByEmail } from "@/lib/notifications/notification-service";
 
 // Esquema de validación para la solicitud del instructor
 const requestInstructorSchema = z.object({

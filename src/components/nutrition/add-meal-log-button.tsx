@@ -244,13 +244,13 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
   };
 
   const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase())
+    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   const filteredRecipes = recipes.filter(
     (recipe) =>
       recipe.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-      recipe.mealType.includes(mealType)
+      recipe.mealType.includes(mealType),
   );
 
   const resetForm = () => {
@@ -337,11 +337,11 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
 
   const toggleItemSelection = (
     item: Food | Recipe,
-    type: "food" | "recipe"
+    type: "food" | "recipe",
   ) => {
     // Verificar si el item ya está seleccionado
     const existingIndex = selectedItems.findIndex(
-      (selected) => selected.id === item.id && selected.type === type
+      (selected) => selected.id === item.id && selected.type === type,
     );
 
     if (existingIndex >= 0) {
@@ -410,7 +410,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
           fat: acc.fat + fat,
         };
       },
-      { calories: 0, protein: 0, carbs: 0, fat: 0 }
+      { calories: 0, protein: 0, carbs: 0, fat: 0 },
     );
   };
 
@@ -490,7 +490,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onClick={() =>
                   updateItemQuantity(
                     editingItemIndex,
-                    selectedItem.quantity - 0.5
+                    selectedItem.quantity - 0.5,
                   )
                 }
               >
@@ -507,7 +507,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onChange={(e) =>
                   updateItemQuantity(
                     editingItemIndex,
-                    Number.parseFloat(e.target.value) || 0.1
+                    Number.parseFloat(e.target.value) || 0.1,
                   )
                 }
                 className="text-center text-xs"
@@ -518,7 +518,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
                 onClick={() =>
                   updateItemQuantity(
                     editingItemIndex,
-                    selectedItem.quantity + 0.5
+                    selectedItem.quantity + 0.5,
                   )
                 }
               >
@@ -707,7 +707,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe"
+            activeTab === "foods" ? "food" : "recipe",
           );
 
           return (
@@ -721,7 +721,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe"
+                  activeTab === "foods" ? "food" : "recipe",
                 )
               }
               type="button"

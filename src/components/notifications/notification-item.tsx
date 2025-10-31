@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Notification } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utils/utils";
 
 interface NotificationItemProps {
   notification: Notification;

@@ -1,13 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth";
+import { authOptions } from "@/lib/auth/auth";
 import {
   getUserNotifications,
   createNotification,
   markAllNotificationsAsRead,
   deleteAllNotifications,
   type CreateNotificationParams,
-} from "@/lib/notification-service";
+} from "@/lib/notifications/notification-service";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
