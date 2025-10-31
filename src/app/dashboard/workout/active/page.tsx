@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import WorkoutTimerFloat from "@/components/workout-timer-float";
+import WorkoutTimerFloat from "@/components/workout/workout-timer-float";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";

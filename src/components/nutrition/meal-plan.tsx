@@ -16,15 +16,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useTranslation } from "react-i18next";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   FrenchFries02Icon,
   RiceBowl01Icon,
   SteakIcon,
+  Apple01Icon,
+  NoodlesIcon,
 } from "@hugeicons/core-free-icons";
 
-// import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Tipos para el plan de comidas
 export type Food = {
@@ -81,7 +82,6 @@ export function MealPlan({
   foodRecommendation,
   isLoading = false,
 }: MealPlanProps) {
-  const { t } = useTranslation("common");
 
   if (isLoading) {
     return <MealPlanSkeleton />;
@@ -100,26 +100,26 @@ export function MealPlan({
     );
   }
 
-  // const mealTypes = {
-  //   breakfast: {
-  //     label: "Desayuno",
-  //     icon: <Apple01Icon size={12} className="text-muted-foreground" />,
-  //   },
-  //   lunch: {
-  //     label: "Almuerzo",
-  //     icon: <NoodlesIcon size={12} className="text-muted-foreground" />,
-  //   },
-  //   dinner: {
-  //     label: "Cena",
-  //     icon: <HugeiconsIcon icon={RiceBowl01Icon} size={12} className="text-muted-foreground" />,
-  //   },
-  //   snack: {
-  //     label: "Snacks",
-  //     icon: <HugeiconsIcon icon={FrenchFries02Icon} size={12} className="text-muted-foreground" />,
-  //   },
-  // };
+  const mealTypes = {
+    breakfast: {
+      label: "Desayuno",
+      icon: <HugeiconsIcon icon={Apple01Icon} size={12} className="text-muted-foreground" />,
+    },
+    lunch: {
+      label: "Almuerzo",
+      icon: <HugeiconsIcon icon={NoodlesIcon} size={12} className="text-muted-foreground" />,
+    },
+    dinner: {
+      label: "Cena",
+      icon: <HugeiconsIcon icon={RiceBowl01Icon} size={12} className="text-muted-foreground" />,
+    },
+    snack: {
+      label: "Snacks",
+      icon: <HugeiconsIcon icon={FrenchFries02Icon} size={12} className="text-muted-foreground" />,
+    },
+  };
 
-  const translatedText = t(foodRecommendation.macros.description);
+  const translatedText = foodRecommendation.macros.description;
 
   return (
     <div className="space-y-4">
@@ -193,9 +193,8 @@ export function MealPlan({
           </div>
         </CardContent>
       </Card>
-      {/* 
       <Tabs defaultValue="breakfast" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full ">
+        <TabsList className="grid grid-cols-4 w-full">
           <TabsTrigger value="breakfast">
             {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
           </TabsTrigger>
@@ -210,92 +209,88 @@ export function MealPlan({
           </TabsTrigger>
         </TabsList>
 
-        {Object.entries(foodRecommendation.meals).map(([key, meal]) => (
-          <TabsContent key={key} value={key === "snacks" ? "snack" : key}>
-            <Card>
-              <CardHeader>
-                <CardTitle>
-                  {
-                    mealTypes[
-                      key === "snacks"
-                        ? "snack"
-                        : (key as keyof typeof mealTypes)
-                    ].label
-                  }
-                </CardTitle>
-                <CardDescription>
-                  Calorías: {meal.calories} | Proteínas: {meal.protein}g |
-                  Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Alimento</TableHead>
-                        <TableHead className="w-[100px] text-center">
-                          Cantidad
-                        </TableHead>
-                        <TableHead className="w-[100px] text-center">
-                          Calorías
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell text-center">
-                          Proteínas
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell text-center">
-                          Carbos
-                        </TableHead>
-                        <TableHead className="hidden md:table-cell text-center">
-                          Grasas
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {meal.entries.length > 0 ? (
-                        meal.entries.map((entry) => (
-                          <TableRow key={entry.id}>
-                            <TableCell className="font-medium">
-                              <div className="flex flex-col">
-                                <span>{entry.food.name}</span>
-                                <span className="text-xs text-muted-foreground">
-                                  {entry.food.category}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {entry.quantity * 100}g
-                            </TableCell>
-                            <TableCell className="text-center">
-                              {Math.round(entry.food.calories * entry.quantity)}
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell text-center">
-                              {(entry.food.protein * entry.quantity).toFixed(1)}
-                              g
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell text-center">
-                              {(entry.food.carbs * entry.quantity).toFixed(1)}g
-                            </TableCell>
-                            <TableCell className="hidden md:table-cell text-center">
-                              {(entry.food.fat * entry.quantity).toFixed(1)}g
+        {Object.entries(foodRecommendation.meals).map(([key, meal]) => {
+          const tabValue = key === "snacks" ? "snack" : key;
+          const mealTypeKey = key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
+          
+          return (
+            <TabsContent key={key} value={tabValue}>
+              <Card>
+                <CardHeader>
+                  <CardTitle>{mealTypes[mealTypeKey].label}</CardTitle>
+                  <CardDescription>
+                    Calorías: {meal.calories} | Proteínas: {meal.protein}g |
+                    Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Alimento</TableHead>
+                          <TableHead className="w-[100px] text-center">
+                            Cantidad
+                          </TableHead>
+                          <TableHead className="w-[100px] text-center">
+                            Calorías
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell text-center">
+                            Proteínas
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell text-center">
+                            Carbos
+                          </TableHead>
+                          <TableHead className="hidden md:table-cell text-center">
+                            Grasas
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {meal.entries && meal.entries.length > 0 ? (
+                          meal.entries.map((entry) => (
+                            <TableRow key={entry.id}>
+                              <TableCell className="font-medium">
+                                <div className="flex flex-col">
+                                  <span>{entry.food?.name || "Alimento desconocido"}</span>
+                                  <span className="text-xs text-muted-foreground">
+                                    {entry.food?.category || "N/A"}
+                                  </span>
+                                </div>
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {Math.round((entry.quantity || 0) * 100)}g
+                              </TableCell>
+                              <TableCell className="text-center">
+                                {Math.round((entry.food?.calories || 0) * (entry.quantity || 0))}
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell text-center">
+                                {((entry.food?.protein || 0) * (entry.quantity || 0)).toFixed(1)}g
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell text-center">
+                                {((entry.food?.carbs || 0) * (entry.quantity || 0)).toFixed(1)}g
+                              </TableCell>
+                              <TableCell className="hidden md:table-cell text-center">
+                                {((entry.food?.fat || 0) * (entry.quantity || 0)).toFixed(1)}g
+                              </TableCell>
+                            </TableRow>
+                          ))
+                        ) : (
+                          <TableRow>
+                            <TableCell colSpan={6} className="h-24 text-center">
+                              No hay alimentos registrados para esta comida.
                             </TableCell>
                           </TableRow>
-                        ))
-                      ) : (
-                        <TableRow>
-                          <TableCell colSpan={6} className="h-24 text-center">
-                            No hay alimentos registrados para esta comida.
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        ))}
-      </Tabs> */}
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          );
+        })}
+      </Tabs>
     </div>
   );
 }

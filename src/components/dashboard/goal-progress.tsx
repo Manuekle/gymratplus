@@ -1,5 +1,5 @@
 // import { Progress } from "@/components/ui/progress";
-import { GoalsDashboard } from "../goals-dashboard";
+import { GoalsDashboard } from "../goals/goals-dashboard";
 
 export default function GoalProgress() {
   return (

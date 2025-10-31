@@ -8,7 +8,7 @@ import {
   publishNotification,
   publishWaterIntake,
 } from "@/lib/database/redis";
-import { createWaterGoalCompletedNotification } from "@/lib/create-system-notifications";
+import { createWaterGoalCompletedNotification } from "@/lib/notifications/create-system-notifications";
 import { startOfDay } from "date-fns";
 
 // POST update water intake

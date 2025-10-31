@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import InstructorSearchContent from "@/components/instructor-search-content"; // Asegúrate de la ruta correcta
+import InstructorSearchContent from "@/components/instructor/instructor-search-content";
 
 // Componente que se utiliza como fallback (carga)
 const SearchPageLoading = () => (

@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
-import { ThemeToggle, useTheme } from "@/components/theme-toggle";
+import { ThemeToggle, useTheme } from "@/components/layout/theme/theme-toggle";
 import Link from "next/link";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";

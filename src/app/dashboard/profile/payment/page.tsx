@@ -33,7 +33,7 @@ import {
   CalendarIcon,
 } from "@hugeicons/core-free-icons";
 
-import { CreditCard } from "@/components/credit-card";
+import { CreditCard } from "@/components/shared/credit-card";
 import {
   Card,
   CardContent,
@@ -42,7 +42,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { CountrySelector } from "@/components/country-selector";
+import { CountrySelector } from "@/components/shared/country-selector";
 
 const instructorFormSchema = z.object({
   bio: z

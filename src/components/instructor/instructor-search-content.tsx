@@ -18,7 +18,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { InstructorProfile, User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { CountrySelector } from "@/components/country-selector";
+import { CountrySelector } from "@/components/shared/country-selector";
 import {
   Select,
   SelectContent,

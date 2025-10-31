@@ -17,9 +17,9 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
-import { UpdateGoal } from "./goals/update-goal";
-import ProgressSkeleton from "./skeleton/progress-skeleton";
-import { DeleteGoal } from "./goals/delete-goal";
+import { UpdateGoal } from "./update-goal";
+import ProgressSkeleton from "../skeleton/progress-skeleton";
+import { DeleteGoal } from "./delete-goal";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Calendar01Icon,
@@ -28,7 +28,7 @@ import {
   WeightScaleIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export function GoalsDashboard() {
   // const { theme, systemTheme } = useTheme();

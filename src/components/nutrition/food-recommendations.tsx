@@ -20,9 +20,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table";
-import { Skeleton } from "./ui/skeleton";
-import { Button } from "./ui/button";
+} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
@@ -474,105 +474,107 @@ export default function FoodRecommendations() {
               </TabsTrigger>
             </TabsList>
 
-            {Object.entries(meals).map(([key, meal]: [string, any]) => (
-              <TabsContent key={key} value={key === "snacks" ? "snack" : key}>
-                <Card>
-                  <CardHeader>
-                    <CardTitle>
-                      {
-                        mealTypes[
-                          key === "snacks"
-                            ? "snack"
-                            : (key as keyof typeof mealTypes)
-                        ].label
-                      }
-                    </CardTitle>
-                    <CardDescription>
-                      Calorías: {meal.calories} | Proteínas: {meal.protein}g |
-                      Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="rounded-md border">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>Alimento</TableHead>
-                            <TableHead className="w-[100px] text-center">
-                              Cantidad
-                            </TableHead>
-                            <TableHead className="w-[100px] text-center">
-                              Calorías
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell text-center">
-                              Proteínas
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell text-center">
-                              Carbos
-                            </TableHead>
-                            <TableHead className="hidden md:table-cell text-center">
-                              Grasas
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {meal.entries.length > 0 ? (
-                            meal.entries.map((entry: any, index: number) => {
-                              const food = foods[entry.foodId] || {
-                                name: `Alimento ${entry.foodId}`,
-                                category: "Desconocido",
-                                calories: 0,
-                                protein: 0,
-                                carbs: 0,
-                                fat: 0,
-                              };
-
-                              return (
-                                <TableRow key={index}>
-                                  <TableCell className="font-medium">
-                                    <div className="flex flex-col">
-                                      <span>{food.name}</span>
-                                      <span className="text-xs text-muted-foreground">
-                                        {food.category}
-                                      </span>
-                                    </div>
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {Math.round(entry.quantity * 100)}g
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {Math.round(food.calories * entry.quantity)}
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
-                                    {(food.protein * entry.quantity).toFixed(1)}
-                                    g
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
-                                    {(food.carbs * entry.quantity).toFixed(1)}g
-                                  </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
-                                    {(food.fat * entry.quantity).toFixed(1)}g
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })
-                          ) : (
+            {Object.entries(meals).map(([key, meal]: [string, any]) => {
+              // Map "snacks" to "snack" for tab value
+              const tabValue = key === "snacks" ? "snack" : key;
+              const mealTypeKey = key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
+              
+              // Ensure meal has entries array
+              const mealEntries = Array.isArray(meal.entries) ? meal.entries : [];
+              
+              return (
+                <TabsContent key={key} value={tabValue}>
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>
+                        {mealTypes[mealTypeKey].label}
+                      </CardTitle>
+                      <CardDescription>
+                        Calorías: {meal.calories || 0} | Proteínas: {meal.protein || 0}g |
+                        Carbohidratos: {meal.carbs || 0}g | Grasas: {meal.fat || 0}g
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
                             <TableRow>
-                              <TableCell
-                                colSpan={6}
-                                className="h-24 text-center"
-                              >
-                                No hay alimentos registrados para esta comida.
-                              </TableCell>
+                              <TableHead>Alimento</TableHead>
+                              <TableHead className="w-[100px] text-center">
+                                Cantidad
+                              </TableHead>
+                              <TableHead className="w-[100px] text-center">
+                                Calorías
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell text-center">
+                                Proteínas
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell text-center">
+                                Carbos
+                              </TableHead>
+                              <TableHead className="hidden md:table-cell text-center">
+                                Grasas
+                              </TableHead>
                             </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </CardContent>
-                </Card>
-              </TabsContent>
-            ))}
+                          </TableHeader>
+                          <TableBody>
+                            {mealEntries.length > 0 ? (
+                              mealEntries.map((entry: any, index: number) => {
+                                const food = foods[entry.foodId] || {
+                                  name: `Alimento ${entry.foodId}`,
+                                  category: "Desconocido",
+                                  calories: 0,
+                                  protein: 0,
+                                  carbs: 0,
+                                  fat: 0,
+                                };
+
+                                return (
+                                  <TableRow key={index}>
+                                    <TableCell className="font-medium">
+                                      <div className="flex flex-col">
+                                        <span>{food.name}</span>
+                                        <span className="text-xs text-muted-foreground">
+                                          {food.category}
+                                        </span>
+                                      </div>
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                      {Math.round((entry.quantity || 0) * 100)}g
+                                    </TableCell>
+                                    <TableCell className="text-center">
+                                      {Math.round((food.calories || 0) * (entry.quantity || 0))}
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell text-center">
+                                      {((food.protein || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell text-center">
+                                      {((food.carbs || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                    </TableCell>
+                                    <TableCell className="hidden md:table-cell text-center">
+                                      {((food.fat || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })
+                            ) : (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={6}
+                                  className="h-24 text-center"
+                                >
+                                  No hay alimentos registrados para esta comida.
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </CardContent>
       </Card>

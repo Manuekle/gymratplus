@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { GoalProgress } from "@/components/dashboard/goal-progress";
-import { NutritionSummary } from "@/components/dashboard/nutrition-summary";
-import { ProgressChart } from "@/components/dashboard/progress-chart";
-import { WorkoutSummary } from "@/components/dashboard/workout-summary";
-import { AnimatedLayout } from "@/components/layout/animated-layout";
+import GoalProgress from "@/components/dashboard/goal-progress";
+import NutritionSummary from "@/components/dashboard/nutrition-summary";
+import ProgressChart from "@/components/dashboard/progress-chart";
+import WorkoutSummary from "@/components/dashboard/workout-summary";
+import AnimatedLayout from "@/components/layout/animated-layout";
 
 export default function DashboardPage() {
   const [refreshKey, setRefreshKey] = useState(0);

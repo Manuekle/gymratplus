@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-import { ThemeToggle } from "@/components/theme-toggle";
+import { ThemeToggle } from "@/components/layout/theme/theme-toggle";
 import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
 import { WorkoutStreak } from "./workout/workout-streak";

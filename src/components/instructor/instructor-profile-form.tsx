@@ -11,7 +11,7 @@ import { useSession } from "next-auth/react";
 import { redis } from "@/lib/database/redis";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CountrySelector } from "@/components/country-selector";
+import { CountrySelector } from "@/components/shared/country-selector";
 import {
   Form,
   FormControl,

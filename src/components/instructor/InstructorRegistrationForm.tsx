@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { CountrySelector } from "@/components/country-selector";
+import { CountrySelector } from "@/components/shared/country-selector";
 import {
   Drawer,
   DrawerContent,

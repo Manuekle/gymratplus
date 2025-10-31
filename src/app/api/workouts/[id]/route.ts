@@ -227,7 +227,7 @@ export async function DELETE(request: NextRequest) {
 
     if (!workout) {
       return NextResponse.json(
-        { error: "Workout no encontrado o no autorizado" },
+        { error: "Entrenamiento no encontrado o no autorizado" },
         { status: 404 },
       );
     }
@@ -242,11 +242,11 @@ export async function DELETE(request: NextRequest) {
       where: { id, createdById: session.user.id, type: "personal" },
     });
 
-    return NextResponse.json({ message: "Workout eliminado correctamente" });
+    return NextResponse.json({ message: "Entrenamiento eliminado correctamente" });
   } catch (error) {
-    console.error("Error eliminando workout:", error);
+    console.error("Error eliminando entrenamiento:", error);
     return NextResponse.json(
-      { error: "Error eliminando workout" },
+      { error: "Error eliminando entrenamiento" },
       { status: 500 },
     );
   }

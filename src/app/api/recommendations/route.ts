@@ -2,7 +2,13 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-import { calculateExperienceLevel } from "@/lib/workout/workout-utils";
+import {
+  calculateExperienceLevel,
+  createWorkoutPlan,
+  getOrCreateExercises,
+  getRecommendedWorkoutType,
+  type WorkoutGoal,
+} from "@/lib/workout/workout-utils";
 import {
   createNutritionPlan,
   type NutritionPlan,
@@ -125,20 +131,8 @@ export async function POST(req: Request): Promise<NextResponse> {
       return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
-    // Get exercises
-    const whereClause: {
-      muscleGroup?: string;
-    } = {};
-
-    if (profileData.goal === "gain-muscle") {
-      whereClause.muscleGroup = "piernas";
-    }
-
-    const exercises = await prisma.exercise.findMany({
-      where: whereClause,
-      take: 10,
-    });
-
+    // Get all exercises
+    const exercises = await getOrCreateExercises();
     if (exercises.length === 0) {
       return NextResponse.json(
         { error: "No exercises available" },
@@ -146,37 +140,68 @@ export async function POST(req: Request): Promise<NextResponse> {
       );
     }
 
-    // Create a personalized workout plan based on profile
-    const workout = (await prisma.workout.create({
+    // Determine workout type based on profile
+    const workoutType = getRecommendedWorkoutType({
+      trainingFrequency: profile.trainingFrequency ?? undefined,
+      goal: profileData.goal as WorkoutGoal,
+      activityLevel: profile.activityLevel ?? undefined,
+      experienceLevel: experienceLevel,
+    });
+
+    // Map goal to WorkoutGoal type
+    const goalMap: Record<string, WorkoutGoal> = {
+      "gain-muscle": "gain-muscle",
+      "lose-weight": "fat-loss",
+      "maintain": "maintain",
+    };
+    const workoutGoal = goalMap[profileData.goal] || "maintain";
+
+    // Get training frequency from profile
+    const trainingFrequency = profile.trainingFrequency ?? 3;
+
+    // Create workout first
+    const workout = await prisma.workout.create({
       data: {
-        name: `Plan de Entrenamiento ${profileData.goal === "gain-muscle" ? "Muscular" : "Cardio"}`,
-        description: `Plan personalizado basado en tu objetivo: ${profileData.goal}`,
+        name: `Plan de Entrenamiento ${workoutType}`,
+        description: `Plan personalizado basado en tu objetivo: ${profileData.goal} y nivel: ${experienceLevel}`,
         createdById: userId,
         type: "personal",
-        exercises: {
-          create: exercises.slice(0, 5).map((exercise, index) => ({
-            exerciseId: exercise.id,
-            sets: profileData.experienceLevel === "beginner" ? 2 : 3,
-            reps: profileData.experienceLevel === "beginner" ? 8 : 12,
-            restTime: profileData.experienceLevel === "beginner" ? 90 : 60,
-            order: index,
-            notes: `Ejercicio recomendado para ${profileData.goal}`,
-          })),
-        },
       },
+    });
+
+    // Create workout plan with exercises
+    await createWorkoutPlan(
+      workout.id,
+      exercises,
+      workoutGoal,
+      profile.gender,
+      trainingFrequency,
+      workoutType,
+      [],
+      "standard"
+    );
+
+    // Fetch the complete workout with exercises
+    const workoutWithExercises = await prisma.workout.findUnique({
+      where: { id: workout.id },
       include: {
         exercises: {
           include: {
             exercise: true,
           },
+          orderBy: {
+            order: "asc",
+          },
         },
       },
-    })) as {
-      id: string;
-      name: string;
-      description: string;
-      exercises: PrismaExercise[];
-    };
+    });
+
+    if (!workoutWithExercises || !workoutWithExercises.exercises.length) {
+      return NextResponse.json(
+        { error: "Failed to create workout plan" },
+        { status: 500 }
+      );
+    }
 
     // Calculate calorie target based on goal and weight
     let calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
@@ -228,15 +253,40 @@ export async function POST(req: Request): Promise<NextResponse> {
     });
 
     // Save the food recommendation to the database
-    const foodRecommendation = await prisma.foodRecommendation.create({
+    // Save the complete meals structure with entries, calories, and macros
+    await prisma.foodRecommendation.create({
       data: {
         userId,
         macros: JSON.stringify(nutritionPlan.macros),
         meals: JSON.stringify({
-          breakfast: nutritionPlan.meals.breakfast.entries.map((e) => e.foodId),
-          lunch: nutritionPlan.meals.lunch.entries.map((e) => e.foodId),
-          dinner: nutritionPlan.meals.dinner.entries.map((e) => e.foodId),
-          snacks: nutritionPlan.meals.snacks.entries.map((e) => e.foodId),
+          breakfast: {
+            entries: nutritionPlan.meals.breakfast.entries,
+            calories: nutritionPlan.meals.breakfast.calories,
+            protein: nutritionPlan.meals.breakfast.protein,
+            carbs: nutritionPlan.meals.breakfast.carbs,
+            fat: nutritionPlan.meals.breakfast.fat,
+          },
+          lunch: {
+            entries: nutritionPlan.meals.lunch.entries,
+            calories: nutritionPlan.meals.lunch.calories,
+            protein: nutritionPlan.meals.lunch.protein,
+            carbs: nutritionPlan.meals.lunch.carbs,
+            fat: nutritionPlan.meals.lunch.fat,
+          },
+          dinner: {
+            entries: nutritionPlan.meals.dinner.entries,
+            calories: nutritionPlan.meals.dinner.calories,
+            protein: nutritionPlan.meals.dinner.protein,
+            carbs: nutritionPlan.meals.dinner.carbs,
+            fat: nutritionPlan.meals.dinner.fat,
+          },
+          snacks: {
+            entries: nutritionPlan.meals.snacks.entries,
+            calories: nutritionPlan.meals.snacks.calories,
+            protein: nutritionPlan.meals.snacks.protein,
+            carbs: nutritionPlan.meals.snacks.carbs,
+            fat: nutritionPlan.meals.snacks.fat,
+          },
         }),
         calorieTarget,
       },
@@ -257,58 +307,172 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
+    // Group exercises by day based on workout type and training frequency
+    const exercisesPerDay = Math.ceil(
+      workoutWithExercises.exercises.length / trainingFrequency
+    );
+    const days: Array<{ day: string; exercises: Exercise[] }> = [];
+
+    // Day names in Spanish
+    const dayNames = [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo",
+    ];
+
+    // Split exercises into days
+    for (let i = 0; i < trainingFrequency; i++) {
+      const startIndex = i * exercisesPerDay;
+      const endIndex = Math.min(
+        startIndex + exercisesPerDay,
+        workoutWithExercises.exercises.length
+      );
+      const dayExercises = workoutWithExercises.exercises
+        .slice(startIndex, endIndex)
+        .map((exerciseData: PrismaExercise) => ({
+          id: exerciseData.id,
+          name: exerciseData.exercise.name,
+          sets: exerciseData.sets,
+          reps: exerciseData.reps,
+          restTime: exerciseData.restTime || 0,
+          notes: exerciseData.notes || "",
+        }));
+
+      if (dayExercises.length > 0) {
+        days.push({
+          day: dayNames[i] || `Día ${i + 1}`,
+          exercises: dayExercises,
+        });
+      }
+    }
+
+    // Collect all food IDs from all meals
+    const allFoodIds = new Set<string>();
+    Object.values(nutritionPlan.meals).forEach((meal) => {
+      meal.entries.forEach((entry) => {
+        allFoodIds.add(entry.foodId);
+      });
+    });
+
+    // Fetch all foods
+    const foodsMap = new Map();
+    if (allFoodIds.size > 0) {
+      const foods = await prisma.food.findMany({
+        where: {
+          id: { in: Array.from(allFoodIds) },
+        },
+      });
+
+      foods.forEach((food) => {
+        foodsMap.set(food.id, {
+          id: food.id,
+          name: food.name,
+          calories: food.calories,
+          protein: food.protein,
+          carbs: food.carbs,
+          fat: food.fat,
+          serving: food.serving,
+          category: food.category,
+        });
+      });
+    }
+
+    // Populate food objects in nutrition plan entries
+    const populatedNutritionPlan = {
+      ...nutritionPlan,
+      meals: {
+        breakfast: {
+          ...nutritionPlan.meals.breakfast,
+          id: `meal-breakfast-${Date.now()}`,
+          entries: nutritionPlan.meals.breakfast.entries.map((entry, index) => ({
+            id: `entry-${index}-${Date.now()}`,
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+            food: foodsMap.get(entry.foodId) || {
+              id: entry.foodId,
+              name: "Alimento no encontrado",
+              calories: 0,
+              protein: 0,
+              carbs: 0,
+              fat: 0,
+              serving: 100,
+              category: "unknown",
+            },
+          })),
+        },
+        lunch: {
+          ...nutritionPlan.meals.lunch,
+          id: `meal-lunch-${Date.now()}`,
+          entries: nutritionPlan.meals.lunch.entries.map((entry, index) => ({
+            id: `entry-${index}-${Date.now()}`,
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+            food: foodsMap.get(entry.foodId) || {
+              id: entry.foodId,
+              name: "Alimento no encontrado",
+              calories: 0,
+              protein: 0,
+              carbs: 0,
+              fat: 0,
+              serving: 100,
+              category: "unknown",
+            },
+          })),
+        },
+        dinner: {
+          ...nutritionPlan.meals.dinner,
+          id: `meal-dinner-${Date.now()}`,
+          entries: nutritionPlan.meals.dinner.entries.map((entry, index) => ({
+            id: `entry-${index}-${Date.now()}`,
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+            food: foodsMap.get(entry.foodId) || {
+              id: entry.foodId,
+              name: "Alimento no encontrado",
+              calories: 0,
+              protein: 0,
+              carbs: 0,
+              fat: 0,
+              serving: 100,
+              category: "unknown",
+            },
+          })),
+        },
+        snacks: {
+          ...nutritionPlan.meals.snacks,
+          id: `meal-snacks-${Date.now()}`,
+          entries: nutritionPlan.meals.snacks.entries.map((entry, index) => ({
+            id: `entry-${index}-${Date.now()}`,
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+            food: foodsMap.get(entry.foodId) || {
+              id: entry.foodId,
+              name: "Alimento no encontrado",
+              calories: 0,
+              protein: 0,
+              carbs: 0,
+              fat: 0,
+              serving: 100,
+              category: "unknown",
+            },
+          })),
+        },
+      },
+    };
+
     const responseData: ResponseData = {
       success: true,
       workoutPlan: {
-        id: workout.id,
-        name: workout.name,
-        description: workout.description,
-        days: [
-          {
-            day: "Lunes",
-            exercises: workout.exercises.map(
-              (exerciseData: PrismaExercise) => ({
-                id: exerciseData.id,
-                name: exerciseData.exercise.name,
-                sets: exerciseData.sets,
-                reps: exerciseData.reps,
-                restTime: exerciseData.restTime || 0,
-                notes: exerciseData.notes || "",
-              })
-            ),
-          },
-          {
-            day: "Miércoles",
-            exercises: workout.exercises.map(
-              (exerciseData: PrismaExercise) => ({
-                id: exerciseData.id,
-                name: exerciseData.exercise.name,
-                sets: exerciseData.sets,
-                reps: exerciseData.reps,
-                restTime: exerciseData.restTime || 0,
-                notes: exerciseData.notes || "",
-              })
-            ),
-          },
-          {
-            day: "Viernes",
-            exercises: workout.exercises.map(
-              (exerciseData: PrismaExercise) => ({
-                id: exerciseData.id,
-                name: exerciseData.exercise.name,
-                sets: exerciseData.sets,
-                reps: exerciseData.reps,
-                restTime: exerciseData.restTime || 0,
-                notes: exerciseData.notes || "",
-              })
-            ),
-          },
-        ],
+        id: workoutWithExercises.id,
+        name: workoutWithExercises.name,
+        description: workoutWithExercises.description || "",
+        days,
       },
-      foodRecommendation: {
-        ...nutritionPlan,
-        id: foodRecommendation.id,
-      },
+      foodRecommendation: populatedNutritionPlan,
       recommendations: [
         `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === "gain-muscle" ? "de fuerza" : "cardio"}`,
         `Consume ${dailyProteinTarget}g de proteína de alta calidad diariamente`,

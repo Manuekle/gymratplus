@@ -2,6 +2,27 @@ import { prisma } from "@/lib/database/prisma";
 import type { Food } from "@prisma/client";
 import { foodsToCreate } from "@/data/food";
 
+// Helper function to map English categories to functional meal categories
+function isProteinCategory(category: string): boolean {
+  return ["meat", "fish", "eggs", "dairy", "legumes", "plant_protein"].includes(category);
+}
+
+function isCarbCategory(category: string): boolean {
+  return ["cereals", "pasta", "rice", "bars"].includes(category);
+}
+
+function isVegetableCategory(category: string): boolean {
+  return ["vegetables"].includes(category);
+}
+
+function isFruitCategory(category: string): boolean {
+  return ["fruits"].includes(category);
+}
+
+function isFatCategory(category: string): boolean {
+  return ["nuts", "seeds", "oils"].includes(category);
+}
+
 // Get or create foods in the database
 export async function getOrCreateFoods(dietaryPreference = "no-preference") {
   // Check if foods already exist
@@ -30,16 +51,23 @@ function filterFoodsByPreference(
     return foods.filter(
       (food) =>
         !food.name.toLowerCase().includes("pollo") &&
+        !food.name.toLowerCase().includes("chicken") &&
         !food.name.toLowerCase().includes("carne") &&
+        !food.name.toLowerCase().includes("meat") &&
         !food.name.toLowerCase().includes("pescado") &&
-        !food.name.toLowerCase().includes("salmón")
+        !food.name.toLowerCase().includes("fish") &&
+        !food.name.toLowerCase().includes("salmón") &&
+        !food.name.toLowerCase().includes("salmon") &&
+        food.category !== "meat" &&
+        food.category !== "fish"
     );
   } else if (dietaryPreference === "keto") {
     return foods.filter(
       (food) =>
         food.carbs < 10 ||
-        food.category === "proteína" ||
-        food.category === "grasa"
+        isProteinCategory(food.category) ||
+        isFatCategory(food.category) ||
+        isVegetableCategory(food.category)
     );
   }
 
@@ -169,6 +197,18 @@ export async function createNutritionPlan(
   };
 }
 
+// Helper to find foods by name pattern (case-insensitive, partial match)
+function findFoodsByNamePattern(
+  foods: Food[],
+  patterns: string[]
+): Food[] {
+  return foods.filter((f) =>
+    patterns.some((pattern) =>
+      f.name.toLowerCase().includes(pattern.toLowerCase())
+    )
+  );
+}
+
 async function createMealLog(
   userId: string,
   mealType: string,
@@ -181,141 +221,252 @@ async function createMealLog(
 
   // Helper function to safely get food items
   const getSafeFoods = (
-    foods: Food[] | undefined,
-    index: number = 0
+    foods: Food[],
+    count: number = 1,
+    startIndex: number = 0
   ): Food[] => {
-    if (!foods || !Array.isArray(foods) || foods.length <= index) {
+    if (!foods || !Array.isArray(foods) || foods.length === 0) {
       return [];
     }
-    const food = foods[index];
-    if (
-      food &&
-      typeof food === "object" &&
-      "id" in food &&
-      "name" in food &&
-      "calories" in food &&
-      "protein" in food &&
-      "carbs" in food &&
-      "fat" in food
-    ) {
-      return [food as Food];
+    const safeFoods: Food[] = [];
+    for (let i = startIndex; i < Math.min(startIndex + count, foods.length); i++) {
+      const food = foods[i];
+      if (
+        food &&
+        typeof food === "object" &&
+        "id" in food &&
+        "name" in food &&
+        "calories" in food &&
+        "protein" in food &&
+        "carbs" in food &&
+        "fat" in food
+      ) {
+        safeFoods.push(food as Food);
+      }
     }
-    return [];
+    return safeFoods;
   };
 
-  // Meal-specific food selection logic
+  // Meal-specific food selection logic using English categories
   if (mealType === "breakfast") {
+    // Protein foods: eggs, dairy (yogurt, cottage cheese)
     const proteinFoods = foods.filter(
       (f) =>
-        f.category === "proteína" &&
-        (f.name === "Huevos" || f.name === "Yogur griego")
+        isProteinCategory(f.category) &&
+        (f.category === "eggs" ||
+          f.category === "dairy" ||
+          f.name.toLowerCase().includes("huevo") ||
+          f.name.toLowerCase().includes("egg") ||
+          f.name.toLowerCase().includes("yogur") ||
+          f.name.toLowerCase().includes("yogurt") ||
+          f.name.toLowerCase().includes("cottage"))
     );
 
+    // Carb foods: cereals (oatmeal, bread)
     const carbFoods = foods.filter(
       (f) =>
-        f.category === "carbohidrato" &&
-        (f.name === "Avena" || f.name === "Pan integral")
+        isCarbCategory(f.category) &&
+        (f.name.toLowerCase().includes("avena") ||
+          f.name.toLowerCase().includes("oat") ||
+          f.name.toLowerCase().includes("pan") ||
+          f.name.toLowerCase().includes("bread"))
     );
 
-    const fruitFoods = foods.filter((f) => f.category === "fruta");
+    // Fruits
+    const fruitFoods = foods.filter((f) => isFruitCategory(f.category));
 
+    // Fats: nuts, avocado
     const fatFoods = foods.filter(
       (f) =>
-        f.category === "grasa" &&
-        (f.name === "Aguacate" || f.name === "Almendras")
+        isFatCategory(f.category) &&
+        (f.name.toLowerCase().includes("aguacate") ||
+          f.name.toLowerCase().includes("avocado") ||
+          f.name.toLowerCase().includes("almendra") ||
+          f.name.toLowerCase().includes("almond"))
     );
 
     if (dietaryPreference === "keto") {
-      const safeProteinFoods = getSafeFoods(proteinFoods);
-      const safeFatFoods = getSafeFoods(fatFoods);
-      const additionalFat =
-        fatFoods.length > 1 ? getSafeFoods(fatFoods, 1) : [];
-
       selectedFoods = [
-        ...safeProteinFoods,
-        ...safeFatFoods,
-        ...additionalFat,
+        ...getSafeFoods(proteinFoods, 2),
+        ...getSafeFoods(fatFoods, 2),
       ].filter((food): food is Food => food !== undefined && food !== null);
+      
+      // Fallback: if still empty, get any protein and fat foods
+      if (selectedFoods.length === 0) {
+        const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+        const anyFat = foods.filter((f) => isFatCategory(f.category));
+        selectedFoods = [
+          ...getSafeFoods(anyProtein, 2),
+          ...getSafeFoods(anyFat, 2),
+        ];
+      }
     } else {
-      const safeProteinFoods = getSafeFoods(proteinFoods);
-      const safeCarbFoods = getSafeFoods(carbFoods);
-      const safeFruitFoods = getSafeFoods(fruitFoods);
-      const safeFatFoods = getSafeFoods(fatFoods);
-
       selectedFoods = [
-        ...safeProteinFoods,
-        ...safeCarbFoods,
-        ...safeFruitFoods,
-        ...safeFatFoods,
+        ...getSafeFoods(proteinFoods, 1),
+        ...getSafeFoods(carbFoods, 1),
+        ...getSafeFoods(fruitFoods, 1),
+        ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
+      
+      // Fallback: if still empty, get foods by category
+      if (selectedFoods.length === 0) {
+        const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+        const anyCarb = foods.filter((f) => isCarbCategory(f.category));
+        const anyFruit = foods.filter((f) => isFruitCategory(f.category));
+        const anyFat = foods.filter((f) => isFatCategory(f.category));
+        selectedFoods = [
+          ...getSafeFoods(anyProtein, 1),
+          ...getSafeFoods(anyCarb, 1),
+          ...getSafeFoods(anyFruit, 1),
+          ...getSafeFoods(anyFat, 1),
+        ];
+      }
     }
   } else if (mealType === "lunch") {
-    const proteinFoods = foods.filter((f) => f.category === "proteína");
+    // Protein: meat, fish, legumes
+    const proteinFoods = foods.filter((f) => isProteinCategory(f.category));
+    // Carbs: rice, pasta, excluding oatmeal
     const carbFoods = foods.filter(
-      (f) => f.category === "carbohidrato" && f.name !== "Avena"
+      (f) =>
+        isCarbCategory(f.category) &&
+        !f.name.toLowerCase().includes("avena") &&
+        !f.name.toLowerCase().includes("oat")
     );
-    const vegFoods = foods.filter((f) => f.category === "verdura");
+    // Vegetables
+    const vegFoods = foods.filter((f) => isVegetableCategory(f.category));
+    // Fats: oils
     const fatFoods = foods.filter(
-      (f) => f.category === "grasa" && f.name === "Aceite de oliva"
+      (f) =>
+        isFatCategory(f.category) &&
+        (f.name.toLowerCase().includes("aceite") ||
+          f.name.toLowerCase().includes("oil") ||
+          f.category === "oils")
     );
 
     if (dietaryPreference === "keto") {
       selectedFoods = [
-        ...getSafeFoods(proteinFoods),
-        ...getSafeFoods(vegFoods),
-        ...(vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : []),
-        ...getSafeFoods(fatFoods),
+        ...getSafeFoods(proteinFoods, 1),
+        ...getSafeFoods(vegFoods, 2),
+        ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
+      
+      // Fallback
+      if (selectedFoods.length === 0) {
+        const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+        const anyVeg = foods.filter((f) => isVegetableCategory(f.category));
+        const anyFat = foods.filter((f) => isFatCategory(f.category));
+        selectedFoods = [
+          ...getSafeFoods(anyProtein, 1),
+          ...getSafeFoods(anyVeg, 2),
+          ...getSafeFoods(anyFat, 1),
+        ];
+      }
     } else {
       selectedFoods = [
-        ...getSafeFoods(proteinFoods),
-        ...getSafeFoods(carbFoods),
-        ...getSafeFoods(vegFoods),
-        ...(vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : []),
-        ...getSafeFoods(fatFoods),
+        ...getSafeFoods(proteinFoods, 1),
+        ...getSafeFoods(carbFoods, 1),
+        ...getSafeFoods(vegFoods, 2),
+        ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
+      
+      // Fallback
+      if (selectedFoods.length === 0) {
+        const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+        const anyCarb = foods.filter((f) => isCarbCategory(f.category));
+        const anyVeg = foods.filter((f) => isVegetableCategory(f.category));
+        const anyFat = foods.filter((f) => isFatCategory(f.category));
+        selectedFoods = [
+          ...getSafeFoods(anyProtein, 1),
+          ...getSafeFoods(anyCarb, 1),
+          ...getSafeFoods(anyVeg, 2),
+          ...getSafeFoods(anyFat, 1),
+        ];
+      }
     }
   } else if (mealType === "dinner") {
-    const proteinFoods = foods.filter((f) => f.category === "proteína");
-    const vegFoods = foods.filter((f) => f.category === "verdura");
-    const fatFoods = foods.filter((f) => f.category === "grasa");
+    // Protein: meat, fish, legumes
+    const proteinFoods = foods.filter((f) => isProteinCategory(f.category));
+    // Vegetables
+    const vegFoods = foods.filter((f) => isVegetableCategory(f.category));
+    // Fats: oils
+    const fatFoods = foods.filter((f) => isFatCategory(f.category));
+    // Carbs (only if not keto)
     const carbFoods =
       dietaryPreference === "keto"
         ? []
         : foods.filter(
-            (f) => f.category === "carbohidrato" && f.name !== "Avena"
+            (f) =>
+              isCarbCategory(f.category) &&
+              !f.name.toLowerCase().includes("avena") &&
+              !f.name.toLowerCase().includes("oat")
           );
 
     selectedFoods = [
-      ...(proteinFoods.length > 1
-        ? getSafeFoods(proteinFoods, 1)
-        : getSafeFoods(proteinFoods)),
-      ...getSafeFoods(carbFoods),
-      ...getSafeFoods(vegFoods),
-      ...(vegFoods.length > 1 ? getSafeFoods(vegFoods, 1) : []),
-      ...getSafeFoods(fatFoods),
+      ...getSafeFoods(proteinFoods, 1, 1), // Skip first protein (use different from lunch)
+      ...getSafeFoods(carbFoods, 1),
+      ...getSafeFoods(vegFoods, 2),
+      ...getSafeFoods(fatFoods, 1),
     ].filter((food): food is Food => food !== undefined && food !== null);
+    
+    // Fallback
+    if (selectedFoods.length === 0) {
+      const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+      const anyCarb = foods.filter((f) => isCarbCategory(f.category));
+      const anyVeg = foods.filter((f) => isVegetableCategory(f.category));
+      const anyFat = foods.filter((f) => isFatCategory(f.category));
+      selectedFoods = [
+        ...getSafeFoods(anyProtein, 1, 1),
+        ...getSafeFoods(anyCarb, 1),
+        ...getSafeFoods(anyVeg, 2),
+        ...getSafeFoods(anyFat, 1),
+      ];
+    }
   } else if (mealType === "snack") {
+    // Protein: dairy (yogurt), eggs
     const proteinFoods = foods.filter(
       (f) =>
-        f.category === "proteína" &&
-        (f.name === "Yogur griego" || f.name === "Huevos")
+        isProteinCategory(f.category) &&
+        (f.category === "eggs" ||
+          f.category === "dairy" ||
+          f.name.toLowerCase().includes("yogur") ||
+          f.name.toLowerCase().includes("yogurt") ||
+          f.name.toLowerCase().includes("huevo") ||
+          f.name.toLowerCase().includes("egg"))
     );
+    // Fruits (not for keto)
     const fruitFoods =
       dietaryPreference === "keto"
         ? []
-        : foods.filter((f) => f.category === "fruta");
+        : foods.filter((f) => isFruitCategory(f.category));
+    // Nuts and seeds
     const nutFoods = foods.filter(
       (f) =>
-        f.category === "grasa" &&
-        (f.name === "Almendras" || f.name === "Semillas de chía")
+        isFatCategory(f.category) &&
+        (f.name.toLowerCase().includes("almendra") ||
+          f.name.toLowerCase().includes("almond") ||
+          f.name.toLowerCase().includes("chía") ||
+          f.name.toLowerCase().includes("chia") ||
+          f.category === "nuts" ||
+          f.category === "seeds")
     );
 
     selectedFoods = [
-      ...getSafeFoods(proteinFoods),
-      ...getSafeFoods(fruitFoods),
-      ...getSafeFoods(nutFoods),
+      ...getSafeFoods(proteinFoods, 1),
+      ...getSafeFoods(fruitFoods, 1),
+      ...getSafeFoods(nutFoods, 1),
     ].filter((food): food is Food => food !== undefined && food !== null);
+    
+    // Fallback
+    if (selectedFoods.length === 0) {
+      const anyProtein = foods.filter((f) => isProteinCategory(f.category));
+      const anyFruit = foods.filter((f) => isFruitCategory(f.category));
+      const anyNuts = foods.filter((f) => isFatCategory(f.category));
+      selectedFoods = [
+        ...getSafeFoods(anyProtein, 1),
+        ...getSafeFoods(anyFruit, 1),
+        ...getSafeFoods(anyNuts, 1),
+      ];
+    }
   }
 
   // Calculate macros and create meal entries
@@ -325,32 +476,55 @@ async function createMealLog(
   let totalFat = 0;
   const mealEntries: { foodId: string; quantity: number }[] = [];
 
+  // If no foods selected, return empty meal log
+  if (selectedFoods.length === 0) {
+    console.warn(`No foods found for meal type: ${mealType}`);
+    return {
+      userId,
+      date: new Date(),
+      mealType,
+      calories: 0,
+      protein: 0,
+      carbs: 0,
+      fat: 0,
+      entries: [],
+    };
+  }
+
   for (const food of selectedFoods) {
+    // Base quantity in servings (not grams)
     let baseQuantity = 1.0;
 
-    if (food.category === "proteína") {
+    // Adjust quantity based on food category and goal
+    if (isProteinCategory(food.category)) {
       baseQuantity = goal === "gain-muscle" ? 1.2 : 1.0;
-    } else if (food.category === "carbohidrato") {
+    } else if (isCarbCategory(food.category)) {
       baseQuantity = goal === "lose-weight" ? 0.8 : 1.0;
-    } else if (food.category === "verdura") {
+    } else if (isVegetableCategory(food.category)) {
       baseQuantity = 1.5;
-    } else if (food.category === "grasa") {
+    } else if (isFatCategory(food.category)) {
       baseQuantity = goal === "lose-weight" ? 0.7 : 1.0;
     }
 
+    // Reduce quantity for snacks
     if (mealType === "snack") {
       baseQuantity *= 0.5;
     }
 
-    const quantity = baseQuantity;
-    totalCalories += food.calories * quantity;
-    totalProtein += food.protein * quantity;
-    totalCarbs += food.carbs * quantity;
-    totalFat += food.fat * quantity;
+    // Convert to grams based on serving size
+    // quantity is in servings, we need to convert to ratio for calculation
+    // servings are typically per 100g, so we use baseQuantity as multiplier
+    const quantityInGrams = (food.serving || 100) * baseQuantity;
+    const quantityRatio = quantityInGrams / 100; // Ratio for macro calculations
+
+    totalCalories += food.calories * quantityRatio;
+    totalProtein += food.protein * quantityRatio;
+    totalCarbs += food.carbs * quantityRatio;
+    totalFat += food.fat * quantityRatio;
 
     mealEntries.push({
       foodId: food.id.toString(),
-      quantity,
+      quantity: quantityRatio, // Store as ratio (1.0 = 100g serving)
     });
   }
 

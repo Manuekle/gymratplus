@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-import { Icons } from "./icons";
+import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Clock01Icon,

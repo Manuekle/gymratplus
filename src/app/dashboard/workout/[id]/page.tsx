@@ -75,10 +75,10 @@ export default function WorkouPage() {
       } else {
         const errorData = await res.json();
         setError(
-          errorData?.error === "Workout no encontrado" ||
-            errorData?.error === "Workout no encontrado o no autorizado"
-            ? "No tienes permiso para ver este workout o no existe."
-            : errorData?.error || "Error al cargar el workout.",
+          errorData?.error === "Entrenamiento no encontrado" ||
+            errorData?.error === "Entrenamiento no encontrado o no autorizado"
+            ? "No tienes permiso para ver este entrenamiento o no existe."
+            : errorData?.error || "Error al cargar el entrenamiento.",
         );
         setWorkout(null);
       }
@@ -97,16 +97,16 @@ export default function WorkouPage() {
       });
 
       if (response.ok) {
-        toast.success("Workout eliminado correctamente");
+        toast.success("Entrenamiento eliminado correctamente");
         router.push("/dashboard/workout");
       } else {
         const error = await response.json();
-        throw new Error(error.message || "Error al eliminar el workout");
+        throw new Error(error.message || "Error al eliminar el entrenamiento");
       }
     } catch (error) {
-      console.error("Error deleting workout:", error);
+      console.error("Error deleting entrenamiento:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al eliminar el workout",
+        error instanceof Error ? error.message : "Error al eliminar el entrenamiento",
       );
     } finally {
       setIsDeleting(false);
@@ -194,14 +194,14 @@ export default function WorkouPage() {
         <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
-              ¿Estás seguro de eliminar este workout?
+              ¿Estás seguro de eliminar este entrenamiento?
             </AlertDialogTitle>
             <AlertDialogDescription className="text-xs">
               Esta acción no se puede deshacer. Esto eliminará permanentemente
-              el workout "{workout.name}" y todos sus datos asociados.
+              el entrenamiento "{workout.name}" y todos sus datos asociados.
               <div className="mt-4">
                 <p className="text-xs font-medium mb-2">
-                  Escribe el nombre del workout para confirmar:
+                  Escribe el nombre del entrenamiento para confirmar:
                 </p>
                 <Input
                   placeholder={`Escribe "${workout.name}"`}

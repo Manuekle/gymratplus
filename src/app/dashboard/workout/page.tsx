@@ -15,7 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
-import { ExerciseProgressChart } from "@/components/exercise-progress-chart";
+import { ExerciseProgressChart } from "@/components/workout/exercise-progress-chart";
 import WorkoutCreator from "@/components/workouts/workout-creator";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";

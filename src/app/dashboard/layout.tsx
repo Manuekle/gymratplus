@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/navbar";
 import { CustomSonner } from "@/components/custom-sonner";
-import ProfileCheck from "@/components/alerts/profile-check";
-import { DashboardHeader } from "@/components/dashboard-header";
+import ProfileCheck from "@/components/shared/alerts/profile-check";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
 
 export const metadata = {
   title: "GymRat+",
