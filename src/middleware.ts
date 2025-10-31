@@ -10,10 +10,7 @@ export async function middleware(req: NextRequest) {
   // Check if this is a request to update the instructor status
   if (path === "/api/auth/session" && req.method === "POST") {
     const body = await req.json();
-    if (
-      body?.isInstructor !== undefined &&
-      token?.isInstructor !== body.isInstructor
-    ) {
+    if (body?.isInstructor !== undefined) {
       // Create a new response with the updated token
       const response = NextResponse.next();
       const newToken = {
@@ -32,6 +29,20 @@ export async function middleware(req: NextRequest) {
         sameSite: "lax",
         path: "/",
         maxAge: 30 * 24 * 60 * 60, // 30 days
+      });
+
+      // Force update the session in the response
+      const session = JSON.stringify({
+        ...token,
+        isInstructor: body.isInstructor,
+      });
+      response.cookies.set({
+        name: "__Secure-next-auth.session-token",
+        value: session,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        path: "/",
       });
 
       return response;

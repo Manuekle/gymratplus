@@ -25,7 +25,8 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      const isScrolled = window.scrollY > 50;
+      // Usar un valor de desplazamiento más pequeño si quieres que el efecto se active antes
+      const isScrolled = window.scrollY > 20;
       setScrolled(isScrolled);
     };
 
@@ -35,10 +36,12 @@ export function Navbar() {
 
   return (
     <div
-      className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-500 ease-in-out ${
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b
+      ${
+        // **Ajuste para efecto Glass sutil**
         scrolled
-          ? "bg-background/90 backdrop-blur-md shadow-lg border-border/20"
-          : "bg-background/50 backdrop-blur-sm border-transparent"
+          ? "bg-background/90 backdrop-blur-lg shadow-md border-border/50" // Más opaco (90) y más desenfoque (lg) cuando se desplaza
+          : "bg-background/70 backdrop-blur-md border-transparent" // Menos opaco (70) y menos desenfoque (md) cuando no se desplaza
       }`}
     >
       <div className="flex h-16 items-center px-4 container mx-auto">
@@ -87,10 +90,11 @@ export function Navbar() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-56 border border-border/20 bg-background/95 backdrop-blur-lg shadow-xl rounded-lg overflow-hidden transition-all duration-200 ease-out"
+                // **Ajuste para efecto Glass en el menú**
+                className="w-56 border border-border/30 bg-background/80 backdrop-blur-lg shadow-2xl rounded-xl overflow-hidden transition-all duration-200 ease-out"
                 align="end"
                 forceMount
-                sideOffset={8}
+                sideOffset={10} // Ligeramente más separado para resaltar el efecto
               >
                 <DropdownMenuLabel className="font-normal">
                   <div className="flex flex-col space-y-1">

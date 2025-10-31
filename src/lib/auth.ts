@@ -225,6 +225,7 @@ export const authOptions: NextAuthOptions = {
           where: { id: userId },
           include: {
             profile: true,
+            instructorProfile: true,
           },
         });
 
@@ -234,6 +235,8 @@ export const authOptions: NextAuthOptions = {
           token.interests = dbUser.interests ?? [];
           // @ts-expect-error profile puede no estar tipado correctamente
           token.profile = dbUser.profile ?? null;
+          // @ts-expect-error instructorProfile puede no estar tipado correctamente
+          token.instructorProfile = dbUser.instructorProfile ?? null;
         }
       }
       return token;
@@ -265,15 +268,15 @@ export const authOptions: NextAuthOptions = {
           })
           .catch(() => null);
 
-        // 2. Determinar si el usuario es instructor (directamente desde la base de datos)
-        const isInstructor = Boolean(userFromDB?.isInstructor);
+        // 2. Obtener el estado actual de instructor del token
+        const isInstructor = token.isInstructor ?? false;
 
-        // 3. Si el estado no coincide, actualizar la base de datos
+        // 3. Si el estado en la base de datos no coincide con el token, actualizar la sesión
         if (userFromDB && userFromDB.isInstructor !== isInstructor) {
-          await prisma.user.update({
-            where: { id: session.user.id },
-            data: { isInstructor },
-          });
+          // Actualizar el token con el valor correcto
+          token.isInstructor = userFromDB.isInstructor;
+          // Forzar actualización de la sesión
+          session.user.isInstructor = userFromDB.isInstructor;
         }
 
         // 4. Obtener perfil de instructor si es necesario
@@ -295,6 +298,7 @@ export const authOptions: NextAuthOptions = {
         const safeUserData = {
           name: userFromDB?.name || cachedUserData?.name || "",
           email: userFromDB?.email || cachedUserData?.email || "",
+          isInstructor: token.isInstructor ?? false,
           experienceLevel:
             userFromDB?.experienceLevel ||
             cachedUserData?.experienceLevel ||

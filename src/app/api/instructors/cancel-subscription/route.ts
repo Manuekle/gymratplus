@@ -11,23 +11,47 @@ export async function POST() {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    // Update the user's subscription status without deleting their instructor profile
-    await prisma.user.update({
+    // Update the user's subscription status
+    const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         isInstructor: false,
-        instructorProfile: {
-          update: {
-            // Mark as not paid
-            isPaid: false,
-          },
-        },
+      },
+      include: {
+        instructorProfile: true,
       },
     });
 
-    return NextResponse.json({ success: true });
+    // Invalidate the session to force a refresh
+    const response = NextResponse.json(
+      {
+        success: true,
+        redirectTo: "/dashboard",
+        isInstructor: updatedUser.isInstructor,
+      },
+      { status: 200 },
+    );
+
+    // Update the session cookie with the new isInstructor status
+    response.cookies.set({
+      name: "__Secure-next-auth.session-token",
+      value: JSON.stringify({
+        ...session,
+        user: {
+          ...session.user,
+          isInstructor: false,
+        },
+      }),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 30 * 24 * 60 * 60, // 30 days
+    });
+
+    return response;
   } catch (error) {
-    console.error("Error cancelling subscription:", error);
+    console.error("Error canceling subscription:", error);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
