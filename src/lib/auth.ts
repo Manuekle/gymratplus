@@ -1,122 +1,90 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/prisma";
-import { DefaultSession, NextAuthOptions, User, Session } from "next-auth";
+import {
+  DefaultSession,
+  NextAuthOptions,
+  User as NextAuthUser,
+  Session as NextAuthSession,
+} from "next-auth";
+import { JWT as NextAuthJWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { JWT } from "next-auth/jwt";
-import { AdapterUser } from "next-auth/adapters";
-import { redis } from "@/lib/redis";
+import { redis } from "@/lib/redis"; // Se mantiene por si es usada en otra parte del proyecto
+
+// --- 1. Extensión de Tipos para NextAuth ---
+
+type ProfileType = {
+  id: string;
+  userId: string;
+  [key: string]: any;
+};
+
+type InstructorProfileType = {
+  id: string;
+  userId: string;
+  isPaid: boolean;
+  [key: string]: any;
+};
 
 declare module "next-auth" {
-  interface Session {
+  // Aseguramos que Session extienda NextAuthSession
+  interface Session extends NextAuthSession {
     user: {
-      id?: string;
-      isInstructor?: boolean;
-      experienceLevel?: string;
-      profile?: any;
-      instructorProfile?: any;
-      _localStorage?: {
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-        experienceLevel?: string | null;
-        isInstructor?: boolean;
-        profile?: any;
-        instructorProfile?: any;
+      id: string;
+      isInstructor: boolean;
+      experienceLevel: string | null;
+      profile: ProfileType | null;
+      instructorProfile: InstructorProfileType | null;
+      _localStorage: {
+        name: string | null;
+        email: string | null;
+        image: string | null;
+        experienceLevel: string | null;
+        isInstructor: boolean;
+        profile: ProfileType | null;
+        instructorProfile: InstructorProfileType | null;
       };
     } & DefaultSession["user"];
   }
 
-  interface User {
-    id?: string;
+  // Aseguramos que User extienda NextAuthUser
+  interface User extends NextAuthUser {
+    id: string;
     isInstructor?: boolean;
-    experienceLevel?: string;
+    experienceLevel?: string | null;
+    profile?: ProfileType | null;
+    instructorProfile?: InstructorProfileType | null;
   }
 }
 
 declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    isInstructor?: boolean;
+  // Aseguramos que JWT extienda NextAuthJWT
+  interface JWT extends NextAuthJWT {
+    id: string;
+    name: string | null; // Se tipa como null si no está presente
+    email: string | null; // Se tipa como null si no está presente
+    image: string | null; // Se tipa como null si no está presente
+    isInstructor: boolean;
+    experienceLevel: string | null;
+    profile: ProfileType | null;
+    instructorProfile: InstructorProfileType | null;
+    interests?: string[];
   }
 }
 
-// Cache en memoria para datos de usuario
-const userDataCache = new Map<
-  string,
-  {
-    data: Record<string, string | undefined>;
-    timestamp: number;
-  }
->();
+// --- 2. Tipado para Credentials Provider ---
 
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutos en milisegundos
-
-// Función helper para obtener datos de usuario con caché
-async function getUserDataWithCache(userId: string) {
-  const cached = userDataCache.get(userId);
-  if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
-
-  // Limpiar la caché en memoria
-  userDataCache.delete(userId);
-
-  let userData = (await redis.hgetall(`user:${userId}:data`)) as Record<
-    string,
-    string | undefined
-  >;
-
-  if (!userData || Object.keys(userData).length === 0) {
-    const userFromDB = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        name: true,
-        email: true,
-        experienceLevel: true,
-        image: true,
-        profile: true,
-      },
-    });
-
-    if (userFromDB) {
-      userData = {
-        name: userFromDB.name ?? "",
-        email: userFromDB.email ?? "",
-        experienceLevel: userFromDB.experienceLevel ?? "",
-        image: userFromDB.image ?? "",
-        profile: userFromDB.profile
-          ? JSON.stringify(userFromDB.profile)
-          : undefined,
-      };
-
-      // Limpiar la caché de Redis antes de actualizar
-      await redis.del(`user:${userId}:data`);
-      await redis.hmset(`user:${userId}:data`, userData);
-      await redis.expire(`user:${userId}:data`, 60 * 60 * 24); // 24 horas
-    }
-  }
-
-  if (userData) {
-    userDataCache.set(userId, {
-      data: userData,
-      timestamp: Date.now(),
-    });
-  }
-
-  return userData;
-}
-
-// Definir un tipo de usuario extendido para incluir la contraseña
-interface CustomUser extends User {
+interface CustomUserForCredentials extends NextAuthUser {
   id: string;
-  email?: string | null; // Permitir null y undefined
+  email: string | null;
   password?: string | null;
-  name: string;
-  experienceLevel: string;
-  image: string;
+  name?: string | null;
+  image?: string | null;
+  isInstructor?: boolean;
 }
+
+// --- 3. Opciones de NextAuth (authOptions) ---
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -139,14 +107,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        console.log("Received Credentials:", credentials);
-
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Credenciales requeridas");
         }
 
-        // Buscar en la base de datos primero
-        const user: CustomUser | null = (await prisma.user.findUnique({
+        const user = (await prisma.user.findUnique({
           where: { email: credentials.email },
           select: {
             id: true,
@@ -154,57 +119,29 @@ export const authOptions: NextAuthOptions = {
             name: true,
             image: true,
             password: true,
+            isInstructor: true,
           },
-        })) as CustomUser | null;
+        })) as CustomUserForCredentials | null;
 
-        // Si user.password es null, asignarle undefined
-        if (user) {
-          user.password = user.password ?? undefined;
-        }
-
-        // Buscar en caché
-        if (!user) {
-          const cacheKey = `user:email:${credentials.email}`;
-          const cachedUser = await redis.get<string>(cacheKey);
-
-          if (cachedUser) {
-            try {
-              const parsedUser = JSON.parse(cachedUser);
-              console.log("Usuario cargado desde caché:", parsedUser);
-              return parsedUser; // Retorna el usuario desde caché si está disponible
-            } catch (error) {
-              console.error("Error al parsear el usuario en caché:", error);
-            }
-          }
-
-          throw new Error("Usuario no encontrado");
-        }
-
-        // Validar la contraseña
-        if (!user.password) {
-          throw new Error("Contraseña no encontrada en la base de datos");
+        if (!user || !user.password) {
+          throw new Error("Credenciales inválidas");
         }
 
         const isPasswordValid = await bcrypt.compare(
           credentials.password,
-          user.password,
+          user.password
         );
 
         if (!isPasswordValid) {
-          throw new Error("Contraseña inválida");
+          throw new Error("Credenciales inválidas");
         }
-
-        // Guardar en caché si aún no está
-        const cacheKey = `user:email:${credentials.email}`;
-        await redis.set(cacheKey, JSON.stringify(user), { ex: 60 * 10 }); // 10 min
-
-        console.log("Usuario guardado en caché:", user);
 
         return {
           id: user.id,
           name: user.name,
           email: user.email,
           image: user.image,
+          isInstructor: user.isInstructor ?? false,
         };
       },
     }),
@@ -214,13 +151,14 @@ export const authOptions: NextAuthOptions = {
     maxAge: 30 * 24 * 60 * 60, // 30 días
   },
   callbacks: {
-    async jwt({ token, user, trigger = "default" }) {
-      // Si es una actualización del token (trigger === 'update') o es un nuevo login (user existe)
-      if (user || trigger === "update") {
-        const userId = user?.id || token.id;
-        if (!userId) return token;
+    async jwt({ token, user, trigger = "default", session }) {
+      const isLoginOrInitialSession = !!user;
+      const userId = user?.id || token.id;
 
-        // Obtener datos actualizados del usuario
+      if (!userId) return token;
+
+      // 1. Get fresh data from database on login or if token is missing extended data
+      if (isLoginOrInitialSession || !token.profile) {
         const dbUser = await prisma.user.findUnique({
           where: { id: userId },
           include: {
@@ -230,165 +168,96 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (dbUser) {
+          // Update basic fields (from DefaultSession)
           token.id = dbUser.id;
+          // Coalesce a null si no existen para asegurar la tipificación de JWT
+          token.name = dbUser.name ?? null;
+          token.email = dbUser.email ?? null;
+          token.image = dbUser.image ?? null;
+
+          // Update extended fields
           token.isInstructor = dbUser.isInstructor ?? false;
-          token.interests = dbUser.interests ?? [];
-          // @ts-expect-error profile puede no estar tipado correctamente
-          token.profile = dbUser.profile ?? null;
-          // @ts-expect-error instructorProfile puede no estar tipado correctamente
-          token.instructorProfile = dbUser.instructorProfile ?? null;
+          token.experienceLevel = dbUser.experienceLevel ?? null;
+          token.interests = (dbUser.interests as string[]) ?? [];
+          token.profile = (dbUser.profile as ProfileType | null) ?? null;
+          token.instructorProfile =
+            (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
         }
       }
-      return token;
+
+      // 2. Handle 'update' trigger
+      if (trigger === "update" && session) {
+        // Asegurar que el objeto session.user existe antes de acceder a sus propiedades
+        if (session.user?.isInstructor !== undefined) {
+          token.isInstructor = session.user.isInstructor;
+        }
+        // Nota: Las actualizaciones complejas deben realizarse aquí, no en el callback 'session'
+      }
+
+      return token as NextAuthJWT; // Aseguramos que el retorno es el tipo JWT de next-auth
     },
-    async session({ session, token }: { session: Session; token: JWT }) {
+    async session({ session, token }) {
+      if (!session.user || !token.id) return session as NextAuthSession;
+
+      // Usamos el token tipado para poblar la sesión
+      const typedToken = token as JWT;
+
+      const sessionUser = {
+        ...session.user,
+        id: typedToken.id,
+        // Usar la triple coalescencia: token -> session default -> null
+        name: typedToken.name ?? session.user.name ?? null,
+        email: typedToken.email ?? session.user.email ?? null,
+        image: typedToken.image ?? session.user.image ?? null,
+
+        isInstructor: typedToken.isInstructor,
+        experienceLevel: typedToken.experienceLevel,
+        profile: typedToken.profile,
+        instructorProfile: typedToken.instructorProfile,
+      };
+
+      const localStorageData = {
+        ...sessionUser, // Copia los campos de sessionUser
+        // Asegurar que profile/instructorProfile se mantienen con el tipo correcto
+        profile: typedToken.profile,
+        instructorProfile: typedToken.instructorProfile,
+      };
+
+      return {
+        ...session,
+        user: {
+          ...sessionUser,
+          _localStorage: localStorageData,
+        },
+      } as NextAuthSession; // Aseguramos el retorno del tipo Session de next-auth
+    },
+    async redirect({ url, baseUrl }): Promise<string> {
       try {
-        if (!session.user) return session;
+        // Corrección de sintaxis: se incluye la llave de cierre de la función.
 
-        // Establecer valores por defecto
-        session.user.id = typeof token.id === "string" ? token.id : "";
-
-        // 1. Obtener datos del usuario desde la base de datos (sin caché para asegurar datos frescos)
-        const userFromDB = await prisma.user
-          .findUnique({
-            where: { id: session.user.id },
-            select: {
-              name: true,
-              email: true,
-              experienceLevel: true,
-              image: true,
-              isInstructor: true,
-              instructorProfile: {
-                select: {
-                  id: true,
-                  isPaid: true,
-                },
-              },
-            },
-          })
-          .catch(() => null);
-
-        // 2. Obtener el estado actual de instructor del token
-        const isInstructor = token.isInstructor ?? false;
-
-        // 3. Si el estado en la base de datos no coincide con el token, actualizar la sesión
-        if (userFromDB && userFromDB.isInstructor !== isInstructor) {
-          // Actualizar el token con el valor correcto
-          token.isInstructor = userFromDB.isInstructor;
-          // Forzar actualización de la sesión
-          session.user.isInstructor = userFromDB.isInstructor;
+        // 1. Si la URL es la base, redirigir al dashboard
+        if (url === baseUrl || url === `${baseUrl}/`) {
+          return `${baseUrl}/dashboard`;
         }
 
-        // 4. Obtener perfil de instructor si es necesario
-        let instructorProfile = null;
-        if (isInstructor) {
-          instructorProfile = await prisma.instructorProfile
-            .findUnique({
-              where: { userId: session.user.id },
-            })
-            .catch(() => null);
+        // 2. Si la URL comienza con la base, es una URL interna válida
+        if (url.startsWith(baseUrl)) {
+          return url;
         }
 
-        // 5. Obtener datos en caché (solo para valores por defecto)
-        const cachedUserData = await getUserDataWithCache(
-          session.user.id,
-        ).catch(() => ({}) as Record<string, string>);
-
-        // 6. Preparar datos seguros para la sesión
-        const safeUserData = {
-          name: userFromDB?.name || cachedUserData?.name || "",
-          email: userFromDB?.email || cachedUserData?.email || "",
-          isInstructor: token.isInstructor ?? false,
-          experienceLevel:
-            userFromDB?.experienceLevel ||
-            cachedUserData?.experienceLevel ||
-            "",
-          image: userFromDB?.image || cachedUserData?.image || "",
-          isInstructor,
-        };
-
-        // 7. Establecer el estado en la sesión
-        session.user.isInstructor = isInstructor;
-
-        // Obtener perfil del usuario
-        let profile = null;
-        try {
-          const cachedProfile = await redis.get(`profile:${session.user.id}`);
-          profile =
-            cachedProfile && typeof cachedProfile === "string"
-              ? JSON.parse(cachedProfile)
-              : null;
-
-          if (!profile) {
-            profile = await prisma.profile.findUnique({
-              where: { userId: session.user.id },
-            });
-
-            if (profile) {
-              await redis.set(
-                `profile:${session.user.id}`,
-                JSON.stringify(profile),
-                { ex: 60 * 60 * 24 }, // 24 horas
-              );
-            }
-          }
-        } catch (error) {
-          console.error("Error al cargar el perfil:", error);
+        // 3. Manejo de URLs relativas (ej: /perfil)
+        if (url.startsWith("/")) {
+          return `${baseUrl}${url}`;
         }
 
-        // Construir objeto de sesión
-        return {
-          ...session,
-          user: {
-            ...session.user,
-            ...safeUserData,
-            profile: profile || null,
-            instructorProfile: instructorProfile || null,
-            _localStorage: {
-              ...safeUserData,
-              profile: profile || null,
-              instructorProfile: instructorProfile || null,
-            },
-          },
-        };
-      } catch (error) {
-        console.error("Error en la sesión:", error);
-        // Devolver una sesión mínima en caso de error
-        return {
-          ...session,
-          user: {
-            id: session.user?.id || "",
-            name: session.user?.name || "",
-            email: session.user?.email || "",
-            image: session.user?.image || "",
-            isInstructor: false,
-            experienceLevel: "",
-            profile: null,
-            instructorProfile: null,
-            _localStorage: {
-              name: session.user?.name || "",
-              email: session.user?.email || "",
-              image: session.user?.image || "",
-              isInstructor: false,
-              experienceLevel: "",
-              profile: null,
-              instructorProfile: null,
-            },
-          },
-        };
-      }
-    },
-    async redirect({ url, baseUrl }) {
-      // Si viene de un login, siempre manda al dashboard
-      if (url === baseUrl || url === `${baseUrl}/`) {
+        // 4. Default: si no es válida o es externa, redirigir al dashboard o a la base
+        return `${baseUrl}/dashboard`;
+      } catch (e) {
+        console.error("Error en la redirección:", e);
+        // Fallback seguro en caso de error
         return `${baseUrl}/dashboard`;
       }
-      // Si hay un callbackUrl válido, úsalo
-      if (url.startsWith(baseUrl)) {
-        return url;
-      }
-      return `${baseUrl}/dashboard`;
-    },
+    }, // <-- Aquí faltaba la llave de cierre
   },
   pages: {
     signIn: "/auth/signin",
