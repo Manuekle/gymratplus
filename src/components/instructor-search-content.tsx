@@ -251,7 +251,7 @@ export default function InstructorSearchContent() {
           </CardDescription>
         </CardHeader>
         <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
-          <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1 md:pb-0 pb-3">
+          <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1 md:pb-0 pb-1">
             <CountrySelector
               value={country}
               onValueChange={(value) => setCountry(value)}
