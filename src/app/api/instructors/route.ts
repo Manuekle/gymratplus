@@ -1,5 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/prisma";
+import {
+  InstructorResponse,
+  InstructorFilters,
+  PrismaWhereConditions,
+} from "@/types/instructor";
 
 // Función para extraer etiquetas de un texto
 const extractTags = (text?: string | null): string[] => {
@@ -14,12 +19,23 @@ const extractTags = (text?: string | null): string[] => {
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const tagFilter = searchParams.get("tagFilter");
-    const country = searchParams.get("country");
-    const isRemote = searchParams.get("isRemote");
-    const isVerified = searchParams.get("isVerified");
-    const maxPrice = searchParams.get("maxPrice");
-    const experienceLevel = searchParams.get("experienceLevel");
+    const filters: InstructorFilters = {
+      tagFilter: searchParams.get("tagFilter"),
+      country: searchParams.get("country"),
+      isRemote: searchParams.get("isRemote"),
+      isVerified: searchParams.get("isVerified"),
+      maxPrice: searchParams.get("maxPrice"),
+      experienceLevel: searchParams.get("experienceLevel"),
+    };
+
+    const {
+      tagFilter,
+      country,
+      isRemote,
+      isVerified,
+      maxPrice,
+      experienceLevel,
+    } = filters;
 
     // Obtener las etiquetas del usuario actual si no se proporcionan como parámetro
     let userTags: string[] = [];
@@ -35,7 +51,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir filtros básicos
-    const whereConditions = {
+    const whereConditions: PrismaWhereConditions = {
       isInstructor: true,
       instructorProfile: {
         isNot: null,
@@ -49,22 +65,23 @@ export async function GET(request: NextRequest) {
       if (country) profileFilters.country = country;
       if (isRemote === "true") profileFilters.isRemote = true;
       if (isVerified === "true") profileFilters.isVerified = true;
-      if (maxPrice)
+      if (maxPrice) {
         profileFilters.pricePerMonth = { lte: parseFloat(maxPrice) };
+      }
 
-      (whereConditions as any).instructorProfile = {
-        ...(whereConditions as any).instructorProfile,
+      whereConditions.instructorProfile = {
+        ...whereConditions.instructorProfile,
         ...profileFilters,
       };
     }
 
     if (experienceLevel) {
-      (whereConditions as any).experienceLevel = experienceLevel;
+      whereConditions.experienceLevel = experienceLevel;
     }
 
     // Obtener instructores con filtros aplicados
     const instructors = await prisma.user.findMany({
-      where: whereConditions as any,
+      where: whereConditions,
       select: {
         id: true,
         name: true,
@@ -113,18 +130,25 @@ export async function GET(request: NextRequest) {
       : selectedInstructors;
 
     // Formatear la respuesta para incluir las etiquetas
-    const result = filteredInstructors.map((instructor) => ({
-      ...instructor,
-      instructorProfile: {
-        ...instructor.instructorProfile,
-        tags: extractTags(instructor.instructorProfile?.curriculum),
+    const result: InstructorResponse[] = filteredInstructors.map(
+      (instructor) => {
+        const { instructorProfile, ...userData } = instructor;
+        return {
+          ...userData,
+          instructorProfile: instructorProfile
+            ? {
+                ...instructorProfile,
+                tags: extractTags(instructorProfile.curriculum),
+              }
+            : null,
+        };
       },
-    }));
+    );
 
     return NextResponse.json(result);
   } catch (error) {
     console.error("Error fetching instructors:", error);
-    return NextResponse.json(
+    return NextResponse.json<{ error: string }>(
       { error: "Error al cargar instructores" },
       { status: 500 },
     );
