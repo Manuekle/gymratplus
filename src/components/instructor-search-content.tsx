@@ -63,7 +63,7 @@ export default function InstructorSearchContent() {
   >(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
 
   const { countries } = useCountries();
@@ -94,7 +94,7 @@ export default function InstructorSearchContent() {
       if (response.ok) {
         const requests = await response.json();
         const requestIds = requests.map(
-          (req: { instructorProfileId: string }) => req.instructorProfileId,
+          (req: { instructorProfileId: string }) => req.instructorProfileId
         );
         setRequestedInstructors(new Set(requestIds));
       }
@@ -208,7 +208,7 @@ export default function InstructorSearchContent() {
         }
 
         setRequestedInstructors((prev) =>
-          new Set(prev).add(instructorProfileId),
+          new Set(prev).add(instructorProfileId)
         );
 
         toast.success("Solicitud enviada", {
@@ -228,12 +228,12 @@ export default function InstructorSearchContent() {
         setRequestingInstructorId(null);
       }
     },
-    [requestedInstructors],
+    [requestedInstructors]
   );
 
   const handleSpecialtyToggle = (spec: string) => {
     setSelectedSpecialties((prev) =>
-      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec],
+      prev.includes(spec) ? prev.filter((s) => s !== spec) : [...prev, spec]
     );
   };
 
@@ -250,14 +250,14 @@ export default function InstructorSearchContent() {
             Encuentra al instructor ideal para ti.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 md:pb-0 pb-3">
-          <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1">
+        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+          <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1 md:pb-0 pb-3">
             <CountrySelector
               value={country}
               onValueChange={(value) => setCountry(value)}
               placeholder="Selecciona un país"
               label="País"
-              className="text-xs h-9"
+              className="text-xs"
             />
           </div>
           <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1">
@@ -270,7 +270,7 @@ export default function InstructorSearchContent() {
               min={0}
               placeholder="Ej: 100"
               value={maxPrice}
-              className="text-xs h-9"
+              className="text-xs"
               onChange={(e) => setMaxPrice(e.target.value)}
             />
           </div>
@@ -405,7 +405,7 @@ export default function InstructorSearchContent() {
           ) : (
             instructors.map((instructor) => {
               const countryData = countries.find(
-                (c) => c.cca2 === instructor.instructorProfile?.country,
+                (c) => c.cca2 === instructor.instructorProfile?.country
               );
               return (
                 <Card
@@ -462,7 +462,7 @@ export default function InstructorSearchContent() {
                         <div className="text-xs font-semibold">
                           $
                           {instructor.instructorProfile.pricePerMonth.toFixed(
-                            2,
+                            2
                           )}
                           /mes
                         </div>
