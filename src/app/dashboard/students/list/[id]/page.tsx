@@ -106,14 +106,14 @@ export default function StudentDetailPage() {
             .json()
             .catch(() => ({ message: "Error de servidor" }));
           throw new Error(
-            errorData.message || "No se pudo cargar la lista de alumnos"
+            errorData.message || "No se pudo cargar la lista de alumnos",
           );
         }
         const data: StudentDetail[] = await res.json();
 
         // Buscar al alumno por el ID de la relación
         const found = data.find(
-          (s: StudentDetail) => s.id === studentRelationId
+          (s: StudentDetail) => s.id === studentRelationId,
         );
 
         if (!found) throw new Error("Alumno no encontrado");
@@ -123,7 +123,7 @@ export default function StudentDetailPage() {
           found.lastWorkoutAt = new Date(found.lastWorkoutAt).toISOString();
         if (found.lastNutritionLog)
           found.lastNutritionLog = new Date(
-            found.lastNutritionLog
+            found.lastNutritionLog,
           ).toISOString();
 
         setStudent(found);
@@ -154,7 +154,7 @@ export default function StudentDetailPage() {
 
         // Filtrar solo las rutinas de este alumno (usando studentId, que es el ID de usuario)
         const studentWorkouts = data.filter(
-          (w) => w.assignedToId === student.studentId
+          (w) => w.assignedToId === student.studentId,
         );
 
         setWorkouts(studentWorkouts);
@@ -187,7 +187,7 @@ export default function StudentDetailPage() {
 
   const workoutDays = useMemo(
     () => Object.keys(groupedExercises),
-    [groupedExercises]
+    [groupedExercises],
   );
 
   const [selectedDay, setSelectedDay] = useState<string>("");
@@ -427,7 +427,7 @@ export default function StudentDetailPage() {
                           : "bg-gray-100 text-gray-800";
                     const totalSets = w.exercises.reduce(
                       (sum, ex) => sum + (ex.sets || 0),
-                      0
+                      0,
                     );
 
                     return (
@@ -469,7 +469,7 @@ export default function StudentDetailPage() {
                                 {format(
                                   new Date(w.assignedDate),
                                   "d MMM yyyy",
-                                  { locale: es }
+                                  { locale: es },
                                 )}
                               </span>
                             </div>
@@ -612,7 +612,7 @@ export default function StudentDetailPage() {
                     {format(
                       new Date(selectedWorkout.assignedDate),
                       "d MMM yy",
-                      { locale: es }
+                      { locale: es },
                     )}
                   </Badge>
                   {selectedWorkout.dueDate && (
@@ -702,7 +702,7 @@ export default function StudentDetailPage() {
                               </p>
                             )}
                           </div>
-                        )
+                        ),
                       )}
                     </div>
                   </ScrollArea>

@@ -64,7 +64,7 @@ export async function POST(req: Request) {
         error: "Error al procesar la suscripción",
         details: error instanceof Error ? error.message : "Error desconocido",
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      { status: 500, headers: { "Content-Type": "application/json" } },
     );
   }
 }

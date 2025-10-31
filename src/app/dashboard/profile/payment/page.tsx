@@ -245,7 +245,7 @@ export default function InstructorRegistrationPage() {
         isRemote: values.isRemote,
         planType: isAnnual ? "annual" : "monthly",
         trialEndDate: new Date(
-          Date.now() + 14 * 24 * 60 * 60 * 1000
+          Date.now() + 14 * 24 * 60 * 60 * 1000,
         ).toISOString(), // 14 days from now
       };
 
@@ -263,7 +263,7 @@ export default function InstructorRegistrationPage() {
         const errorData = await paymentResponse.json().catch(() => ({}));
         throw new Error(
           errorData.error ||
-            "Error al procesar el pago. Por favor, verifica tus datos."
+            "Error al procesar el pago. Por favor, verifica tus datos.",
         );
       }
 
@@ -300,7 +300,7 @@ export default function InstructorRegistrationPage() {
     } catch (error) {
       console.error("Error:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al procesar el pago"
+        error instanceof Error ? error.message : "Error al procesar el pago",
       );
     } finally {
       setIsLoading(false);

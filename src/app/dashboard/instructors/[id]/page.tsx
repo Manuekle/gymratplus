@@ -51,7 +51,7 @@ export default function InstructorProfilePage() {
     string | null
   >(null);
   const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
 
   const loadExistingRequests = useCallback(async () => {
@@ -60,7 +60,7 @@ export default function InstructorProfilePage() {
       if (response.ok) {
         const requests = await response.json();
         const requestIds = requests.map(
-          (req: { instructorProfileId: string }) => req.instructorProfileId
+          (req: { instructorProfileId: string }) => req.instructorProfileId,
         );
         setRequestedInstructors(new Set(requestIds));
       }
@@ -104,7 +104,7 @@ export default function InstructorProfilePage() {
                 : `name/${data.country}`;
 
             const flagResponse = await fetch(
-              `https://restcountries.com/v3.1/${searchParam}`
+              `https://restcountries.com/v3.1/${searchParam}`,
             );
 
             if (flagResponse.ok) {
@@ -179,7 +179,7 @@ export default function InstructorProfilePage() {
             });
             // Update the UI to reflect the existing request
             setRequestedInstructors(
-              new Set([...requestedInstructors, instructorProfileId])
+              new Set([...requestedInstructors, instructorProfileId]),
             );
             return;
           }
@@ -187,7 +187,7 @@ export default function InstructorProfilePage() {
         }
 
         setRequestedInstructors((prev) =>
-          new Set(prev).add(instructorProfileId)
+          new Set(prev).add(instructorProfileId),
         );
 
         toast.success("Solicitud enviada", {
@@ -214,7 +214,7 @@ export default function InstructorProfilePage() {
         setRequestingInstructorId(null);
       }
     },
-    [requestedInstructors]
+    [requestedInstructors],
   );
 
   if (isLoading) {
@@ -413,14 +413,14 @@ export default function InstructorProfilePage() {
                           size="sm"
                           className={`text-[11px] h-8 flex-1 ${
                             requestedInstructors.has(
-                              instructor.instructorProfileId
+                              instructor.instructorProfileId,
                             )
                               ? "bg-red-600 hover:bg-red-700"
                               : ""
                           }`}
                           onClick={() =>
                             handleRequestInstructor(
-                              instructor.instructorProfileId
+                              instructor.instructorProfileId,
                             )
                           }
                           disabled={
@@ -428,7 +428,7 @@ export default function InstructorProfilePage() {
                               instructor.instructorProfileId ||
                             (requestedInstructors.size > 0 &&
                               !requestedInstructors.has(
-                                instructor.instructorProfileId
+                                instructor.instructorProfileId,
                               ))
                           }
                         >
@@ -436,7 +436,7 @@ export default function InstructorProfilePage() {
                           instructor.instructorProfileId ? (
                             <span>Enviando...</span>
                           ) : requestedInstructors.has(
-                              instructor.instructorProfileId
+                              instructor.instructorProfileId,
                             ) ? (
                             <span className="text-white">
                               Solicitud Enviada
@@ -448,7 +448,7 @@ export default function InstructorProfilePage() {
                       </div>
                       {requestedInstructors.size > 0 &&
                         !requestedInstructors.has(
-                          instructor.instructorProfileId
+                          instructor.instructorProfileId,
                         ) && (
                           <p className="text-[10px] text-red-500 text-center leading-tight">
                             Debes cancelar tu solicitud actual primero

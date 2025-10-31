@@ -153,7 +153,7 @@ export default function StudentsListPage() {
       filtered = filtered.filter(
         (student) =>
           student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email?.toLowerCase().includes(searchTerm.toLowerCase())
+          student.email?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -168,26 +168,26 @@ export default function StudentsListPage() {
         case "active_today":
           filtered = filtered.filter(
             (student) =>
-              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt))
+              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt)),
           );
           break;
         case "active_week":
           filtered = filtered.filter(
             (student) =>
               student.lastWorkoutAt &&
-              isThisWeek(new Date(student.lastWorkoutAt))
+              isThisWeek(new Date(student.lastWorkoutAt)),
           );
           break;
         case "inactive":
           filtered = filtered.filter(
             (student) =>
               !student.lastWorkoutAt ||
-              !isThisWeek(new Date(student.lastWorkoutAt))
+              !isThisWeek(new Date(student.lastWorkoutAt)),
           );
           break;
         case "high_streak":
           filtered = filtered.filter(
-            (student) => student.currentWorkoutStreak >= 7
+            (student) => student.currentWorkoutStreak >= 7,
           );
           break;
       }
@@ -223,21 +223,21 @@ export default function StudentsListPage() {
   // Calcular estadísticas
   const totalStudents = students.length;
   const activeToday = students.filter(
-    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt))
+    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt)),
   ).length;
   const activeThisWeek = students.filter(
-    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt))
+    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt)),
   ).length;
   const avgStreak =
     totalStudents > 0
       ? Math.round(
           students.reduce((acc, s) => acc + s.currentWorkoutStreak, 0) /
-            totalStudents
+            totalStudents,
         )
       : 0;
   const totalRevenue = students.reduce(
     (acc, s) => acc + (s.agreedPrice || 0),
-    0
+    0,
   );
 
   if (isLoading) {

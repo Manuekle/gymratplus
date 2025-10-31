@@ -64,7 +64,7 @@ export default function InstructorPage() {
 
       // Obtener banderas de los países únicos
       const uniqueCountries = Array.from(
-        new Set(data.map((i) => i.country).filter(Boolean))
+        new Set(data.map((i) => i.country).filter(Boolean)),
       ) as string[];
 
       if (uniqueCountries.length > 0) {
@@ -72,7 +72,7 @@ export default function InstructorPage() {
         for (const c of uniqueCountries) {
           try {
             const flagResponse = await fetch(
-              `https://restcountries.com/v3.1/alpha/${c}`
+              `https://restcountries.com/v3.1/alpha/${c}`,
             );
             if (flagResponse.ok) {
               const countryData = await flagResponse.json();

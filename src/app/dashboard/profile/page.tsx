@@ -95,40 +95,40 @@ export default function ProfilePage() {
   const [name, setName] = useState(session?.user?.name || "");
 
   const [phone, setPhone] = useState(
-    (session?.user as { profile?: { phone?: string } })?.profile?.phone || ""
+    (session?.user as { profile?: { phone?: string } })?.profile?.phone || "",
   );
 
   const [birthdate, setBirthdate] = useState<string>(
     (session?.user as { profile?: { birthdate?: string } })?.profile
-      ?.birthdate || ""
+      ?.birthdate || "",
   );
 
   const [experienceLevel, setExperienceLevel] = useState(
-    session?.user?.experienceLevel || ""
+    session?.user?.experienceLevel || "",
   );
 
   const [preferredWorkoutTime, setPreferredWorkoutTime] = useState(
     (session?.user as { profile?: { preferredWorkoutTime?: string } })?.profile
-      ?.preferredWorkoutTime || ""
+      ?.preferredWorkoutTime || "",
   );
   const [dailyActivity, setDailyActivity] = useState(
     (session?.user as { profile?: { dailyActivity?: string } })?.profile
-      ?.dailyActivity || ""
+      ?.dailyActivity || "",
   );
 
   const [goal, setGoal] = useState(
-    (session?.user as { profile?: { goal?: string } })?.profile?.goal || ""
+    (session?.user as { profile?: { goal?: string } })?.profile?.goal || "",
   );
 
   const [dietaryPreference, setDietaryPreference] = useState(
     (session?.user as { profile?: { dietaryPreference?: string } })?.profile
-      ?.dietaryPreference || ""
+      ?.dietaryPreference || "",
   );
 
   // Estado para monthsTraining
   const [monthsTraining, setMonthsTraining] = useState(
     (session?.user as { profile?: { monthsTraining?: number } })?.profile
-      ?.monthsTraining || 0
+      ?.monthsTraining || 0,
   );
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -595,24 +595,24 @@ export default function ProfilePage() {
                                   setIsCanceling(true);
                                   const response = await fetch(
                                     "/api/instructors/cancel-subscription",
-                                    { method: "POST" }
+                                    { method: "POST" },
                                   );
 
                                   if (response.ok) {
                                     await update();
                                     setShowCancelDialog(false);
                                     toast.success(
-                                      "Suscripción cancelada correctamente"
+                                      "Suscripción cancelada correctamente",
                                     );
                                   } else {
                                     throw new Error(
-                                      "Error al cancelar la suscripción"
+                                      "Error al cancelar la suscripción",
                                     );
                                   }
                                 } catch (error) {
                                   console.error("Error:", error);
                                   toast.error(
-                                    "Error al cancelar la suscripción"
+                                    "Error al cancelar la suscripción",
                                   );
                                 } finally {
                                   setIsCanceling(false);

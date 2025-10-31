@@ -27,7 +27,7 @@ export function CreditCard({
   };
 
   const getCardType = (
-    number: string
+    number: string,
   ): {
     type: "visa" | "mastercard" | "unknown";
     icon: typeof CreditCardIcon | typeof MasterCardIcon;

@@ -68,8 +68,8 @@ export async function PUT() {
             mealType: getMealTypesForCategory(foodData.category),
             userId: null, // Alimentos base del sistema
           },
-        })
-      )
+        }),
+      ),
     );
 
     return NextResponse.json({
@@ -83,7 +83,7 @@ export async function PUT() {
         error: "Error al cargar los alimentos",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   } finally {
     await prisma.$disconnect();

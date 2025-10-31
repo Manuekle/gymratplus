@@ -47,7 +47,7 @@ type InstructorResponse = {
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     // In Next.js 13+, params is already resolved when the route handler is called
@@ -56,7 +56,7 @@ export async function GET(
     if (!id) {
       return NextResponse.json(
         { error: "Instructor ID is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +79,7 @@ export async function GET(
     if (!instructor) {
       return NextResponse.json(
         { error: "Instructor not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -91,7 +91,7 @@ export async function GET(
       console.error(`[INSTRUCTOR_NOT_FOUND] ID: ${id}`);
       return NextResponse.json(
         { error: "Instructor not found or doesn't have a profile" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -131,17 +131,17 @@ export async function GET(
         case "P2023":
           return NextResponse.json(
             { error: "Invalid instructor ID format" },
-            { status: 400 }
+            { status: 400 },
           );
         case "P2025":
           return NextResponse.json(
             { error: "Instructor not found" },
-            { status: 404 }
+            { status: 404 },
           );
         case "P2002":
           return NextResponse.json(
             { error: "A unique constraint was violated" },
-            { status: 409 }
+            { status: 409 },
           );
         default:
           console.error("Prisma error code:", error.code);
@@ -157,7 +157,7 @@ export async function GET(
             ? (error as Error).message
             : undefined,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
