@@ -26,7 +26,8 @@ export async function initNotificationSubscriber() {
         // Process each notification
         for (const message of notifications) {
           try {
-            const data = JSON.parse(message);
+            // Verificar si el mensaje ya es un objeto
+            const data = typeof message === 'string' ? JSON.parse(message) : message;
             const { userId, notification } = data;
 
             if (userId && notification) {
@@ -70,7 +71,8 @@ export async function initNotificationSubscriber() {
 
         for (const message of intakeUpdates) {
           try {
-            const data = JSON.parse(message);
+            // Verificar si el mensaje ya es un objeto
+            const data = typeof message === 'string' ? JSON.parse(message) : message;
             const { userId, intake, targetIntake } = data;
 
             if (userId && intake && targetIntake) {
@@ -116,7 +118,8 @@ export async function initNotificationSubscriber() {
 
         for (const message of workoutUpdates) {
           try {
-            const data = JSON.parse(message);
+            // Verificar si el mensaje ya es un objeto
+            const data = typeof message === 'string' ? JSON.parse(message) : message;
             // Remove workoutSessionId from destructuring since it's not used
             const { userId, action, workoutName, day } = data;
 

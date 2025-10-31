@@ -25,8 +25,8 @@ export default function GymRatLanding() {
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
 
       {/* Background Blur Effects */}
-      <div className="absolute top-0 left-1/4 w-48 h-48 bg-gradient-to-br from-gray-500/5 to-transparent rounded-full blur-2xl"></div>
-      <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-gradient-to-tl from-gray-600/5 dark:from-white/5 to-transparent rounded-full blur-2xl"></div>
+      <div className="absolute top-0 left-1/4 w-48 h-48 bg-gradient-to-br from-zinc-500/5 to-transparent rounded-full blur-2xl"></div>
+      <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-gradient-to-tl from-zinc-600/5 dark:from-white/5 to-transparent rounded-full blur-2xl"></div>
 
       {/* Navigation */}
       <nav className="relative z-10 bg-white dark:bg-black shadow-sm py-4">
@@ -67,7 +67,7 @@ export default function GymRatLanding() {
               </Button>
               <Button
                 size="default"
-                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 text-xs"
+                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs"
                 asChild
               >
                 <Link href="/auth/signup">Comenzar</Link>
@@ -97,7 +97,7 @@ export default function GymRatLanding() {
             experiencias de entrenamiento personalizadas
           </p>
           <Button
-            className="bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 px-6 py-2"
+            className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-2"
             asChild
           >
             <Link href="/auth/signup">Empezar ahora</Link>
@@ -173,7 +173,7 @@ export default function GymRatLanding() {
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={Target02Icon}
-                      className="w-4 h-4 text-gray-700 dark:text-white"
+                      className="w-4 h-4 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
@@ -191,7 +191,7 @@ export default function GymRatLanding() {
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={ChartAverageIcon}
-                      className="w-4 h-4 text-gray-700 dark:text-white"
+                      className="w-4 h-4 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
@@ -209,7 +209,7 @@ export default function GymRatLanding() {
                   <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={UserGroupIcon}
-                      className="w-4 h-4 text-gray-700 dark:text-white"
+                      className="w-4 h-4 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
@@ -245,7 +245,7 @@ export default function GymRatLanding() {
       </section>
 
       {/* What We Offer */}
-      <section className="relative z-10 py-20  border-gray-200 dark:border-gray-800/50">
+      <section className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge
@@ -305,7 +305,7 @@ export default function GymRatLanding() {
       {/* Pricing */}
       <section
         id="precios"
-        className="relative z-10 py-20  border-gray-200 dark:border-gray-800/50"
+        className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50"
       >
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12 pb-12">
@@ -327,8 +327,8 @@ export default function GymRatLanding() {
 
           <div className="grid md:grid-cols-3 xl:gap-6 gap-20 max-w-7xl mx-auto">
             {/* Plan Alumno */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-gray-100/90 hover:to-gray-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-hidden">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
+            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-hidden">
+              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <CardContent className="p-6">
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold tracking-heading mb-2">
@@ -365,18 +365,18 @@ export default function GymRatLanding() {
                   </li>
                 </ul>
                 <Button
-                  variant="outline"
-                  className="text-xs w-full bg-white text-black border border-zinc-200 hover:bg-black hover:text-white dark:bg-transparent dark:text-white dark:border-zinc-700 dark:hover:bg-white dark:hover:text-black transition-colors shadow-sm hover:shadow-md"
+                  variant="default"
+                  className="text-xs w-full text-white bg-green-600 hover:bg-green-600/90 backdrop-blur-sm transition-colors shadow-sm hover:shadow-md"
                   asChild
                 >
-                  <Link href="/auth/signup">Comenzar gratis</Link>
+                  <Link href="/dashboard">Comenzar gratis</Link>
                 </Button>
               </CardContent>
             </Card>
 
             {/* Plan Instructor Mensual */}
-            <Card className="relative flex flex-col shadow-lg dark:shadow-xl transition-all duration-200 hover:shadow-xl hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 px-4 pt-8 pb-4 min-h-[280px] -mt-5 mb-1 overflow-visible transform xl:scale-105 scale-100 ">
-              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-gray-50/50 to-gray-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
+            <Card className="relative flex flex-col shadow-lg dark:shadow-xl transition-all duration-200 hover:shadow-xl hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 px-4 pt-8 pb-4 min-h-[280px] -mt-5 mb-1 overflow-visible transform xl:scale-102 scale-100 ">
+              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
               <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
                 <div className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs font-medium">
                   Más popular
@@ -403,7 +403,7 @@ export default function GymRatLanding() {
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
-                    <span>Todo lo del plan Alumno</span>
+                    <span className="text-[9px]">Todo lo del plan Alumno</span>
                   </li>
                   <li className="flex items-center text-xs">
                     <HugeiconsIcon
@@ -428,10 +428,12 @@ export default function GymRatLanding() {
                   </li>
                 </ul>
                 <Button
-                  className="text-xs w-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-800 dark:hover:bg-gray-100 transition-colors shadow-md hover:shadow-lg"
+                  className="text-xs w-full bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-md hover:shadow-lg"
                   asChild
                 >
-                  <Link href="/auth/signup">Prueba gratis 14 días</Link>
+                  <Link href="/dashboard/profile/payment">
+                    Prueba gratis 14 días
+                  </Link>
                 </Button>
               </CardContent>
             </Card>
@@ -451,7 +453,7 @@ export default function GymRatLanding() {
                   </h3>
                   <div className="text-3xl font-semibold tracking-heading mb-1">
                     $49
-                    <span className="text-lg text-gray-600 dark:text-gray-200 font-normal">
+                    <span className="text-lg text-zinc-600 dark:text-zinc-200 font-normal">
                       /año
                     </span>
                   </div>
@@ -483,11 +485,11 @@ export default function GymRatLanding() {
                   </li>
                 </ul>
                 <Button
-                  variant="outline"
-                  className="text-xs w-full bg-white text-black border border-zinc-200 hover:bg-black hover:text-white dark:bg-transparent dark:text-white dark:border-zinc-700 dark:hover:bg-white dark:hover:text-black transition-colors shadow-sm hover:shadow-md"
+                  variant="default"
+                  className="text-xs w-full text-white bg-sky-600 hover:bg-sky-600/90 backdrop-blur-sm transition-colors shadow-sm hover:shadow-md"
                   asChild
                 >
-                  <Link href="/auth/signup">Elegir anual</Link>
+                  <Link href="/dashboard/profile/payment">Elegir anual</Link>
                 </Button>
               </CardContent>
             </Card>
