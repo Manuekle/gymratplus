@@ -95,7 +95,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         }
 
         experienceLevel = calculateExperienceLevel(
-          experienceData
+          experienceData,
         ) as ProfileData["experienceLevel"];
       }
     }
@@ -105,7 +105,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           error:
             "No se pudo calcular tu nivel de experiencia. Por favor, completa tu perfil con tu frecuencia de entrenamiento y meses entrenando.",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
     profileData.experienceLevel = experienceLevel;
@@ -113,7 +113,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Validar los otros campos requeridos
     const requiredFields = ["goal", "currentWeight", "height"] as const;
     const missingFields = requiredFields.filter(
-      (field) => !profileData[field as keyof ProfileData]
+      (field) => !profileData[field as keyof ProfileData],
     );
     if (missingFields.length > 0) {
       return NextResponse.json({
@@ -136,7 +136,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     if (exercises.length === 0) {
       return NextResponse.json(
         { error: "No exercises available" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -152,7 +152,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     const goalMap: Record<string, WorkoutGoal> = {
       "gain-muscle": "gain-muscle",
       "lose-weight": "fat-loss",
-      "maintain": "maintain",
+      maintain: "maintain",
     };
     const workoutGoal = goalMap[profileData.goal] || "maintain";
 
@@ -178,7 +178,7 @@ export async function POST(req: Request): Promise<NextResponse> {
       trainingFrequency,
       workoutType,
       [],
-      "standard"
+      "standard",
     );
 
     // Fetch the complete workout with exercises
@@ -199,7 +199,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     if (!workoutWithExercises || !workoutWithExercises.exercises.length) {
       return NextResponse.json(
         { error: "Failed to create workout plan" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -236,7 +236,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     }
 
     const dailyProteinTarget = Math.round(
-      (calorieTarget * proteinPercentage) / 4
+      (calorieTarget * proteinPercentage) / 4,
     );
     const dailyCarbTarget = Math.round((calorieTarget * carbsPercentage) / 4);
     const dailyFatTarget = Math.round((calorieTarget * fatPercentage) / 9);
@@ -307,47 +307,32 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
     }
 
-    // Group exercises by day based on workout type and training frequency
-    const exercisesPerDay = Math.ceil(
-      workoutWithExercises.exercises.length / trainingFrequency
-    );
+    // Group all exercises in a single day with muscle groups in notes
     const days: Array<{ day: string; exercises: Exercise[] }> = [];
 
-    // Day names in Spanish
-    const dayNames = [
-      "Lunes",
-      "Martes",
-      "Miércoles",
-      "Jueves",
-      "Viernes",
-      "Sábado",
-      "Domingo",
-    ];
+    // Create a single day with all exercises
+    const allExercises = workoutWithExercises.exercises.map(
+      (exerciseData: PrismaExercise) => {
+        // Extract muscle group from notes (format: "Full Body - [Muscle Group]")
+        const muscleGroup = exerciseData.notes?.split(" - ")[1] || "Full Body";
 
-    // Split exercises into days
-    for (let i = 0; i < trainingFrequency; i++) {
-      const startIndex = i * exercisesPerDay;
-      const endIndex = Math.min(
-        startIndex + exercisesPerDay,
-        workoutWithExercises.exercises.length
-      );
-      const dayExercises = workoutWithExercises.exercises
-        .slice(startIndex, endIndex)
-        .map((exerciseData: PrismaExercise) => ({
+        return {
           id: exerciseData.id,
           name: exerciseData.exercise.name,
           sets: exerciseData.sets,
           reps: exerciseData.reps,
           restTime: exerciseData.restTime || 0,
-          notes: exerciseData.notes || "",
-        }));
+          notes: muscleGroup, // Store the muscle group in notes
+        };
+      },
+    );
 
-      if (dayExercises.length > 0) {
-        days.push({
-          day: dayNames[i] || `Día ${i + 1}`,
-          exercises: dayExercises,
-        });
-      }
+    // Add all exercises to a single day
+    if (allExercises.length > 0) {
+      days.push({
+        day: "Full Body",
+        exercises: allExercises,
+      });
     }
 
     // Collect all food IDs from all meals
@@ -388,21 +373,23 @@ export async function POST(req: Request): Promise<NextResponse> {
         breakfast: {
           ...nutritionPlan.meals.breakfast,
           id: `meal-breakfast-${Date.now()}`,
-          entries: nutritionPlan.meals.breakfast.entries.map((entry, index) => ({
-            id: `entry-${index}-${Date.now()}`,
-            foodId: entry.foodId,
-            quantity: entry.quantity,
-            food: foodsMap.get(entry.foodId) || {
-              id: entry.foodId,
-              name: "Alimento no encontrado",
-              calories: 0,
-              protein: 0,
-              carbs: 0,
-              fat: 0,
-              serving: 100,
-              category: "unknown",
-            },
-          })),
+          entries: nutritionPlan.meals.breakfast.entries.map(
+            (entry, index) => ({
+              id: `entry-${index}-${Date.now()}`,
+              foodId: entry.foodId,
+              quantity: entry.quantity,
+              food: foodsMap.get(entry.foodId) || {
+                id: entry.foodId,
+                name: "Alimento no encontrado",
+                calories: 0,
+                protein: 0,
+                carbs: 0,
+                fat: 0,
+                serving: 100,
+                category: "unknown",
+              },
+            }),
+          ),
         },
         lunch: {
           ...nutritionPlan.meals.lunch,
@@ -490,7 +477,7 @@ export async function POST(req: Request): Promise<NextResponse> {
         error: "Error generating recommendations",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

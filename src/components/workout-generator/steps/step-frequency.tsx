@@ -79,7 +79,7 @@ export function StepFrequency({ value, onChange }: StepFrequencyProps) {
         </div>
 
         <div className="mt-8 text-center">
-          <div className="text-md font-semibold text-primary">
+          <div className="text-lg tracking-heading font-semibold text-primary">
             {value} {value === 1 ? "día" : "días"} por semana
           </div>
           <p className="text-xs text-muted-foreground mt-2">

@@ -122,7 +122,7 @@ export const breakfastRecipes: Recipe[] = [
       {
         foodId:
           foodsWithTags.find(
-            (f) => f.name === "Proteína de suero de leche (whey)"
+            (f) => f.name === "Proteína de suero de leche (whey)",
           )?.id || "",
         quantity: 25,
         unit: "g",
@@ -366,13 +366,13 @@ export const allRecipes = [
 // Function to get recipes by dietary preference
 export function getRecipesByDietaryPreference(preference: string): Recipe[] {
   return allRecipes.filter((recipe) =>
-    recipe.dietaryTags.includes(preference.toLowerCase())
+    recipe.dietaryTags.includes(preference.toLowerCase()),
   );
 }
 
 // Function to get recipes by meal type
 export function getRecipesByMealType(mealType: string): Recipe[] {
   return allRecipes.filter((recipe) =>
-    recipe.mealType.includes(mealType.toLowerCase())
+    recipe.mealType.includes(mealType.toLowerCase()),
   );
 }

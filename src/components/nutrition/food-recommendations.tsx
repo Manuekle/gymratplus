@@ -477,21 +477,23 @@ export default function FoodRecommendations() {
             {Object.entries(meals).map(([key, meal]: [string, any]) => {
               // Map "snacks" to "snack" for tab value
               const tabValue = key === "snacks" ? "snack" : key;
-              const mealTypeKey = key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
-              
+              const mealTypeKey =
+                key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
+
               // Ensure meal has entries array
-              const mealEntries = Array.isArray(meal.entries) ? meal.entries : [];
-              
+              const mealEntries = Array.isArray(meal.entries)
+                ? meal.entries
+                : [];
+
               return (
                 <TabsContent key={key} value={tabValue}>
                   <Card>
                     <CardHeader>
-                      <CardTitle>
-                        {mealTypes[mealTypeKey].label}
-                      </CardTitle>
+                      <CardTitle>{mealTypes[mealTypeKey].label}</CardTitle>
                       <CardDescription>
-                        Calorías: {meal.calories || 0} | Proteínas: {meal.protein || 0}g |
-                        Carbohidratos: {meal.carbs || 0}g | Grasas: {meal.fat || 0}g
+                        Calorías: {meal.calories || 0} | Proteínas:{" "}
+                        {meal.protein || 0}g | Carbohidratos: {meal.carbs || 0}g
+                        | Grasas: {meal.fat || 0}g
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -543,16 +545,30 @@ export default function FoodRecommendations() {
                                       {Math.round((entry.quantity || 0) * 100)}g
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      {Math.round((food.calories || 0) * (entry.quantity || 0))}
+                                      {Math.round(
+                                        (food.calories || 0) *
+                                          (entry.quantity || 0),
+                                      )}
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {((food.protein || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                      {(
+                                        (food.protein || 0) *
+                                        (entry.quantity || 0)
+                                      ).toFixed(1)}
+                                      g
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {((food.carbs || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                      {(
+                                        (food.carbs || 0) *
+                                        (entry.quantity || 0)
+                                      ).toFixed(1)}
+                                      g
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {((food.fat || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                      {(
+                                        (food.fat || 0) * (entry.quantity || 0)
+                                      ).toFixed(1)}
+                                      g
                                     </TableCell>
                                   </TableRow>
                                 );

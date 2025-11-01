@@ -106,7 +106,9 @@ export default function WorkouPage() {
     } catch (error) {
       console.error("Error deleting entrenamiento:", error);
       toast.error(
-        error instanceof Error ? error.message : "Error al eliminar el entrenamiento",
+        error instanceof Error
+          ? error.message
+          : "Error al eliminar el entrenamiento",
       );
     } finally {
       setIsDeleting(false);

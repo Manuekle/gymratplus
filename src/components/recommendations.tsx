@@ -169,7 +169,7 @@ export default function RecommendationsComponent() {
       } catch (error) {
         console.error("Error fetching profile:", error);
         setError(
-          "No se encontró un perfil. Por favor, complete su perfil primero."
+          "No se encontró un perfil. Por favor, complete su perfil primero.",
         );
         return null;
       }
@@ -184,7 +184,7 @@ export default function RecommendationsComponent() {
     }
 
     const fetchRecommendations = async (
-      profileData: ProfileData
+      profileData: ProfileData,
     ): Promise<void> => {
       if (!profileData) return;
 
@@ -209,7 +209,7 @@ export default function RecommendationsComponent() {
       } catch (error: unknown) {
         console.error("Error fetching recommendations:", error);
         setError(
-          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde."
+          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde.",
         );
         toast.error("Failed to generate recommendations", {
           description: "Please try again later",
@@ -278,6 +278,29 @@ export default function RecommendationsComponent() {
                   isLoading={isLoading}
                   defaultOpen={["Día 1-0"]}
                 />
+                <div className="mt-8 space-y-4">
+                  <h3 className="text-lg font-semibold tracking-heading">
+                    Recomendaciones
+                  </h3>
+                  <div className="space-y-3">
+                    {recommendations?.recommendations?.map(
+                      (recommendation: string, index: number) => (
+                        <div key={index} className="flex items-start gap-3">
+                          <div className="flex-shrink-0 mt-0.5">
+                            <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
+                              <span className="text-xs font-medium text-primary">
+                                {index + 1}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {recommendation}
+                          </p>
+                        </div>
+                      ),
+                    )}
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="nutrition" className="mt-0">
@@ -287,6 +310,17 @@ export default function RecommendationsComponent() {
                 />
               </TabsContent>
             </Tabs>
+            {/* aqui un boton de ir a profile */}
+            <div className="mt-8">
+              <Button
+                variant="outline"
+                onClick={() => router.push("/dashboard/profile")}
+                className="text-xs w-full"
+                size="lg"
+              >
+                Volver al Perfil
+              </Button>
+            </div>
           </motion.div>
         ) : null}
       </CardContent>

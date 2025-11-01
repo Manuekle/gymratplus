@@ -4,7 +4,9 @@ import { foodsToCreate } from "@/data/food";
 
 // Helper function to map English categories to functional meal categories
 function isProteinCategory(category: string): boolean {
-  return ["meat", "fish", "eggs", "dairy", "legumes", "plant_protein"].includes(category);
+  return ["meat", "fish", "eggs", "dairy", "legumes", "plant_protein"].includes(
+    category,
+  );
 }
 
 function isCarbCategory(category: string): boolean {
@@ -31,7 +33,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
   if (count === 0) {
     // Create foods if they don't exist
     const createdFoods = await prisma.$transaction(
-      foodsToCreate.map((food) => prisma.food.create({ data: food }))
+      foodsToCreate.map((food) => prisma.food.create({ data: food })),
     );
 
     return filterFoodsByPreference(createdFoods, dietaryPreference);
@@ -45,7 +47,7 @@ export async function getOrCreateFoods(dietaryPreference = "no-preference") {
 // Helper function to filter foods by dietary preference
 function filterFoodsByPreference(
   foods: Food[],
-  dietaryPreference: string
+  dietaryPreference: string,
 ): Food[] {
   if (dietaryPreference === "vegetarian") {
     return foods.filter(
@@ -59,7 +61,7 @@ function filterFoodsByPreference(
         !food.name.toLowerCase().includes("salmón") &&
         !food.name.toLowerCase().includes("salmon") &&
         food.category !== "meat" &&
-        food.category !== "fish"
+        food.category !== "fish",
     );
   } else if (dietaryPreference === "keto") {
     return foods.filter(
@@ -67,7 +69,7 @@ function filterFoodsByPreference(
         food.carbs < 10 ||
         isProteinCategory(food.category) ||
         isFatCategory(food.category) ||
-        isVegetableCategory(food.category)
+        isVegetableCategory(food.category),
     );
   }
 
@@ -115,7 +117,7 @@ export interface NutritionPlan {
 }
 
 export async function createNutritionPlan(
-  profile: NutritionProfile
+  profile: NutritionProfile,
 ): Promise<NutritionPlan> {
   const { userId, goal, dietaryPreference } = profile;
 
@@ -128,7 +130,7 @@ export async function createNutritionPlan(
     "breakfast",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const lunch: MealLog = await createMealLog(
@@ -136,7 +138,7 @@ export async function createNutritionPlan(
     "lunch",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const dinner: MealLog = await createMealLog(
@@ -144,7 +146,7 @@ export async function createNutritionPlan(
     "dinner",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const snacks: MealLog = await createMealLog(
@@ -152,7 +154,7 @@ export async function createNutritionPlan(
     "snack",
     foods,
     goal,
-    dietaryPreference
+    dietaryPreference,
   );
 
   const translationDictionary: Record<string, string> = {
@@ -169,20 +171,20 @@ export async function createNutritionPlan(
       protein: `${profile.dailyProteinTarget ?? 0}g (${Math.round(
         (((profile.dailyProteinTarget ?? 0) * 4) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       carbs: `${profile.dailyCarbTarget ?? 0}g (${Math.round(
         (((profile.dailyCarbTarget ?? 0) * 4) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       fat: `${profile.dailyFatTarget ?? 0}g (${Math.round(
         (((profile.dailyFatTarget ?? 0) * 9) /
           (profile.dailyCalorieTarget ?? 2000)) *
-          100
+          100,
       )}%)`,
       description: `Basado en tu objetivo de ${translate(
-        goal
+        goal,
       )} y un objetivo diario de ${
         profile.dailyCalorieTarget ?? 2000
       } calorías`,
@@ -198,14 +200,11 @@ export async function createNutritionPlan(
 }
 
 // Helper to find foods by name pattern (case-insensitive, partial match)
-function findFoodsByNamePattern(
-  foods: Food[],
-  patterns: string[]
-): Food[] {
+function findFoodsByNamePattern(foods: Food[], patterns: string[]): Food[] {
   return foods.filter((f) =>
     patterns.some((pattern) =>
-      f.name.toLowerCase().includes(pattern.toLowerCase())
-    )
+      f.name.toLowerCase().includes(pattern.toLowerCase()),
+    ),
   );
 }
 
@@ -214,7 +213,7 @@ async function createMealLog(
   mealType: string,
   foods: Food[],
   goal: string,
-  dietaryPreference: string = "no-preference"
+  dietaryPreference: string = "no-preference",
 ): Promise<MealLog> {
   // Select appropriate foods based on meal type and dietary preference
   let selectedFoods: Food[] = [];
@@ -223,13 +222,17 @@ async function createMealLog(
   const getSafeFoods = (
     foods: Food[],
     count: number = 1,
-    startIndex: number = 0
+    startIndex: number = 0,
   ): Food[] => {
     if (!foods || !Array.isArray(foods) || foods.length === 0) {
       return [];
     }
     const safeFoods: Food[] = [];
-    for (let i = startIndex; i < Math.min(startIndex + count, foods.length); i++) {
+    for (
+      let i = startIndex;
+      i < Math.min(startIndex + count, foods.length);
+      i++
+    ) {
       const food = foods[i];
       if (
         food &&
@@ -259,7 +262,7 @@ async function createMealLog(
           f.name.toLowerCase().includes("egg") ||
           f.name.toLowerCase().includes("yogur") ||
           f.name.toLowerCase().includes("yogurt") ||
-          f.name.toLowerCase().includes("cottage"))
+          f.name.toLowerCase().includes("cottage")),
     );
 
     // Carb foods: cereals (oatmeal, bread)
@@ -269,7 +272,7 @@ async function createMealLog(
         (f.name.toLowerCase().includes("avena") ||
           f.name.toLowerCase().includes("oat") ||
           f.name.toLowerCase().includes("pan") ||
-          f.name.toLowerCase().includes("bread"))
+          f.name.toLowerCase().includes("bread")),
     );
 
     // Fruits
@@ -282,7 +285,7 @@ async function createMealLog(
         (f.name.toLowerCase().includes("aguacate") ||
           f.name.toLowerCase().includes("avocado") ||
           f.name.toLowerCase().includes("almendra") ||
-          f.name.toLowerCase().includes("almond"))
+          f.name.toLowerCase().includes("almond")),
     );
 
     if (dietaryPreference === "keto") {
@@ -290,7 +293,7 @@ async function createMealLog(
         ...getSafeFoods(proteinFoods, 2),
         ...getSafeFoods(fatFoods, 2),
       ].filter((food): food is Food => food !== undefined && food !== null);
-      
+
       // Fallback: if still empty, get any protein and fat foods
       if (selectedFoods.length === 0) {
         const anyProtein = foods.filter((f) => isProteinCategory(f.category));
@@ -307,7 +310,7 @@ async function createMealLog(
         ...getSafeFoods(fruitFoods, 1),
         ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
-      
+
       // Fallback: if still empty, get foods by category
       if (selectedFoods.length === 0) {
         const anyProtein = foods.filter((f) => isProteinCategory(f.category));
@@ -330,7 +333,7 @@ async function createMealLog(
       (f) =>
         isCarbCategory(f.category) &&
         !f.name.toLowerCase().includes("avena") &&
-        !f.name.toLowerCase().includes("oat")
+        !f.name.toLowerCase().includes("oat"),
     );
     // Vegetables
     const vegFoods = foods.filter((f) => isVegetableCategory(f.category));
@@ -340,7 +343,7 @@ async function createMealLog(
         isFatCategory(f.category) &&
         (f.name.toLowerCase().includes("aceite") ||
           f.name.toLowerCase().includes("oil") ||
-          f.category === "oils")
+          f.category === "oils"),
     );
 
     if (dietaryPreference === "keto") {
@@ -349,7 +352,7 @@ async function createMealLog(
         ...getSafeFoods(vegFoods, 2),
         ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
-      
+
       // Fallback
       if (selectedFoods.length === 0) {
         const anyProtein = foods.filter((f) => isProteinCategory(f.category));
@@ -368,7 +371,7 @@ async function createMealLog(
         ...getSafeFoods(vegFoods, 2),
         ...getSafeFoods(fatFoods, 1),
       ].filter((food): food is Food => food !== undefined && food !== null);
-      
+
       // Fallback
       if (selectedFoods.length === 0) {
         const anyProtein = foods.filter((f) => isProteinCategory(f.category));
@@ -398,7 +401,7 @@ async function createMealLog(
             (f) =>
               isCarbCategory(f.category) &&
               !f.name.toLowerCase().includes("avena") &&
-              !f.name.toLowerCase().includes("oat")
+              !f.name.toLowerCase().includes("oat"),
           );
 
     selectedFoods = [
@@ -407,7 +410,7 @@ async function createMealLog(
       ...getSafeFoods(vegFoods, 2),
       ...getSafeFoods(fatFoods, 1),
     ].filter((food): food is Food => food !== undefined && food !== null);
-    
+
     // Fallback
     if (selectedFoods.length === 0) {
       const anyProtein = foods.filter((f) => isProteinCategory(f.category));
@@ -431,7 +434,7 @@ async function createMealLog(
           f.name.toLowerCase().includes("yogur") ||
           f.name.toLowerCase().includes("yogurt") ||
           f.name.toLowerCase().includes("huevo") ||
-          f.name.toLowerCase().includes("egg"))
+          f.name.toLowerCase().includes("egg")),
     );
     // Fruits (not for keto)
     const fruitFoods =
@@ -447,7 +450,7 @@ async function createMealLog(
           f.name.toLowerCase().includes("chía") ||
           f.name.toLowerCase().includes("chia") ||
           f.category === "nuts" ||
-          f.category === "seeds")
+          f.category === "seeds"),
     );
 
     selectedFoods = [
@@ -455,7 +458,7 @@ async function createMealLog(
       ...getSafeFoods(fruitFoods, 1),
       ...getSafeFoods(nutFoods, 1),
     ].filter((food): food is Food => food !== undefined && food !== null);
-    
+
     // Fallback
     if (selectedFoods.length === 0) {
       const anyProtein = foods.filter((f) => isProteinCategory(f.category));

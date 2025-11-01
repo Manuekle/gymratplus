@@ -242,7 +242,9 @@ export async function DELETE(request: NextRequest) {
       where: { id, createdById: session.user.id, type: "personal" },
     });
 
-    return NextResponse.json({ message: "Entrenamiento eliminado correctamente" });
+    return NextResponse.json({
+      message: "Entrenamiento eliminado correctamente",
+    });
   } catch (error) {
     console.error("Error eliminando entrenamiento:", error);
     return NextResponse.json(

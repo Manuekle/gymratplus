@@ -1,7 +1,5 @@
 "use client";
 
-import { CardDescription, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import {
   DialogDescription,
@@ -9,9 +7,9 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useRouter } from "next/navigation";
+
+import { useState } from "react";
 
 import { Workout } from "@/types/workout-types";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -22,7 +20,7 @@ interface StepResultsProps {
 }
 
 export function StepResults({ workout }: StepResultsProps) {
-  const router = useRouter();
+  const [selectedDay, setSelectedDay] = useState(workout.days[0]?.day);
 
   if (!workout) {
     return (
@@ -49,99 +47,82 @@ export function StepResults({ workout }: StepResultsProps) {
         </DialogDescription>
       </DialogHeader>
 
-      <div>
-        <div className="pb-2">
-          <div className="flex justify-between items-start gap-8">
-            <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-xs">{workout.name}</CardTitle>
-              <CardDescription className="text-xs">
+      <div className="space-y-4">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="space-y-1">
+            <h3 className="text-lg font-semibold tracking-tight">
+              {workout.name}
+            </h3>
+            {workout.description && (
+              <p className="text-sm text-muted-foreground">
                 {workout.description}
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Badge variant="outline" className="flex items-center gap-1">
-                {workout.type}
-              </Badge>
-              <Badge variant="outline" className="flex items-center gap-1">
-                <HugeiconsIcon icon={Calendar01Icon} className="h-3 w-3" />
-                {workout.days.length} días
-              </Badge>
-            </div>
+              </p>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="secondary" className="px-3 py-1 text-xs">
+              {workout.type}
+            </Badge>
+            <Badge
+              variant="outline"
+              className="px-3 py-1 text-xs flex items-center gap-1"
+            >
+              <HugeiconsIcon icon={Calendar01Icon} className="h-3.5 w-3.5" />
+              {workout.days.length} {workout.days.length === 1 ? "día" : "días"}{" "}
+              por semana
+            </Badge>
           </div>
         </div>
         <div className="pt-4">
-          <Tabs defaultValue={workout.days[0]?.day}>
-            <TabsList className="w-full mb-4 flex flex-wrap h-auto ">
+          <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
+            <div className="flex flex-nowrap overflow-x-auto pb-1 gap-1.5 hide-scrollbar">
               {workout.days.map((day, index) => (
-                <TabsTrigger key={index} value={day.day} className="flex-1">
+                <button
+                  key={index}
+                  onClick={() => setSelectedDay(day.day)}
+                  className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${
+                    selectedDay === day.day
+                      ? "bg-primary/80 dark:bg-primary/20 border-primary/20 text-white dark:text-white font-medium"
+                      : "border-border/50 text-black dark:text-white hover:bg-muted/50"
+                  }`}
+                >
                   {day.day}
-                </TabsTrigger>
+                </button>
               ))}
-            </TabsList>
+            </div>
+          </div>
 
-            <ScrollArea className="h-[400px] mt-0 pr-4">
-              {workout.days.map((day, dayIndex) => (
-                <TabsContent key={dayIndex} value={day.day}>
-                  <div className="grid md:grid-cols-2 gap-6">
-                    {day.exercises.map((exercise, exIndex) => (
-                      <div
-                        key={exIndex}
-                        className="border rounded-lg shadow-sm"
-                      >
-                        <div className="flex items-center p-4 border-b">
-                          <div className="flex-1">
-                            <h4 className="font-medium text-xs">
-                              {exercise.name}
-                            </h4>
-                            {exercise.notes && (
-                              <p className="text-xs text-muted-foreground">
-                                {exercise.notes}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="p-4 grid grid-cols-3 gap-4 text-center">
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Sets
-                            </p>
-                            <p className="font-semibold text-xs">
-                              {exercise.sets}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Reps
-                            </p>
-                            <p className="font-semibold text-xs">
-                              {exercise.reps || "Tiempo"}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground mb-1">
-                              Descanso
-                            </p>
-                            <p className="font-semibold flex items-center justify-center gap-1 text-xs">
-                              {exercise.restTime}s
-                            </p>
-                          </div>
-                        </div>
+          <ScrollArea className="max-h-[400px] w-full mt-2">
+            <div className="space-y-1 pr-2">
+              {workout.days
+                .find((day) => day.day === selectedDay)
+                ?.exercises.map((exercise, exIndex) => (
+                  <div
+                    key={exIndex}
+                    className="flex flex-col border-b py-2 last:border-0"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
+                        {exercise.name}
+                      </h4>
+                      <div className="flex items-center gap-3 text-xs flex-shrink-0">
+                        <span className="text-muted-foreground whitespace-nowrap">
+                          {exercise.sets}×{exercise.reps || "Tiempo"}
+                        </span>
+                        <span className="font-medium whitespace-nowrap">
+                          ⏱️{exercise.restTime}s
+                        </span>
                       </div>
-                    ))}
+                    </div>
+                    {exercise.notes && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {exercise.notes}
+                      </p>
+                    )}
                   </div>
-                </TabsContent>
-              ))}
-            </ScrollArea>
-          </Tabs>
-        </div>
-        <div className="flex justify-end pt-5">
-          <Button
-            size="sm"
-            className="text-xs"
-            onClick={() => router.push("/dashboard/workout")}
-          >
-            Cerrar
-          </Button>
+                ))}
+            </div>
+          </ScrollArea>
         </div>
       </div>
     </div>

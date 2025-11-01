@@ -82,7 +82,6 @@ export function MealPlan({
   foodRecommendation,
   isLoading = false,
 }: MealPlanProps) {
-
   if (isLoading) {
     return <MealPlanSkeleton />;
   }
@@ -103,19 +102,43 @@ export function MealPlan({
   const mealTypes = {
     breakfast: {
       label: "Desayuno",
-      icon: <HugeiconsIcon icon={Apple01Icon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={Apple01Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     lunch: {
       label: "Almuerzo",
-      icon: <HugeiconsIcon icon={NoodlesIcon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={NoodlesIcon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     dinner: {
       label: "Cena",
-      icon: <HugeiconsIcon icon={RiceBowl01Icon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={RiceBowl01Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
     snack: {
       label: "Snacks",
-      icon: <HugeiconsIcon icon={FrenchFries02Icon} size={12} className="text-muted-foreground" />,
+      icon: (
+        <HugeiconsIcon
+          icon={FrenchFries02Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
     },
   };
 
@@ -211,13 +234,16 @@ export function MealPlan({
 
         {Object.entries(foodRecommendation.meals).map(([key, meal]) => {
           const tabValue = key === "snacks" ? "snack" : key;
-          const mealTypeKey = key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
-          
+          const mealTypeKey =
+            key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
+
           return (
             <TabsContent key={key} value={tabValue}>
               <Card>
                 <CardHeader>
-                  <CardTitle>{mealTypes[mealTypeKey].label}</CardTitle>
+                  <CardTitle className="text-lg tracking-heading font-semibold">
+                    {mealTypes[mealTypeKey].label}
+                  </CardTitle>
                   <CardDescription>
                     Calorías: {meal.calories} | Proteínas: {meal.protein}g |
                     Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
@@ -252,7 +278,9 @@ export function MealPlan({
                             <TableRow key={entry.id}>
                               <TableCell className="font-medium">
                                 <div className="flex flex-col">
-                                  <span>{entry.food?.name || "Alimento desconocido"}</span>
+                                  <span>
+                                    {entry.food?.name || "Alimento desconocido"}
+                                  </span>
                                   <span className="text-xs text-muted-foreground">
                                     {entry.food?.category || "N/A"}
                                   </span>
@@ -262,16 +290,30 @@ export function MealPlan({
                                 {Math.round((entry.quantity || 0) * 100)}g
                               </TableCell>
                               <TableCell className="text-center">
-                                {Math.round((entry.food?.calories || 0) * (entry.quantity || 0))}
+                                {Math.round(
+                                  (entry.food?.calories || 0) *
+                                    (entry.quantity || 0),
+                                )}
                               </TableCell>
                               <TableCell className="hidden md:table-cell text-center">
-                                {((entry.food?.protein || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                {(
+                                  (entry.food?.protein || 0) *
+                                  (entry.quantity || 0)
+                                ).toFixed(1)}
+                                g
                               </TableCell>
                               <TableCell className="hidden md:table-cell text-center">
-                                {((entry.food?.carbs || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                {(
+                                  (entry.food?.carbs || 0) *
+                                  (entry.quantity || 0)
+                                ).toFixed(1)}
+                                g
                               </TableCell>
                               <TableCell className="hidden md:table-cell text-center">
-                                {((entry.food?.fat || 0) * (entry.quantity || 0)).toFixed(1)}g
+                                {(
+                                  (entry.food?.fat || 0) * (entry.quantity || 0)
+                                ).toFixed(1)}
+                                g
                               </TableCell>
                             </TableRow>
                           ))
