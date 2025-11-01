@@ -61,7 +61,7 @@ export async function initNotificationSubscriber() {
       }
     };
 
-    // Check water intake
+    // Check water intake (only update UI, notifications are handled in the water-intake route)
     const checkWaterIntake = async () => {
       try {
         const intakeUpdates = await subscriberClient.lrange(
@@ -70,33 +70,7 @@ export async function initNotificationSubscriber() {
           -1,
         );
 
-        for (const message of intakeUpdates) {
-          try {
-            // Verificar si el mensaje ya es un objeto
-            const data =
-              typeof message === "string" ? JSON.parse(message) : message;
-            const { userId, intake, targetIntake } = data;
-
-            if (userId && intake && targetIntake) {
-              if (intake >= targetIntake) {
-                await createNotification({
-                  userId,
-                  title: "Meta de agua alcanzada",
-                  message:
-                    "¡Felicidades! Has alcanzado tu meta diaria de consumo de agua.",
-                  type: "water",
-                });
-
-                console.log(
-                  `Water goal notification created for user ${userId}`,
-                );
-              }
-            }
-          } catch (error) {
-            console.error("Error processing water intake message:", error);
-          }
-        }
-
+        // Just clear the updates without processing notifications
         if (intakeUpdates.length > 0) {
           await subscriberClient.ltrim(
             WATER_INTAKE_CHANNEL,

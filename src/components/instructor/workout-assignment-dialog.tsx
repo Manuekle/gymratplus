@@ -542,40 +542,57 @@ export function WorkoutAssignmentDialog({
               Resumen del entrenamiento
             </Label>
 
-            <Tabs defaultValue={days[0]} className="w-full">
-              <TabsList className="flex flex-wrap h-auto gap-4">
-                {days.map((day) => (
-                  <TabsTrigger key={day} value={day} className="text-xs flex-1">
-                    {day}
-                  </TabsTrigger>
-                ))}
-              </TabsList>
+            <div className="w-full">
+              <Tabs defaultValue={days[0]} className="w-full">
+                <ScrollArea className="w-full pb-2" orientation="horizontal">
+                  <TabsList className="flex flex-nowrap h-auto w-auto px-1">
+                    {days.map((day) => (
+                      <TabsTrigger
+                        key={day}
+                        value={day}
+                        className="text-xs px-3 py-1 whitespace-nowrap"
+                      >
+                        {day}
+                      </TabsTrigger>
+                    ))}
+                  </TabsList>
+                </ScrollArea>
 
-              {days.map((day) => (
-                <TabsContent key={day} value={day}>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedExercises
-                      .filter((ex) => ex.day === day)
-                      .map((ex) => {
-                        const exercise = exercises.find(
-                          (e) => e.id === ex.exerciseId,
-                        );
-                        return (
-                          <div
-                            key={ex.exerciseId}
-                            className="flex items-center gap-2 px-3 py-1.5 border rounded-full text-xs"
-                          >
-                            <span className="font-medium">
-                              {exercise?.name} ({ex.sets}x{ex.reps} -{" "}
-                              {ex.restTime}s)
-                            </span>
-                          </div>
-                        );
-                      })}
-                  </div>
-                </TabsContent>
-              ))}
-            </Tabs>
+                <div className="mt-3 max-h-[300px] overflow-y-auto pr-2">
+                  {days.map((day) => (
+                    <TabsContent key={day} value={day} className="m-0">
+                      <div className="flex flex-col gap-2">
+                        {selectedExercises
+                          .filter((ex) => ex.day === day)
+                          .map((ex) => {
+                            const exercise = exercises.find(
+                              (e) => e.id === ex.exerciseId,
+                            );
+                            return (
+                              <div
+                                key={ex.exerciseId}
+                                className="flex items-center justify-between gap-2 p-3 border rounded-lg text-xs"
+                              >
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-medium truncate">
+                                    {exercise?.name}
+                                  </p>
+                                  <p className="text-muted-foreground text-xs">
+                                    {ex.sets} series × {ex.reps} repeticiones
+                                  </p>
+                                </div>
+                                <div className="bg-muted px-2 py-1 rounded-md text-xs whitespace-nowrap">
+                                  ⏱️ {ex.restTime}s
+                                </div>
+                              </div>
+                            );
+                          })}
+                      </div>
+                    </TabsContent>
+                  ))}
+                </div>
+              </Tabs>
+            </div>
             {/* Selector de estudiante */}
             <div className="space-y-2">
               <Label className="text-xs md:text-xs" htmlFor="student-select">

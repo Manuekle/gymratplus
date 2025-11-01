@@ -28,11 +28,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const today = new Date();
+    const now = new Date();
     // Get local date in YYYY-MM-DD format for the default value
-    const localDate = new Date(
-      today.getTime() - today.getTimezoneOffset() * 60000,
-    )
+    const localDate = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
       .toISOString()
       .split("T")[0];
     const { intake, date = localDate } = body as {
@@ -103,10 +101,21 @@ export async function POST(req: NextRequest) {
     }
     await storeWaterIntake(session.user.id, formattedDate, numericIntake);
 
+    // Get user's timezone offset in minutes
+    const timezoneOffset = new Date().getTimezoneOffset() * 60000;
+
+    // Get today's date at midnight in the user's timezone
+    const todayAtMidnight = new Date(Date.now() - timezoneOffset);
+    todayAtMidnight.setUTCHours(0, 0, 0, 0);
+
     // Check if user reached their water goal
     const userProfile = await prisma.profile.findUnique({
       where: { userId: session.user.id },
-      select: { waterIntake: true, notificationsActive: true },
+      select: {
+        waterIntake: true,
+        notificationsActive: true,
+        lastWaterGoalNotification: true,
+      },
     });
 
     if (
@@ -114,18 +123,36 @@ export async function POST(req: NextRequest) {
       userProfile?.waterIntake &&
       numericIntake >= userProfile.waterIntake
     ) {
-      // Create notification in database
-      await createWaterGoalCompletedNotification(session.user.id);
+      // Check if we've already sent a notification today
+      const lastNotificationDate = userProfile.lastWaterGoalNotification
+        ? new Date(
+            userProfile.lastWaterGoalNotification.getTime() - timezoneOffset,
+          )
+        : null;
 
-      // Publish notification to Redis for real-time updates
-      await publishNotification(session.user.id, {
-        type: "water",
-        title: "Meta de agua alcanzada",
-        message:
-          "¡Felicidades! Has alcanzado tu meta diaria de consumo de agua.",
-      });
+      const shouldSendNotification =
+        !lastNotificationDate || lastNotificationDate < todayAtMidnight;
 
-      // Also add to water intake list for polling
+      if (shouldSendNotification) {
+        // Create notification in database
+        await createWaterGoalCompletedNotification(session.user.id);
+
+        // Update the last notification timestamp
+        await prisma.profile.update({
+          where: { userId: session.user.id },
+          data: { lastWaterGoalNotification: new Date() },
+        });
+
+        // Publish notification to Redis for real-time updates
+        await publishNotification(session.user.id, {
+          type: "water",
+          title: "Meta de agua alcanzada",
+          message:
+            "¡Felicidades! Has alcanzado tu meta diaria de consumo de agua.",
+        });
+      }
+
+      // Always update the water intake for UI updates
       await publishWaterIntake(
         session.user.id,
         numericIntake,

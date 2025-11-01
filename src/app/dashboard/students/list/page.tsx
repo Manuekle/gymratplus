@@ -2,30 +2,24 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
-import { format, isToday, isYesterday, isThisWeek } from "date-fns";
+import { format, isToday, isThisWeek } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
-import {} from "@/components/ui/dropdown-menu";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrangeByLettersAZIcon,
   Clock01Icon,
-  Dollar02Icon,
   EyeIcon,
-  FireIcon,
   Search01Icon,
   Target02Icon,
-  UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import {
   Select,
@@ -220,25 +214,8 @@ export default function StudentsListPage() {
     return { status: "old", text: "Inactivo", variant: "destructive" as const };
   };
 
-  // Calcular estadísticas
+  // Total students count
   const totalStudents = students.length;
-  const activeToday = students.filter(
-    (s) => s.lastWorkoutAt && isToday(new Date(s.lastWorkoutAt)),
-  ).length;
-  const activeThisWeek = students.filter(
-    (s) => s.lastWorkoutAt && isThisWeek(new Date(s.lastWorkoutAt)),
-  ).length;
-  const avgStreak =
-    totalStudents > 0
-      ? Math.round(
-          students.reduce((acc, s) => acc + s.currentWorkoutStreak, 0) /
-            totalStudents,
-        )
-      : 0;
-  const totalRevenue = students.reduce(
-    (acc, s) => acc + (s.agreedPrice || 0),
-    0,
-  );
 
   if (isLoading) {
     return (
@@ -255,53 +232,24 @@ export default function StudentsListPage() {
             </div>
           </div>
 
-          {/* Stats Skeleton */}
-          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Card key={i}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
-                  <Skeleton className="h-3 w-20" />
-                  <Skeleton className="h-4 w-4" />
-                </CardHeader>
-                <CardContent className="py-3">
-                  <Skeleton className="h-6 w-10 mb-1" />
-                  <Skeleton className="h-2.5 w-16" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          {/* Filters Skeleton */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex gap-3">
-                <Skeleton className="h-8 flex-1 max-w-sm" />
-                <Skeleton className="h-8 w-28" />
-                <Skeleton className="h-8 w-36" />
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Students List Skeleton */}
           <div className="space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <Card key={i}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Skeleton className="h-10 w-10 rounded-full" />
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-3 w-28" />
-                        <Skeleton className="h-2.5 w-40" />
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                      <Skeleton className="h-5 w-14" />
-                      <Skeleton className="h-7 w-7" />
+              <div key={i} className="p-4 border rounded-lg">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="space-y-1.5">
+                      <Skeleton className="h-3 w-28" />
+                      <Skeleton className="h-2.5 w-40" />
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                  <div className="flex items-center space-x-3">
+                    <Skeleton className="h-5 w-14" />
+                    <Skeleton className="h-7 w-7" />
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -311,84 +259,6 @@ export default function StudentsListPage() {
 
   return (
     <div className="space-y-4">
-      {/* Stats Overview */}
-      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
-            <CardTitle className="text-xs font-medium">Total Alumnos</CardTitle>
-            <HugeiconsIcon
-              icon={UserGroupIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="text-2xl font-semibold">
-              {stats?.totalStudents || totalStudents}
-            </div>
-            <p className="text-xs text-muted-foreground">alumnos activos</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
-            <CardTitle className="text-xs font-medium">Activos Hoy</CardTitle>
-            <HugeiconsIcon
-              icon={ArrangeByLettersAZIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="text-2xl font-semibold">
-              {stats?.activeToday || activeToday}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              {stats?.totalStudents
-                ? Math.round((stats.activeToday / stats.totalStudents) * 100)
-                : totalStudents > 0
-                  ? Math.round((activeToday / totalStudents) * 100)
-                  : 0}
-              % del total
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
-            <CardTitle className="text-xs font-medium">
-              Racha Promedio
-            </CardTitle>
-            <HugeiconsIcon
-              icon={FireIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="text-2xl font-semibold">
-              {stats?.avgStreak || avgStreak}
-            </div>
-            <p className="text-xs text-muted-foreground">días consecutivos</p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1.5">
-            <CardTitle className="text-xs font-medium">
-              Ingresos Mensuales
-            </CardTitle>
-            <HugeiconsIcon
-              icon={Dollar02Icon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent className="py-3">
-            <div className="text-2xl font-semibold">
-              ${stats?.totalRevenue || totalRevenue}
-            </div>
-            <p className="text-xs text-muted-foreground">total estimado</p>
-          </CardContent>
-        </Card>
-      </div>
-
       <div className="flex flex-col gap-3 md:flex-row">
         <div className="relative flex-1 max-w-sm">
           <HugeiconsIcon
@@ -454,8 +324,11 @@ export default function StudentsListPage() {
             const activityStatus = getActivityStatus(student.lastWorkoutAt);
 
             return (
-              <Card key={student.id}>
-                <CardContent className="p-3">
+              <div
+                key={student.id}
+                className="border rounded-lg overflow-hidden"
+              >
+                <div className="p-3">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
                     <Avatar className="h-10 w-10 border-2 border-background">
@@ -567,8 +440,8 @@ export default function StudentsListPage() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             );
           })
         )}

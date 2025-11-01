@@ -104,6 +104,7 @@ model Profile {
   dailyCarbTarget      Int? // carbohidratos diarios en gramos (se calcula automáticamente)
   dailyFatTarget       Int? // grasas diarias en gramos (se calcula automáticamente)
   waterIntake          Float? // consumo de agua en litros por día (se calcula automáticamente)
+  lastWaterGoalNotification DateTime? // Fecha de la última notificación de meta de agua alcanzada
   notificationsActive  Boolean   @default(true)
   createdAt            DateTime  @default(now())
   updatedAt            DateTime  @updatedAt

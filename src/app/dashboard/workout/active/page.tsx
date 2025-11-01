@@ -15,7 +15,7 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout/workout-timer-float";
 import { toast } from "sonner";
-import { Textarea } from "@/components/ui/textarea";
+// import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Spinner = () => (
@@ -60,11 +60,11 @@ const DEBOUNCE_DELAY = 1000; // 1 segundo de retraso para el guardado
 export default function ActiveWorkoutPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  // const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
     null,
   );
-  const [notes, setNotes] = useState("");
+  // const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<{
     active: boolean;
@@ -92,7 +92,7 @@ export default function ActiveWorkoutPage() {
         if (response.ok) {
           const data: WorkoutSession = await response.json();
           setWorkoutSession(data);
-          setNotes(data.notes || "");
+          // setNotes(data.notes || "");
           setStartTime(new Date(data.createdAt));
         } else {
           toast.error("No hay entrenamiento activo", {
@@ -366,36 +366,36 @@ export default function ActiveWorkoutPage() {
   };
 
   // Completar el entrenamiento (solo guarda las notas)
-  const completeWorkout = async () => {
-    if (!workoutSession) return;
+  // const completeWorkout = async () => {
+  //   if (!workoutSession) return;
 
-    setSaving(true);
-    try {
-      // Solo guardar las notas
-      await fetch("/api/workout-session/notes", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          workoutSessionId: workoutSession.id,
-          notes,
-        }),
-      });
+  //   setSaving(true);
+  //   try {
+  //     // Solo guardar las notas
+  //     await fetch("/api/workout-session/notes", {
+  //       method: "PUT",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         workoutSessionId: workoutSession.id,
+  //         notes,
+  //       }),
+  //     });
 
-      toast.success("Notas guardadas", {
-        description: "Las notas del entrenamiento han sido guardadas",
-      });
+  //     toast.success("Notas guardadas", {
+  //       description: "Las notas del entrenamiento han sido guardadas",
+  //     });
 
-      // Si deseas terminar el entrenamiento COMPLETO, tendrías que llamar a otro endpoint
-      // Por ahora, solo guarda las notas como tu función original.
-    } catch (error) {
-      console.error("Error al guardar notas:", error);
-      toast.error("Error al guardar", {
-        description: "No se pudieron guardar las notas",
-      });
-    } finally {
-      setSaving(false);
-    }
-  };
+  //     // Si deseas terminar el entrenamiento COMPLETO, tendrías que llamar a otro endpoint
+  //     // Por ahora, solo guarda las notas como tu función original.
+  //   } catch (error) {
+  //     console.error("Error al guardar notas:", error);
+  //     toast.error("Error al guardar", {
+  //       description: "No se pudieron guardar las notas",
+  //     });
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
 
   if (loading) {
     // ... (Tu esqueleto de carga existente)
@@ -501,7 +501,7 @@ export default function ActiveWorkoutPage() {
                 Entrenamiento en progreso
               </CardDescription>
             </div>
-            <Button
+            {/* <Button
               onClick={completeWorkout}
               disabled={saving}
               size="sm"
@@ -509,23 +509,24 @@ export default function ActiveWorkoutPage() {
             >
               {saving && <Spinner />}
               Guardar notas
-            </Button>
+            </Button> */}
           </div>
 
           <div className="mb-6">
             <Progress value={progress} className="h-2" />
           </div>
 
-          <div className="pb-6">
+          {/* <div className="pb-6">
             <h3 className="text-xs md:text-xs font-medium mb-2">Notas</h3>
             <Textarea
               className="w-full text-xs md:text-xs resize-none"
               rows={3}
+              disabled
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Añade notas sobre tu entrenamiento..."
             />
-          </div>
+          </div> */}
 
           {restTimer.active && (
             <div className="bg-foreground p-4 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in">

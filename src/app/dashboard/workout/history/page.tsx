@@ -213,11 +213,11 @@ export default function WorkoutHistoryPage() {
         <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
-                <p className="text-xl md:text-3xl font-semibold  tracking-heading">
+                <p className="text-xl md:text-2xl font-semibold  tracking-heading">
                   {stats.totalSessions}
                 </p>
               </div>
@@ -234,11 +234,11 @@ export default function WorkoutHistoryPage() {
         <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-gray-800">
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
-                <p className="text-xl md:text-3xl font-semibold ">
+                <p className="text-xl md:text-2xl font-semibold ">
                   {stats.totalExercises}
                 </p>
               </div>
@@ -255,11 +255,11 @@ export default function WorkoutHistoryPage() {
         <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-gray-800">
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
-                <p className="text-xl md:text-3xl font-semibold ">
+                <p className="text-xl md:text-2xl font-semibold ">
                   {stats.totalSets}
                 </p>
               </div>
@@ -276,11 +276,11 @@ export default function WorkoutHistoryPage() {
         <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-gray-800">
           <CardContent className="pt-2">
             <div className="flex items-center justify-between">
-              <div>
+              <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
-                <p className="text-xl md:text-3xl font-semibold ">
+                <p className="text-xl md:text-2xl font-semibold ">
                   {stats.averageDuration} min
                 </p>
               </div>

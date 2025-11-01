@@ -45,6 +45,18 @@ export default function NotificationsPage() {
     return notifications.filter((n) => selectedTypes.includes(n.type));
   }, [notifications, selectedTypes]);
 
+  const notificationTypeLabels: Record<
+    string,
+    { label: string; emoji: string }
+  > = {
+    system: { label: "Sistema", emoji: "⚙️" },
+    workout: { label: "Entrenamiento", emoji: "💪" },
+    meal: { label: "Comida", emoji: "🍽️" },
+    water: { label: "Agua", emoji: "💧" },
+    weight: { label: "Peso", emoji: "⚖️" },
+    goal: { label: "Objetivo", emoji: "🎯" },
+  };
+
   const toggleType = (type: string) => {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type],
@@ -121,7 +133,13 @@ export default function NotificationsPage() {
                   onCheckedChange={() => toggleType(type)}
                   className="text-xs md:text-xs capitalize"
                 >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  <span className="flex items-center gap-2">
+                    <span>{notificationTypeLabels[type]?.emoji || "🔔"}</span>
+                    <span>
+                      {notificationTypeLabels[type]?.label ||
+                        type.charAt(0).toUpperCase() + type.slice(1)}
+                    </span>
+                  </span>
                 </DropdownMenuCheckboxItem>
               ))}
             </DropdownMenuContent>
