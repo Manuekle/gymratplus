@@ -26,6 +26,7 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
+  Calendar01Icon,
   ChocolateIcon,
   EggsIcon,
   FrenchFries02Icon,
@@ -33,6 +34,13 @@ import {
   RiceBowl01Icon,
   SteakIcon,
 } from "@hugeicons/core-free-icons";
+import { format } from "date-fns";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils/utils";
 // cambiar todo
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
@@ -364,24 +372,47 @@ export default function FoodRecommendations() {
                 <span className="text-xs text-muted-foreground">
                   Historial:
                 </span>
-                <select
-                  className="text-xs border rounded p-1"
-                  value={selectedRecommendation.id}
-                  onChange={(e) => {
-                    const selected = recommendations.find(
-                      (r) => r.id === e.target.value,
-                    );
-                    if (selected) {
-                      setSelectedRecommendation(selected);
-                    }
-                  }}
-                >
-                  {recommendations.map((rec) => (
-                    <option key={rec.id} value={rec.id}>
-                      {new Date(rec.createdAt).toLocaleDateString()}
-                    </option>
-                  ))}
-                </select>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className={cn(
+                        "w-[200px] justify-start text-left font-normal text-xs",
+                        !selectedRecommendation && "text-muted-foreground"
+                      )}
+                    >
+                      <HugeiconsIcon
+                        icon={Calendar01Icon}
+                        className="mr-2 h-4 w-4"
+                      />
+                      {selectedRecommendation ? (
+                        format(
+                          new Date(selectedRecommendation.createdAt),
+                          "PPP"
+                        )
+                      ) : (
+                        <span>Selecciona una fecha</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <div className="max-h-[300px] overflow-y-auto">
+                      {recommendations.map((rec) => (
+                        <div
+                          key={rec.id}
+                          className={cn(
+                            "p-2 text-sm cursor-pointer hover:bg-accent",
+                            selectedRecommendation?.id === rec.id && "bg-accent"
+                          )}
+                          onClick={() => setSelectedRecommendation(rec)}
+                        >
+                          {format(new Date(rec.createdAt), "PPP")}
+                        </div>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             )}
           </div>
@@ -489,7 +520,9 @@ export default function FoodRecommendations() {
                 <TabsContent key={key} value={tabValue}>
                   <Card>
                     <CardHeader>
-                      <CardTitle>{mealTypes[mealTypeKey].label}</CardTitle>
+                      <CardTitle className="text-lg tracking-heading font-semibold">
+                        {mealTypes[mealTypeKey].label}
+                      </CardTitle>
                       <CardDescription>
                         Calorías: {meal.calories || 0} | Proteínas:{" "}
                         {meal.protein || 0}g | Carbohidratos: {meal.carbs || 0}g
@@ -547,7 +580,7 @@ export default function FoodRecommendations() {
                                     <TableCell className="text-center">
                                       {Math.round(
                                         (food.calories || 0) *
-                                          (entry.quantity || 0),
+                                          (entry.quantity || 0)
                                       )}
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">

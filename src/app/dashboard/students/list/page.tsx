@@ -18,6 +18,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Clock01Icon,
   EyeIcon,
+  FireIcon,
   Search01Icon,
   Target02Icon,
 } from "@hugeicons/core-free-icons";
@@ -147,7 +148,7 @@ export default function StudentsListPage() {
       filtered = filtered.filter(
         (student) =>
           student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email?.toLowerCase().includes(searchTerm.toLowerCase()),
+          student.email?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -162,26 +163,26 @@ export default function StudentsListPage() {
         case "active_today":
           filtered = filtered.filter(
             (student) =>
-              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt)),
+              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt))
           );
           break;
         case "active_week":
           filtered = filtered.filter(
             (student) =>
               student.lastWorkoutAt &&
-              isThisWeek(new Date(student.lastWorkoutAt)),
+              isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "inactive":
           filtered = filtered.filter(
             (student) =>
               !student.lastWorkoutAt ||
-              !isThisWeek(new Date(student.lastWorkoutAt)),
+              !isThisWeek(new Date(student.lastWorkoutAt))
           );
           break;
         case "high_streak":
           filtered = filtered.filter(
-            (student) => student.currentWorkoutStreak >= 7,
+            (student) => student.currentWorkoutStreak >= 7
           );
           break;
       }
@@ -455,9 +456,9 @@ export default function StudentsListPage() {
               Mostrando {filteredStudents.length} de {totalStudents} alumnos
             </span>
             <div className="flex items-center gap-3">
-              <span>Activos esta semana: {activeThisWeek}</span>
+              <span>Activos esta semana: {stats?.activeThisWeek || 0}</span>
               <Separator orientation="vertical" className="h-3" />
-              <span>Racha promedio: {avgStreak} días</span>
+              <span>Racha promedio: {stats?.avgStreak || 0} días</span>
             </div>
           </div>
         </div>
