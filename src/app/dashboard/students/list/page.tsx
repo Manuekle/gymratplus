@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
-import { format, isToday, isThisWeek } from "date-fns";
+import { format, isToday, isThisWeek, isYesterday } from "date-fns";
 import { es } from "date-fns/locale";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -148,7 +148,7 @@ export default function StudentsListPage() {
       filtered = filtered.filter(
         (student) =>
           student.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          student.email?.toLowerCase().includes(searchTerm.toLowerCase())
+          student.email?.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
@@ -163,26 +163,26 @@ export default function StudentsListPage() {
         case "active_today":
           filtered = filtered.filter(
             (student) =>
-              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt))
+              student.lastWorkoutAt && isToday(new Date(student.lastWorkoutAt)),
           );
           break;
         case "active_week":
           filtered = filtered.filter(
             (student) =>
               student.lastWorkoutAt &&
-              isThisWeek(new Date(student.lastWorkoutAt))
+              isThisWeek(new Date(student.lastWorkoutAt)),
           );
           break;
         case "inactive":
           filtered = filtered.filter(
             (student) =>
               !student.lastWorkoutAt ||
-              !isThisWeek(new Date(student.lastWorkoutAt))
+              !isThisWeek(new Date(student.lastWorkoutAt)),
           );
           break;
         case "high_streak":
           filtered = filtered.filter(
-            (student) => student.currentWorkoutStreak >= 7
+            (student) => student.currentWorkoutStreak >= 7,
           );
           break;
       }

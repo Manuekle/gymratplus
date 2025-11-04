@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import {
-  Calendar01Icon,
   Mail01Icon,
   MapPinIcon,
   PhoneLockIcon,
@@ -53,19 +52,37 @@ export default function InstructorProfilePage() {
   const [requestedInstructors, setRequestedInstructors] = useState<Set<string>>(
     new Set(),
   );
+  const [hiredInstructors, setHiredInstructors] = useState<Set<string>>(
+    new Set(),
+  );
 
   const loadExistingRequests = useCallback(async () => {
     try {
-      const response = await fetch("/api/student-instructor-requests");
-      if (response.ok) {
-        const requests = await response.json();
-        const requestIds = requests.map(
-          (req: { instructorProfileId: string }) => req.instructorProfileId,
-        );
+      const [requestsResponse, hiredResponse] = await Promise.all([
+        fetch("/api/student-instructor-requests"),
+        fetch("/api/student-instructors?status=active"),
+      ]);
+
+      if (requestsResponse.ok) {
+        const requests = await requestsResponse.json();
+        const requestIds = requests
+          .filter((req: { status: string }) => req.status === "pending")
+          .map(
+            (req: { instructorProfileId: string }) => req.instructorProfileId,
+          );
         setRequestedInstructors(new Set(requestIds));
       }
+
+      if (hiredResponse.ok) {
+        const hiredInstructors = await hiredResponse.json();
+        const hiredIds = hiredInstructors.map(
+          (instructor: { instructorProfileId: string }) =>
+            instructor.instructorProfileId,
+        );
+        setHiredInstructors(new Set(hiredIds));
+      }
     } catch (error) {
-      console.error("Error loading existing requests:", error);
+      console.error("Error loading instructor data:", error);
     }
   }, []);
 
@@ -141,21 +158,19 @@ export default function InstructorProfilePage() {
         return;
       }
 
-      // Check if already has a request for this instructor
-      if (requestedInstructors.has(instructorProfileId)) {
-        toast.info("Solicitud existente", {
-          description: "Ya tienes una solicitud pendiente con este instructor.",
-        });
-        return;
+      // Check if already has an active request for this instructor
+      if (hiredInstructors.has(instructorProfileId)) {
+        return; // No need to show a message, the UI already shows they're a student
       }
 
-      // Check if has any active requests
+      // Check if already has a pending request for this instructor
+      if (requestedInstructors.has(instructorProfileId)) {
+        return; // No need to show a message, the UI already shows the request is pending
+      }
+
+      // Check if has any other pending requests
       if (requestedInstructors.size > 0) {
-        toast.error("Solicitud pendiente", {
-          description:
-            "Ya tienes una solicitud pendiente. Debes cancelarla antes de solicitar otro instructor.",
-        });
-        return;
+        return; // No need to show a message, the UI already handles this case
       }
 
       setRequestingInstructorId(instructorProfileId);
@@ -173,10 +188,6 @@ export default function InstructorProfilePage() {
           const errorData = await response.json();
           // Handle the case when the request already exists
           if (errorData.error && errorData.error.includes("ya existe")) {
-            toast.info("Solicitud existente", {
-              description:
-                "Ya tienes una solicitud pendiente con este instructor.",
-            });
             // Update the UI to reflect the existing request
             setRequestedInstructors(
               new Set([...requestedInstructors, instructorProfileId]),
@@ -268,10 +279,42 @@ export default function InstructorProfilePage() {
     );
   }
 
+  const isInactive =
+    instructor.status && instructor.status.toLowerCase() !== "active";
+
   //   const isRequested = instructor ? requestedInstructors.has(instructor.instructorProfileId) : false;
 
   return (
     <div>
+      {isInactive && (
+        <div
+          className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-4"
+          role="alert"
+        >
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-yellow-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm">
+                Este instructor actualmente no está aceptando nuevos
+                estudiantes.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="flex flex-col md:flex-row gap-4">
         {/* Compact Sidebar */}
         <div className="w-full md:w-80 space-y-3">
@@ -404,61 +447,70 @@ export default function InstructorProfilePage() {
                 )}
               </div>
 
-              {(() => {
-                if (instructor) {
-                  return (
-                    <div className="w-full space-y-1">
-                      <div className="flex flex-row gap-1.5">
-                        <Button
-                          size="sm"
-                          className={`text-[11px] h-8 flex-1 ${
-                            requestedInstructors.has(
-                              instructor.instructorProfileId,
-                            )
-                              ? "bg-red-600 hover:bg-red-700"
-                              : ""
-                          }`}
-                          onClick={() =>
-                            handleRequestInstructor(
-                              instructor.instructorProfileId,
-                            )
-                          }
-                          disabled={
-                            requestingInstructorId ===
-                              instructor.instructorProfileId ||
-                            (requestedInstructors.size > 0 &&
-                              !requestedInstructors.has(
+              {!isInactive &&
+                !hiredInstructors.has(instructor.instructorProfileId) &&
+                (() => {
+                  if (instructor) {
+                    return (
+                      <div className="w-full space-y-1">
+                        <div className="flex flex-row gap-1.5">
+                          <Button
+                            size="sm"
+                            className={`text-[11px] h-8 flex-1 ${
+                              requestedInstructors.has(
                                 instructor.instructorProfileId,
-                              ))
-                          }
-                        >
-                          {requestingInstructorId ===
-                          instructor.instructorProfileId ? (
-                            <span>Enviando...</span>
-                          ) : requestedInstructors.has(
-                              instructor.instructorProfileId,
-                            ) ? (
-                            <span className="text-white">
-                              Solicitud Enviada
-                            </span>
-                          ) : (
-                            "Solicitar"
+                              )
+                                ? "bg-red-600 hover:bg-red-700"
+                                : ""
+                            }`}
+                            onClick={() =>
+                              handleRequestInstructor(
+                                instructor.instructorProfileId,
+                              )
+                            }
+                            disabled={
+                              requestingInstructorId ===
+                                instructor.instructorProfileId ||
+                              (requestedInstructors.size > 0 &&
+                                !requestedInstructors.has(
+                                  instructor.instructorProfileId,
+                                ))
+                            }
+                          >
+                            {requestingInstructorId ===
+                            instructor.instructorProfileId ? (
+                              <span>Enviando...</span>
+                            ) : requestedInstructors.has(
+                                instructor.instructorProfileId,
+                              ) ? (
+                              <span className="text-white">
+                                Solicitud Enviada
+                              </span>
+                            ) : (
+                              "Solicitar"
+                            )}
+                          </Button>
+                        </div>
+                        {requestedInstructors.size > 0 &&
+                          !requestedInstructors.has(
+                            instructor.instructorProfileId,
+                          ) && (
+                            <p className="text-[10px] text-red-500 text-center leading-tight">
+                              Debes cancelar tu solicitud actual primero
+                            </p>
                           )}
-                        </Button>
                       </div>
-                      {requestedInstructors.size > 0 &&
-                        !requestedInstructors.has(
-                          instructor.instructorProfileId,
-                        ) && (
-                          <p className="text-[10px] text-red-500 text-center leading-tight">
-                            Debes cancelar tu solicitud actual primero
-                          </p>
-                        )}
-                    </div>
-                  );
-                }
-                return "";
-              })()}
+                    );
+                  }
+                  return "";
+                })()}
+              {hiredInstructors.has(instructor.instructorProfileId) && (
+                <div className="w-full text-center py-2">
+                  <span className="text-xs text-green-600 font-medium">
+                    Ya eres estudiante de este instructor
+                  </span>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

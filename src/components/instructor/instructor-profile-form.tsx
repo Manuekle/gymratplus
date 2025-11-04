@@ -24,7 +24,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { Icons } from "../icons";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
@@ -59,7 +58,19 @@ export function InstructorProfileForm({
   const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
+  const [profileData, setProfileData] = useState<InstructorProfileValues>({
+    bio: "",
+    specialties: [],
+    curriculum: "",
+    pricePerMonth: undefined,
+    contactEmail: "",
+    contactPhone: "",
+    country: "",
+    city: "",
+    isRemote: false,
+  });
 
   // In-memory cache for user data
   const userDataCache = new Map<
@@ -104,7 +115,7 @@ export function InstructorProfileForm({
           ? data.curriculum.split(/\s*,\s*/).filter(Boolean)
           : [];
 
-        form.reset({
+        const formData = {
           bio: data.bio || "",
           curriculum: data.curriculum || "",
           specialties: specialties,
@@ -114,7 +125,10 @@ export function InstructorProfileForm({
           country: data.country || "",
           city: data.city || "",
           isRemote: data.isRemote ?? false,
-        });
+        };
+
+        setProfileData(formData);
+        form.reset(formData);
       } catch (error: unknown) {
         let errorMessage = "Hubo un error al cargar el perfil.";
         if (error instanceof Error) {
@@ -188,6 +202,8 @@ export function InstructorProfileForm({
         throw new Error(errorData.message || "Error al actualizar el perfil.");
       }
 
+      // Update profile data with new values
+      setProfileData(values);
       toast.success("Perfil de instructor actualizado con éxito!");
       if (onSuccess) {
         onSuccess();
@@ -200,148 +216,256 @@ export function InstructorProfileForm({
         errorMessage = error;
       }
       toast.error(errorMessage);
-      console.error(error);
+      console.error("Error updating instructor profile:", error);
     } finally {
       setIsLoading(false);
     }
   }
 
+  const toggleEditMode = () => {
+    setIsEditing(!isEditing);
+  };
+
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-full" />
-        <Skeleton className="h-10 w-1/2" />
-        <Skeleton className="h-10 w-1/3" />
+      <div className="space-y-4">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64" />
+        <div className="space-y-2 pt-4">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
       </div>
     );
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="bio"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Biografía</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Cuéntanos sobre tu experiencia y filosofía como instructor."
-                      className="resize-none text-xs"
-                      {...field}
-                      rows={4}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Una breve descripción de tu perfil profesional.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <div>
+      {!isEditing && profileData ? (
+        <div className="space-y-6">
+          {profileData.bio && (
+            <div className="w-full">
+              <h4 className="text-xs font-medium">Biografía</h4>
+              <p className="mt-1 break-words text-xs text-muted-foreground">
+                {profileData.bio}
+              </p>
+            </div>
+          )}
 
-            <FormField
-              control={form.control}
-              name="specialties"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Especialidades</FormLabel>
-                  <FormControl>
-                    <TagSelector
-                      selectedTags={field.value || []}
-                      onTagSelect={(tags) => {
-                        field.onChange(tags);
-                        form.setValue("curriculum", tags.join(", "), {
-                          shouldValidate: true,
-                        });
-                      }}
-                      availableTags={SPECIALTIES}
-                      placeholder="Buscar especialidades..."
-                      className="min-h-[40px]"
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Selecciona al menos una especialidad
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+          {profileData.specialties?.length > 0 && (
+            <div>
+              <h4 className="text-xs font-medium">Especialidades</h4>
+              <div className="mt-1 flex flex-wrap gap-2">
+                {profileData.specialties.map((specialty) => (
+                  <span
+                    key={specialty}
+                    className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+                  >
+                    {specialty}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {(profileData.contactEmail || profileData.contactPhone) && (
+            <div>
+              <h4 className="text-xs font-medium">Información de contacto</h4>
+              <div className="mt-1 space-y-1 text-xs text-muted-foreground">
+                {profileData.contactEmail && (
+                  <div>Email: {profileData.contactEmail}</div>
+                )}
+                {profileData.contactPhone && (
+                  <div>Teléfono: {profileData.contactPhone}</div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {(profileData.country || profileData.city) && (
+            <div>
+              <h4 className="text-xs font-medium">Ubicación</h4>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {[profileData.city, profileData.country]
+                  .filter(Boolean)
+                  .join(", ")}
+                {profileData.isRemote && " (También atiendo de forma remota)"}
+              </p>
+            </div>
+          )}
+
+          {profileData.pricePerMonth && (
+            <div>
+              <h4 className="text-xs font-medium">Precio por mes</h4>
+              <p className="mt-1 text-xs text-muted-foreground">
+                ${profileData.pricePerMonth.toLocaleString()}
+              </p>
+            </div>
+          )}
+
+          <div>
+            <Button
+              variant="destructive"
+              size="sm"
+              className="mt-4"
+              onClick={() => setIsCancelDialogOpen(true)}
+            >
+              Cancelar plan de instructor
+            </Button>
           </div>
-          <div className="space-y-6">
-            <FormField
-              control={form.control}
-              name="pricePerMonth"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Precio por mes (USD)</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="text-xs"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      placeholder="Ej: 50.00"
-                      {...field}
-                      value={field.value ?? ""}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Tu tarifa mensual sugerida para los alumnos.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        </div>
+      ) : (
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit((data) => {
+              onSubmit(data);
+              setIsEditing(false);
+            })}
+            className="space-y-8"
+          >
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              <FormField
+                control={form.control}
+                name="bio"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Biografía</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Cuéntales a los estudiantes sobre ti y tu experiencia..."
+                        className="min-h-[120px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Comparte tu experiencia, formación y enfoque de enseñanza.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="contactEmail"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email de Contacto</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="text-xs"
-                      placeholder="tu@ejemplo.com"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Email donde los alumnos pueden contactarte directamente.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="specialties"
+                render={({ field }) => (
+                  <FormItem className="md:col-span-2">
+                    <FormLabel>Especialidades</FormLabel>
+                    <FormControl>
+                      <TagSelector
+                        availableTags={SPECIALTIES}
+                        selectedTags={field.value || []}
+                        onTagSelect={field.onChange}
+                        placeholder="Selecciona tus especialidades..."
+                        className="w-full"
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Selecciona al menos una especialidad en la que te
+                      desempeñas.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="contactPhone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Teléfono de Contacto</FormLabel>
-                  <FormControl>
-                    <Input
-                      className="text-xs"
-                      placeholder="+1234567890"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormDescription>
-                    Número de teléfono donde los alumnos pueden contactarte.
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="pricePerMonth"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Precio por mes (opcional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 5000"
+                        {...field}
+                        value={field.value || ""}
+                        onChange={(e) =>
+                          field.onChange(
+                            e.target.value ? Number(e.target.value) : null,
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Precio mensual en tu moneda local. Déjalo en blanco si
+                      prefieres no mostrarlo.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="isRemote"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-xs">
+                        Ofreces clases remotas?
+                      </FormLabel>
+                      <FormDescription>
+                        Los estudiantes podrán contactarte para clases en línea.
+                      </FormDescription>
+                    </div>
+                    <FormControl>
+                      <Switch
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contactEmail"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email de contacto (opcional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="email@ejemplo.com"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Correo electrónico donde los estudiantes pueden
+                      contactarte.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="contactPhone"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Teléfono (opcional)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="tel"
+                        placeholder="+1234567890"
+                        {...field}
+                        value={field.value || ""}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      Número de teléfono donde los estudiantes pueden
+                      contactarte.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="country"
@@ -350,9 +474,8 @@ export function InstructorProfileForm({
                     <FormLabel>País</FormLabel>
                     <FormControl>
                       <CountrySelector
-                        value={field.value}
+                        value={field.value || ""}
                         onValueChange={field.onChange}
-                        className="text-xs"
                         placeholder="Selecciona un país"
                       />
                     </FormControl>
@@ -360,6 +483,7 @@ export function InstructorProfileForm({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="city"
@@ -368,9 +492,9 @@ export function InstructorProfileForm({
                     <FormLabel>Ciudad</FormLabel>
                     <FormControl>
                       <Input
-                        className="text-xs"
-                        placeholder="Ej: Madrid"
+                        placeholder="Tu ciudad"
                         {...field}
+                        value={field.value || ""}
                       />
                     </FormControl>
                     <FormMessage />
@@ -379,58 +503,37 @@ export function InstructorProfileForm({
               />
             </div>
 
-            <FormField
-              control={form.control}
-              name="isRemote"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                  <div className="space-y-0.5">
-                    <FormLabel>¿Ofreces clases remotas?</FormLabel>
-                    <FormDescription>
-                      Permite a alumnos de cualquier lugar contactarte.
-                    </FormDescription>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-          </div>
-        </div>
-        <Separator />
-        <div className="flex justify-end">
-          <div className="flex gap-4">
-            <Button type="submit" disabled={isLoading} size="lg">
-              {isLoading ? (
-                <>
+            <div className="flex justify-end space-x-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+                disabled={isLoading}
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={isLoading}>
+                {isLoading && (
                   <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando...
-                </>
-              ) : (
-                "Guardar Cambios"
-              )}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={isLoading}
-              size="lg"
-              onClick={() => setIsCancelDialogOpen(true)}
-            >
-              Cancelar Plan
-            </Button>
-            <CancelPlanDialog
-              open={isCancelDialogOpen}
-              onOpenChange={setIsCancelDialogOpen}
-              onSuccess={handleCancelSuccess}
-            />
-          </div>
-        </div>
-      </form>
-    </Form>
+                )}
+                Guardar cambios
+              </Button>
+            </div>
+          </form>
+        </Form>
+      )}
+      <div className="flex flex-row items-center justify-between w-full pt-4">
+        {!isEditing && (
+          <Button onClick={toggleEditMode} variant="outline" size="sm">
+            Editar perfil
+          </Button>
+        )}
+        <CancelPlanDialog
+          open={isCancelDialogOpen}
+          onOpenChange={setIsCancelDialogOpen}
+          onSuccess={handleCancelSuccess}
+        />
+      </div>
+    </div>
   );
 }

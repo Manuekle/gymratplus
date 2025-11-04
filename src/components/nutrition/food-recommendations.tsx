@@ -379,7 +379,7 @@ export default function FoodRecommendations() {
                       size="sm"
                       className={cn(
                         "w-[200px] justify-start text-left font-normal text-xs",
-                        !selectedRecommendation && "text-muted-foreground"
+                        !selectedRecommendation && "text-muted-foreground",
                       )}
                     >
                       <HugeiconsIcon
@@ -389,7 +389,7 @@ export default function FoodRecommendations() {
                       {selectedRecommendation ? (
                         format(
                           new Date(selectedRecommendation.createdAt),
-                          "PPP"
+                          "PPP",
                         )
                       ) : (
                         <span>Selecciona una fecha</span>
@@ -403,7 +403,8 @@ export default function FoodRecommendations() {
                           key={rec.id}
                           className={cn(
                             "p-2 text-sm cursor-pointer hover:bg-accent",
-                            selectedRecommendation?.id === rec.id && "bg-accent"
+                            selectedRecommendation?.id === rec.id &&
+                              "bg-accent",
                           )}
                           onClick={() => setSelectedRecommendation(rec)}
                         >
@@ -580,7 +581,7 @@ export default function FoodRecommendations() {
                                     <TableCell className="text-center">
                                       {Math.round(
                                         (food.calories || 0) *
-                                          (entry.quantity || 0)
+                                          (entry.quantity || 0),
                                       )}
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">

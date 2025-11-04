@@ -403,28 +403,32 @@ export default function GymRatLanding() {
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
-                    <span className="text-[9px]">Todo lo del plan Alumno</span>
+                    <span className="text-xs">Todo lo del plan Alumno</span>
                   </li>
                   <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
-                    <span>Gestión de clientes</span>
+                    <span className="text-xs">Gestión de clientes</span>
                   </li>
                   <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
-                    <span>Creación de entrenamientos personalizados</span>
+                    <span className="text-xs">
+                      Creación de entrenamientos personalizados
+                    </span>
                   </li>
                   <li className="flex items-center text-xs">
                     <HugeiconsIcon
                       icon={Tick02Icon}
                       className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
                     />
-                    <span>Dashboard de analíticas avanzadas</span>
+                    <span className="text-xs">
+                      Dashboard de analíticas avanzadas
+                    </span>
                   </li>
                 </ul>
                 <Button
