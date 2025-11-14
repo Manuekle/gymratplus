@@ -3,6 +3,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import WorkoutExercise from "../workouts/workout-exercise";
+import { MuscleMap } from "@/components/muscle-map/muscle-map";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete02Icon } from "@hugeicons/core-free-icons";
@@ -124,6 +125,9 @@ export function WorkoutNew({
     }
   };
 
+  // Obtener nombres de ejercicios para el MuscleMap
+  const exerciseNames = exercises.map((ex) => ex.name);
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
@@ -149,6 +153,14 @@ export function WorkoutNew({
         >
           Agregar ejercicio
         </Button>
+      </div>
+
+      {/* MuscleMap integrado */}
+      <div className="mb-6">
+        <MuscleMap
+          selectedExercises={exerciseNames}
+          mode="view"
+        />
       </div>
 
       {isLoading ? (

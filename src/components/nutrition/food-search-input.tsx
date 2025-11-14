@@ -104,7 +104,7 @@ export function FoodSearchInput({
             <button
               key={idx}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-full text-left px-4 py-2 text-sm hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
+              className="w-full text-left px-4 py-2 text-xs hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
             >
               {suggestion}
             </button>

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { CardDescription, CardTitle } from "@/components/ui/card";
 import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
 import StartWorkout from "@/components/workouts/start-workout";
 import { WorkoutNew } from "@/components/workout/workout-new";
 import {
@@ -184,21 +183,11 @@ export default function WorkouPage() {
         </div>
 
         <div className="pt-6 border-t">
-          <Tabs defaultValue={workout.days[0]?.day || ""} className="w-full">
-            {workout.days.map((day, dayIndex) => (
-              <TabsContent
-                key={dayIndex}
-                value={day.day}
-                className="mt-4 space-y-4"
-              >
-                <WorkoutNew
-                  workoutId={workout.id}
-                  exercises={day.exercises}
-                  days={workout.days.map((d) => d.day)}
-                />
-              </TabsContent>
-            ))}
-          </Tabs>
+          <WorkoutNew
+            workoutId={workout.id}
+            exercises={workout.days[0]?.exercises || []}
+            days={workout.days.map((d) => d.day)}
+          />
         </div>
       </div>
 

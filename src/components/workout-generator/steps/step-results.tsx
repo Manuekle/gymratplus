@@ -9,7 +9,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 import { Workout } from "@/types/workout-types";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -21,6 +21,11 @@ interface StepResultsProps {
 
 export function StepResults({ workout }: StepResultsProps) {
   const [selectedDay, setSelectedDay] = useState(workout.days[0]?.day);
+
+  const selectedDayExercises = useMemo(() => {
+    const day = workout.days.find((d) => d.day === selectedDay);
+    return day?.exercises.map((ex) => ex.name) || [];
+  }, [workout.days, selectedDay]);
 
   if (!workout) {
     return (
@@ -92,37 +97,39 @@ export function StepResults({ workout }: StepResultsProps) {
             </div>
           </div>
 
-          <ScrollArea className="max-h-[400px] w-full mt-2">
-            <div className="space-y-1 pr-2">
-              {workout.days
-                .find((day) => day.day === selectedDay)
-                ?.exercises.map((exercise, exIndex) => (
-                  <div
-                    key={exIndex}
-                    className="flex flex-col border-b py-2 last:border-0"
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
-                        {exercise.name}
-                      </h4>
-                      <div className="flex items-center gap-3 text-xs flex-shrink-0">
-                        <span className="text-muted-foreground whitespace-nowrap">
-                          {exercise.sets}×{exercise.reps || "Tiempo"}
-                        </span>
-                        <span className="font-medium whitespace-nowrap">
-                          ⏱️{exercise.restTime}s
-                        </span>
+          <div className="mt-2">
+            <ScrollArea className="max-h-[400px] w-full">
+              <div className="space-y-1 pr-2">
+                {workout.days
+                  .find((day) => day.day === selectedDay)
+                  ?.exercises.map((exercise, exIndex) => (
+                    <div
+                      key={exIndex}
+                      className="flex flex-col border-b py-2 last:border-0"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
+                          {exercise.name}
+                        </h4>
+                        <div className="flex items-center gap-3 text-xs flex-shrink-0">
+                          <span className="text-muted-foreground whitespace-nowrap">
+                            {exercise.sets}×{exercise.reps || "Tiempo"}
+                          </span>
+                          <span className="font-medium whitespace-nowrap">
+                            ⏱️{exercise.restTime}s
+                          </span>
+                        </div>
                       </div>
+                      {exercise.notes && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {exercise.notes}
+                        </p>
+                      )}
                     </div>
-                    {exercise.notes && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {exercise.notes}
-                      </p>
-                    )}
-                  </div>
-                ))}
-            </div>
-          </ScrollArea>
+                  ))}
+              </div>
+            </ScrollArea>
+          </div>
         </div>
       </div>
     </div>

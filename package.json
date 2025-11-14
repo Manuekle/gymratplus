@@ -31,6 +31,7 @@
     "@hugeicons/core-free-icons": "^1.0.14",
     "@hugeicons/react": "^1.0.5",
     "@huggingface/transformers": "^3.3.3",
+    "@mjcdev/react-body-highlighter": "^0.0.4",
     "@prisma/client": "^6.18.0",
     "@radix-ui/react-accordion": "^1.2.3",
     "@radix-ui/react-alert-dialog": "^1.1.6",

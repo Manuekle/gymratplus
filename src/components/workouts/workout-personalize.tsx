@@ -501,56 +501,58 @@ export function WorkoutPersonalize() {
                 </Select>
               </div>
 
-              <ScrollArea className="h-[300px] mt-0 pr-4">
-                <div className="grid grid-cols-1 gap-4">
-                  {Object.entries(
-                    (filteredExercises as Exercise[]).reduce<
-                      Record<string, Exercise[]>
-                    >((acc, exercise) => {
-                      const muscleGroup = exercise.muscleGroup || "other";
-                      if (!acc[muscleGroup]) {
-                        acc[muscleGroup] = [];
-                      }
-                      acc[muscleGroup].push(exercise);
-                      return acc;
-                    }, {}),
-                  ).map(([muscleGroup, groupExercises]) => (
-                    <div key={muscleGroup} className="space-y-2">
-                      <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
-                        {muscleGroup}
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {groupExercises.map((exercise) => (
-                          <div
-                            key={exercise.id}
-                            onClick={() => handleExerciseSelection(exercise.id)}
-                            className={`
-                              flex items-center gap-1.5 px-3 py-1.5 
-                              rounded-full text-xs font-medium 
-                              transition-colors duration-200
-                              cursor-pointer
-                              border border-border
-                              ${
-                                isExerciseSelected(exercise.id)
-                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                  : "bg-background hover:bg-secondary"
-                              }
-                            `}
-                          >
-                            <span>{exercise.name}</span>
-                            {isExerciseSelected(exercise.id) && (
-                              <HugeiconsIcon
-                                icon={Cancel01Icon}
-                                className="h-3 w-3 text-current"
-                              />
-                            )}
-                          </div>
-                        ))}
+              <div>
+                <ScrollArea className="h-[300px] mt-0 pr-4">
+                  <div className="grid grid-cols-1 gap-4">
+                    {Object.entries(
+                      (filteredExercises as Exercise[]).reduce<
+                        Record<string, Exercise[]>
+                      >((acc, exercise) => {
+                        const muscleGroup = exercise.muscleGroup || "other";
+                        if (!acc[muscleGroup]) {
+                          acc[muscleGroup] = [];
+                        }
+                        acc[muscleGroup].push(exercise);
+                        return acc;
+                      }, {}),
+                    ).map(([muscleGroup, groupExercises]) => (
+                      <div key={muscleGroup} className="space-y-2">
+                        <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
+                          {muscleGroup}
+                        </h3>
+                        <div className="flex flex-wrap gap-2">
+                          {groupExercises.map((exercise) => (
+                            <div
+                              key={exercise.id}
+                              onClick={() => handleExerciseSelection(exercise.id)}
+                              className={`
+                                flex items-center gap-1.5 px-3 py-1.5 
+                                rounded-full text-xs font-medium 
+                                transition-colors duration-200
+                                cursor-pointer
+                                border border-border
+                                ${
+                                  isExerciseSelected(exercise.id)
+                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                    : "bg-background hover:bg-secondary"
+                                }
+                              `}
+                            >
+                              <span>{exercise.name}</span>
+                              {isExerciseSelected(exercise.id) && (
+                                <HugeiconsIcon
+                                  icon={Cancel01Icon}
+                                  className="h-3 w-3 text-current"
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
 
               <div className="flex justify-between">
                 <Button
