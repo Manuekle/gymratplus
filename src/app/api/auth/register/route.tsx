@@ -57,6 +57,7 @@ export async function POST(request: Request) {
     });
 
     // Limpiar datos sensibles
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password: _, ...userWithoutPassword } = user;
 
     // Guardar en caché para acceso rápido

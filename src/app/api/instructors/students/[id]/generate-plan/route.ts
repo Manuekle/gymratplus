@@ -141,8 +141,54 @@ export async function POST(
       `   └─ TOTALES ENVIADOS: P=${totalSent.protein.toFixed(1)}g, C=${totalSent.carbs.toFixed(1)}g, F=${totalSent.fat.toFixed(1)}g, Cal=${totalSent.calories}kcal`,
     );
 
+    // Convertir todos los valores a enteros antes de devolver
+    const roundedPlan: NutritionPlan = {
+      userId: nutritionPlan.userId,
+      date: nutritionPlan.date,
+      breakfast: {
+        userId: nutritionPlan.breakfast.userId,
+        date: nutritionPlan.breakfast.date,
+        mealType: nutritionPlan.breakfast.mealType,
+        calories: Math.round(nutritionPlan.breakfast.calories),
+        protein: Math.round(nutritionPlan.breakfast.protein),
+        carbs: Math.round(nutritionPlan.breakfast.carbs),
+        fat: Math.round(nutritionPlan.breakfast.fat),
+        entries: nutritionPlan.breakfast.entries,
+      },
+      lunch: {
+        userId: nutritionPlan.lunch.userId,
+        date: nutritionPlan.lunch.date,
+        mealType: nutritionPlan.lunch.mealType,
+        calories: Math.round(nutritionPlan.lunch.calories),
+        protein: Math.round(nutritionPlan.lunch.protein),
+        carbs: Math.round(nutritionPlan.lunch.carbs),
+        fat: Math.round(nutritionPlan.lunch.fat),
+        entries: nutritionPlan.lunch.entries,
+      },
+      dinner: {
+        userId: nutritionPlan.dinner.userId,
+        date: nutritionPlan.dinner.date,
+        mealType: nutritionPlan.dinner.mealType,
+        calories: Math.round(nutritionPlan.dinner.calories),
+        protein: Math.round(nutritionPlan.dinner.protein),
+        carbs: Math.round(nutritionPlan.dinner.carbs),
+        fat: Math.round(nutritionPlan.dinner.fat),
+        entries: nutritionPlan.dinner.entries,
+      },
+      snack: {
+        userId: nutritionPlan.snack.userId,
+        date: nutritionPlan.snack.date,
+        mealType: nutritionPlan.snack.mealType,
+        calories: Math.round(nutritionPlan.snack.calories),
+        protein: Math.round(nutritionPlan.snack.protein),
+        carbs: Math.round(nutritionPlan.snack.carbs),
+        fat: Math.round(nutritionPlan.snack.fat),
+        entries: nutritionPlan.snack.entries,
+      },
+    };
+
     // Solo devolver el plan generado, NO guardar en BD
-    return NextResponse.json(nutritionPlan);
+    return NextResponse.json(roundedPlan);
   } catch (error) {
     console.error("Error al generar el plan:", error);
     return NextResponse.json(

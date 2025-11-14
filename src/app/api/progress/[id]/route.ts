@@ -107,7 +107,13 @@ export async function PUT(request: NextRequest) {
     }
 
     // Preparar datos para actualización
-    const updateData: any = {};
+    const updateData: {
+      weight?: number;
+      bodyFatPercentage?: number;
+      muscleMassPercentage?: number;
+      date?: Date;
+      notes?: string | null;
+    } = {};
 
     if (weight !== undefined) {
       updateData.weight = Number.parseFloat(weight);

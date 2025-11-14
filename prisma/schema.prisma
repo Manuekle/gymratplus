@@ -191,6 +191,9 @@ model Food {
   serving          Float // en gramos
   category         String // proteína, carbohidrato, grasa, etc.
   mealType         String[] // ["desayuno", "almuerzo", "cena", "snack"]
+  synonyms         String[] // Sinónimos para búsqueda mejorada (ej: ["pollo", "pechuga"])
+  predefinedPortions Json? // Porciones predefinidas en formato JSON (opcional, si no está se calculan por categoría)
+  servingUnit      String? // Unidad base: "g", "ml", "unidad" (default: "g")
   createdAt        DateTime           @default(now())
   updatedAt        DateTime           @updatedAt
   User             User?              @relation(fields: [userId], references: [id])

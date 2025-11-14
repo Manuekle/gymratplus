@@ -59,7 +59,7 @@ const DEBOUNCE_DELAY = 1000; // 1 segundo de retraso para el guardado
 
 export default function ActiveWorkoutPage() {
   const router = useRouter();
-  const { data: session, update: updateSession } = useSession();
+  const { update: updateSession } = useSession();
   const [loading, setLoading] = useState(true);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
     null,

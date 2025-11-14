@@ -42,6 +42,15 @@ function areFoodsEqual(
   newFoodData: any,
   mealType: string[],
 ): boolean {
+  const existingSynonyms = existingFood.synonyms || [];
+  const newSynonyms = newFoodData.synonyms || [];
+  const existingPortions = existingFood.predefinedPortions
+    ? JSON.stringify(existingFood.predefinedPortions)
+    : null;
+  const newPortions = newFoodData.predefinedPortions
+    ? JSON.stringify(newFoodData.predefinedPortions)
+    : null;
+
   return (
     existingFood.name === newFoodData.name &&
     existingFood.calories === newFoodData.calories &&
@@ -52,7 +61,10 @@ function areFoodsEqual(
     (existingFood.sugar || 0) === (newFoodData.sugar || 0) &&
     existingFood.serving === newFoodData.serving &&
     existingFood.category === newFoodData.category &&
-    arraysEqual(existingFood.mealType || [], mealType)
+    arraysEqual(existingFood.mealType || [], mealType) &&
+    arraysEqual(existingSynonyms, newSynonyms) &&
+    existingFood.servingUnit === (newFoodData.servingUnit || null) &&
+    existingPortions === newPortions
   );
 }
 
@@ -88,8 +100,21 @@ async function main() {
         await prisma.food.update({
           where: { id: existingFood.id },
           data: {
-            ...foodData,
+            name: foodData.name,
+            calories: foodData.calories,
+            protein: foodData.protein,
+            carbs: foodData.carbs,
+            fat: foodData.fat,
+            fiber: foodData.fiber ?? null,
+            sugar: foodData.sugar ?? null,
+            serving: foodData.serving,
+            category: foodData.category,
             mealType,
+            synonyms: foodData.synonyms || [],
+            predefinedPortions: foodData.predefinedPortions
+              ? JSON.parse(JSON.stringify(foodData.predefinedPortions))
+              : null,
+            servingUnit: foodData.servingUnit || null,
           },
         });
         updated++;
@@ -101,8 +126,21 @@ async function main() {
       // Crear nuevo alimento
       await prisma.food.create({
         data: {
-          ...foodData,
+          name: foodData.name,
+          calories: foodData.calories,
+          protein: foodData.protein,
+          carbs: foodData.carbs,
+          fat: foodData.fat,
+          fiber: foodData.fiber ?? null,
+          sugar: foodData.sugar ?? null,
+          serving: foodData.serving,
+          category: foodData.category,
           mealType,
+          synonyms: foodData.synonyms || [],
+          predefinedPortions: foodData.predefinedPortions
+            ? JSON.parse(JSON.stringify(foodData.predefinedPortions))
+            : null,
+          servingUnit: foodData.servingUnit || null,
           userId: null, // Alimentos base del sistema
         },
       });

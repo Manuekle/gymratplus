@@ -160,7 +160,7 @@ export default function StudentDetailPage() {
         );
 
         setWorkouts(studentWorkouts);
-      } catch (e) {
+      } catch {
         toast.error("Error al cargar rutinas", {
           description: "Hubo un problema al obtener las rutinas asignadas.",
         });

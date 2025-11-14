@@ -10,21 +10,21 @@ import { JWT as NextAuthJWT } from "next-auth/jwt";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { redis } from "@/lib/database/redis"; // Se mantiene por si es usada en otra parte del proyecto
+// import { redis } from "@/lib/database/redis"; // Reserved for future use
 
 // --- 1. Extensión de Tipos para NextAuth ---
 
 type ProfileType = {
   id: string;
   userId: string;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 type InstructorProfileType = {
   id: string;
   userId: string;
   isPaid: boolean;
-  [key: string]: any;
+  [key: string]: unknown;
 };
 
 declare module "next-auth" {

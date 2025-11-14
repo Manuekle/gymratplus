@@ -19,6 +19,13 @@ type FoodCategory =
   | "rice"
   | "bars";
 
+// Tipo para porciones predefinidas
+type PredefinedPortion = {
+  label: string; // Ej: "1 taza", "50 g"
+  value: number; // Cantidad en gramos o ml
+  unit: "g" | "ml" | "unidad";
+};
+
 // Tipo para los alimentos
 type FoodItem = {
   name: string;
@@ -31,6 +38,9 @@ type FoodItem = {
   serving: number; // en gramos
   category: FoodCategory;
   isFavorite?: boolean;
+  synonyms?: string[]; // Sinónimos para búsqueda (ej: ["pollo", "pechuga"])
+  predefinedPortions?: PredefinedPortion[]; // Porciones predefinidas personalizadas
+  servingUnit?: "g" | "ml" | "unidad"; // Unidad base (default: "g")
 };
 
 export const foodsToCreate: FoodItem[] = [
@@ -47,6 +57,13 @@ export const foodsToCreate: FoodItem[] = [
     serving: 120, // Porción típica de pechuga de pollo (antes 100g)
     category: "meat",
     isFavorite: true,
+    synonyms: [
+      "pollo",
+      "pechuga",
+      "pollo cocido",
+      "pechuga cocida",
+      "pollo a la plancha",
+    ],
   },
   {
     name: "Huevo entero",
@@ -59,6 +76,8 @@ export const foodsToCreate: FoodItem[] = [
     serving: 50, // 1 huevo grande estándar
     category: "eggs",
     isFavorite: true,
+    synonyms: ["huevo", "huevos", "huevo completo"],
+    servingUnit: "unidad",
   },
   {
     name: "Clara de huevo",
@@ -70,6 +89,8 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 0.2,
     serving: 33, // 1 clara grande estándar
     category: "eggs",
+    synonyms: ["clara", "claras"],
+    servingUnit: "unidad",
   },
   {
     name: "Atún en agua (escurrido)",
@@ -82,6 +103,7 @@ export const foodsToCreate: FoodItem[] = [
     serving: 142, // 1 lata estándar (5oz) en lugar de 85g
     category: "fish",
     isFavorite: true,
+    synonyms: ["atún", "tuna", "atun", "atún en lata"],
   },
   {
     name: "Salmón (cocido)",
@@ -94,6 +116,7 @@ export const foodsToCreate: FoodItem[] = [
     serving: 150, // Porción típica de salmón (antes 100g)
     category: "fish",
     isFavorite: true,
+    synonyms: ["salmon", "salmón cocido", "salmón a la plancha"],
   },
 
   // Lácteos y alternativas
@@ -107,6 +130,8 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 3.6,
     serving: 170, // 1 envase individual estándar (antes 100g)
     category: "dairy",
+    synonyms: ["yogur", "yogurt", "yogur griego", "griego", "yogurt griego"],
+    servingUnit: "ml",
   },
   {
     name: "Queso cottage bajo en grasa",
@@ -118,6 +143,7 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 2.7,
     serving: 113, // 1/2 taza (113g)
     category: "dairy",
+    synonyms: ["queso cottage", "cottage", "requesón"],
   },
   {
     name: "Leche descremada",
@@ -129,6 +155,7 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 5,
     serving: 100, // ~1/2 taza
     category: "dairy",
+    servingUnit: "ml",
   },
   {
     name: "Queso panela",
@@ -331,6 +358,7 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 0,
     serving: 100,
     category: "cereals",
+    synonyms: ["avena", "oatmeal", "quaker", "avena en hojuelas"],
   },
   {
     name: "Pasta integral",
@@ -983,6 +1011,8 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 12.2,
     serving: 100,
     category: "fruits",
+    synonyms: ["plátano", "banana", "banano", "plátano macho"],
+    servingUnit: "unidad",
   },
   {
     name: "Manzana",
@@ -1247,6 +1277,8 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 0.7,
     serving: 100,
     category: "fruits",
+    synonyms: ["aguacate", "palta", "avocado"],
+    servingUnit: "unidad",
   }, // Aunque también es una grasa, se consume como fruta
 
   // Fats and Oils
@@ -1260,6 +1292,13 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 0,
     serving: 100,
     category: "oils",
+    synonyms: [
+      "aceite",
+      "oliva",
+      "aceite oliva",
+      "aceite de oliva extra virgen",
+    ],
+    servingUnit: "ml",
   },
   {
     name: "Almendras",
@@ -1271,6 +1310,7 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 4.4,
     serving: 100,
     category: "nuts",
+    synonyms: ["almendras", "almendra", "almendras crudas"],
   },
   {
     name: "Nueces",
@@ -1501,6 +1541,7 @@ export const foodsToCreate: FoodItem[] = [
     serving: 100,
     category: "rice",
     isFavorite: true,
+    synonyms: ["arroz", "rice", "arroz cocido", "arroz blanco"],
   },
   {
     name: "Pasta (cocida)",
@@ -1513,6 +1554,7 @@ export const foodsToCreate: FoodItem[] = [
     serving: 100,
     category: "pasta",
     isFavorite: true,
+    synonyms: ["pasta", "spaghetti", "fideos", "macarrones", "pasta cocida"],
   },
   {
     name: "Pan blanco",
@@ -1537,6 +1579,7 @@ export const foodsToCreate: FoodItem[] = [
     sugar: 4.8,
     serving: 100,
     category: "dairy",
+    servingUnit: "ml",
   },
   {
     name: "Queso mozzarella",
@@ -1636,6 +1679,13 @@ export const foodsToCreate: FoodItem[] = [
     serving: 100,
     category: "nuts",
     isFavorite: true,
+    synonyms: [
+      "cacahuetes",
+      "maní",
+      "cacahuate",
+      "peanuts",
+      "cacahuetes tostados",
+    ],
   },
   {
     name: "Mantequilla de cacahuete",

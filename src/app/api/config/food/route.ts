@@ -61,15 +61,17 @@ export async function PUT() {
 
     // Insertar todos los alimentos de foodsToCreate
     const foods = await Promise.all(
-      foodsToCreate.map(({ isFavorite, ...foodData }) =>
-        prisma.food.create({
+      foodsToCreate.map(({ isFavorite, ...foodData }) => {
+        // isFavorite is not used in food creation
+        void isFavorite;
+        return prisma.food.create({
           data: {
             ...foodData,
             mealType: getMealTypesForCategory(foodData.category),
             userId: null, // Alimentos base del sistema
           },
-        }),
-      ),
+        });
+      }),
     );
 
     return NextResponse.json({

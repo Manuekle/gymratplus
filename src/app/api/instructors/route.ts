@@ -1,10 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import {
-  InstructorResponse,
-  InstructorFilters,
-  PrismaWhereConditions,
-} from "@/types/instructor";
+import { InstructorFilters, PrismaWhereConditions } from "@/types/instructor";
 
 // Función para extraer etiquetas de un texto
 const extractTags = (text?: string | null): string[] => {

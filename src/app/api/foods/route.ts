@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
     const searchQuery = req.nextUrl.searchParams.get("search");
     const category = req.nextUrl.searchParams.get("category");
     const mealType = req.nextUrl.searchParams.get("mealType");
-    const onlyFavorites = req.nextUrl.searchParams.get("favorites") === "true";
+    // const onlyFavorites = req.nextUrl.searchParams.get("favorites") === "true"; // Not used currently
     const onlyCustom = req.nextUrl.searchParams.get("custom") === "true";
 
     // Build the where clause with proper Prisma types
@@ -73,6 +73,9 @@ export async function GET(req: NextRequest) {
           serving: true,
           category: true,
           mealType: true,
+          synonyms: true,
+          predefinedPortions: true,
+          servingUnit: true,
           createdAt: true,
           updatedAt: true,
         },

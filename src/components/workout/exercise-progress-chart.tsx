@@ -123,7 +123,7 @@ export function ExerciseProgressChart() {
   const isDark = currentTheme === "dark";
   const [selectedExercises, setSelectedExercises] = useState<string[]>([]);
   const [timeRange, setTimeRange] = useState("all");
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false); // Reserved for future use
   const { progressData, fetchExerciseProgressData } = useExerciseProgress();
 
   useEffect(() => {
@@ -174,9 +174,13 @@ export function ExerciseProgressChart() {
 
       Object.entries(session.exercises).forEach(([name, data]) => {
         if (!exerciseMap[name] && data) {
+          const exerciseData = data as {
+            muscleGroup?: string;
+            exerciseId?: string;
+          };
           exerciseMap[name] = {
-            muscleGroup: (data as any).muscleGroup || "Otros",
-            exerciseId: (data as any).exerciseId || name,
+            muscleGroup: exerciseData.muscleGroup || "Otros",
+            exerciseId: exerciseData.exerciseId || name,
           };
         }
       });

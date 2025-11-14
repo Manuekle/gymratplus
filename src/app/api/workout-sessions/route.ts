@@ -69,7 +69,7 @@ export async function GET(
           { status: 400 },
         );
       }
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: "Formato de fecha inválido. Usa el formato YYYY-MM-DD" },
         { status: 400 },
@@ -218,7 +218,7 @@ export async function POST(
     let body;
     try {
       body = await request.json();
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: "El cuerpo de la solicitud no es un JSON válido" },
         { status: 400 },
@@ -315,12 +315,17 @@ export async function POST(
     });
 
     // Transform response to maintain consistency with GET
+    type ExerciseSessionData = {
+      sets: Array<{ weight: number; reps: number }>;
+      exercise: { name: string; muscleGroup?: string | null; id: string };
+    };
+
     const transformedSession = {
       id: workoutSession.id,
       date: workoutSession.date,
       notes: workoutSession.notes,
       exercises:
-        (workoutSession as any).exercises?.reduce(
+        (workoutSession.exercises as ExerciseSessionData[] | undefined)?.reduce(
           (
             acc: Record<
               string,
@@ -331,7 +336,7 @@ export async function POST(
                 exerciseId: string;
               }
             >,
-            exerciseSession: any,
+            exerciseSession: ExerciseSessionData,
           ) => {
             const lastSet =
               exerciseSession.sets?.[exerciseSession.sets.length - 1];

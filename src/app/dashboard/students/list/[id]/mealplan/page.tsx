@@ -1,7 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
+import {
+  searchFoods,
+  groupFoodsByCategory,
+  getCategoryLabel,
+} from "@/lib/nutrition/food-search";
+import { FoodSearchInput } from "@/components/nutrition/food-search-input";
+import { FoodPortionSelector } from "@/components/nutrition/food-portion-selector";
+import { formatPortionLabel } from "@/lib/nutrition/food-portions";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -37,6 +45,8 @@ type Food = {
   serving: number;
   category: string;
   mealType?: string[];
+  servingUnit?: string | null;
+  synonyms?: string[];
 };
 
 type SelectedFood = {
@@ -370,7 +380,13 @@ export default function CreateMealPlanPage() {
               if (food) {
                 validEntries++;
                 const servingSize = food.serving || 100;
-                const multiplier = (entry.quantity || 1) * (servingSize / 100);
+
+                // Redondear la cantidad a 2 decimales máximo cuando se genera automáticamente
+                // Esto evita decimales muy largos como 0.606586956657336
+                const roundedQuantity =
+                  Math.round((entry.quantity || 1) * 100) / 100;
+
+                const multiplier = roundedQuantity * (servingSize / 100);
                 const calculatedProtein = (food.protein || 0) * multiplier;
                 const calculatedCarbs = (food.carbs || 0) * multiplier;
                 const calculatedFat = (food.fat || 0) * multiplier;
@@ -394,7 +410,7 @@ export default function CreateMealPlanPage() {
                     `         └─ ¿Coinciden?: ${String(entry.foodId) === String(food.id)}`,
                   );
                   console.log(
-                    `         └─ quantity recibido: ${entry.quantity}, serving: ${servingSize}g`,
+                    `         └─ quantity recibido: ${entry.quantity}, quantity redondeado: ${roundedQuantity}, serving: ${servingSize}g`,
                   );
                   console.log(
                     `         └─ multiplier: ${multiplier.toFixed(3)}`,
@@ -410,7 +426,7 @@ export default function CreateMealPlanPage() {
                 return {
                   foodId: entry.foodId,
                   food: food,
-                  quantity: entry.quantity || 1,
+                  quantity: roundedQuantity, // Usar la cantidad redondeada
                 } as SelectedFood;
               } else {
                 invalidEntries++;
@@ -606,35 +622,46 @@ export default function CreateMealPlanPage() {
     }
   };
 
-  const mealTypeMap = {
-    breakfast: "desayuno",
-    lunch: "almuerzo",
-    dinner: "cena",
-    snacks: "snack",
-  };
+  // Usar el nuevo sistema de búsqueda mejorado estilo Fitia
+  const mealTypeMap = useMemo(
+    () => ({
+      breakfast: "desayuno",
+      lunch: "almuerzo",
+      dinner: "cena",
+      snacks: "snack",
+    }),
+    [],
+  );
 
-  const filteredFoods = foods.filter((food) => {
-    const matchesSearch = searchQuery
-      ? food.name.toLowerCase().includes(searchQuery.toLowerCase())
-      : true;
+  const searchResults = useMemo(() => {
+    return searchFoods(
+      foods.map((f) => ({
+        id: f.id,
+        name: f.name,
+        calories: f.calories,
+        protein: f.protein,
+        carbs: f.carbs,
+        fat: f.fat,
+        serving: f.serving,
+        category: f.category,
+        mealType: f.mealType,
+        synonyms: (f as { synonyms?: string[] }).synonyms,
+        servingUnit: (f as { servingUnit?: string | null }).servingUnit,
+      })),
+      searchQuery,
+      {
+        mealType: mealTypeMap[activeMeal],
+        limit: 100,
+      },
+    );
+  }, [foods, searchQuery, activeMeal, mealTypeMap]);
 
-    if (!matchesSearch) return false;
+  const filteredFoods = searchResults.map((result) => result.food);
 
-    // Si hay búsqueda, mostrar todos los que coincidan
-    if (searchQuery) {
-      return true;
-    }
-
-    // Si no hay búsqueda, filtrar por mealType
-    // Mostrar si tiene el mealType correcto, o si no tiene mealType definido
-    const hasMealType =
-      food.mealType && Array.isArray(food.mealType) && food.mealType.length > 0;
-    if (!hasMealType) {
-      return true; // Mostrar alimentos sin mealType definido
-    }
-
-    return food.mealType?.includes(mealTypeMap[activeMeal]) || false;
-  });
+  // Agrupar alimentos por categoría para mostrar en la UI
+  const groupedFoods = useMemo(() => {
+    return groupFoodsByCategory(searchResults);
+  }, [searchResults]);
 
   const addFoodToMeal = (food: Food) => {
     setMealPlan((prev) => {
@@ -1173,18 +1200,15 @@ export default function CreateMealPlanPage() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
                 {/* Left Column - Food Selection */}
                 <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-                  <div className="relative">
-                    <HugeiconsIcon
-                      icon={Search01Icon}
-                      className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                    />
-                    <Input
-                      placeholder="Buscar alimentos..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 h-10 text-xs"
-                    />
-                  </div>
+                  <FoodSearchInput
+                    value={searchQuery}
+                    onChange={setSearchQuery}
+                    foods={foods.map((f) => ({
+                      name: f.name,
+                      category: f.category,
+                    }))}
+                    placeholder="Buscar alimentos..."
+                  />
 
                   <Tabs
                     value={activeMeal}
@@ -1237,67 +1261,183 @@ export default function CreateMealPlanPage() {
                           </p>
                         </div>
                       ) : (
-                        filteredFoods.map((food) => {
-                          const isSelected = mealPlan[activeMeal].some(
-                            (item) => item.foodId === food.id,
-                          );
-                          return (
-                            <div
-                              key={food.id}
-                              onClick={() => addFoodToMeal(food)}
-                              className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
-                                isSelected
-                                  ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
-                                  : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
-                              }`}
-                            >
-                              <div className="flex items-start sm:items-center justify-between gap-3">
-                                <div className="flex-1 min-w-0">
-                                  <h3 className="text-xs font-medium">
-                                    {food.name}
-                                  </h3>
-                                  <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
-                                    {food.serving || 0}g
-                                  </p>
-                                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                                    <span className="flex items-center">
-                                      <span className="text-red-500 dark:text-red-400 font-medium mr-1">
-                                        P:
-                                      </span>
-                                      <span className="text-foreground">
-                                        {food.protein}g
-                                      </span>
-                                    </span>
-                                    <span className="flex items-center">
-                                      <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
-                                        C:
-                                      </span>
-                                      <span className="text-foreground">
-                                        {food.carbs}g
-                                      </span>
-                                    </span>
-                                    <span className="flex items-center">
-                                      <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
-                                        G:
-                                      </span>
-                                      <span className="text-foreground">
-                                        {food.fat}g
-                                      </span>
-                                    </span>
+                        // Mostrar alimentos agrupados por categoría
+                        Object.entries(groupedFoods).map(
+                          ([category, categoryFoods]) => (
+                            <div key={category} className="space-y-2 mb-4">
+                              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1 sticky top-0 bg-background py-1 z-10">
+                                {getCategoryLabel(category)}
+                              </h4>
+                              {categoryFoods.map((result) => {
+                                const food = result.food;
+                                const isSelected = mealPlan[activeMeal].some(
+                                  (item) => item.foodId === food.id,
+                                );
+
+                                // Calcular porcentajes para la gráfica circular
+                                const totalMacros =
+                                  food.protein * 4 +
+                                  food.carbs * 4 +
+                                  food.fat * 9;
+                                const proteinPercentage =
+                                  totalMacros > 0
+                                    ? ((food.protein * 4) / totalMacros) * 100
+                                    : 0;
+                                const carbsPercentage =
+                                  totalMacros > 0
+                                    ? ((food.carbs * 4) / totalMacros) * 100
+                                    : 0;
+                                const fatPercentage =
+                                  totalMacros > 0
+                                    ? ((food.fat * 9) / totalMacros) * 100
+                                    : 0;
+
+                                // Determinar unidad de porción
+                                // Usar servingUnit del alimento si está disponible, sino inferir de la categoría o nombre
+                                const servingUnit =
+                                  food.servingUnit &&
+                                  typeof food.servingUnit === "string" &&
+                                  food.servingUnit.trim() !== ""
+                                    ? food.servingUnit
+                                    : food.category === "beverages"
+                                      ? "ml"
+                                      : food.category === "eggs"
+                                        ? "unidad"
+                                        : // Lácteos líquidos (leche, etc.)
+                                          food.category === "dairy" &&
+                                            (food.name
+                                              .toLowerCase()
+                                              .includes("leche") ||
+                                              food.name
+                                                .toLowerCase()
+                                                .includes("milk"))
+                                          ? "ml"
+                                          : "g";
+
+                                return (
+                                  <div
+                                    key={food.id}
+                                    onClick={() => addFoodToMeal(food)}
+                                    className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
+                                      isSelected
+                                        ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
+                                        : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
+                                    }`}
+                                  >
+                                    <div className="flex items-start sm:items-center justify-between gap-3">
+                                      <div className="flex-1 min-w-0">
+                                        <h3 className="text-xs font-medium">
+                                          {food.name}
+                                        </h3>
+                                        <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
+                                          Porción base: {food.serving || 100}{" "}
+                                          {servingUnit === "unidad"
+                                            ? (food.serving || 100) === 1
+                                              ? "unidad"
+                                              : "unidades"
+                                            : servingUnit}
+                                        </p>
+                                        <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                                          <span className="flex items-center">
+                                            <span className="text-red-500 dark:text-red-400 font-medium mr-1">
+                                              P:
+                                            </span>
+                                            <span className="text-foreground">
+                                              {food.protein}g
+                                            </span>
+                                          </span>
+                                          <span className="flex items-center">
+                                            <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
+                                              C:
+                                            </span>
+                                            <span className="text-foreground">
+                                              {food.carbs}g
+                                            </span>
+                                          </span>
+                                          <span className="flex items-center">
+                                            <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
+                                              G:
+                                            </span>
+                                            <span className="text-foreground">
+                                              {food.fat}g
+                                            </span>
+                                          </span>
+                                        </div>
+                                      </div>
+
+                                      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                                        <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                                          <svg
+                                            className="w-full h-full -rotate-90"
+                                            viewBox="0 0 36 36"
+                                          >
+                                            <circle
+                                              cx="18"
+                                              cy="18"
+                                              r="16"
+                                              fill="none"
+                                              className="stroke-muted/50"
+                                              strokeWidth="2.5"
+                                            />
+                                            <circle
+                                              cx="18"
+                                              cy="18"
+                                              r="16"
+                                              fill="none"
+                                              className="stroke-red-500"
+                                              strokeWidth="2.5"
+                                              strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
+                                              strokeLinecap="round"
+                                            />
+                                            <circle
+                                              cx="18"
+                                              cy="18"
+                                              r="16"
+                                              fill="none"
+                                              className="stroke-blue-500"
+                                              strokeWidth="2.5"
+                                              strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
+                                              strokeDashoffset={
+                                                -proteinPercentage
+                                              }
+                                              strokeLinecap="round"
+                                            />
+                                            <circle
+                                              cx="18"
+                                              cy="18"
+                                              r="16"
+                                              fill="none"
+                                              className="stroke-yellow-500"
+                                              strokeWidth="2.5"
+                                              strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
+                                              strokeDashoffset={
+                                                -(
+                                                  proteinPercentage +
+                                                  carbsPercentage
+                                                )
+                                              }
+                                              strokeLinecap="round"
+                                            />
+                                          </svg>
+                                          <div className="absolute inset-0 flex items-center justify-center">
+                                            <span className="text-xs sm:text-xs font-semibold">
+                                              {food.calories}
+                                            </span>
+                                          </div>
+                                        </div>
+                                        <div className="text-right hidden sm:block">
+                                          <div className="text-xs text-muted-foreground">
+                                            kcal
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
                                   </div>
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                  <div className="text-xs sm:text-xs font-semibold mb-1">
-                                    {food.calories}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground">
-                                    kcal
-                                  </div>
-                                </div>
-                              </div>
+                                );
+                              })}
                             </div>
-                          );
-                        })
+                          ),
+                        )
                       )}
                     </div>
                   </ScrollArea>
@@ -1459,8 +1599,69 @@ export default function CreateMealPlanPage() {
                                             <div className="font-medium text-xs truncate">
                                               {item.food.name}
                                             </div>
-                                            <div className="text-xs text-muted-foreground">
-                                              {calories} kcal
+                                            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                                              <div className="text-xs text-muted-foreground">
+                                                {calories} kcal
+                                              </div>
+                                              <span className="text-xs text-muted-foreground/60">
+                                                •
+                                              </span>
+                                              <div className="text-xs text-muted-foreground">
+                                                {(() => {
+                                                  const servingBase =
+                                                    item.food.serving || 100;
+                                                  const servingUnit =
+                                                    item.food.servingUnit ||
+                                                    (item.food.category ===
+                                                    "beverages"
+                                                      ? "ml"
+                                                      : item.food.category ===
+                                                          "eggs"
+                                                        ? "unidad"
+                                                        : // Lácteos líquidos (leche, etc.)
+                                                          item.food.category ===
+                                                              "dairy" &&
+                                                            (item.food.name
+                                                              .toLowerCase()
+                                                              .includes(
+                                                                "leche",
+                                                              ) ||
+                                                              item.food.name
+                                                                .toLowerCase()
+                                                                .includes(
+                                                                  "milk",
+                                                                ))
+                                                          ? "ml"
+                                                          : "g");
+                                                  const currentQuantityInBase =
+                                                    item.quantity * servingBase;
+                                                  return `Cantidad: ${formatPortionLabel(currentQuantityInBase, servingUnit as "g" | "ml" | "unidad", servingBase)}`;
+                                                })()}
+                                              </div>
+                                              <span className="text-xs text-muted-foreground/60">
+                                                •
+                                              </span>
+                                              <div className="text-xs text-muted-foreground">
+                                                Base: {item.food.serving || 100}{" "}
+                                                {(() => {
+                                                  const unit =
+                                                    item.food.servingUnit ||
+                                                    (item.food.category ===
+                                                    "beverages"
+                                                      ? "ml"
+                                                      : item.food.category ===
+                                                          "eggs"
+                                                        ? "unidad"
+                                                        : "g");
+                                                  const serving =
+                                                    item.food.serving || 100;
+                                                  return unit === "unidad"
+                                                    ? serving === 1
+                                                      ? "unidad"
+                                                      : "unidades"
+                                                    : unit;
+                                                })()}
+                                              </div>
                                             </div>
                                           </div>
                                           <Button
@@ -1478,6 +1679,35 @@ export default function CreateMealPlanPage() {
                                           </Button>
                                         </div>
                                         <div className="flex items-center gap-2">
+                                          <FoodPortionSelector
+                                            food={item.food}
+                                            currentQuantity={item.quantity}
+                                            onQuantityChange={(newQuantity) => {
+                                              setMealPlan((prev) => {
+                                                const currentMeal =
+                                                  prev[activeMeal];
+                                                const index =
+                                                  currentMeal.findIndex(
+                                                    (i) =>
+                                                      i.foodId === item.foodId,
+                                                  );
+                                                if (index >= 0) {
+                                                  const updated = [
+                                                    ...currentMeal,
+                                                  ];
+                                                  updated[index] = {
+                                                    ...updated[index]!,
+                                                    quantity: newQuantity,
+                                                  };
+                                                  return {
+                                                    ...prev,
+                                                    [activeMeal]: updated,
+                                                  };
+                                                }
+                                                return prev;
+                                              });
+                                            }}
+                                          />
                                           <Button
                                             variant="outline"
                                             size="icon"
@@ -1657,11 +1887,12 @@ export default function CreateMealPlanPage() {
                                                     const existingItem =
                                                       updated[index];
                                                     if (existingItem) {
-                                                      // eslint-disable-next-line @typescript-eslint/no-unused-vars
                                                       const {
                                                         _inputValue,
                                                         ...rest
                                                       } = existingItem;
+                                                      // _inputValue is intentionally discarded
+                                                      void _inputValue;
                                                       updated[index] = rest;
                                                     }
                                                     return {

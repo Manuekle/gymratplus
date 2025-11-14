@@ -143,7 +143,7 @@ export async function createWorkoutPlan(
   gender: string | null,
   trainingFrequency: number,
   workoutType: WorkoutType,
-  _workoutHistory: any[] = [],
+  // _workoutHistory: unknown[] = [], // Reserved for future use
   methodology: Methodology = "standard",
 ) {
   if (!workoutId || !exercises?.length) {
@@ -179,11 +179,12 @@ export async function createWorkoutPlan(
 // WORKOUT CREATION HELPERS
 // ============================================================================
 
-function getRepsNumber(reps: string | number): number {
-  if (typeof reps === "number") return reps;
-  const match = String(reps).match(/(\d+)/);
-  return match ? parseInt(match[1], 10) : 10;
-}
+// Reserved for future use
+// function getRepsNumber(reps: string | number): number {
+//   if (typeof reps === "number") return reps;
+//   const match = String(reps).match(/(\d+)/);
+//   return match ? parseInt(match[1], 10) : 10;
+// }
 
 function getSetsAndRepsForGoal(
   goal: WorkoutGoal,
@@ -225,7 +226,7 @@ function getSetsAndRepsForGoal(
 function applyMethodology(
   exercises: ExercisePlan[],
   methodology: Methodology,
-  goal: WorkoutGoal,
+  // goal: WorkoutGoal, // Reserved for future use
 ): ExercisePlan[] {
   if (methodology === "standard") return exercises;
 
@@ -292,7 +293,7 @@ function selectUniqueExercises(
   }
 
   // If after drawing from unique pool we still need more, take from the full pool (repetition allowed)
-  let remaining = count - selectedExercises.length;
+  const remaining = count - selectedExercises.length;
   if (remaining > 0) {
     const fallbackExercises = exercises.filter(
       (ex) => !selectedExercises.map((s) => s.id).includes(ex.id),
@@ -491,7 +492,7 @@ export async function createUpperLowerSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
@@ -636,7 +637,7 @@ export async function createPushPullLegsSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
   const usedExercises = new Set<string>();
 
@@ -880,7 +881,7 @@ export async function createWeiderSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   // Filter exercises by muscle group
@@ -996,7 +997,7 @@ export async function createChestTricepsWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
@@ -1088,7 +1089,7 @@ export async function createBackBicepsWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
@@ -1180,7 +1181,7 @@ export async function createLegWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
@@ -1262,7 +1263,7 @@ export async function createShoulderWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
@@ -1337,7 +1338,7 @@ export async function createCoreWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: any[] = [];
+  const workoutExercises: ExercisePlan[] = [];
   let order = 1;
 
   const coreExercises = filterExercisesByMuscleGroup(exercises, "core");

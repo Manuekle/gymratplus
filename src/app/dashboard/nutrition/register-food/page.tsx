@@ -1,7 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import {
+  searchFoods,
+  groupFoodsByCategory,
+  getCategoryLabel,
+} from "@/lib/nutrition/food-search";
+import { FoodSearchInput } from "@/components/nutrition/food-search-input";
+import { FoodPortionSelector } from "@/components/nutrition/food-portion-selector";
+import { formatPortionLabel } from "@/lib/nutrition/food-portions";
 
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
@@ -40,13 +48,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
   Calendar02Icon,
-  Cancel01Icon,
   Delete02Icon,
   FavouriteIcon,
-  FishFoodIcon,
   MinusSignIcon,
   PlusSignIcon,
-  Search01Icon,
 } from "@hugeicons/core-free-icons";
 // import AddFoodsButton from "@/components/config/add-foods-button";
 // import AddExerciseButton from "@/components/config/add-exercise-button";
@@ -70,6 +75,8 @@ type Food = {
   serving: number;
   category: MealType;
   isFavorite?: boolean;
+  servingUnit?: string | null;
+  synonyms?: string[];
 };
 
 type Recipe = {
@@ -115,7 +122,6 @@ export default function RegisterFoodPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [foods, setFoods] = useState<Food[]>([]);
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
@@ -229,15 +235,40 @@ export default function RegisterFoodPage() {
     );
   };
 
-  const filteredFoods = foods.filter((food) =>
-    food.name.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  // Usar el nuevo sistema de búsqueda mejorado estilo Fitia
+  const searchResults = useMemo(() => {
+    return searchFoods(
+      foods.map((f) => ({
+        id: f.id,
+        name: f.name,
+        calories: f.calories,
+        protein: f.protein,
+        carbs: f.carbs,
+        fat: f.fat,
+        serving: f.serving,
+        category: f.category,
+        mealType: f.mealType,
+        synonyms: (f as { synonyms?: string[] }).synonyms,
+        servingUnit: (f as { servingUnit?: string | null }).servingUnit,
+      })),
+      searchQuery,
+      {
+        limit: 100,
+        prioritizeFavorites: true,
+        favorites: favoriteFoods,
+      },
+    );
+  }, [foods, searchQuery, favoriteFoods]);
+
+  const filteredFoods = searchResults.map((result) => result.food);
+
+  // Agrupar alimentos por categoría para mostrar en la UI
+  const groupedFoods = useMemo(() => {
+    return groupFoodsByCategory(searchResults);
+  }, [searchResults]);
 
   const favoriteFoodsList = filteredFoods.filter((food) =>
     favoriteFoods.has(food.id),
-  );
-  const nonFavoriteFoods = filteredFoods.filter(
-    (food) => !favoriteFoods.has(food.id),
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -537,154 +568,358 @@ export default function RegisterFoodPage() {
       );
     }
 
-    return (
-      <div className="space-y-2">
-        {items.map((item) => {
-          const isSelected = isItemSelected(
-            item.id,
-            activeTab === "foods" || activeTab === "favorites"
-              ? "food"
-              : "recipe",
-          );
+    // Si estamos en la pestaña de favoritos, mostrar sin agrupar
+    if (activeTab === "favorites") {
+      return (
+        <div className="space-y-2">
+          {items.map((item) => {
+            const isSelected = isItemSelected(item.id, "food");
+            const totalMacros =
+              item.protein * 4 + item.carbs * 4 + item.fat * 9;
+            const proteinPercentage =
+              totalMacros > 0 ? ((item.protein * 4) / totalMacros) * 100 : 0;
+            const carbsPercentage =
+              totalMacros > 0 ? ((item.carbs * 4) / totalMacros) * 100 : 0;
+            const fatPercentage =
+              totalMacros > 0 ? ((item.fat * 9) / totalMacros) * 100 : 0;
 
-          const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
-          const proteinPercentage =
-            totalMacros > 0 ? ((item.protein * 4) / totalMacros) * 100 : 0;
-          const carbsPercentage =
-            totalMacros > 0 ? ((item.carbs * 4) / totalMacros) * 100 : 0;
-          const fatPercentage =
-            totalMacros > 0 ? ((item.fat * 9) / totalMacros) * 100 : 0;
-
-          return (
-            <div
-              key={item.id}
-              onClick={() =>
-                toggleItemSelection(
-                  item,
-                  activeTab === "foods" || activeTab === "favorites"
-                    ? "food"
-                    : "recipe",
-                )
-              }
-              className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
-                isSelected
-                  ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
-                  : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
-              }`}
-            >
-              <div className="flex items-start sm:items-center justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-xs font-medium">{item.name}</h3>
-                  <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
-                    {activeTab === "foods" || activeTab === "favorites"
-                      ? `${(item as Food).serving || 0}g`
-                      : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
-                  </p>
-                  <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                    <span className="flex items-center">
-                      <span className="text-red-500 dark:text-red-400 font-medium mr-1">
-                        P:
+            return (
+              <div
+                key={item.id}
+                onClick={() => toggleItemSelection(item, "food")}
+                className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
+                  isSelected
+                    ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
+                    : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
+                }`}
+              >
+                <div className="flex items-start sm:items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-xs font-medium">{item.name}</h3>
+                    <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
+                      {activeTab === "foods" || activeTab === "favorites"
+                        ? (() => {
+                            const foodItem = item as Food;
+                            const servingUnit =
+                              foodItem.servingUnit ||
+                              (foodItem.category === "beverages"
+                                ? "ml"
+                                : foodItem.category === "eggs"
+                                  ? "unidad"
+                                  : // Lácteos líquidos (leche, etc.)
+                                    foodItem.category === "dairy" &&
+                                      (foodItem.name
+                                        .toLowerCase()
+                                        .includes("leche") ||
+                                        foodItem.name
+                                          .toLowerCase()
+                                          .includes("milk"))
+                                    ? "ml"
+                                    : "g");
+                            const serving = foodItem.serving || 100;
+                            const unitLabel =
+                              servingUnit === "unidad"
+                                ? serving === 1
+                                  ? "unidad"
+                                  : "unidades"
+                                : servingUnit;
+                            return `Porción base: ${serving} ${unitLabel}`;
+                          })()
+                        : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
+                    </p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                      <span className="flex items-center">
+                        <span className="text-red-500 dark:text-red-400 font-medium mr-1">
+                          P:
+                        </span>
+                        <span className="text-foreground">{item.protein}g</span>
                       </span>
-                      <span className="text-foreground">{item.protein}g</span>
-                    </span>
-                    <span className="flex items-center">
-                      <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
-                        C:
+                      <span className="flex items-center">
+                        <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
+                          C:
+                        </span>
+                        <span className="text-foreground">{item.carbs}g</span>
                       </span>
-                      <span className="text-foreground">{item.carbs}g</span>
-                    </span>
-                    <span className="flex items-center">
-                      <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
-                        G:
-                      </span>
-                      <span className="text-foreground">{item.fat}g</span>
-                    </span>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 p-0 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleFavorite(item.id, e);
-                    }}
-                    aria-label={
-                      favoriteFoods.has(item.id)
-                        ? "Quitar de favoritos"
-                        : "Añadir a favoritos"
-                    }
-                  >
-                    <HugeiconsIcon
-                      icon={FavouriteIcon}
-                      className={`h-4 w-4 sm:h-5 sm:w-5 ${favoriteFoods.has(item.id) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`}
-                    />
-                  </Button>
-                  <div className="relative w-12 h-12 sm:w-16 sm:h-16">
-                    <svg
-                      className="w-full h-full -rotate-90"
-                      viewBox="0 0 36 36"
-                    >
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="16"
-                        fill="none"
-                        className="stroke-muted/50"
-                        strokeWidth="2.5"
-                      />
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="16"
-                        fill="none"
-                        className="stroke-red-500"
-                        strokeWidth="2.5"
-                        strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="16"
-                        fill="none"
-                        className="stroke-blue-500"
-                        strokeWidth="2.5"
-                        strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
-                        strokeDashoffset={-proteinPercentage}
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="18"
-                        cy="18"
-                        r="16"
-                        fill="none"
-                        className="stroke-yellow-500"
-                        strokeWidth="2.5"
-                        strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
-                        strokeDashoffset={
-                          -(proteinPercentage + carbsPercentage)
-                        }
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-xs sm:text-xs font-semibold">
-                        {item.calories}
+                      <span className="flex items-center">
+                        <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
+                          G:
+                        </span>
+                        <span className="text-foreground">{item.fat}g</span>
                       </span>
                     </div>
                   </div>
-                  <div className="text-right hidden sm:block">
-                    <div className="text-xs text-muted-foreground">kcal</div>
+
+                  <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 p-0 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleFavorite(item.id, e);
+                      }}
+                      aria-label={
+                        favoriteFoods.has(item.id)
+                          ? "Quitar de favoritos"
+                          : "Añadir a favoritos"
+                      }
+                    >
+                      <HugeiconsIcon
+                        icon={FavouriteIcon}
+                        className={`h-4 w-4 sm:h-5 sm:w-5 ${favoriteFoods.has(item.id) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`}
+                      />
+                    </Button>
+                    <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                      <svg
+                        className="w-full h-full -rotate-90"
+                        viewBox="0 0 36 36"
+                      >
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className="stroke-muted/50"
+                          strokeWidth="2.5"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className="stroke-red-500"
+                          strokeWidth="2.5"
+                          strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
+                          strokeLinecap="round"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className="stroke-blue-500"
+                          strokeWidth="2.5"
+                          strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
+                          strokeDashoffset={-proteinPercentage}
+                          strokeLinecap="round"
+                        />
+                        <circle
+                          cx="18"
+                          cy="18"
+                          r="16"
+                          fill="none"
+                          className="stroke-yellow-500"
+                          strokeWidth="2.5"
+                          strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
+                          strokeDashoffset={
+                            -(proteinPercentage + carbsPercentage)
+                          }
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs sm:text-xs font-semibold">
+                          {item.calories}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="text-right hidden sm:block">
+                      <div className="text-xs text-muted-foreground">kcal</div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
+      );
+    }
+
+    // Para alimentos normales, mostrar agrupados por categoría
+    return (
+      <div className="space-y-4">
+        {Object.entries(groupedFoods).map(([category, categoryFoods]) => (
+          <div key={category} className="space-y-2">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide px-1 sticky top-0 bg-background py-1 z-10">
+              {getCategoryLabel(category)}
+            </h4>
+            {categoryFoods.map((result) => {
+              const item = result.food;
+              const isSelected = isItemSelected(
+                item.id,
+                activeTab === "foods" ? "food" : "recipe",
+              );
+
+              const totalMacros =
+                item.protein * 4 + item.carbs * 4 + item.fat * 9;
+              const proteinPercentage =
+                totalMacros > 0 ? ((item.protein * 4) / totalMacros) * 100 : 0;
+              const carbsPercentage =
+                totalMacros > 0 ? ((item.carbs * 4) / totalMacros) * 100 : 0;
+              const fatPercentage =
+                totalMacros > 0 ? ((item.fat * 9) / totalMacros) * 100 : 0;
+
+              return (
+                <div
+                  key={item.id}
+                  onClick={() =>
+                    toggleItemSelection(
+                      item,
+                      activeTab === "foods" ? "food" : "recipe",
+                    )
+                  }
+                  className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
+                    isSelected
+                      ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
+                      : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
+                  }`}
+                >
+                  <div className="flex items-start sm:items-center justify-between gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xs font-medium">{item.name}</h3>
+                      <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
+                        {activeTab === "foods"
+                          ? (() => {
+                              const foodItem = item as Food;
+                              const servingUnit =
+                                foodItem.servingUnit ||
+                                (foodItem.category === "beverages"
+                                  ? "ml"
+                                  : foodItem.category === "eggs"
+                                    ? "unidad"
+                                    : // Lácteos líquidos (leche, etc.)
+                                      foodItem.category === "dairy" &&
+                                        (foodItem.name
+                                          .toLowerCase()
+                                          .includes("leche") ||
+                                          foodItem.name
+                                            .toLowerCase()
+                                            .includes("milk"))
+                                      ? "ml"
+                                      : "g");
+                              const serving = foodItem.serving || 100;
+                              const unitLabel =
+                                servingUnit === "unidad"
+                                  ? serving === 1
+                                    ? "unidad"
+                                    : "unidades"
+                                  : servingUnit;
+                              return `Porción base: ${serving} ${unitLabel}`;
+                            })()
+                          : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
+                      </p>
+                      <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
+                        <span className="flex items-center">
+                          <span className="text-red-500 dark:text-red-400 font-medium mr-1">
+                            P:
+                          </span>
+                          <span className="text-foreground">
+                            {item.protein}g
+                          </span>
+                        </span>
+                        <span className="flex items-center">
+                          <span className="text-blue-500 dark:text-blue-400 font-medium mr-1">
+                            C:
+                          </span>
+                          <span className="text-foreground">{item.carbs}g</span>
+                        </span>
+                        <span className="flex items-center">
+                          <span className="text-yellow-500 dark:text-yellow-400 font-medium mr-1">
+                            G:
+                          </span>
+                          <span className="text-foreground">{item.fat}g</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 p-0 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleFavorite(item.id, e);
+                        }}
+                        aria-label={
+                          favoriteFoods.has(item.id)
+                            ? "Quitar de favoritos"
+                            : "Añadir a favoritos"
+                        }
+                      >
+                        <HugeiconsIcon
+                          icon={FavouriteIcon}
+                          className={`h-4 w-4 sm:h-5 sm:w-5 ${favoriteFoods.has(item.id) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`}
+                        />
+                      </Button>
+                      <div className="relative w-12 h-12 sm:w-16 sm:h-16">
+                        <svg
+                          className="w-full h-full -rotate-90"
+                          viewBox="0 0 36 36"
+                        >
+                          <circle
+                            cx="18"
+                            cy="18"
+                            r="16"
+                            fill="none"
+                            className="stroke-muted/50"
+                            strokeWidth="2.5"
+                          />
+                          <circle
+                            cx="18"
+                            cy="18"
+                            r="16"
+                            fill="none"
+                            className="stroke-red-500"
+                            strokeWidth="2.5"
+                            strokeDasharray={`${proteinPercentage} ${100 - proteinPercentage}`}
+                            strokeLinecap="round"
+                          />
+                          <circle
+                            cx="18"
+                            cy="18"
+                            r="16"
+                            fill="none"
+                            className="stroke-blue-500"
+                            strokeWidth="2.5"
+                            strokeDasharray={`${carbsPercentage} ${100 - carbsPercentage}`}
+                            strokeDashoffset={-proteinPercentage}
+                            strokeLinecap="round"
+                          />
+                          <circle
+                            cx="18"
+                            cy="18"
+                            r="16"
+                            fill="none"
+                            className="stroke-yellow-500"
+                            strokeWidth="2.5"
+                            strokeDasharray={`${fatPercentage} ${100 - fatPercentage}`}
+                            strokeDashoffset={
+                              -(proteinPercentage + carbsPercentage)
+                            }
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xs sm:text-xs font-semibold">
+                            {item.calories}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-right hidden sm:block">
+                        <div className="text-xs text-muted-foreground">
+                          kcal
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ))}
       </div>
     );
   };
@@ -889,28 +1124,15 @@ export default function RegisterFoodPage() {
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
             <div className="lg:col-span-2 space-y-3 sm:space-y-4">
-              <div className="relative">
-                <HugeiconsIcon
-                  icon={Search01Icon}
-                  className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                />
-                <Input
-                  placeholder="Buscar..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 h-10 text-xs"
-                />
-                {searchQuery && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                    onClick={() => setSearchQuery("")}
-                  >
-                    <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
+              <FoodSearchInput
+                value={searchQuery}
+                onChange={setSearchQuery}
+                foods={foods.map((f) => ({
+                  name: f.name,
+                  category: f.category,
+                }))}
+                placeholder="Buscar..."
+              />
 
               <Tabs
                 value={activeTab}
@@ -1076,8 +1298,91 @@ export default function RegisterFoodPage() {
                                         <div className="font-medium text-xs truncate">
                                           {data.name}
                                         </div>
-                                        <div className="text-xs text-muted-foreground">
-                                          {calories} kcal
+                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                                          <div className="text-xs text-muted-foreground">
+                                            {calories} kcal
+                                          </div>
+                                          {item.type === "food" && (
+                                            <>
+                                              <span className="text-xs text-muted-foreground/60">
+                                                •
+                                              </span>
+                                              <div className="text-xs text-muted-foreground">
+                                                {(() => {
+                                                  const foodData = data as Food;
+                                                  const servingBase =
+                                                    foodData.serving || 100;
+                                                  const servingUnit =
+                                                    foodData.servingUnit ||
+                                                    (foodData.category ===
+                                                    "beverages"
+                                                      ? "ml"
+                                                      : foodData.category ===
+                                                          "eggs"
+                                                        ? "unidad"
+                                                        : // Lácteos líquidos (leche, etc.)
+                                                          foodData.category ===
+                                                              "dairy" &&
+                                                            (foodData.name
+                                                              .toLowerCase()
+                                                              .includes(
+                                                                "leche",
+                                                              ) ||
+                                                              foodData.name
+                                                                .toLowerCase()
+                                                                .includes(
+                                                                  "milk",
+                                                                ))
+                                                          ? "ml"
+                                                          : "g");
+                                                  const currentQuantityInBase =
+                                                    quantity;
+                                                  return `Cantidad: ${formatPortionLabel(currentQuantityInBase, servingUnit as "g" | "ml" | "unidad", servingBase)}`;
+                                                })()}
+                                              </div>
+                                              <span className="text-xs text-muted-foreground/60">
+                                                •
+                                              </span>
+                                              <div className="text-xs text-muted-foreground">
+                                                Base:{" "}
+                                                {(() => {
+                                                  const foodData = data as Food;
+                                                  const serving =
+                                                    foodData.serving || 100;
+                                                  const unit =
+                                                    foodData.servingUnit ||
+                                                    (foodData.category ===
+                                                    "beverages"
+                                                      ? "ml"
+                                                      : foodData.category ===
+                                                          "eggs"
+                                                        ? "unidad"
+                                                        : // Lácteos líquidos (leche, etc.)
+                                                          foodData.category ===
+                                                              "dairy" &&
+                                                            (foodData.name
+                                                              .toLowerCase()
+                                                              .includes(
+                                                                "leche",
+                                                              ) ||
+                                                              foodData.name
+                                                                .toLowerCase()
+                                                                .includes(
+                                                                  "milk",
+                                                                ))
+                                                          ? "ml"
+                                                          : "g");
+                                                  const unitLabel =
+                                                    unit === "unidad"
+                                                      ? serving === 1
+                                                        ? "unidad"
+                                                        : "unidades"
+                                                      : unit;
+                                                  return `${serving} ${unitLabel}`;
+                                                })()}
+                                              </div>
+                                            </>
+                                          )}
                                         </div>
                                       </div>
                                       <Button
@@ -1094,28 +1399,49 @@ export default function RegisterFoodPage() {
                                     </div>
 
                                     <div className="space-y-2">
-                                      <Select
-                                        value={item.unit}
-                                        onValueChange={(value) =>
-                                          updateItemUnit(index, value)
-                                        }
-                                      >
-                                        <SelectTrigger className="h-8 text-xs">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                          {getAvailableUnits(item).map(
-                                            (unit) => (
-                                              <SelectItem
-                                                key={unit.value}
-                                                value={unit.value}
-                                              >
-                                                {unit.label}
-                                              </SelectItem>
-                                            ),
-                                          )}
-                                        </SelectContent>
-                                      </Select>
+                                      {item.type === "food" ? (
+                                        <FoodPortionSelector
+                                          food={item.data as Food}
+                                          currentQuantity={
+                                            // Convertir de gramos/ml a porciones (servings)
+                                            item.quantity /
+                                            ((item.data as Food).serving || 100)
+                                          }
+                                          onQuantityChange={(newQuantity) => {
+                                            // Convertir de porciones (servings) a gramos/ml
+                                            const servingSize =
+                                              (item.data as Food).serving ||
+                                              100;
+                                            updateItemQuantity(
+                                              index,
+                                              newQuantity * servingSize,
+                                            );
+                                          }}
+                                        />
+                                      ) : (
+                                        <Select
+                                          value={item.unit}
+                                          onValueChange={(value) =>
+                                            updateItemUnit(index, value)
+                                          }
+                                        >
+                                          <SelectTrigger className="h-8 text-xs">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {getAvailableUnits(item).map(
+                                              (unit) => (
+                                                <SelectItem
+                                                  key={unit.value}
+                                                  value={unit.value}
+                                                >
+                                                  {unit.label}
+                                                </SelectItem>
+                                              ),
+                                            )}
+                                          </SelectContent>
+                                        </Select>
+                                      )}
 
                                       <div className="flex items-center gap-2">
                                         <Button
