@@ -36,6 +36,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
 import { BirthDatePicker } from "@/components/ui/birth-date-picker";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   BirthdayCakeIcon,
@@ -60,7 +61,7 @@ export default function ProfilePage() {
   const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-  const { data: session, update } = useSession();
+  const { data: session, status, update } = useSession();
   const isInstructor = session?.user?.isInstructor || false;
 
   // Load user data when session is available
@@ -300,6 +301,56 @@ export default function ProfilePage() {
       setIsUploading(false);
     }
   };
+
+  if (!session || status === "loading") {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="pt-6">
+            <div className="flex flex-col md:flex-row gap-6 items-center">
+              <Skeleton className="h-24 w-24 rounded-full" />
+              <div className="space-y-4 flex-1 text-center md:text-left">
+                <div className="flex flex-col items-center md:flex-row md:items-center gap-2 md:gap-4">
+                  <Skeleton className="h-8 w-48" />
+                  <Skeleton className="h-6 w-20" />
+                </div>
+                <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-40" />
+                </div>
+              </div>
+              <Skeleton className="h-9 w-20" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-24" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-7 w-40 mb-2" />
+            <Skeleton className="h-4 w-56" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-32 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -567,9 +618,9 @@ export default function ProfilePage() {
                         open={showCancelDialog}
                         onOpenChange={setShowCancelDialog}
                       >
-                        <DialogContent className="sm:max-w-[425px]">
+                        <DialogContent className="sm:max-w-[425px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                           <DialogHeader>
-                            <DialogTitle className="text-xl tracking-heading font-semibold">
+                            <DialogTitle className="text-2xl tracking-heading font-semibold">
                               Confirmar cancelación
                             </DialogTitle>
                             <DialogDescription className="text-xs md:text-xs">

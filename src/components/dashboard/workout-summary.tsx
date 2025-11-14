@@ -47,21 +47,21 @@ export default function WorkoutSummary() {
   }, []);
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border">
-      <div className="flex justify-between items-center w-full mb-4">
-        <div className="flex items-center gap-2 w-full">
-          <h2 className="text-2xl font-semibold  tracking-heading">
+    <div className="p-4 md:p-6 rounded-lg shadow-sm border">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4">
+        <div className="flex items-center gap-2">
+          <h2 className="text-2xl font-semibold tracking-heading">
             Resumen de Entrenamientos
           </h2>
         </div>
         <Link
           href="/dashboard/workout/history"
-          className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
+          className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors self-start sm:self-auto"
         >
           Ver todos
           <HugeiconsIcon
             icon={ArrowRight01Icon}
-            className="h-4 w-4 text-muted-foreground"
+            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
           />
         </Link>
       </div>

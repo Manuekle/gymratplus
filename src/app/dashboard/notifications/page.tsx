@@ -183,13 +183,15 @@ export default function NotificationsPage() {
               {isLoading ? (
                 <NotificationSkeleton cantidad={8} />
               ) : filteredNotifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center px-12 space-y-3">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
                   <HugeiconsIcon
                     icon={Notification03Icon}
-                    className="h-12 w-12 text-muted-foreground opacity-30"
+                    className="h-12 w-12 text-muted-foreground opacity-30 mb-3"
                   />
-                  <h3 className="font-medium text-xs">No hay notificaciones</h3>
-                  <p className="text-xs text-muted-foreground text-center max-w-sm">
+                  <h3 className="text-xs font-medium mb-2">
+                    No hay notificaciones
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-sm">
                     No tienes notificaciones en este momento. Las nuevas
                     notificaciones aparecerán aquí.
                   </p>
@@ -235,15 +237,15 @@ export default function NotificationsPage() {
               {isLoading ? (
                 <NotificationSkeleton cantidad={8} />
               ) : filteredNotifications.filter((n) => !n.read).length === 0 ? (
-                <div className="flex flex-col items-center justify-center p-12 space-y-3">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
                   <HugeiconsIcon
                     icon={Notification03Icon}
-                    className="h-12 w-12 text-muted-foreground opacity-30"
+                    className="h-12 w-12 text-muted-foreground opacity-30 mb-3"
                   />
-                  <h3 className="font-medium">
+                  <h3 className="text-xs font-medium mb-2">
                     No hay notificaciones sin leer
                   </h3>
-                  <p className="text-xs text-muted-foreground text-center max-w-sm">
+                  <p className="text-xs text-muted-foreground max-w-sm">
                     Has leído todas tus notificaciones. ¡Buen trabajo!
                   </p>
                 </div>

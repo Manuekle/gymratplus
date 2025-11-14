@@ -149,35 +149,48 @@ export default function WorkouPage() {
         </span>
       </div>
 
-      <div className="border rounded-lg p-4">
-        <div className="flex justify-between items-start gap-8">
-          <div className="flex flex-col gap-1 w-full">
-            <CardTitle className="text-2xl font-semibold  tracking-heading">
+      <div className="border rounded-lg p-6 shadow-sm bg-card">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col gap-2 w-full">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               {workout.name}
             </CardTitle>
-            <CardDescription className="text-xs">
-              {workout.description}
-            </CardDescription>
+            {workout.description && (
+              <CardDescription className="text-xs text-muted-foreground">
+                {workout.description}
+              </CardDescription>
+            )}
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
+            <Badge
+              variant="outline"
+              className="flex items-center gap-1.5 px-3 py-1.5"
+            >
+              <HugeiconsIcon icon={Calendar01Icon} className="h-4 w-4" />
+              <span className="text-xs font-medium">
+                {workout.days.length}{" "}
+                {workout.days.length === 1 ? "día" : "días"}
+              </span>
+            </Badge>
             <Button
               variant="destructive"
               size="sm"
               onClick={() => setIsDeleteDialogOpen(true)}
+              className="gap-2"
             >
               Eliminar
             </Button>
-            <Badge variant="outline" className="flex items-center gap-1">
-              <HugeiconsIcon icon={Calendar01Icon} className="h-3 w-3" />
-              {workout.days.length} días
-            </Badge>
           </div>
         </div>
 
-        <div className="pt-4">
-          <Tabs defaultValue={workout.days[0]?.day || ""}>
+        <div className="pt-6 border-t">
+          <Tabs defaultValue={workout.days[0]?.day || ""} className="w-full">
             {workout.days.map((day, dayIndex) => (
-              <TabsContent key={dayIndex} value={day.day}>
+              <TabsContent
+                key={dayIndex}
+                value={day.day}
+                className="mt-4 space-y-4"
+              >
                 <WorkoutNew
                   workoutId={workout.id}
                   exercises={day.exercises}
@@ -193,7 +206,7 @@ export default function WorkouPage() {
         open={isDeleteDialogOpen}
         onOpenChange={setIsDeleteDialogOpen}
       >
-        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8">
+        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Estás seguro de eliminar este entrenamiento?

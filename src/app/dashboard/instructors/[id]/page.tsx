@@ -15,6 +15,7 @@ import {
   PhoneLockIcon,
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
+// Calendar01Icon removed - unused
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 // import type { InstructorProfile, User } from "@prisma/client";
@@ -307,7 +308,7 @@ export default function InstructorProfilePage() {
               </svg>
             </div>
             <div className="ml-3">
-              <p className="text-sm">
+              <p className="text-xs">
                 Este instructor actualmente no está aceptando nuevos
                 estudiantes.
               </p>
@@ -538,11 +539,11 @@ export default function InstructorProfilePage() {
             </CardHeader>
             <CardContent>
               {instructor.bio ? (
-                <div className="whitespace-pre-line break-words text-sm text-muted-foreground">
+                <div className="whitespace-pre-line break-words text-xs text-muted-foreground">
                   {instructor.bio}
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground italic">
+                <p className="text-xs text-muted-foreground italic">
                   Sin biografía disponible.
                 </p>
               )}

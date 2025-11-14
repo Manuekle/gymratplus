@@ -41,6 +41,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils/utils";
+import { Icons } from "@/components/icons";
 // cambiar todo
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
@@ -97,7 +98,12 @@ export default function FoodRecommendations() {
         if (!response.ok) {
           throw new Error("Failed to fetch foods");
         }
-        const foodsData = await response.json();
+        const responseData = await response.json();
+
+        // Handle both array and paginated response formats
+        const foodsData = Array.isArray(responseData)
+          ? responseData
+          : responseData.data || [];
 
         // Create a map of food IDs to food objects
         const foodsMap: Record<string, any> = {};
@@ -269,24 +275,131 @@ export default function FoodRecommendations() {
     );
   }
 
+  const generatePlan = async () => {
+    try {
+      setIsLoading(true);
+
+      // First, get the user profile
+      const profileResponse = await fetch("/api/profile");
+      if (!profileResponse.ok) {
+        throw new Error(
+          "No se encontró el perfil. Por favor, completa tu perfil primero.",
+        );
+      }
+      const profileData = await profileResponse.json();
+
+      // Generate recommendations (this will automatically save the food recommendation)
+      const response = await fetch("/api/recommendations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to generate plan");
+      }
+
+      toast.success("Plan generado exitosamente");
+
+      // Reload recommendations
+      const recResponse = await fetch("/api/food-recommendations");
+      if (recResponse.ok) {
+        const recData = await recResponse.json();
+        const parsedData = recData.map((item: any) => ({
+          ...item,
+          macros:
+            typeof item.macros === "string"
+              ? JSON.parse(item.macros)
+              : item.macros,
+          meals:
+            typeof item.meals === "string"
+              ? JSON.parse(item.meals)
+              : item.meals,
+        }));
+        setRecommendations(parsedData);
+        if (parsedData.length > 0) {
+          setSelectedRecommendation(parsedData[0]);
+        }
+        // Reload foods as well
+        const foodsResponse = await fetch("/api/foods");
+        if (foodsResponse.ok) {
+          const foodsData = await foodsResponse.json();
+          const foodsArray = Array.isArray(foodsData)
+            ? foodsData
+            : foodsData.data || [];
+          const foodsMap: Record<string, any> = {};
+          foodsArray.forEach((food: any) => {
+            foodsMap[food.id] = food;
+          });
+          setFoods(foodsMap);
+        }
+      }
+    } catch (error: any) {
+      console.error("Error generating plan:", error);
+      toast.error("Error al generar el plan", {
+        description: error.message || "Por favor, intenta de nuevo más tarde",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (recommendations.length === 0) {
     return (
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold  tracking-heading">
-            Tu Plan de Alimentación
-          </CardTitle>
-          <CardDescription className="text-xs text-muted-foreground">
-            No tienes ningún plan de alimentación guardado.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p className="text-center py-8 text-muted-foreground text-xs">
-            Genera un plan de nutrición para ver las recomendaciones de
-            alimentos.
-          </p>
-        </CardContent>
-      </Card>
+      <div className="w-full space-y-4">
+        <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+          <Button
+            variant="outline"
+            className="text-xs w-full"
+            size="sm"
+            onClick={() => router.push("/dashboard/nutrition")}
+          >
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
+            Volver a la lista
+          </Button>
+        </div>
+        <Card className="w-full">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Tu Plan de Alimentación
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              No tienes ningún plan de alimentación guardado.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col items-center justify-center py-12 space-y-4">
+              <div className="text-center space-y-2">
+                <h3 className="text-lg font-semibold tracking-heading">
+                  No hay planes disponibles
+                </h3>
+                <p className="text-xs text-muted-foreground max-w-md">
+                  Genera un plan de nutrición personalizado basado en tu perfil
+                  para ver las recomendaciones de alimentos.
+                </p>
+              </div>
+              <Button
+                onClick={generatePlan}
+                disabled={isLoading}
+                className="text-xs"
+                size="sm"
+              >
+                {isLoading ? (
+                  <>
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                    Generando...
+                  </>
+                ) : (
+                  "Generar Plan de Alimentación"
+                )}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -349,7 +462,7 @@ export default function FoodRecommendations() {
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full"
           size="sm"
           onClick={() => router.push("/dashboard/nutrition")}
         >
@@ -402,7 +515,7 @@ export default function FoodRecommendations() {
                         <div
                           key={rec.id}
                           className={cn(
-                            "p-2 text-sm cursor-pointer hover:bg-accent",
+                            "p-2 text-xs cursor-pointer hover:bg-accent",
                             selectedRecommendation?.id === rec.id &&
                               "bg-accent",
                           )}
@@ -613,7 +726,15 @@ export default function FoodRecommendations() {
                                   colSpan={6}
                                   className="h-24 text-center"
                                 >
-                                  No hay alimentos registrados para esta comida.
+                                  <div className="flex flex-col items-center justify-center py-4">
+                                    <h3 className="text-xs font-semibold mb-1">
+                                      No hay alimentos registrados
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground">
+                                      No hay alimentos registrados para esta
+                                      comida.
+                                    </p>
+                                  </div>
                                 </TableCell>
                               </TableRow>
                             )}

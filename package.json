@@ -15,7 +15,8 @@
     "type-check:routes": "tsc --noEmit --skipLibCheck --include 'app/**/*.ts' 'pages/api/**/*.ts'",
     "postbuild": "next-sitemap",
     "postinstall": "prisma generate",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "update": "ncu -u"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -112,6 +113,7 @@
     "eslint": "^9.22.0",
     "eslint-config-next": "15.2.0",
     "eslint-config-prettier": "^10.1.1",
+    "npm-check-updates": "^19.1.2",
     "postcss": "8.5.3",
     "prettier": "^3.6.2",
     "prisma": "^6.18.0",

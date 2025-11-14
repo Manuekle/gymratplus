@@ -156,18 +156,22 @@ export default function NutritionSummary() {
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border">
-      <div className="flex justify-between items-center mb-4">
+    <div className="p-4 md:p-6 rounded-lg shadow-sm border">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4">
         <div className="flex items-center gap-2">
-          <h2 className="text-2xl font-semibold  tracking-heading">
+          <h2 className="text-2xl font-semibold tracking-heading">
             Resumen Nutricional
           </h2>
         </div>
         <Link
           href="/dashboard/nutrition"
-          className="text-xs text-muted-foreground flex items-center gap-1"
+          className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors self-start sm:self-auto"
         >
-          Ver mas <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+          Ver más
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
 

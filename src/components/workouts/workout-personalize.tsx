@@ -53,10 +53,11 @@ type WorkoutType =
   | "perdida_grasa"
   | "resistencia"
   | "movilidad"
-  | "estandar";
+  | "estandar"
+  | "custom";
 
 const workoutConfigs: Record<
-  WorkoutType,
+  Exclude<WorkoutType, "custom">,
   {
     sets: number;
     reps: number;
@@ -105,6 +106,9 @@ export function WorkoutPersonalize() {
   const [days, setDays] = useState<string[]>([]);
   const [step, setStep] = useState(1);
   const [workoutType, setWorkoutType] = useState<WorkoutType>("estandar");
+  const [customSets, setCustomSets] = useState<number>(3);
+  const [customReps, setCustomReps] = useState<number>(10);
+  const [customRestTime, setCustomRestTime] = useState<number>(180);
   const [open, setOpen] = useState(false);
   const { refreshWorkouts } = useWorkouts();
 
@@ -156,14 +160,23 @@ export function WorkoutPersonalize() {
         selectedExercises.filter((_, index) => index !== existingIndex),
       );
     } else {
+      const config =
+        workoutType === "custom"
+          ? {
+              sets: customSets,
+              reps: customReps,
+              restTime: customRestTime,
+            }
+          : workoutConfigs[workoutType];
+
       setSelectedExercises([
         ...selectedExercises,
         {
           exerciseId,
           day: currentDay,
-          sets: workoutConfigs[workoutType].sets,
-          reps: workoutConfigs[workoutType].reps,
-          restTime: workoutConfigs[workoutType].restTime,
+          sets: config.sets,
+          reps: config.reps,
+          restTime: config.restTime,
         },
       ]);
     }
@@ -224,6 +237,15 @@ export function WorkoutPersonalize() {
       toast.success("Entrenamiento creado con éxito");
       await refreshWorkouts();
       setOpen(false);
+      setStep(1);
+      setName("");
+      setCurrentDay("");
+      setDays([]);
+      setSelectedExercises([]);
+      setWorkoutType("estandar");
+      setCustomSets(3);
+      setCustomReps(10);
+      setCustomRestTime(180);
     } catch (error) {
       console.error("Error creating personalized workout:", error);
       toast.error("Error al crear el entrenamiento");
@@ -256,7 +278,7 @@ export function WorkoutPersonalize() {
             Personalizar rutina
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-8 xl:pt-8">
+        <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <DialogHeader className="">
             <DialogTitle className="text-2xl font-semibold  tracking-heading">
               Crea tu rutina personalizada
@@ -322,9 +344,46 @@ export function WorkoutPersonalize() {
                     >
                       Movilidad y flexibilidad
                     </SelectItem>
+                    <SelectItem className="text-xs md:text-xs" value="custom">
+                      Personalizado (configura series, reps y tiempo)
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {workoutType === "custom" && (
+                <div className="grid grid-cols-3 gap-2">
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder="Series"
+                    className="text-xs"
+                    value={customSets}
+                    onChange={(e) =>
+                      setCustomSets(parseInt(e.target.value) || 1)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    min="1"
+                    placeholder="Reps"
+                    className="text-xs"
+                    value={customReps}
+                    onChange={(e) =>
+                      setCustomReps(parseInt(e.target.value) || 1)
+                    }
+                  />
+                  <Input
+                    type="number"
+                    min="0"
+                    placeholder="Descanso (s)"
+                    className="text-xs"
+                    value={customRestTime}
+                    onChange={(e) =>
+                      setCustomRestTime(parseInt(e.target.value) || 0)
+                    }
+                  />
+                </div>
+              )}
               <div className="space-y-2">
                 <Label className="text-xs md:text-xs" htmlFor="day-name">
                   Nombre del día

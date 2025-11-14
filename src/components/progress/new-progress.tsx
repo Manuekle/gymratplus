@@ -233,7 +233,7 @@ export function NewProgress({
           Añadir registro
         </Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto pt-8 xl:pt-8">
+      <DialogContent className="overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">
             {isEditing ? "Editar registro" : "Nuevo registro de progreso"}

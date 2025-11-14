@@ -52,19 +52,48 @@ export async function GET(req: NextRequest) {
       where.mealType = { has: mealType };
     }
 
-    // Apply favorites filter if needed
-    if (onlyFavorites) {
-      where.isFavorite = true;
-    }
+    // Note: isFavorite field doesn't exist in schema, removing filter
 
-    const foods = await prisma.food.findMany({
-      where,
-      orderBy: {
-        name: "asc",
+    // Optimize: add pagination and limit fields
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "100");
+    const skip = parseInt(req.nextUrl.searchParams.get("skip") || "0");
+
+    const [foods, total] = await Promise.all([
+      prisma.food.findMany({
+        where,
+        select: {
+          id: true,
+          name: true,
+          calories: true,
+          protein: true,
+          carbs: true,
+          fat: true,
+          fiber: true,
+          sugar: true,
+          serving: true,
+          category: true,
+          mealType: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+        orderBy: {
+          name: "asc",
+        },
+        take: limit,
+        skip: skip,
+      }),
+      prisma.food.count({ where }),
+    ]);
+
+    return NextResponse.json({
+      data: foods,
+      pagination: {
+        total,
+        limit,
+        skip,
+        hasMore: skip + limit < total,
       },
     });
-
-    return NextResponse.json(foods);
   } catch (error) {
     console.error("Error fetching foods:", error);
     return NextResponse.json(
@@ -115,8 +144,6 @@ export async function POST(req: NextRequest) {
         serving: data.serving,
         category: data.category,
         mealType: data.mealType || [],
-        imageUrl: data.imageUrl || null,
-        isFavorite: data.isFavorite || false,
         userId: userId,
       },
     });
@@ -158,11 +185,11 @@ export async function PUT() {
           data: {
             ...food,
             mealType:
-              food.category === "proteína" || food.category === "carbohidrato"
+              food.category === "PROTEINA" || food.category === "CARBOHIDRATO"
                 ? ["desayuno", "almuerzo", "cena"]
-                : food.category === "fruta"
+                : food.category === "FRUTA"
                   ? ["desayuno", "snack"]
-                  : food.category === "verdura"
+                  : food.category === "VERDURA"
                     ? ["almuerzo", "cena"]
                     : ["desayuno", "almuerzo", "cena", "snack"],
           },

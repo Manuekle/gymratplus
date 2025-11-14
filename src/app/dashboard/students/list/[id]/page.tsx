@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,6 +24,7 @@ import {
   LayersIcon,
   Target01Icon,
   CalendarCheckIn01Icon,
+  ArrowLeft01Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Dialog,
@@ -79,6 +80,7 @@ interface AssignedWorkoutExercise {
 // --- Componente Principal ---
 export default function StudentDetailPage() {
   const params = useParams();
+  const router = useRouter();
   // El ID que viene de los parámetros es el ID de la relación, no el studentId
   const studentRelationId = params?.id as string;
 
@@ -236,11 +238,6 @@ export default function StudentDetailPage() {
   if (error || !student) {
     return (
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
-        <h1 className="text-2xl font-semibold mb-2">Alumno no encontrado</h1>
-        <p className="text-xs text-muted-foreground mb-4 text-center max-w-md">
-          {error ||
-            "El alumno que estás buscando no existe o hubo un problema de conexión."}
-        </p>
         <Button
           onClick={() => (window.location.href = "/dashboard/students/list")}
           size="sm"
@@ -253,8 +250,20 @@ export default function StudentDetailPage() {
 
   return (
     <div>
+      <div className="mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          className="md:w-auto w-full text-xs"
+          onClick={() => (window.location.href = "/dashboard/students/list")}
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+          Volver a alumnos
+        </Button>
+      </div>
       <div className="flex flex-col md:flex-row gap-4">
         {/* Compact Sidebar */}
+
         <div className="w-full md:w-80 space-y-3">
           <Card>
             <CardHeader className="pb-3">
@@ -374,26 +383,11 @@ export default function StudentDetailPage() {
 
         {/* Main Content - Compact */}
         <div className="flex-1 space-y-3">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl tracking-heading font-semibold">
-              {student.name}
-            </h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                (window.location.href = "/dashboard/students/list")
-              }
-            >
-              Volver a alumnos
-            </Button>
-          </div>
-
           {/* Workouts Section */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg tracking-heading font-semibold">
+                <CardTitle className="text-2xl tracking-heading font-semibold">
                   Rutinas Asignadas
                 </CardTitle>
                 <Button
@@ -413,8 +407,13 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : workouts.length === 0 ? (
-                <div className="text-center text-xs text-muted-foreground py-6 border rounded-lg bg-muted/50">
-                  Este alumno aún no tiene rutinas asignadas.
+                <div className="flex flex-col items-center justify-center py-12 text-center border rounded-lg bg-muted/50">
+                  <h3 className="text-xs font-medium mb-2">
+                    No hay rutinas asignadas
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Este alumno aún no tiene rutinas asignadas.
+                  </p>
                 </div>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -537,10 +536,44 @@ export default function StudentDetailPage() {
             </CardContent>
           </Card>
 
+          {/* Food Plans Section */}
+          <Card>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl tracking-heading font-semibold">
+                  Planes de Alimentación
+                </CardTitle>
+                <Button
+                  size="sm"
+                  variant="default"
+                  className="h-7 text-xs"
+                  onClick={() =>
+                    router.push(
+                      `/dashboard/students/list/${studentRelationId}/mealplan`,
+                    )
+                  }
+                >
+                  Crear Plan
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center justify-center text-center py-8">
+                <h3 className="text-xs font-medium mb-2">
+                  No hay planes de alimentación
+                </h3>
+                <p className="text-xs text-muted-foreground max-w-sm mb-4">
+                  Crea un plan de alimentación personalizado para este alumno
+                  basado en su perfil nutricional.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Stats Overview Card */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg tracking-heading font-semibold">
+              <CardTitle className="text-2xl tracking-heading font-semibold">
                 Resumen de Actividad
               </CardTitle>
             </CardHeader>
@@ -550,13 +583,13 @@ export default function StudentDetailPage() {
                   <span className="text-muted-foreground">
                     Promedio semanal
                   </span>
-                  <span className="font-semibold">
+                  <span className="font-normal">
                     {student.averageWorkoutsPerWeek.toFixed(1)} entrenos
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Racha actual</span>
-                  <span className="font-semibold flex items-center gap-1">
+                  <span className="font-normal flex items-center gap-1">
                     <HugeiconsIcon icon={FireIcon} className="h-3 w-3 " />
                     {student.currentWorkoutStreak} días
                   </span>
@@ -579,22 +612,24 @@ export default function StudentDetailPage() {
         </div>
       </div>
       {student && (
-        <WorkoutAssignmentDialog
-          open={isAssignDialogOpen}
-          onOpenChange={setIsAssignDialogOpen}
-          studentId={student.studentId}
-          studentName={student.name || "el alumno"}
-          onSuccess={() => {
-            // Refresh the workouts list after successful assignment
-            // You might want to add a refetch function for workouts
-            setIsAssignDialogOpen(false);
-          }}
-        />
+        <>
+          <WorkoutAssignmentDialog
+            open={isAssignDialogOpen}
+            onOpenChange={setIsAssignDialogOpen}
+            studentId={student.studentId}
+            studentName={student.name || "el alumno"}
+            onSuccess={() => {
+              // Refresh the workouts list after successful assignment
+              // You might want to add a refetch function for workouts
+              setIsAssignDialogOpen(false);
+            }}
+          />
+        </>
       )}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <DialogHeader>
-            <DialogTitle className="text-xl tracking-heading font-semibold">
+            <DialogTitle className="text-2xl tracking-heading font-semibold">
               {selectedWorkout?.name || "Detalle de Rutina"}
             </DialogTitle>
             <DialogDescription className="text-xs">
@@ -651,9 +686,14 @@ export default function StudentDetailPage() {
 
               {/* Exercises */}
               {workoutDays.length === 0 ? (
-                <p className="text-xs text-muted-foreground text-center py-4">
-                  No hay ejercicios registrados.
-                </p>
+                <div className="flex flex-col items-center justify-center py-8 text-center">
+                  <h3 className="text-xs font-medium mb-2">
+                    No hay ejercicios registrados
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Esta rutina aún no tiene ejercicios asignados.
+                  </p>
+                </div>
               ) : (
                 <div className="w-full">
                   <div className="sticky top-0 bg-background z-10 pb-2 pt-1">

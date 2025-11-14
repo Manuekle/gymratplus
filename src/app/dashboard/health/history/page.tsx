@@ -98,8 +98,8 @@ export default function HealthHistoryPage() {
                 <TableHeader>
                   <TableRow>
                     {["Fecha", "Peso", "Grasa", "Músculo", "Acciones"].map(
-                      (header, i) => (
-                        <TableHead key={i}>
+                      (header) => (
+                        <TableHead key={header}>
                           <div className="h-4 w-20 rounded-md bg-muted animate-pulse" />
                         </TableHead>
                       ),
@@ -179,12 +179,16 @@ export default function HealthHistoryPage() {
               <TableBody>
                 {records.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={5}
-                      className="h-24 text-center text-muted-foreground"
-                    >
-                      No hay registros aún. Añade tu primer registro para
-                      comenzar.
+                    <TableCell colSpan={5} className="h-32 text-center">
+                      <div className="flex flex-col items-center justify-center py-4 gap-2">
+                        <h3 className="text-xs font-medium">
+                          No hay registros aún
+                        </h3>
+                        <p className="text-xs text-muted-foreground max-w-sm">
+                          Añade tu primer registro para comenzar a hacer
+                          seguimiento de tu progreso.
+                        </p>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ) : (

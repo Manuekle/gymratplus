@@ -17,17 +17,57 @@ export async function GET() {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   try {
-    // Obtener todos los workouts del usuario, incluyendo los asignados
+    // Optimize: only select needed fields
     const workouts = await prisma.workout.findMany({
       where: {
         OR: [
-          { createdById: session.user.id }, // Workouts creados por el usuario
-          { assignedToId: session.user.id }, // Workouts asignados al usuario
+          { createdById: session.user.id },
+          { assignedToId: session.user.id },
         ],
       },
-      include: {
-        exercises: true,
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        type: true,
+        status: true,
+        notes: true,
+        createdById: true,
+        instructorId: true,
+        assignedToId: true,
+        createdAt: true,
+        updatedAt: true,
+        exercises: {
+          select: {
+            id: true,
+            exerciseId: true,
+            order: true,
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+                muscleGroup: true,
+                equipment: true,
+              },
+            },
+            sets: true,
+            reps: true,
+            weight: true,
+            restTime: true,
+            notes: true,
+          },
+          orderBy: {
+            order: "asc",
+          },
+        },
         instructor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        createdBy: {
           select: {
             id: true,
             name: true,
@@ -39,7 +79,45 @@ export async function GET() {
         createdAt: "desc",
       },
     });
-    return NextResponse.json(workouts);
+
+    // Mapear la respuesta para incluir campos necesarios y convertir fechas
+    const mappedWorkouts = workouts.map((workout) => ({
+      id: workout.id,
+      name: workout.name,
+      description: workout.description,
+      type: workout.type,
+      status: workout.status,
+      notes: workout.notes,
+      createdById: workout.createdById,
+      instructorId: workout.instructorId,
+      assignedToId: workout.assignedToId,
+      userId: workout.createdById, // Alias para compatibilidad con el hook
+      createdAt: workout.createdAt.toISOString(),
+      updatedAt: workout.updatedAt.toISOString(),
+      isTemplate: false, // El schema no tiene template, solo personal/assigned
+      exercises: workout.exercises.map((ex) => ({
+        id: ex.id,
+        exerciseId: ex.exerciseId,
+        order: ex.order,
+        sets: ex.sets,
+        reps: ex.reps,
+        weight: ex.weight,
+        restTime: ex.restTime,
+        notes: ex.notes,
+        exercise: ex.exercise
+          ? {
+              id: ex.exercise.id,
+              name: ex.exercise.name,
+              muscleGroup: ex.exercise.muscleGroup,
+              equipment: ex.exercise.equipment,
+            }
+          : null,
+      })),
+      instructor: workout.instructor,
+      createdBy: workout.createdBy,
+    }));
+
+    return NextResponse.json(mappedWorkouts);
   } catch (error) {
     console.error("Error obteniendo workouts:", error);
     return NextResponse.json(

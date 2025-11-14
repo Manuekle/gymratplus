@@ -72,10 +72,10 @@ export default function WorkoutSummary() {
   console.log(workoutSessions);
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border">
-      <div className="flex justify-between items-center w-full mb-4">
+    <div className="p-4 md:p-6 rounded-lg shadow-sm border">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0 mb-4">
         <span>
-          <CardTitle className="text-2xl font-semibold  tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
             Historial
           </CardTitle>
           <CardDescription className="text-xs">
@@ -83,11 +83,14 @@ export default function WorkoutSummary() {
           </CardDescription>
         </span>
         <Link
-          href="workout/history"
-          className="text-xs text-muted-foreground flex items-center gap-1 w-28  md:w-1/6 justify-end"
+          href="/dashboard/workout/history"
+          className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors self-start sm:self-auto"
         >
-          Ver todos{" "}
-          <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+          Ver todos
+          <HugeiconsIcon
+            icon={ArrowRight01Icon}
+            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+          />
         </Link>
       </div>
 

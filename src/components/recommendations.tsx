@@ -293,7 +293,7 @@ export default function RecommendationsComponent() {
                               </span>
                             </div>
                           </div>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {recommendation}
                           </p>
                         </div>

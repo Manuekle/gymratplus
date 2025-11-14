@@ -359,10 +359,13 @@ export default function InstructorDashboardPage() {
             </div>
             <Link
               href="/dashboard/students/list"
-              className="text-xs text-muted-foreground hover:underline flex items-center gap-1 w-full md:w-1/6 justify-end mt-2 md:mt-0"
+              className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors mt-2 md:mt-0"
             >
               Ver todos
-              <HugeiconsIcon icon={ArrowRight01Icon} className="h-4 w-4" />
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+              />
             </Link>
           </div>
         </CardHeader>
@@ -480,12 +483,20 @@ export default function InstructorDashboardPage() {
               ))}
               {students.length > 5 && (
                 <div className="pt-4 border-t">
-                  <Button variant="ghost" size="sm" className="w-full" asChild>
-                    <Link href="/dashboard/instructors/students">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="w-full group"
+                    asChild
+                  >
+                    <Link
+                      href="/dashboard/students/list"
+                      className="flex items-center justify-center gap-1.5"
+                    >
                       Ver todos los alumnos ({students.length})
                       <HugeiconsIcon
                         icon={ArrowRight01Icon}
-                        className="h-4 w-4 ml-1"
+                        className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
                       />
                     </Link>
                   </Button>

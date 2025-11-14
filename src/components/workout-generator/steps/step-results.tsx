@@ -54,7 +54,7 @@ export function StepResults({ workout }: StepResultsProps) {
               {workout.name}
             </h3>
             {workout.description && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 {workout.description}
               </p>
             )}

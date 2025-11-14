@@ -364,8 +364,27 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
   try {
+    // Verificar que el workout existe y pertenece al usuario
+    const workout = await prisma.workout.findUnique({
+      where: { id, createdById: session.user.id, type: "personal" },
+    });
+
+    if (!workout) {
+      return NextResponse.json(
+        { error: "Entrenamiento no encontrado o no autorizado" },
+        { status: 404 },
+      );
+    }
+
+    // Establecer workoutId a null en todas las sesiones asociadas para mantener el historial
+    await prisma.workoutSession.updateMany({
+      where: { workoutId: id },
+      data: { workoutId: null },
+    });
+
+    // Eliminar el workout (el historial se mantiene con workoutId = null)
     await prisma.workout.delete({
-      where: { id: id, createdById: session.user.id, type: "personal" },
+      where: { id, createdById: session.user.id, type: "personal" },
     });
     return NextResponse.json({ message: "Workout eliminado" });
   } catch (error) {

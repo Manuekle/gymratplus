@@ -74,40 +74,42 @@ model User {
   createdAt            DateTime             @default(now())
   updatedAt            DateTime             @updatedAt
   Goal                 Goal[]
-  foodRecommendations  FoodRecommendation[]
+  foodRecommendations  FoodRecommendation[] @relation("FoodRecommendationUser")
+  instructorFoodPlans  FoodRecommendation[] @relation("FoodRecommendationInstructor")
+  assignedFoodPlans    FoodRecommendation[] @relation("FoodRecommendationAssigned")
   foodPlans            FoodPlan[]
   studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
 }
 
 model Profile {
-  id                   String    @id @default(cuid())
-  userId               String    @unique
-  user                 User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  gender               String?
-  phone                String?
-  birthdate            DateTime?
-  height               String? // en cm
-  currentWeight        String? // en kg
-  targetWeight         String? // en kg
-  activityLevel        String? // sedentario, ligero, moderado, activo, muy activo
-  goal                 String? // perder peso, mantener peso, ganar músculo
-  bodyFatPercentage    String? // % grasa corporal
-  muscleMass           String? // % masa muscular
-  metabolicRate        Int? // tasa metabólica basal en kcal
-  dailyActivity        String? // actividad diaria (Ej: trabajo de oficina, trabajo físico)
-  trainingFrequency    Int? // cantidad de entrenamientos por semana
-  monthsTraining       Int? // Nuevo campo: meses entrenando
-  preferredWorkoutTime String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
-  dietaryPreference    String? // preferencias dietéticas (Ej: vegetariano, keto, etc.)
-  dailyCalorieTarget   Int? // calorías objetivo diarias (se calcula automáticamente)
-  dailyProteinTarget   Int? // proteína diaria en gramos (se calcula automáticamente)
-  dailyCarbTarget      Int? // carbohidratos diarios en gramos (se calcula automáticamente)
-  dailyFatTarget       Int? // grasas diarias en gramos (se calcula automáticamente)
-  waterIntake          Float? // consumo de agua en litros por día (se calcula automáticamente)
+  id                        String    @id @default(cuid())
+  userId                    String    @unique
+  user                      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  gender                    String?
+  phone                     String?
+  birthdate                 DateTime?
+  height                    String? // en cm
+  currentWeight             String? // en kg
+  targetWeight              String? // en kg
+  activityLevel             String? // sedentario, ligero, moderado, activo, muy activo
+  goal                      String? // perder peso, mantener peso, ganar músculo
+  bodyFatPercentage         String? // % grasa corporal
+  muscleMass                String? // % masa muscular
+  metabolicRate             Int? // tasa metabólica basal en kcal
+  dailyActivity             String? // actividad diaria (Ej: trabajo de oficina, trabajo físico)
+  trainingFrequency         Int? // cantidad de entrenamientos por semana
+  monthsTraining            Int? // Nuevo campo: meses entrenando
+  preferredWorkoutTime      String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
+  dietaryPreference         String? // preferencias dietéticas (Ej: vegetariano, keto, etc.)
+  dailyCalorieTarget        Int? // calorías objetivo diarias (se calcula automáticamente)
+  dailyProteinTarget        Int? // proteína diaria en gramos (se calcula automáticamente)
+  dailyCarbTarget           Int? // carbohidratos diarios en gramos (se calcula automáticamente)
+  dailyFatTarget            Int? // grasas diarias en gramos (se calcula automáticamente)
+  waterIntake               Float? // consumo de agua en litros por día (se calcula automáticamente)
   lastWaterGoalNotification DateTime? // Fecha de la última notificación de meta de agua alcanzada
-  notificationsActive  Boolean   @default(true)
-  createdAt            DateTime  @default(now())
-  updatedAt            DateTime  @updatedAt
+  notificationsActive       Boolean   @default(true)
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
 
 model Exercise {
@@ -378,8 +380,8 @@ model WorkoutSession {
   id        String            @id @default(cuid())
   userId    String
   user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutId String
-  workout   Workout           @relation(fields: [workoutId], references: [id])
+  workoutId String?
+  workout   Workout?          @relation(fields: [workoutId], references: [id], onDelete: SetNull)
   date      DateTime          @default(now())
   completed Boolean           @default(false)
   duration  Int? // duración en minutos
@@ -417,15 +419,24 @@ model SetSession {
 model FoodRecommendation {
   id            String   @id @default(cuid())
   userId        String
-  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User     @relation("FoodRecommendationUser", fields: [userId], references: [id], onDelete: Cascade)
+  // Instructor que creó el plan (si fue creado por instructor)
+  instructorId  String?
+  instructor    User?    @relation("FoodRecommendationInstructor", fields: [instructorId], references: [id])
+  // Estudiante al que se asigna el plan (si fue asignado por instructor)
+  assignedToId  String?
+  assignedTo    User?    @relation("FoodRecommendationAssigned", fields: [assignedToId], references: [id])
   date          DateTime @default(now())
   macros        Json // Stores protein, carbs, fat, description
   meals         Json // Stores breakfast, lunch, dinner, snacks with their entries
   calorieTarget Int
+  notes         String? // Notas del instructor
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([userId])
+  @@index([instructorId])
+  @@index([assignedToId])
 }
 
 model FoodPlan {

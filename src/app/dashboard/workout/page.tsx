@@ -20,6 +20,7 @@ import WorkoutCreator from "@/components/workouts/workout-creator";
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import WorkoutHistory from "@/components/workouts/workout-history";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface UserProfile {
   id: string;
@@ -31,7 +32,7 @@ interface UserProfile {
 }
 
 export default function WorkoutsPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -62,6 +63,56 @@ export default function WorkoutsPage() {
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
 
   console.log(user);
+
+  if (status === "loading" || !user) {
+    return (
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-48 mb-2" />
+            <Skeleton className="h-4 w-56" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-2 w-full" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-44 mb-2" />
+            <Skeleton className="h-4 w-52" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-64 w-full" />
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-2">
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-40 mb-2" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-32 w-full" />
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-2">
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-36 mb-2" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-48 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">

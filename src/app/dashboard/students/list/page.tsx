@@ -13,9 +13,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
+import { FoodPlanAssignmentDialog } from "@/components/instructor/food-plan-assignment-dialog";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  Apple01Icon,
   Clock01Icon,
   EyeIcon,
   FireIcon,
@@ -61,9 +63,10 @@ export default function StudentsListPage() {
   const [selectedStudent, setSelectedStudent] = useState<{
     id: string;
     studentId: string;
-    name: string;
+    name: string | null;
   } | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFoodPlanDialogOpen, setIsFoodPlanDialogOpen] = useState(false);
   const [stats, setStats] = useState<{
     totalStudents: number;
     activeToday: number;
@@ -388,6 +391,22 @@ export default function StudentsListPage() {
                               className="h-3.5 w-3.5"
                             />
                           </Button>
+
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7"
+                            title="Crear plan de alimentación"
+                            onClick={() => {
+                              setSelectedStudent(student);
+                              setIsFoodPlanDialogOpen(true);
+                            }}
+                          >
+                            <HugeiconsIcon
+                              icon={Apple01Icon}
+                              className="h-3.5 w-3.5"
+                            />
+                          </Button>
                         </div>
                       </div>
 
@@ -466,12 +485,24 @@ export default function StudentsListPage() {
 
       {/* Diálogo para asignar rutina */}
       {selectedStudent && (
-        <WorkoutAssignmentDialog
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          studentId={selectedStudent.studentId}
-          studentName={selectedStudent.name}
-        />
+        <>
+          <WorkoutAssignmentDialog
+            open={isDialogOpen}
+            onOpenChange={setIsDialogOpen}
+            studentId={selectedStudent.studentId}
+            studentName={selectedStudent.name || "el alumno"}
+          />
+          <FoodPlanAssignmentDialog
+            open={isFoodPlanDialogOpen}
+            onOpenChange={setIsFoodPlanDialogOpen}
+            studentId={selectedStudent.studentId}
+            studentName={selectedStudent.name || "el alumno"}
+            onPlanCreated={() => {
+              setIsFoodPlanDialogOpen(false);
+              fetchStudents(); // Refresh the list to update badges
+            }}
+          />
+        </>
       )}
     </div>
   );

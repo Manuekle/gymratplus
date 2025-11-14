@@ -90,19 +90,12 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // If it's a system food, only allow updating isFavorite
+    // System foods cannot be updated
     if (food.userId === null) {
-      const updatedFood = await prisma.food.update({
-        where: {
-          id: foodId,
-        },
-        data: {
-          isFavorite:
-            data.isFavorite !== undefined ? data.isFavorite : food.isFavorite,
-        },
-      });
-
-      return NextResponse.json(updatedFood);
+      return NextResponse.json(
+        { error: "System foods cannot be updated" },
+        { status: 403 },
+      );
     }
 
     // If it's a custom food, allow updating all fields
@@ -121,9 +114,6 @@ export async function PUT(request: NextRequest) {
         serving: data.serving !== undefined ? data.serving : food.serving,
         category: data.category || food.category,
         mealType: data.mealType || food.mealType,
-        imageUrl: data.imageUrl !== undefined ? data.imageUrl : food.imageUrl,
-        isFavorite:
-          data.isFavorite !== undefined ? data.isFavorite : food.isFavorite,
       },
     });
 

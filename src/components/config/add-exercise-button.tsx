@@ -98,7 +98,7 @@ export default function AddExerciseButton() {
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               ¿Eliminar ejercicios duplicados?
             </AlertDialogTitle>
             <AlertDialogDescription>

@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Actualizar el peso máximo en WorkoutExercise
+    // Actualizar el peso máximo en WorkoutExercise (solo si el workout aún existe)
     const updatePromises = workoutSession.exercises.map(
       async (exerciseSession) => {
         // Encontrar el peso máximo de los sets
@@ -56,8 +56,8 @@ export async function POST(request: NextRequest) {
           ...exerciseSession.sets.map((set) => set.weight || 0),
         );
 
-        // Encontrar el ejercicio correspondiente en el workout
-        const workoutExercise = workoutSession.workout.exercises.find(
+        // Encontrar el ejercicio correspondiente en el workout (si el workout existe)
+        const workoutExercise = workoutSession.workout?.exercises.find(
           (we) => we.exerciseId === exerciseSession.exerciseId,
         );
 

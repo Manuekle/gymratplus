@@ -183,7 +183,7 @@ const ProfileCheck = () => {
       ) : null} */}
 
       <AlertDialog open={showAlert && !isLoading} onOpenChange={setShowAlert}>
-        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8">
+        <AlertDialogContent className="overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
               Datos de perfil incompletos

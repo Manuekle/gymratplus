@@ -21,6 +21,7 @@ import { useState, useEffect } from "react";
 import { WeightChart } from "@/components/weight-chart";
 import { useSession } from "next-auth/react";
 import { WaterIntakeTracker } from "@/components/water/water-intake-tracker";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Activity01Icon,
@@ -53,7 +54,7 @@ interface UserProfile {
 }
 
 export default function HealthPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const [user, setUser] = useState<UserProfile | null>(null);
 
@@ -96,6 +97,64 @@ export default function HealthPage() {
   const minIMC = 15;
   const maxIMC = 40;
   const progressValue = ((bmi - minIMC) / (maxIMC - minIMC)) * 100;
+
+  if (status === "loading" || !user) {
+    return (
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-40 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <div className="grid grid-cols-3 gap-4">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-16" />
+                    <Skeleton className="h-8 w-full" />
+                  </div>
+                ))}
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-2 w-full" />
+                <Skeleton className="h-3 w-full" />
+              </div>
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-40" />
+                <Skeleton className="h-2 w-full" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-48 mb-2" />
+            <Skeleton className="h-4 w-40" />
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <Skeleton className="h-20 w-full" />
+                <Skeleton className="h-20 w-full" />
+              </div>
+              <Skeleton className="h-48 w-full" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-2">
+          <CardHeader className="pb-2">
+            <Skeleton className="h-7 w-40 mb-2" />
+            <Skeleton className="h-4 w-32" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-32 w-full" />
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-6 md:grid-cols-2">

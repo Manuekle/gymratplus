@@ -358,15 +358,19 @@ export default function ProgressChart({
         ) : chartData.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full gap-2">
             <h3 className="text-xs font-medium">No hay datos disponibles</h3>
-            <p className="text-muted-foreground text-center text-xs mb-4">
+            <p className="text-xs text-muted-foreground text-center max-w-sm">
               Asegúrate de establecer un objetivo para hacer seguimiento de tu
-              progreso
+              progreso.
             </p>
           </div>
         ) : filteredData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-muted-foreground mb-4">
+          <div className="flex flex-col items-center justify-center h-full gap-2">
+            <h3 className="text-xs font-medium">
               No hay datos para el período seleccionado
+            </h3>
+            <p className="text-xs text-muted-foreground text-center max-w-sm">
+              Intenta seleccionar un rango de fechas diferente para ver tu
+              progreso.
             </p>
           </div>
         ) : (

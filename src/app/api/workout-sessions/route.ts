@@ -5,16 +5,7 @@ import { z } from "zod";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 
-// Types
-type ExerciseSet = {
-  reps: number;
-  weight: number;
-};
-
-type ExerciseData = {
-  name: string;
-  sets: ExerciseSet[];
-};
+// Types removed - using inline types where needed
 
 // Zod Schemas
 const exerciseSetSchema = z.object({
@@ -97,13 +88,32 @@ export async function GET(
         : {}),
     };
 
+    // Optimize query: only select needed fields and limit results
+    const limit = parseInt(searchParams.get("limit") || "50");
+    const skip = parseInt(searchParams.get("skip") || "0");
+
     const workoutSessions = await prisma.workoutSession.findMany({
       where,
-      include: {
+      select: {
+        id: true,
+        date: true,
+        notes: true,
         exercises: {
-          include: {
-            exercise: true,
+          select: {
+            exercise: {
+              select: {
+                id: true,
+                name: true,
+                muscleGroup: true,
+              },
+            },
             sets: {
+              select: {
+                setNumber: true,
+                weight: true,
+                reps: true,
+                completed: true,
+              },
               orderBy: {
                 setNumber: "asc",
               },
@@ -114,6 +124,8 @@ export async function GET(
       orderBy: {
         date: "desc",
       },
+      take: limit,
+      skip: skip,
     });
 
     // Transformar los datos para incluir los ejercicios y sus series
@@ -172,7 +184,18 @@ export async function GET(
       ),
     }));
 
-    return NextResponse.json(transformedSessions);
+    // Obtener el total real de sesiones (antes de aplicar limit y skip)
+    const totalSessions = await prisma.workoutSession.count({ where });
+
+    return NextResponse.json({
+      data: transformedSessions,
+      pagination: {
+        limit,
+        skip,
+        total: totalSessions,
+        hasMore: skip + limit < totalSessions,
+      },
+    });
   } catch (error) {
     console.error("[WORKOUT_SESSIONS_GET]", error);
     return NextResponse.json({ error: "Error interno" }, { status: 500 });

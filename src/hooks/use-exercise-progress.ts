@@ -157,14 +157,25 @@ export const useExerciseProgress = () => {
           );
         }
 
-        const data = await response.json();
-        console.log("API Response data:", data);
+        const responseData = await response.json();
+        console.log("API Response data:", responseData);
 
         try {
-          // Verificar si la respuesta es un array
-          if (!Array.isArray(data)) {
+          // Manejar respuesta con paginación (objeto con data) o array directo
+          let data: WorkoutSession[];
+          if (
+            responseData &&
+            typeof responseData === "object" &&
+            "data" in responseData
+          ) {
+            // Nueva estructura con paginación
+            data = Array.isArray(responseData.data) ? responseData.data : [];
+          } else if (Array.isArray(responseData)) {
+            // Estructura antigua (array directo)
+            data = responseData;
+          } else {
             throw new Error(
-              `Se esperaba un array pero se recibió: ${typeof data}`,
+              `Se esperaba un array o un objeto con 'data' pero se recibió: ${typeof responseData}`,
             );
           }
 

@@ -80,7 +80,7 @@ export function CancelPlanDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-y-auto pt-20 xl:pt-8">
+      <DialogContent className="overflow-y-auto pt-20 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">
             ¿Cancelar plan de instructor?

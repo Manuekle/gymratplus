@@ -177,7 +177,7 @@ export function WorkoutGenerator() {
               Generar rutina
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto pt-12 xl:pt-8">
+          <DialogContent className="max-w-sm max-h-[900px] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={step}

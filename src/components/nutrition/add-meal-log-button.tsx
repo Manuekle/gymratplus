@@ -769,7 +769,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[600px] overflow-y-auto pt-8 xl:pt-8">
+      <DialogContent className="sm:max-w-[600px] overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Registrar Comida

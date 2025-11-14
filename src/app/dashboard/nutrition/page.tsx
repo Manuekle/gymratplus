@@ -24,6 +24,7 @@ import { MealLogCalendar } from "@/components/nutrition/meal-log-calendar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { CalorieCalculator } from "@/components/nutrition/calorie-calculator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Bread04Icon,
@@ -107,6 +108,7 @@ export default function NutritionPage() {
   const [todayData, setTodayData] = useState<TodayData | null>(null);
   const [weekData, setWeekData] = useState<WeekData | null>(null);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Función para recargar los datos
   const reloadData = useCallback(() => {
@@ -125,7 +127,6 @@ export default function NutritionPage() {
   }, []);
 
   const analyticsData = async (type: string) => {
-    // setLoading(true);
     try {
       const response = await fetch(`/api/nutrition-analytics?type=${type}`);
       if (!response.ok) {
@@ -136,21 +137,15 @@ export default function NutritionPage() {
       setTodayData(data);
     } catch (error) {
       console.error(`Error fetching ${type} data:`, error);
-      // toast({
-      //   title: "Error",
-      //   description: "No se pudieron cargar los datos de análisis",
-      //   variant: "destructive",
-      // });
       toast.error("Error", {
         description: "No se pudieron cargar los datos de análisis",
       });
     } finally {
-      // setLoading(false);
+      setIsLoading(false);
     }
   };
 
   const weeklyData = async (type: string) => {
-    // setLoading(true);
     try {
       const response = await fetch(`/api/nutrition-analytics?type=${type}`);
       if (!response.ok) {
@@ -164,8 +159,6 @@ export default function NutritionPage() {
       toast.error("Error", {
         description: "No se pudieron cargar los datos de análisis",
       });
-    } finally {
-      // setLoading(false);
     }
   };
 
@@ -236,6 +229,85 @@ export default function NutritionPage() {
     })) ?? [];
 
   // console.log(user);
+
+  if (isLoading || !user) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card className="col-span-2 md:col-span-1">
+            <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
+              <span>
+                <Skeleton className="h-7 md:h-8 w-40 md:w-48 mb-2" />
+                <Skeleton className="h-3 md:h-4 w-32 md:w-40" />
+              </span>
+              <div className="flex flex-row gap-2 items-center">
+                <Skeleton className="h-8 w-8 rounded-md" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                <div className="flex justify-between items-end">
+                  <div>
+                    <Skeleton className="h-3 w-20 mb-2" />
+                    <Skeleton className="h-8 md:h-10 w-20 md:w-24" />
+                  </div>
+                  <div className="text-right">
+                    <Skeleton className="h-3 w-16 mb-2" />
+                    <Skeleton className="h-8 md:h-10 w-20 md:w-24" />
+                  </div>
+                </div>
+                <Skeleton className="h-3 w-full rounded-full" />
+                <div className="flex justify-between text-xs">
+                  <Skeleton className="h-3 w-32" />
+                  <Skeleton className="h-3 w-24" />
+                </div>
+                <div className="pt-4">
+                  <Skeleton className="h-48 md:h-56 w-full rounded-md" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="col-span-2 md:col-span-1">
+            <CardHeader className="pb-2">
+              <Skeleton className="h-7 md:h-8 w-36 md:w-40 mb-2" />
+              <Skeleton className="h-3 md:h-4 w-48 md:w-56" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-6">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-4 w-4 rounded" />
+                        <Skeleton className="h-3 w-20 md:w-24" />
+                      </div>
+                      <Skeleton className="h-3 w-16 md:w-20" />
+                    </div>
+                    <Skeleton className="h-2 w-full rounded-full" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="col-span-2">
+            <CardHeader className="pb-2 flex flex-col gap-2 md:gap-0 md:flex-row justify-between items-start">
+              <span>
+                <Skeleton className="h-7 md:h-8 w-40 md:w-48 mb-2" />
+                <Skeleton className="h-3 md:h-4 w-32 md:w-40" />
+              </span>
+              <div className="flex flex-row gap-2 items-center">
+                <Skeleton className="h-8 w-28 md:w-32 rounded-md" />
+                <Skeleton className="h-8 w-28 md:w-32 rounded-md" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-64 md:h-80 w-full rounded-md" />
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

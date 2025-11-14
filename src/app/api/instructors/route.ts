@@ -130,20 +130,22 @@ export async function GET(request: NextRequest) {
       : selectedInstructors;
 
     // Formatear la respuesta para incluir las etiquetas
-    const result: InstructorResponse[] = filteredInstructors.map(
-      (instructor) => {
-        const { instructorProfile, ...userData } = instructor;
-        return {
-          ...userData,
-          instructorProfile: instructorProfile
-            ? {
-                ...instructorProfile,
-                tags: extractTags(instructorProfile.curriculum),
-              }
-            : null,
-        };
-      },
-    );
+    const result = filteredInstructors.map((instructor) => {
+      const { instructorProfile, ...userData } = instructor;
+      return {
+        ...userData,
+        email: null, // Add required fields
+        updatedAt: new Date().toISOString(),
+        isInstructor: true,
+        interests: [],
+        instructorProfile: instructorProfile
+          ? {
+              ...instructorProfile,
+              tags: extractTags(instructorProfile.curriculum),
+            }
+          : null,
+      };
+    });
 
     return NextResponse.json(result);
   } catch (error) {

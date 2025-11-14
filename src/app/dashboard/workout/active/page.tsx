@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -15,7 +16,6 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout/workout-timer-float";
 import { toast } from "sonner";
-// import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Spinner = () => (
@@ -59,12 +59,11 @@ const DEBOUNCE_DELAY = 1000; // 1 segundo de retraso para el guardado
 
 export default function ActiveWorkoutPage() {
   const router = useRouter();
+  const { data: session, update: updateSession } = useSession();
   const [loading, setLoading] = useState(true);
-  // const [saving, setSaving] = useState(false);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
     null,
   );
-  // const [notes, setNotes] = useState("");
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [restTimer, setRestTimer] = useState<{
     active: boolean;
@@ -84,6 +83,15 @@ export default function ActiveWorkoutPage() {
     {},
   );
 
+  // Ref para almacenar peticiones fallidas que necesitan reintento
+  const failedRequests = useRef<
+    Array<{
+      setId: string;
+      exerciseId: string;
+      data: Partial<Set>;
+    }>
+  >([]);
+
   // Cargar la sesión de entrenamiento activa
   useEffect(() => {
     const fetchActiveWorkout = async () => {
@@ -92,7 +100,6 @@ export default function ActiveWorkoutPage() {
         if (response.ok) {
           const data: WorkoutSession = await response.json();
           setWorkoutSession(data);
-          // setNotes(data.notes || "");
           setStartTime(new Date(data.createdAt));
         } else {
           toast.error("No hay entrenamiento activo", {
@@ -129,6 +136,53 @@ export default function ActiveWorkoutPage() {
       setInputValues(initialInputValues);
     }
   }, [workoutSession]);
+
+  // Revalidar sesión cuando la página vuelve al foreground
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === "visible") {
+        // Revalidar la sesión cuando la página vuelve a ser visible
+        try {
+          await updateSession();
+        } catch (error) {
+          console.error("Error revalidando sesión:", error);
+        }
+
+        // Reintentar peticiones fallidas
+        if (failedRequests.current.length > 0) {
+          const requestsToRetry = [...failedRequests.current];
+          failedRequests.current = [];
+
+          for (const request of requestsToRetry) {
+            try {
+              await updateSet(request.setId, request.exerciseId, request.data);
+            } catch (error) {
+              console.error("Error reintentando petición:", error);
+              // Si falla de nuevo, volver a agregar a la cola
+              failedRequests.current.push(request);
+            }
+          }
+        }
+      }
+    };
+
+    // También escuchar el evento focus para cuando la ventana vuelve al foco
+    const handleFocus = async () => {
+      try {
+        await updateSession();
+      } catch (error) {
+        console.error("Error revalidando sesión en focus:", error);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [updateSession]);
 
   // Limpiar temporizadores al desmontar
   useEffect(() => {
@@ -193,6 +247,7 @@ export default function ActiveWorkoutPage() {
     setId: string,
     exerciseId: string,
     data: Partial<Set>,
+    retryCount = 0,
   ) => {
     setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
@@ -202,6 +257,32 @@ export default function ActiveWorkoutPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ setId, ...data }),
       });
+
+      // Si la respuesta es 401 (no autorizado), revalidar sesión y reintentar
+      if (response.status === 401) {
+        try {
+          await updateSession();
+          // Reintentar una vez después de revalidar
+          if (retryCount === 0) {
+            return updateSet(setId, exerciseId, data, 1);
+          }
+        } catch (error) {
+          console.error("Error revalidando sesión:", error);
+        }
+
+        // Si falla después de reintentar, agregar a la cola de reintentos
+        failedRequests.current.push({ setId, exerciseId, data });
+        toast.error("Error de autenticación", {
+          description:
+            "La sesión expiró. Los cambios se guardarán cuando vuelvas a la app.",
+        });
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
 
       if (response.ok) {
         setWorkoutSession((prev) => {
@@ -251,11 +332,6 @@ export default function ActiveWorkoutPage() {
                 ),
               }),
             );
-
-            // toast.success("Set guardado y completado", {
-            //   description: "Datos actualizados en tu sesión.",
-            //   duration: 1500,
-            // });
           }
           return newWorkoutSession;
         });
@@ -327,7 +403,6 @@ export default function ActiveWorkoutPage() {
 
   // Completar un ejercicio
   const completeExercise = async (exerciseSessionId: string) => {
-    // ... (Tu lógica existente para completar ejercicio)
     try {
       const response = await fetch("/api/workout-session/exercise", {
         method: "PUT",
@@ -365,69 +440,34 @@ export default function ActiveWorkoutPage() {
     }
   };
 
-  // Completar el entrenamiento (solo guarda las notas)
-  // const completeWorkout = async () => {
-  //   if (!workoutSession) return;
-
-  //   setSaving(true);
-  //   try {
-  //     // Solo guardar las notas
-  //     await fetch("/api/workout-session/notes", {
-  //       method: "PUT",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify({
-  //         workoutSessionId: workoutSession.id,
-  //         notes,
-  //       }),
-  //     });
-
-  //     toast.success("Notas guardadas", {
-  //       description: "Las notas del entrenamiento han sido guardadas",
-  //     });
-
-  //     // Si deseas terminar el entrenamiento COMPLETO, tendrías que llamar a otro endpoint
-  //     // Por ahora, solo guarda las notas como tu función original.
-  //   } catch (error) {
-  //     console.error("Error al guardar notas:", error);
-  //     toast.error("Error al guardar", {
-  //       description: "No se pudieron guardar las notas",
-  //     });
-  //   } finally {
-  //     setSaving(false);
-  //   }
-  // };
-
   if (loading) {
-    // ... (Tu esqueleto de carga existente)
     return (
-      <div className="p-6 space-y-6">
-        <div className="flex justify-between items-center mb-6">
-          <Skeleton className="h-10 w-48" />
-          <Skeleton className="h-9 w-36 rounded-md" />
+      <div className="p-4 md:p-6 space-y-4 md:space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-9 w-32 md:w-48" />
         </div>
 
-        <div className="border rounded-lg p-6">
+        <div className="border rounded-lg p-4 md:p-6 shadow-sm bg-card">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div className="space-y-2 w-full">
-              <Skeleton className="h-8 w-64" />
-              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-7 md:h-8 w-48 md:w-64" />
+              <Skeleton className="h-3 md:h-4 w-32 md:w-40" />
             </div>
-            <Skeleton className="h-9 w-28" />
           </div>
 
           <div className="mb-6">
             <Skeleton className="h-2 w-full rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
             {[1, 2, 3].map((exercise) => (
               <Card key={exercise} className="p-4">
                 <div className="flex justify-between items-start mb-4">
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     <Skeleton className="h-5 w-40" />
-                    <Skeleton className="h-4 w-32" />
+                    <Skeleton className="h-3 w-32" />
                   </div>
-                  <Skeleton className="h-8 w-32" />
+                  <Skeleton className="h-8 w-28 md:w-32" />
                 </div>
 
                 <div className="space-y-3">
@@ -458,11 +498,15 @@ export default function ActiveWorkoutPage() {
 
   if (!workoutSession) {
     return (
-      <div className="text-center p-8">
-        <h2 className="text-xl font-semibold mb-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 md:p-8 text-center gap-4">
+        <h2 className="text-lg md:text-xl font-semibold">
           No hay entrenamiento activo
         </h2>
-        <Button onClick={() => router.push("/dashboard/workout")}>
+        <Button
+          onClick={() => router.push("/dashboard/workout")}
+          size="sm"
+          className="text-xs"
+        >
           Iniciar un entrenamiento
         </Button>
       </div>
@@ -472,7 +516,7 @@ export default function ActiveWorkoutPage() {
   const progress = calculateProgress();
 
   return (
-    <div>
+    <div className="p-4 md:p-6">
       {startTime && (
         <WorkoutTimerFloat
           workoutSessionId={workoutSession.id}
@@ -480,202 +524,170 @@ export default function ActiveWorkoutPage() {
           onComplete={() => router.push("/dashboard/workout/history")}
         />
       )}
-      <div className="pt-4">
-        <div className="mb-4 flex justify-between w-full items-center">
-          <Button
-            variant="outline"
-            className="text-xs"
-            size="sm"
-            onClick={() => router.push("/dashboard/workout")}
-          >
-            Volver a la lista
-          </Button>
+      <div className="mb-4 flex justify-between w-full items-center">
+        <Button
+          variant="outline"
+          className="text-xs"
+          size="sm"
+          onClick={() => router.push("/dashboard/workout")}
+        >
+          Volver a la lista
+        </Button>
+      </div>
+
+      <div className="border rounded-lg p-4 md:p-6 shadow-sm bg-card">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <div className="flex flex-col gap-1 w-full">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              {workoutSession.notes || "Sesión de Entrenamiento"}
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Entrenamiento en progreso
+            </CardDescription>
+          </div>
         </div>
-        <div className="border rounded-lg p-4 mt-8">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
-            <div className="flex flex-col gap-1 w-full">
-              <CardTitle className="text-2xl font-semibold tracking-heading">
-                {workoutSession.notes || "Sesión de Entrenamiento"}
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Entrenamiento en progreso
-              </CardDescription>
+
+        <div className="mb-6">
+          <Progress value={progress} className="h-2" />
+        </div>
+
+        {restTimer.active && (
+          <div className="bg-primary text-primary-foreground p-4 md:p-6 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in shadow-md">
+            <h3 className="text-xs md:text-xs font-medium mb-2">
+              Tiempo de descanso
+            </h3>
+            <div className="text-2xl md:text-3xl font-semibold mb-3">
+              {formatTime(restTimer.timeLeft)}
             </div>
-            {/* <Button
-              onClick={completeWorkout}
-              disabled={saving}
+            <Button
+              variant="secondary"
               size="sm"
               className="text-xs"
+              onClick={() =>
+                setRestTimer({ active: false, timeLeft: 0, exerciseId: null })
+              }
             >
-              {saving && <Spinner />}
-              Guardar notas
-            </Button> */}
+              Omitir
+            </Button>
           </div>
+        )}
 
-          <div className="mb-6">
-            <Progress value={progress} className="h-2" />
-          </div>
-
-          {/* <div className="pb-6">
-            <h3 className="text-xs md:text-xs font-medium mb-2">Notas</h3>
-            <Textarea
-              className="w-full text-xs md:text-xs resize-none"
-              rows={3}
-              disabled
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Añade notas sobre tu entrenamiento..."
-            />
-          </div> */}
-
-          {restTimer.active && (
-            <div className="bg-foreground p-4 rounded-lg text-center mb-6 transform transition-all duration-300 ease-in">
-              <h3 className="text-md mb-2 text-white dark:text-black">
-                Tiempo de descanso
-              </h3>
-              <div className="text-3xl font-semibold text-white dark:text-black">
-                {formatTime(restTimer.timeLeft)}
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                className="mt-2 text-xs"
-                onClick={() =>
-                  setRestTimer({ active: false, timeLeft: 0, exerciseId: null })
-                }
-              >
-                Omitir
-              </Button>
-            </div>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {workoutSession.exercises.map((exercise) => (
-              <div
-                key={exercise.id}
-                className={`border py-4 rounded-lg ${
-                  exercise.completed ? "opacity-70" : ""
-                } ${
-                  restTimer.exerciseId === exercise.id
-                    ? "border-4 border-lime-500 shadow-md"
-                    : ""
-                }`}
-              >
-                <CardHeader className="pb-2">
-                  <div className="flex flex-col md:flex-row justify-start md:justify-between items-start gap-4 md:gap-0 md:items-center">
-                    <div>
-                      <CardTitle className="text-md tracking-heading font-semibold">
-                        {exercise.exercise.name}
-                      </CardTitle>
-                      <p className="text-xs text-muted-foreground">
-                        {exercise.exercise.muscleGroup} |{" "}
-                        {exercise.exercise.equipment}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {exercise.completed ? (
-                        <Badge
-                          variant="outline"
-                          className="text-white bg-green-700 hover:bg-green-700/90"
-                        >
-                          Completado
-                        </Badge>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="text-xs"
-                          onClick={() => completeExercise(exercise.id)}
-                          // Desactivar si todos los sets aún no están completados (Opcional)
-                          // disabled={!exercise.sets.every(s => s.completed)}
-                        >
-                          Marcar como completado
-                        </Button>
-                      )}
-                    </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6">
+          {workoutSession.exercises.map((exercise) => (
+            <Card
+              key={exercise.id}
+              className={`${exercise.completed ? "opacity-70" : ""} ${
+                restTimer.exerciseId === exercise.id
+                  ? "border-2 border-primary shadow-md"
+                  : ""
+              }`}
+            >
+              <CardHeader className="pb-3">
+                <div className="flex flex-col gap-3">
+                  <div>
+                    <CardTitle className="text-xs md:text-lg tracking-heading font-semibold">
+                      {exercise.exercise.name}
+                    </CardTitle>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {exercise.exercise.muscleGroup} |{" "}
+                      {exercise.exercise.equipment}
+                    </p>
                   </div>
-                </CardHeader>
-                <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-3 gap-2 items-center font-medium text-xs">
-                      <div className="col-span-1">Set</div>
-                      <div className="col-span-1">Peso (kg)</div>
-                      <div className="col-span-1">Reps</div>
-                    </div>
-
-                    {exercise.sets.map((set) => (
-                      <div
-                        key={set.id}
-                        className="grid grid-cols-3 gap-2 items-center"
+                  <div className="flex items-center justify-end">
+                    {exercise.completed ? (
+                      <Badge
+                        variant="outline"
+                        className="bg-green-600 text-white border-green-600 hover:bg-green-600/90"
                       >
-                        <div className="col-span-1 text-xs flex items-center">
-                          {set.setNumber}
-                          {set.isDropSet && (
-                            <span className="ml-1 text-red-500 font-bold text-xs">
-                              *
-                            </span>
-                          )}
-                          {isUpdating[set.id] && (
-                            <div className="ml-2">
-                              <Spinner />
-                            </div>
-                          )}
-                        </div>
-                        <div className="col-span-1">
-                          <Input
-                            type="text"
-                            inputMode="decimal"
-                            pattern="[0-9]*[.,]?[0-9]*"
-                            placeholder="Peso"
-                            min="0"
-                            value={inputValues[set.id]?.weight ?? ""}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Permite: número, string vacío, o número seguido de un punto (para decimales)
-                              if (value === "" || /^\d*[.,]?\d*$/.test(value)) {
-                                handleInputChange(
-                                  set.id,
-                                  exercise.id,
-                                  "weight",
-                                  value.replace(",", "."), // Asegurar punto como separador decimal
-                                );
-                              }
-                            }}
-                            disabled={exercise.completed || isUpdating[set.id]}
-                            className="text-xs"
-                          />
-                        </div>
-                        <div className="col-span-1">
-                          <Input
-                            type="text"
-                            inputMode="numeric"
-                            pattern="[0-9]*"
-                            placeholder="Reps"
-                            min="0"
-                            value={inputValues[set.id]?.reps ?? ""}
-                            onChange={(e) => {
-                              const value = e.target.value;
-                              // Solo permite números enteros positivos o vacío
-                              if (value === "" || /^\d+$/.test(value)) {
-                                handleInputChange(
-                                  set.id,
-                                  exercise.id,
-                                  "reps",
-                                  value,
-                                );
-                              }
-                            }}
-                            disabled={exercise.completed || isUpdating[set.id]}
-                            className="text-xs"
-                          />
-                        </div>
-                      </div>
-                    ))}
+                        Completado
+                      </Badge>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="text-xs w-full md:w-auto"
+                        onClick={() => completeExercise(exercise.id)}
+                      >
+                        Marcar como completado
+                      </Button>
+                    )}
                   </div>
-                </CardContent>
-              </div>
-            ))}
-          </div>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-0">
+                <div className="space-y-3">
+                  <div className="grid grid-cols-3 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                    <div className="col-span-1">Set</div>
+                    <div className="col-span-1">Peso (kg)</div>
+                    <div className="col-span-1">Reps</div>
+                  </div>
+
+                  {exercise.sets.map((set) => (
+                    <div
+                      key={set.id}
+                      className="grid grid-cols-3 gap-2 items-center"
+                    >
+                      <div className="col-span-1 text-xs font-medium flex items-center gap-1.5">
+                        <span>{set.setNumber}</span>
+                        {set.isDropSet && (
+                          <span className="text-destructive font-bold">*</span>
+                        )}
+                        {isUpdating[set.id] && (
+                          <div className="ml-1">
+                            <Spinner />
+                          </div>
+                        )}
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="text"
+                          inputMode="decimal"
+                          pattern="[0-9]*[.,]?[0-9]*"
+                          placeholder="0"
+                          value={inputValues[set.id]?.weight ?? ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d*[.,]?\d*$/.test(value)) {
+                              handleInputChange(
+                                set.id,
+                                exercise.id,
+                                "weight",
+                                value.replace(",", "."),
+                              );
+                            }
+                          }}
+                          disabled={exercise.completed || isUpdating[set.id]}
+                          className="text-xs h-9"
+                        />
+                      </div>
+                      <div className="col-span-1">
+                        <Input
+                          type="text"
+                          inputMode="numeric"
+                          pattern="[0-9]*"
+                          placeholder="0"
+                          value={inputValues[set.id]?.reps ?? ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (value === "" || /^\d+$/.test(value)) {
+                              handleInputChange(
+                                set.id,
+                                exercise.id,
+                                "reps",
+                                value,
+                              );
+                            }
+                          }}
+                          disabled={exercise.completed || isUpdating[set.id]}
+                          className="text-xs h-9"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>

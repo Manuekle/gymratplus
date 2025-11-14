@@ -174,18 +174,22 @@ export default function WorkoutHistoryPage() {
 
   if (workoutSessions.length === 0) {
     return (
-      <Card className="text-center py-56 items-center flex">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
         <h2 className="text-xs font-medium">
           No hay entrenamientos completados
         </h2>
+        <p className="text-xs text-muted-foreground max-w-sm">
+          Aún no has completado ningún entrenamiento. Inicia uno para comenzar a
+          registrar tu progreso.
+        </p>
         <Button
           size="sm"
-          className="text-xs px-6"
+          className="text-xs"
           onClick={() => router.push("/dashboard/workout")}
         >
           Iniciar un entrenamiento
         </Button>
-      </Card>
+      </div>
     );
   }
 
@@ -217,7 +221,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Total de sesiones
                 </p>
-                <p className="text-xl md:text-2xl font-semibold  tracking-heading">
+                <p className="text-2xl font-semibold  tracking-heading">
                   {stats.totalSessions}
                 </p>
               </div>
@@ -238,7 +242,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Ejercicios realizados
                 </p>
-                <p className="text-xl md:text-2xl font-semibold ">
+                <p className="text-2xl font-semibold ">
                   {stats.totalExercises}
                 </p>
               </div>
@@ -259,9 +263,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Sets completados
                 </p>
-                <p className="text-xl md:text-2xl font-semibold ">
-                  {stats.totalSets}
-                </p>
+                <p className="text-2xl font-semibold ">{stats.totalSets}</p>
               </div>
               <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
                 <HugeiconsIcon
@@ -280,7 +282,7 @@ export default function WorkoutHistoryPage() {
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
                   Duración promedio
                 </p>
-                <p className="text-xl md:text-2xl font-semibold ">
+                <p className="text-2xl font-semibold ">
                   {stats.averageDuration} min
                 </p>
               </div>

@@ -90,11 +90,18 @@ export function MealPlan({
   if (!foodRecommendation || !foodRecommendation.macros) {
     return (
       <div className="space-y-4">
-        <div className="text-center py-8">
-          <p className="text-muted-foreground">
-            No se encontró información del plan nutricional
-          </p>
-        </div>
+        <Card>
+          <CardContent className="py-12">
+            <div className="flex flex-col items-center justify-center text-center space-y-2">
+              <h3 className="text-xs font-semibold">
+                No hay información disponible
+              </h3>
+              <p className="text-xs text-muted-foreground">
+                No se encontró información del plan nutricional.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -320,7 +327,14 @@ export function MealPlan({
                         ) : (
                           <TableRow>
                             <TableCell colSpan={6} className="h-24 text-center">
-                              No hay alimentos registrados para esta comida.
+                              <div className="flex flex-col items-center justify-center py-4">
+                                <h3 className="text-xs font-semibold mb-1">
+                                  No hay alimentos registrados
+                                </h3>
+                                <p className="text-xs text-muted-foreground">
+                                  No hay alimentos registrados para esta comida.
+                                </p>
+                              </div>
                             </TableCell>
                           </TableRow>
                         )}

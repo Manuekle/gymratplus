@@ -221,18 +221,15 @@ export default function InstructorPage() {
       </div>
       {/* Instructors Grid */}
       {instructors.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-            <h3 className="text-xs font-medium mb-2">
-              No tienes instructores asignados
-            </h3>
-            <p className="text-muted-foreground text-xs max-w-md mb-6">
-              Cuando te asignen instructores o solicites uno, aparecerán aquí
-              para que puedas gestionar tu entrenamiento y mantenerte en
-              contacto.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <h3 className="text-xs font-medium mb-2">
+            No tienes instructores asignados
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-sm">
+            Cuando te asignen instructores o solicites uno, aparecerán aquí para
+            que puedas gestionar tu entrenamiento y mantenerte en contacto.
+          </p>
+        </div>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {instructors.map((instructor) => (

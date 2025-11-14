@@ -2,10 +2,10 @@ import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-// eliminar
+
 interface NutritionPlan {
   macros: object;
-  meals: object[];
+  meals: object;
   calorieTarget: number;
 }
 
@@ -78,6 +78,16 @@ export async function GET() {
       },
       orderBy: {
         createdAt: "desc",
+      },
+      select: {
+        id: true,
+        userId: true,
+        date: true,
+        macros: true,
+        meals: true,
+        calorieTarget: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
 

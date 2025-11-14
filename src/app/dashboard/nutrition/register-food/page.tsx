@@ -34,6 +34,7 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import TimePicker from "@/components/ui/time-picker";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -100,8 +101,18 @@ export default function RegisterFoodPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"foods" | "favorites">("foods");
   const [mealType, setMealType] = useState<MealType>("desayuno");
-  const [mealTime, setMealTime] = useState(format(new Date(), "HH:mm"));
-  const [mealDate, setMealDate] = useState<Date>(new Date());
+  const [mealTime, setMealTime] = useState(() => {
+    if (typeof window !== "undefined") {
+      return format(new Date(), "HH:mm");
+    }
+    return "12:00";
+  });
+  const [mealDate, setMealDate] = useState<Date>(() => {
+    if (typeof window !== "undefined") {
+      return new Date();
+    }
+    return new Date();
+  });
   const [searchQuery, setSearchQuery] = useState("");
   const [foods, setFoods] = useState<Food[]>([]);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
@@ -115,12 +126,28 @@ export default function RegisterFoodPage() {
     try {
       const response = await fetch("/api/foods");
       if (!response.ok) {
-        throw new Error("Error al cargar los alimentos");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.error ||
+            `Error al cargar los alimentos: ${response.status}`,
+        );
       }
-      const data = await response.json();
+      const result = await response.json();
+
+      // Handle both old format (array) and new format (object with data property)
+      const foodsData = Array.isArray(result)
+        ? result
+        : result.data && Array.isArray(result.data)
+          ? result.data
+          : [];
+
+      if (!Array.isArray(foodsData)) {
+        console.error("Invalid foods data format:", result);
+        throw new Error("Formato de datos inválido");
+      }
 
       // Convert meal types in the food data
-      const foodsWithConvertedMealTypes = data.map(
+      const foodsWithConvertedMealTypes = foodsData.map(
         (food: Food & { mealType?: string | string[] }) => ({
           ...food,
           mealType: Array.isArray(food.mealType)
@@ -129,36 +156,48 @@ export default function RegisterFoodPage() {
         }),
       );
 
-      // Merge with favorites data
-      const foodsWithFavorites = foodsWithConvertedMealTypes.map(
-        (food: Food) => ({
-          ...food,
-          isFavorite: favoriteFoods.has(food.id),
-        }),
-      );
-
-      setFoods(foodsWithFavorites);
+      setFoods(foodsWithConvertedMealTypes);
     } catch (error) {
       console.error("Error fetching foods:", error);
-      toast.error("Error al cargar los alimentos");
+      toast.error("Error", {
+        description:
+          error instanceof Error
+            ? error.message
+            : "Error al cargar los alimentos",
+      });
+      setFoods([]); // Set empty array on error to prevent UI issues
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFoods();
-  }, []);
-
-  useEffect(() => {
-    // Load favorites from localStorage
+    // Load favorites from localStorage first
     if (typeof window !== "undefined") {
       const savedFavorites = localStorage.getItem("favoriteFoods");
       if (savedFavorites) {
-        setFavoriteFoods(new Set(JSON.parse(savedFavorites)));
+        try {
+          setFavoriteFoods(new Set(JSON.parse(savedFavorites)));
+        } catch (error) {
+          console.error("Error parsing favorite foods:", error);
+        }
       }
     }
   }, []);
+
+  useEffect(() => {
+    fetchFoods();
+  }, []);
+
+  // Apply favorites to foods when favoriteFoods change
+  useEffect(() => {
+    setFoods((prevFoods) =>
+      prevFoods.map((food) => ({
+        ...food,
+        isFavorite: favoriteFoods.has(food.id),
+      })),
+    );
+  }, [favoriteFoods]);
 
   // Toggle favorite status for a food item
   const toggleFavorite = (foodId: string, e: React.MouseEvent) => {
@@ -406,27 +445,38 @@ export default function RegisterFoodPage() {
   };
 
   const calculateTotals = () => {
+    if (!selectedItems || selectedItems.length === 0) {
+      return { calories: 0, protein: 0, carbs: 0, fat: 0 };
+    }
     return selectedItems.reduce(
       (acc, item) => {
+        if (!item || !item.data) {
+          return acc;
+        }
         const data = item.data;
-        const quantityInGrams = item.quantity;
+        const quantityInGrams = item.quantity || 0;
 
-        const servingSize = item.type === "food" ? (data as Food).serving : 1;
+        const servingSize =
+          item.type === "food" ? (data as Food).serving || 1 : 1;
+
+        if (servingSize === 0) {
+          return acc;
+        }
 
         const ratio = quantityInGrams / servingSize;
 
-        const calories = Math.round(data.calories * ratio);
+        const calories = Math.round((data.calories || 0) * ratio);
         const protein = Math.max(
           0,
-          Number.parseFloat((data.protein * ratio).toFixed(1)),
+          Number.parseFloat(((data.protein || 0) * ratio).toFixed(1)),
         );
         const carbs = Math.max(
           0,
-          Number.parseFloat((data.carbs * ratio).toFixed(1)),
+          Number.parseFloat(((data.carbs || 0) * ratio).toFixed(1)),
         );
         const fat = Math.max(
           0,
-          Number.parseFloat((data.fat * ratio).toFixed(1)),
+          Number.parseFloat(((data.fat || 0) * ratio).toFixed(1)),
         );
 
         return {
@@ -443,9 +493,27 @@ export default function RegisterFoodPage() {
   const renderFoodsList = () => {
     if (loading) {
       return (
-        <div className="flex flex-col gap-3 justify-center items-center py-16 text-muted-foreground">
-          <Icons.spinner className="h-8 w-8 animate-spin" />
-          <p className="text-xs">Cargando...</p>
+        <div className="space-y-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="p-3 sm:p-4 rounded-lg border bg-card">
+              <div className="flex items-start sm:items-center justify-between gap-3">
+                <div className="flex-1 min-w-0 space-y-2">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-3 w-20" />
+                  <div className="flex flex-wrap gap-x-3 gap-y-1">
+                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-12" />
+                    <Skeleton className="h-3 w-12" />
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                  <Skeleton className="h-5 w-5 rounded-full" />
+                  <Skeleton className="h-12 w-12 sm:h-16 sm:w-16 rounded-full" />
+                  <Skeleton className="h-3 w-8 hidden sm:block" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       );
     }
@@ -454,11 +522,16 @@ export default function RegisterFoodPage() {
 
     if (items.length === 0) {
       return (
-        <div className="py-16 text-center">
-          <p className="text-muted-foreground text-xs">
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <h3 className="text-xs font-medium mb-2">
             {searchQuery
               ? "No se encontraron resultados"
               : "No hay elementos disponibles"}
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-sm">
+            {searchQuery
+              ? "Intenta ajustar los términos de búsqueda para encontrar alimentos."
+              : "No hay alimentos disponibles en este momento."}
           </p>
         </div>
       );
@@ -469,7 +542,9 @@ export default function RegisterFoodPage() {
         {items.map((item) => {
           const isSelected = isItemSelected(
             item.id,
-            activeTab === "foods" ? "food" : "recipe",
+            activeTab === "foods" || activeTab === "favorites"
+              ? "food"
+              : "recipe",
           );
 
           const totalMacros = item.protein * 4 + item.carbs * 4 + item.fat * 9;
@@ -481,16 +556,17 @@ export default function RegisterFoodPage() {
             totalMacros > 0 ? ((item.fat * 9) / totalMacros) * 100 : 0;
 
           return (
-            <button
+            <div
               key={item.id}
-              type="button"
               onClick={() =>
                 toggleItemSelection(
                   item,
-                  activeTab === "foods" ? "food" : "recipe",
+                  activeTab === "foods" || activeTab === "favorites"
+                    ? "food"
+                    : "recipe",
                 )
               }
-              className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm ${
+              className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
                 isSelected
                   ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
                   : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70"
@@ -500,9 +576,9 @@ export default function RegisterFoodPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-xs font-medium">{item.name}</h3>
                   <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
-                    {activeTab === "foods"
-                      ? `${(item as Food).serving}g`
-                      : `${(item as Recipe).servings} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
+                    {activeTab === "foods" || activeTab === "favorites"
+                      ? `${(item as Food).serving || 0}g`
+                      : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
                   </p>
                   <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                     <span className="flex items-center">
@@ -527,10 +603,15 @@ export default function RegisterFoodPage() {
                 </div>
 
                 <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-                  <button
+                  <Button
                     type="button"
-                    onClick={(e) => toggleFavorite(item.id, e)}
-                    className="p-1.5 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 p-0 rounded-full hover:bg-zinc-200 dark:hover:bg-zinc-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(item.id, e);
+                    }}
                     aria-label={
                       favoriteFoods.has(item.id)
                         ? "Quitar de favoritos"
@@ -541,7 +622,7 @@ export default function RegisterFoodPage() {
                       icon={FavouriteIcon}
                       className={`h-4 w-4 sm:h-5 sm:w-5 ${favoriteFoods.has(item.id) ? "text-yellow-500 fill-yellow-500" : "text-muted-foreground"}`}
                     />
-                  </button>
+                  </Button>
                   <div className="relative w-12 h-12 sm:w-16 sm:h-16">
                     <svg
                       className="w-full h-full -rotate-90"
@@ -601,7 +682,7 @@ export default function RegisterFoodPage() {
                   </div>
                 </div>
               </div>
-            </button>
+            </div>
           );
         })}
       </div>
@@ -632,12 +713,104 @@ export default function RegisterFoodPage() {
   const adjustedFat =
     Math.max(0, Math.min(100, 100 - adjustedProtein - adjustedCarbs)) || 0;
 
+  if (loading && foods.length === 0) {
+    return (
+      <div>
+        <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+          <Skeleton className="h-9 w-32" />
+        </div>
+
+        <Card className="w-full overflow-hidden">
+          <CardHeader className="pb-4">
+            <Skeleton className="h-7 md:h-8 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-12" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+              <div className="lg:col-span-2 space-y-3 sm:space-y-4">
+                <Skeleton className="h-10 w-full" />
+                <div className="grid w-full grid-cols-2 h-10">
+                  <Skeleton className="h-full rounded-md" />
+                  <Skeleton className="h-full rounded-md" />
+                </div>
+                <div className="space-y-2">
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                      key={index}
+                      className="p-3 sm:p-4 rounded-lg border bg-card"
+                    >
+                      <div className="flex items-start sm:items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0 space-y-2">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-20" />
+                          <div className="flex flex-wrap gap-x-3 gap-y-1">
+                            <Skeleton className="h-3 w-12" />
+                            <Skeleton className="h-3 w-12" />
+                            <Skeleton className="h-3 w-12" />
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
+                          <Skeleton className="h-5 w-5 rounded-full" />
+                          <Skeleton className="h-12 w-12 sm:h-16 sm:w-16 rounded-full" />
+                          <Skeleton className="h-3 w-8 hidden sm:block" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="lg:col-span-1">
+                <div className="sticky top-4 sm:top-6">
+                  <Card className="border-muted/50">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="flex items-center justify-center mb-3 sm:mb-4">
+                        <Skeleton className="h-24 w-24 sm:h-32 sm:w-32 rounded-full" />
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        <Skeleton className="h-16 rounded-lg" />
+                        <Skeleton className="h-16 rounded-lg" />
+                        <Skeleton className="h-16 rounded-lg" />
+                      </div>
+                      <Separator className="my-4" />
+                      <Skeleton className="h-3 w-24 mb-2" />
+                      <div className="space-y-2">
+                        {Array.from({ length: 2 }).map((_, index) => (
+                          <Skeleton key={index} className="h-20 rounded-lg" />
+                        ))}
+                      </div>
+                      <Skeleton className="h-10 w-full mt-4" />
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full"
           size="sm"
           onClick={() => router.push("/dashboard/nutrition")}
         >
@@ -650,7 +823,7 @@ export default function RegisterFoodPage() {
         {/* <AddFoodsButton />
         <AddExerciseButton /> */}
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
             Registrar Comida
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">
@@ -768,8 +941,13 @@ export default function RegisterFoodPage() {
                 <Card className="border-muted/50">
                   <CardContent className="p-3 sm:p-4">
                     {selectedItems.length === 0 ? (
-                      <div className="text-center py-6 text-xs text-muted-foreground">
-                        Selecciona alimentos para ver el resumen
+                      <div className="flex flex-col items-center justify-center py-8 text-center">
+                        <h3 className="text-xs font-medium mb-2">
+                          Resumen de alimentos
+                        </h3>
+                        <p className="text-xs text-muted-foreground max-w-sm">
+                          Selecciona alimentos para ver el resumen nutricional.
+                        </p>
                       </div>
                     ) : (
                       <>
