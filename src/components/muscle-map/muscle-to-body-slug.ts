@@ -8,7 +8,7 @@ export const muscleToBodySlug: Record<MuscleName, Slug> = {
   esternocleidomastoideo: "neck",
   omohioideo: "neck",
   esternohioideo: "neck",
-  
+
   // Hombros
   deltoides_anterior: "deltoids",
   deltoides_medio: "deltoids",
@@ -16,12 +16,12 @@ export const muscleToBodySlug: Record<MuscleName, Slug> = {
   redondo_mayor: "upper-back",
   redondo_menor: "upper-back",
   infraespinoso: "upper-back",
-  
+
   // Pecho
   pectoral_mayor: "chest",
   pectoral_menor: "chest",
   serrato_anterior: "chest",
-  
+
   // Espalda
   dorsal_ancho: "upper-back",
   romboide_mayor: "upper-back",
@@ -30,7 +30,7 @@ export const muscleToBodySlug: Record<MuscleName, Slug> = {
   trapecio_superior: "trapezius",
   trapecio_medio: "trapezius",
   trapecio_inferior: "trapezius",
-  
+
   // Brazos
   biceps_braquial: "biceps",
   braquial: "biceps",
@@ -38,36 +38,36 @@ export const muscleToBodySlug: Record<MuscleName, Slug> = {
   braquiorradial: "forearm",
   flexores_antebrazo: "forearm",
   extensores_antebrazo: "forearm",
-  
+
   // Abdomen
   recto_abdominal: "abs",
   oblicuo_externo: "obliques",
   oblicuo_interno: "obliques",
   transverso_abdominal: "abs",
-  
+
   // Piernas - Cuádriceps
   recto_femoral: "quadriceps",
   vasto_lateral: "quadriceps",
   vasto_medial: "quadriceps",
   vasto_intermedio: "quadriceps",
-  
+
   // Piernas - Isquiotibiales
   biceps_femoral: "hamstring",
   semitendinoso: "hamstring",
   semimembranoso: "hamstring",
-  
+
   // Piernas - Glúteos
   gluteo_mayor: "gluteal",
   gluteo_medio: "gluteal",
   gluteo_menor: "gluteal",
-  
+
   // Piernas - Aductores/Abductores
   aductores: "adductors",
   abductores: "gluteal", // Los abductores están en los glúteos
   pectineo: "adductors",
   gracilis: "adductors",
   adductor_magno: "adductors",
-  
+
   // Piernas - Pantorrillas
   gastrocnemio: "calves",
   soleo: "calves",
@@ -86,7 +86,6 @@ export function getBodySlugForMuscle(muscle: MuscleName): Slug {
 // Función helper para obtener todos los músculos que mapean a un slug específico
 export function getMusclesForBodySlug(slug: Slug): MuscleName[] {
   return Object.entries(muscleToBodySlug)
-    .filter(([_, bodySlug]) => bodySlug === slug)
+    .filter(([, bodySlug]) => bodySlug === slug)
     .map(([muscle]) => muscle as MuscleName);
 }
-

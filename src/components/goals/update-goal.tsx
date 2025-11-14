@@ -14,23 +14,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useGoals, type Goal } from "@/hooks/use-goals";
 import { useSession } from "next-auth/react";
-
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Textarea } from "@/components/ui/textarea";
-
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils/utils";
-
 import { Icons } from "../icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Calendar01Icon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
+
 interface GoalProps {
   onSuccess: () => void;
   goal: Goal;
@@ -49,7 +47,6 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   const { addProgressUpdate } = useGoals();
   const { data: session } = useSession();
 
-  // Chequeo de dueño
   const isOwner =
     session?.user?.id && goal.userId && session.user.id === goal.userId;
 
@@ -64,7 +61,6 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       return;
     }
 
-    // Validación básica
     if (!date) {
       setError("La fecha es obligatoria");
       return;
@@ -88,19 +84,13 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       });
 
       if (result) {
-        // Mostrar mensaje de éxito
         toast.success("Progreso actualizado correctamente");
-
-        // Cerrar el diálogo después de un breve retraso
         setTimeout(() => {
           setOpen(false);
-          // Resetear el formulario
           setValue(goal.currentValue?.toString() || "");
           setNotes("");
           setDate(new Date());
         }, 1000);
-
-        // Notificar al componente padre para actualizar la lista
         onSuccess();
       }
     } catch (error: unknown) {
@@ -127,22 +117,25 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       setIsSubmitting(false);
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" className="text-xs px-4">
+        <Button size="sm" variant="outline" className="text-xs h-8 px-3">
           Actualizar
         </Button>
       </DialogTrigger>
-      <DialogContent className="overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold  tracking-heading">
-            Actualizar progreso
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader className="pb-3">
+          <DialogTitle className="text-base font-semibold">
+            Actualizar Progreso
           </DialogTitle>
         </DialogHeader>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label className="text-xs md:text-xs" htmlFor="date">
+          {/* Fecha */}
+          <div className="space-y-1.5">
+            <Label htmlFor="date" className="text-xs text-muted-foreground">
               Fecha
             </Label>
             <Popover>
@@ -150,22 +143,20 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal text-xs md:text-xs",
+                    "w-full justify-start text-left font-normal h-9 text-xs",
                     !date && "text-muted-foreground",
                   )}
                 >
                   <HugeiconsIcon
                     icon={Calendar01Icon}
-                    className="mr-2 h-4 w-4"
+                    className="mr-2 h-3.5 w-3.5"
                   />
-                  {date ? (
-                    format(date, "PPP", { locale: es })
-                  ) : (
-                    <span>Selecciona una fecha</span>
-                  )}
+                  {date
+                    ? format(date, "PPP", { locale: es })
+                    : "Selecciona una fecha"}
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
+              <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                   mode="single"
                   selected={date}
@@ -177,12 +168,17 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
             </Popover>
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs md:text-xs" htmlFor="value">
-              Valor actual ({goal.unit || ""})
+          {/* Valor */}
+          <div className="space-y-1.5">
+            <Label htmlFor="value" className="text-xs text-muted-foreground">
+              Valor actual
+              {goal.unit && (
+                <span className="text-muted-foreground ml-1">
+                  ({goal.unit})
+                </span>
+              )}
             </Label>
             <Input
-              className="text-xs md:text-xs"
               id="value"
               type="text"
               inputMode="numeric"
@@ -190,35 +186,53 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
               placeholder={`Ej: ${goal.targetValue || ""}`}
               value={value}
               onChange={(e) => setValue(e.target.value)}
+              className="h-9 text-xs"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="text-xs md:text-xs" htmlFor="notes">
-              Notas (opcional)
+          {/* Notas */}
+          <div className="space-y-1.5">
+            <Label htmlFor="notes" className="text-xs text-muted-foreground">
+              Notas <span className="text-muted-foreground">(opcional)</span>
             </Label>
             <Textarea
               id="notes"
-              className="text-xs md:text-xs resize-none"
+              className="text-xs resize-none min-h-[80px]"
               placeholder="Observaciones adicionales..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={3}
             />
           </div>
-          {error && <p className="text-red-500 text-xs">{error}</p>}
 
-          <div className="flex justify-end space-x-2 pt-2">
+          {/* Error */}
+          {error && (
+            <p className="text-xs text-destructive bg-destructive/10 p-2 rounded-md">
+              {error}
+            </p>
+          )}
+
+          {/* Botones */}
+          <div className="flex justify-end gap-2 pt-2">
             <Button
+              type="button"
+              variant="ghost"
               size="sm"
-              className="text-xs px-4"
+              className="text-xs h-8"
+              onClick={() => setOpen(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
               type="submit"
+              size="sm"
+              className="text-xs h-8 px-4"
               disabled={isSubmitting || !isOwner}
             >
               {isSubmitting ? (
                 <>
-                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                  Guardando
+                  <Icons.spinner className="mr-2 h-3.5 w-3.5 animate-spin" />
+                  Guardando...
                 </>
               ) : (
                 "Guardar"

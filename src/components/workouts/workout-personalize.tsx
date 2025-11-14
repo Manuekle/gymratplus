@@ -524,7 +524,9 @@ export function WorkoutPersonalize() {
                           {groupExercises.map((exercise) => (
                             <div
                               key={exercise.id}
-                              onClick={() => handleExerciseSelection(exercise.id)}
+                              onClick={() =>
+                                handleExerciseSelection(exercise.id)
+                              }
                               className={`
                                 flex items-center gap-1.5 px-3 py-1.5 
                                 rounded-full text-xs font-medium 

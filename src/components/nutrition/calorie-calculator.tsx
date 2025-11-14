@@ -15,13 +15,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 import { useSession } from "next-auth/react";
 
@@ -29,6 +22,8 @@ import { toast } from "sonner";
 import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
+  Activity01Icon,
+  Activity03Icon,
   BroccoliIcon,
   CheeseIcon,
   Dish01Icon,
@@ -37,6 +32,8 @@ import {
   SmileIcon,
   Target02Icon,
   Tick02Icon,
+  WorkoutRunIcon,
+  WorkoutGymnasticsIcon,
 } from "@hugeicons/core-free-icons";
 
 type FormData = {
@@ -227,14 +224,14 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
         <div className="flex items-center justify-between mb-6 px-2">
           {Array.from({ length: totalSteps }).map((_, i) => (
             <div key={i} className="flex items-center flex-1">
-              <div className="flex flex-col items-center flex-1">
+              <div className="flex items-center justify-center flex-1">
                 <div
                   className={`flex items-center justify-center w-10 h-10 rounded-full transition-all duration-300 ${
                     step > i + 1
-                      ? "bg-green-500 text-white border-2 border-green-500 shadow-sm"
+                      ? "bg-green-500 text-white border border-green-500 shadow-sm"
                       : step === i + 1
-                        ? "bg-primary text-primary-foreground border-2 border-primary shadow-md scale-110"
-                        : "bg-muted text-muted-foreground border-2 border-muted"
+                        ? "bg-primary text-primary-foreground border border-primary shadow-md scale-110"
+                        : "bg-muted text-muted-foreground border border-muted"
                   }`}
                 >
                   {step > i + 1 ? (
@@ -243,13 +240,6 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     stepIcons[i]
                   )}
                 </div>
-                <span
-                  className={`text-[10px] mt-2 font-medium ${
-                    step >= i + 1 ? "text-foreground" : "text-muted-foreground"
-                  }`}
-                >
-                  Paso {i + 1}
-                </span>
               </div>
               {i < totalSteps - 1 && (
                 <div
@@ -400,81 +390,213 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                   >
                     Nivel de Actividad
                   </Label>
-                  <Select
-                    value={formValues.activityLevel}
-                    onValueChange={(value) =>
-                      setValue(
-                        "activityLevel",
-                        value as
-                          | "sedentary"
-                          | "light"
-                          | "moderate"
-                          | "active"
-                          | "very_active",
-                      )
-                    }
-                  >
-                    <SelectTrigger className="h-10 text-xs">
-                      <SelectValue placeholder="Selecciona tu nivel de actividad" />
-                    </SelectTrigger>
-                    <SelectContent className="p-1">
-                      <SelectItem
-                        className="px-3 py-2.5 text-xs cursor-pointer focus:bg-accent/50"
-                        value="sedentary"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="font-medium text-xs">Sedentario</div>
-                          <div className="text-xs text-muted-foreground">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        formValues.activityLevel === "sedentary"
+                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                      }`}
+                      onClick={() => setValue("activityLevel", "sedentary")}
+                    >
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div
+                          className={`p-2.5 rounded-full ${
+                            formValues.activityLevel === "sedentary"
+                              ? "bg-primary-foreground/20"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <HugeiconsIcon
+                            icon={SmileIcon}
+                            className={`h-6 w-6 ${
+                              formValues.activityLevel === "sedentary"
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        </div>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs font-semibold block">
+                            Sedentario
+                          </span>
+                          <span
+                            className={`text-[10px] block ${
+                              formValues.activityLevel === "sedentary"
+                                ? "text-primary-foreground/80"
+                                : "text-muted-foreground"
+                            }`}
+                          >
                             Poco o ningún ejercicio
-                          </div>
+                          </span>
                         </div>
-                      </SelectItem>
-                      <SelectItem
-                        className="px-3 py-2.5 text-xs cursor-pointer focus:bg-accent/50"
-                        value="light"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="font-medium text-xs">Ligero</div>
-                          <div className="text-xs text-muted-foreground">
+                      </div>
+                    </div>
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        formValues.activityLevel === "light"
+                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                      }`}
+                      onClick={() => setValue("activityLevel", "light")}
+                    >
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div
+                          className={`p-2.5 rounded-full ${
+                            formValues.activityLevel === "light"
+                              ? "bg-primary-foreground/20"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <HugeiconsIcon
+                            icon={Activity01Icon}
+                            className={`h-6 w-6 ${
+                              formValues.activityLevel === "light"
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        </div>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs font-semibold block">
+                            Ligero
+                          </span>
+                          <span
+                            className={`text-[10px] block ${
+                              formValues.activityLevel === "light"
+                                ? "text-primary-foreground/80"
+                                : "text-muted-foreground"
+                            }`}
+                          >
                             Ejercicio 1-3 días/semana
-                          </div>
+                          </span>
                         </div>
-                      </SelectItem>
-                      <SelectItem
-                        className="px-3 py-2.5 text-xs cursor-pointer focus:bg-accent/50"
-                        value="moderate"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="font-medium text-xs">Moderado</div>
-                          <div className="text-xs text-muted-foreground">
+                      </div>
+                    </div>
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        formValues.activityLevel === "moderate"
+                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                      }`}
+                      onClick={() => setValue("activityLevel", "moderate")}
+                    >
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div
+                          className={`p-2.5 rounded-full ${
+                            formValues.activityLevel === "moderate"
+                              ? "bg-primary-foreground/20"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <HugeiconsIcon
+                            icon={Activity03Icon}
+                            className={`h-6 w-6 ${
+                              formValues.activityLevel === "moderate"
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        </div>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs font-semibold block">
+                            Moderado
+                          </span>
+                          <span
+                            className={`text-[10px] block ${
+                              formValues.activityLevel === "moderate"
+                                ? "text-primary-foreground/80"
+                                : "text-muted-foreground"
+                            }`}
+                          >
                             Ejercicio 3-5 días/semana
-                          </div>
+                          </span>
                         </div>
-                      </SelectItem>
-                      <SelectItem
-                        className="px-3 py-2.5 text-xs cursor-pointer focus:bg-accent/50"
-                        value="active"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="font-medium text-xs">Activo</div>
-                          <div className="text-xs text-muted-foreground">
+                      </div>
+                    </div>
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                        formValues.activityLevel === "active"
+                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                      }`}
+                      onClick={() => setValue("activityLevel", "active")}
+                    >
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div
+                          className={`p-2.5 rounded-full ${
+                            formValues.activityLevel === "active"
+                              ? "bg-primary-foreground/20"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <HugeiconsIcon
+                            icon={WorkoutRunIcon}
+                            className={`h-6 w-6 ${
+                              formValues.activityLevel === "active"
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        </div>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs font-semibold block">
+                            Activo
+                          </span>
+                          <span
+                            className={`text-[10px] block ${
+                              formValues.activityLevel === "active"
+                                ? "text-primary-foreground/80"
+                                : "text-muted-foreground"
+                            }`}
+                          >
                             Ejercicio intenso 6-7 días/semana
-                          </div>
+                          </span>
                         </div>
-                      </SelectItem>
-                      <SelectItem
-                        className="px-3 py-2.5 text-xs cursor-pointer focus:bg-accent/50"
-                        value="very_active"
-                      >
-                        <div className="space-y-0.5">
-                          <div className="font-medium text-xs">Muy activo</div>
-                          <div className="text-xs text-muted-foreground">
+                      </div>
+                    </div>
+                    <div
+                      className={`border rounded-lg p-4 cursor-pointer transition-all sm:col-span-2 ${
+                        formValues.activityLevel === "very_active"
+                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
+                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                      }`}
+                      onClick={() => setValue("activityLevel", "very_active")}
+                    >
+                      <div className="flex flex-col items-center gap-2.5">
+                        <div
+                          className={`p-2.5 rounded-full ${
+                            formValues.activityLevel === "very_active"
+                              ? "bg-primary-foreground/20"
+                              : "bg-muted"
+                          }`}
+                        >
+                          <HugeiconsIcon
+                            icon={WorkoutGymnasticsIcon}
+                            className={`h-6 w-6 ${
+                              formValues.activityLevel === "very_active"
+                                ? "text-primary-foreground"
+                                : "text-muted-foreground"
+                            }`}
+                          />
+                        </div>
+                        <div className="text-center space-y-1">
+                          <span className="text-xs font-semibold block">
+                            Muy activo
+                          </span>
+                          <span
+                            className={`text-[10px] block ${
+                              formValues.activityLevel === "very_active"
+                                ? "text-primary-foreground/80"
+                                : "text-muted-foreground"
+                            }`}
+                          >
                             Ejercicio muy intenso, trabajo físico
-                          </div>
+                          </span>
                         </div>
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             )}
@@ -493,45 +615,128 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     <Label className="text-xs font-medium" htmlFor="goal">
                       Objetivo
                     </Label>
-                    <div className="grid grid-cols-3 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "lose-weight"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() => setValue("goal", "lose-weight")}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-xs font-medium">
-                            Perder peso
-                          </span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.goal === "lose-weight"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={Target02Icon}
+                              className={`h-6 w-6 ${
+                                formValues.goal === "lose-weight"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Perder peso
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.goal === "lose-weight"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Reducir grasa corporal
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "maintain"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() => setValue("goal", "maintain")}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-xs font-medium">Mantener</span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.goal === "maintain"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={Pulse01Icon}
+                              className={`h-6 w-6 ${
+                                formValues.goal === "maintain"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Mantener
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.goal === "maintain"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Mantener peso actual
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "gain-muscle"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() => setValue("goal", "gain-muscle")}
                       >
-                        <div className="flex flex-col items-center gap-1">
-                          <span className="text-xs font-medium">
-                            Ganar músculo
-                          </span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.goal === "gain-muscle"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={PresentationBarChart02Icon}
+                              className={`h-6 w-6 ${
+                                formValues.goal === "gain-muscle"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Ganar músculo
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.goal === "gain-muscle"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Aumentar masa muscular
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -544,61 +749,132 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     >
                       Preferencia Dietética
                     </Label>
-                    <div className="grid grid-cols-3 gap-2.5">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "no-preference"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "no-preference")
                         }
                       >
-                        <div className="flex flex-col items-center gap-1.5">
-                          <HugeiconsIcon
-                            icon={Dish01Icon}
-                            className="h-5 w-5"
-                          />
-                          <span className="text-xs font-medium">
-                            Sin preferencia
-                          </span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.dietaryPreference === "no-preference"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={Dish01Icon}
+                              className={`h-6 w-6 ${
+                                formValues.dietaryPreference === "no-preference"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Sin preferencia
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.dietaryPreference === "no-preference"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Dieta equilibrada
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "vegetarian"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "vegetarian")
                         }
                       >
-                        <div className="flex flex-col items-center gap-1.5">
-                          <HugeiconsIcon
-                            icon={BroccoliIcon}
-                            className="h-5 w-5"
-                          />
-                          <span className="text-xs font-medium">
-                            Vegetariano
-                          </span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.dietaryPreference === "vegetarian"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={BroccoliIcon}
+                              className={`h-6 w-6 ${
+                                formValues.dietaryPreference === "vegetarian"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Vegetariano
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.dietaryPreference === "vegetarian"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Sin carne animal
+                            </span>
+                          </div>
                         </div>
                       </div>
                       <div
-                        className={`border-2 rounded-lg p-3.5 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "keto"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
                             : "border-border hover:border-primary/50 hover:bg-accent/50"
                         }`}
                         onClick={() => setValue("dietaryPreference", "keto")}
                       >
-                        <div className="flex flex-col items-center gap-1.5">
-                          <HugeiconsIcon
-                            icon={CheeseIcon}
-                            className="h-5 w-5"
-                          />
-                          <span className="text-xs font-medium">Keto</span>
+                        <div className="flex flex-col items-center gap-2.5">
+                          <div
+                            className={`p-2.5 rounded-full ${
+                              formValues.dietaryPreference === "keto"
+                                ? "bg-primary-foreground/20"
+                                : "bg-muted"
+                            }`}
+                          >
+                            <HugeiconsIcon
+                              icon={CheeseIcon}
+                              className={`h-6 w-6 ${
+                                formValues.dietaryPreference === "keto"
+                                  ? "text-primary-foreground"
+                                  : "text-muted-foreground"
+                              }`}
+                            />
+                          </div>
+                          <div className="text-center space-y-1">
+                            <span className="text-xs font-semibold block">
+                              Keto
+                            </span>
+                            <span
+                              className={`text-[10px] block ${
+                                formValues.dietaryPreference === "keto"
+                                  ? "text-primary-foreground/80"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              Bajo en carbohidratos
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>

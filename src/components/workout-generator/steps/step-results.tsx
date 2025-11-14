@@ -9,7 +9,7 @@ import {
 
 import { ScrollArea } from "@/components/ui/scroll-area";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 
 import { Workout } from "@/types/workout-types";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -21,11 +21,6 @@ interface StepResultsProps {
 
 export function StepResults({ workout }: StepResultsProps) {
   const [selectedDay, setSelectedDay] = useState(workout.days[0]?.day);
-
-  const selectedDayExercises = useMemo(() => {
-    const day = workout.days.find((d) => d.day === selectedDay);
-    return day?.exercises.map((ex) => ex.name) || [];
-  }, [workout.days, selectedDay]);
 
   if (!workout) {
     return (

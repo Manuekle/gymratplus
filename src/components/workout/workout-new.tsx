@@ -129,8 +129,8 @@ export function WorkoutNew({
   const exerciseNames = exercises.map((ex) => ex.name);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Selector de días */}
         <div className="flex flex-wrap gap-2">
           {days.map((day) => (
@@ -156,12 +156,7 @@ export function WorkoutNew({
       </div>
 
       {/* MuscleMap integrado */}
-      <div className="mb-6">
-        <MuscleMap
-          selectedExercises={exerciseNames}
-          mode="view"
-        />
-      </div>
+      <MuscleMap selectedExercises={exerciseNames} mode="view" />
 
       {isLoading ? (
         <div>

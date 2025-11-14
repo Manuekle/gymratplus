@@ -239,7 +239,7 @@ export default function InstructorPage() {
             >
               <CardHeader className="pb-4">
                 <div className="flex items-start space-x-4">
-                  <Avatar className="h-16 w-16 border-2 border-background shadow-sm">
+                  <Avatar className="h-16 w-16 border border-background shadow-sm">
                     <AvatarImage
                       src={instructor.image || "/placeholder-avatar.jpg"}
                       alt={instructor.name || "Instructor"}

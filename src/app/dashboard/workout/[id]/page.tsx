@@ -148,10 +148,10 @@ export default function WorkouPage() {
         </span>
       </div>
 
-      <div className="border rounded-lg p-6 shadow-sm bg-card">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex flex-col gap-2 w-full">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
+      <div className="border rounded-lg p-4 sm:p-6 shadow-sm bg-card">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+          <div className="flex flex-col gap-1.5 w-full">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
               {workout.name}
             </CardTitle>
             {workout.description && (
@@ -182,7 +182,7 @@ export default function WorkouPage() {
           </div>
         </div>
 
-        <div className="pt-6 border-t">
+        <div className="pt-4 border-t">
           <WorkoutNew
             workoutId={workout.id}
             exercises={workout.days[0]?.exercises || []}

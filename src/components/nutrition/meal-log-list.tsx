@@ -179,7 +179,7 @@ export function MealLogList({
                       aria-label="Eliminar"
                     >
                       {deletingId === meal.id ? (
-                        <div className="h-3 w-3 rounded-full border-2 border-muted-foreground/30 border-t-muted-foreground animate-spin" />
+                        <div className="h-3 w-3 rounded-full border border-muted-foreground/30 border-t-muted-foreground animate-spin" />
                       ) : (
                         <HugeiconsIcon
                           icon={Delete02Icon}

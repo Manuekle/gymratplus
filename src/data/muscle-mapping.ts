@@ -159,7 +159,11 @@ export const exerciseToMuscles: Record<string, MuscleName[]> = {
     "vasto_intermedio",
   ],
   "Curl femoral sentado": ["biceps_femoral", "semitendinoso", "semimembranoso"],
-  "Curl femoral acostado": ["biceps_femoral", "semitendinoso", "semimembranoso"],
+  "Curl femoral acostado": [
+    "biceps_femoral",
+    "semitendinoso",
+    "semimembranoso",
+  ],
   "Elevaciones de pantorrilla": ["gastrocnemio", "soleo"],
   Abductores: ["abductores", "gluteo_medio"],
   Aductores: ["aductores", "pectineo", "gracilis", "adductor_magno"],
@@ -184,11 +188,7 @@ export const exerciseToMuscles: Record<string, MuscleName[]> = {
     "vasto_medial",
     "gluteo_mayor",
   ],
-  "Step-ups con mancuernas": [
-    "recto_femoral",
-    "vasto_lateral",
-    "gluteo_mayor",
-  ],
+  "Step-ups con mancuernas": ["recto_femoral", "vasto_lateral", "gluteo_mayor"],
   "Peso muerto rumano": [
     "biceps_femoral",
     "semitendinoso",
@@ -273,7 +273,11 @@ export const exerciseToMuscles: Record<string, MuscleName[]> = {
   "Pull-over en polea": ["dorsal_ancho"],
 
   // HOMBROS
-  "Press militar": ["deltoides_anterior", "deltoides_medio", "triceps_braquial"],
+  "Press militar": [
+    "deltoides_anterior",
+    "deltoides_medio",
+    "triceps_braquial",
+  ],
   "Remo al mentón": ["deltoides_medio", "trapecio"],
   "Elevaciones laterales en polea baja": ["deltoides_medio"],
   "Elevaciones laterales con mancuernas": ["deltoides_medio"],
@@ -299,7 +303,11 @@ export const exerciseToMuscles: Record<string, MuscleName[]> = {
   "Fondos en banco": ["triceps_braquial"],
   "Patada de tríceps": ["triceps_braquial"],
   "Curl spider": ["biceps_braquial"],
-  "Curl Zottman": ["biceps_braquial", "flexores_antebrazo", "extensores_antebrazo"],
+  "Curl Zottman": [
+    "biceps_braquial",
+    "flexores_antebrazo",
+    "extensores_antebrazo",
+  ],
   "Extensión de tríceps en polea": ["triceps_braquial"],
   "Rompecráneos en banco inclinado": ["triceps_braquial"],
   "Press cerrado en smith": ["triceps_braquial"],
@@ -332,10 +340,9 @@ export function getMusclesForExercise(exerciseName: string): MuscleName[] {
 // Función helper para obtener ejercicios que trabajan un músculo específico
 export function getExercisesForMuscle(muscle: MuscleName): string[] {
   return Object.entries(exerciseToMuscles)
-    .filter(([_, muscles]) => muscles.includes(muscle))
+    .filter(([, muscles]) => muscles.includes(muscle))
     .map(([exercise]) => exercise);
 }
 
 // Exportar exerciseToMuscles para uso en componentes
 export { exerciseToMuscles };
-

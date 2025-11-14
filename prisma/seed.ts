@@ -170,7 +170,9 @@ async function seedFoods() {
 
 async function seedExercises() {
   if (!SEED_CONFIG.EXERCISES) {
-    console.log("⏭️  Saltando seed de ejercicios (SEED_EXERCISES no está en 'true')");
+    console.log(
+      "⏭️  Saltando seed de ejercicios (SEED_EXERCISES no está en 'true')",
+    );
     return;
   }
 
@@ -190,7 +192,8 @@ async function seedExercises() {
   for (const exerciseData of exercises) {
     // Buscar si ya existe un ejercicio con el mismo nombre
     const existingExercise = existingExercises.find(
-      (e) => e.name.toLowerCase().trim() === exerciseData.name.toLowerCase().trim(),
+      (e) =>
+        e.name.toLowerCase().trim() === exerciseData.name.toLowerCase().trim(),
     );
 
     if (existingExercise) {
@@ -241,7 +244,9 @@ async function main() {
   console.log("📋 Configuración:");
   console.log(`   - Alimentos: ${SEED_CONFIG.FOODS ? "✅" : "❌"}`);
   console.log(`   - Ejercicios: ${SEED_CONFIG.EXERCISES ? "✅" : "❌"}`);
-  console.log("\n💡 Para ejecutar solo ejercicios: SEED_EXERCISES=true npm run seed");
+  console.log(
+    "\n💡 Para ejecutar solo ejercicios: SEED_EXERCISES=true npm run seed",
+  );
   console.log("💡 Para ejecutar solo alimentos: SEED_FOODS=true npm run seed");
   console.log("💡 Para ejecutar ambos: npm run seed (o sin variables)\n");
 

@@ -21,11 +21,11 @@ export default function WorkoutSkeleton() {
         </span>
       </div>
 
-      <div className="border rounded-lg p-6 shadow-sm bg-card">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-          <div className="flex flex-col gap-2 w-full">
-            <Skeleton className="h-8 w-64" />
-            <Skeleton className="h-4 w-96 max-w-full" />
+      <div className="border rounded-lg p-4 sm:p-6 shadow-sm bg-card">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
+          <div className="flex flex-col gap-1.5 w-full">
+            <Skeleton className="h-7 sm:h-8 w-48 sm:w-64" />
+            <Skeleton className="h-3 w-72 sm:w-96 max-w-full" />
           </div>
           <div className="flex gap-2 items-center">
             <Skeleton className="h-8 w-20" />
@@ -33,9 +33,30 @@ export default function WorkoutSkeleton() {
           </div>
         </div>
 
-        <div className="pt-6 border-t">
+        <div className="pt-4 border-t">
           <div className="space-y-4">
-            <Skeleton className="h-10 w-full" />
+            {/* Skeleton para selector de días y botón */}
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex gap-2">
+                <Skeleton className="h-8 w-20" />
+                <Skeleton className="h-8 w-20" />
+              </div>
+              <Skeleton className="h-8 w-32" />
+            </div>
+
+            {/* Skeleton para MuscleMap */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between pb-2 border-b">
+                <Skeleton className="h-4 w-24" />
+                <div className="flex gap-1.5">
+                  <Skeleton className="h-7 w-16" />
+                  <Skeleton className="h-7 w-16" />
+                </div>
+              </div>
+              <Skeleton className="h-64 w-full rounded-lg" />
+            </div>
+
+            {/* Skeleton para ejercicios */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
               {Array.from({ length: 6 }).map((_, index) => (
                 <div key={index} className="border rounded-lg shadow-sm">

@@ -19,7 +19,7 @@ import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const Spinner = () => (
-  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+  <div className="animate-spin h-4 w-4 border border-current border-t-transparent rounded-full" />
 );
 
 interface WorkoutSession {
@@ -578,7 +578,7 @@ export default function ActiveWorkoutPage() {
               key={exercise.id}
               className={`${exercise.completed ? "opacity-70" : ""} ${
                 restTimer.exerciseId === exercise.id
-                  ? "border-2 border-primary shadow-md"
+                  ? "border border-primary shadow-md"
                   : ""
               }`}
             >

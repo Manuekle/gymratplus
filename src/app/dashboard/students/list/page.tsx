@@ -334,7 +334,7 @@ export default function StudentsListPage() {
                 <div className="p-3">
                   <div className="flex items-start gap-3">
                     {/* Avatar */}
-                    <Avatar className="h-10 w-10 border-2 border-background">
+                    <Avatar className="h-10 w-10 border border-background">
                       {student.image ? (
                         <AvatarImage
                           src={student.image}

@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import Body from "@mjcdev/react-body-highlighter";
 import type { ExtendedBodyPart, Slug } from "@mjcdev/react-body-highlighter";
 import {
@@ -16,7 +16,6 @@ import {
   getMusclesForBodySlug,
 } from "./muscle-to-body-slug";
 
-
 interface MuscleMapProps {
   // Ejercicios seleccionados para resaltar músculos trabajados
   selectedExercises?: string[];
@@ -28,8 +27,33 @@ interface MuscleMapProps {
   highlightedMuscles?: MuscleName[];
 }
 
-
-// No necesitamos estas listas ya que la librería maneja automáticamente qué músculos mostrar en cada vista
+// Paleta de colores por grupo muscular
+const muscleGroupColors: Record<Slug, string> = {
+  chest: "#ef4444", // Rojo para pecho
+  biceps: "#3b82f6", // Azul para bíceps
+  triceps: "#8b5cf6", // Púrpura para tríceps
+  deltoids: "#f59e0b", // Naranja para hombros
+  "upper-back": "#10b981", // Verde para espalda superior
+  "lower-back": "#059669", // Verde oscuro para espalda inferior
+  trapezius: "#06b6d4", // Cian para trapecio
+  abs: "#ec4899", // Rosa para abdominales
+  obliques: "#f97316", // Naranja oscuro para oblicuos
+  quadriceps: "#6366f1", // Índigo para cuádriceps
+  hamstring: "#14b8a6", // Turquesa para isquiotibiales
+  gluteal: "#a855f7", // Púrpura para glúteos
+  calves: "#22c55e", // Verde claro para pantorrillas
+  adductors: "#eab308", // Amarillo para aductores
+  forearm: "#64748b", // Gris azulado para antebrazo
+  tibialis: "#84cc16", // Verde lima para tibial
+  neck: "#f43f5e", // Rosa para cuello
+  // Partes no usadas pero requeridas por el tipo
+  ankles: "#94a3b8",
+  feet: "#94a3b8",
+  hands: "#94a3b8",
+  hair: "#94a3b8",
+  head: "#94a3b8",
+  knees: "#94a3b8",
+};
 
 // Nombres en español para los músculos
 const muscleNames: Record<MuscleName, string> = {
@@ -95,11 +119,14 @@ export function MuscleMap({
 }: MuscleMapProps) {
   const [view, setView] = useState<"front" | "back">("front");
   const [selectedMuscle, setSelectedMuscle] = useState<MuscleName | null>(null);
+  const { theme, systemTheme } = useTheme();
+  const isDark =
+    theme === "dark" || (theme === "system" && systemTheme === "dark");
 
   // Calcular músculos trabajados por los ejercicios seleccionados
   const workedMuscles = useMemo(() => {
     if (selectedExercises.length === 0) return new Set<MuscleName>();
-    
+
     const muscles = new Set<MuscleName>();
     selectedExercises.forEach((exerciseName) => {
       const exerciseMuscles = exerciseToMuscles[exerciseName];
@@ -110,11 +137,11 @@ export function MuscleMap({
     return muscles;
   }, [selectedExercises]);
 
-  // Convertir músculos trabajados a slugs de la librería con intensidad
+  // Convertir músculos trabajados a slugs de la librería con colores personalizados
   const bodyPartsData = useMemo(() => {
     // Agrupar músculos por slug y calcular intensidad basada en cantidad de músculos trabajados
     const slugCounts = new Map<string, number>();
-    
+
     workedMuscles.forEach((muscle) => {
       const slug = getBodySlugForMuscle(muscle);
       slugCounts.set(slug, (slugCounts.get(slug) || 0) + 1);
@@ -126,14 +153,29 @@ export function MuscleMap({
       slugCounts.set(slug, (slugCounts.get(slug) || 0) + 1);
     });
 
-    // Convertir a array de ExtendedBodyPart
+    // Convertir a array de ExtendedBodyPart con colores personalizados
     const bodyParts: ExtendedBodyPart[] = [];
     slugCounts.forEach((count, slug) => {
-      // Intensidad: 1 = bajo, 2 = medio/alto (más músculos trabajados = mayor intensidad)
-      const intensity = count >= 3 ? 2 : count >= 1 ? 1 : 1;
+      const slugTyped = slug as Slug;
+      // Obtener color específico para este grupo muscular
+      const groupColor = muscleGroupColors[slugTyped] || "#10b981";
+
+      // Calcular opacidad basada en cantidad (más músculos = más intenso)
+      const opacity = Math.min(0.4 + count * 0.15, 0.85);
+
+      // Convertir color hex a rgba para aplicar opacidad
+      // La opacidad se ajusta según la cantidad de músculos trabajados
+      const hexToRgba = (hex: string, alpha: number) => {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+      };
+
       bodyParts.push({
-        slug: slug as Slug,
-        intensity,
+        slug: slugTyped,
+        color: hexToRgba(groupColor, opacity), // Color personalizado por grupo muscular
+        intensity: count >= 3 ? 2 : 1,
       });
     });
 
@@ -143,24 +185,24 @@ export function MuscleMap({
   // Manejar click en parte del cuerpo
   const handleBodyPartClick = (bodyPart: ExtendedBodyPart) => {
     if (mode === "view") return;
-    
+
     if (!bodyPart.slug) return;
-    
+
     // Obtener todos los músculos que mapean a este slug
     const muscles = getMusclesForBodySlug(bodyPart.slug);
-    
+
     if (muscles.length > 0) {
       // Usar el primer músculo como representante (o podríamos mostrar todos)
       const representativeMuscle = muscles[0];
       if (representativeMuscle) {
         setSelectedMuscle(representativeMuscle);
-        
+
         // Obtener ejercicios para todos los músculos de este grupo
         const allExercises = new Set<string>();
         muscles.forEach((muscle) => {
           getExercisesForMuscle(muscle).forEach((ex) => allExercises.add(ex));
         });
-        
+
         onMuscleSelect?.(representativeMuscle, Array.from(allExercises));
       }
     }
@@ -171,20 +213,15 @@ export function MuscleMap({
     : [];
 
   return (
-    <div className="w-full space-y-4">
-      {/* Header mejorado */}
+    <div className="w-full space-y-3">
+      {/* Header compacto */}
       <div className="flex items-center justify-between pb-2 border-b">
-        <div>
-          <h3 className="text-xs font-semibold">Mapa Muscular</h3>
-          <p className="text-xs text-muted-foreground mt-0.5">
-            Músculos trabajados en este día
-          </p>
-        </div>
-        <div className="flex gap-2">
+        <h3 className="text-xs font-medium">Mapa Muscular</h3>
+        <div className="flex gap-1.5">
           <Button
             variant={view === "front" ? "default" : "outline"}
             size="sm"
-            className="h-8 px-4 text-xs font-medium"
+            className="h-7 px-3 text-xs"
             onClick={() => setView("front")}
           >
             Frontal
@@ -192,7 +229,7 @@ export function MuscleMap({
           <Button
             variant={view === "back" ? "default" : "outline"}
             size="sm"
-            className="h-8 px-4 text-xs font-medium"
+            className="h-7 px-3 text-xs"
             onClick={() => setView("back")}
           >
             Trasera
@@ -200,78 +237,48 @@ export function MuscleMap({
         </div>
       </div>
 
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Componente Body de la librería con mejor diseño */}
-        <div className="flex-1 flex justify-center items-center bg-gradient-to-br from-muted/30 to-background rounded-lg p-6 border border-border shadow-sm">
-          <div className="w-full max-w-md">
+      {/* Componente Body de la librería */}
+      <div className="flex justify-center items-center bg-gradient-to-br from-muted/20 via-background to-muted/10 dark:from-muted/10 dark:via-background dark:to-muted/5 rounded-lg p-4 sm:p-6 border border-border/50 shadow-sm">
+        <div className="w-full max-w-md mx-auto flex justify-center items-center">
+          <div className="w-full flex justify-center items-center [&>svg]:mx-auto [&>svg]:block">
             <Body
               data={bodyPartsData}
               side={view}
               gender="male"
               scale={1.6}
-              border="#d1d5db"
-              colors={["#10b981", "#059669"]} // Verde para músculos trabajados
+              border={isDark ? "#64748b" : "#cbd5e1"}
+              colors={Object.values(muscleGroupColors)}
               onBodyPartClick={handleBodyPartClick}
             />
           </div>
         </div>
-
-        {/* Panel de información - Solo en modo select */}
-        {mode === "select" && selectedMuscle && (
-          <div className="lg:w-64 space-y-2">
-            <div className="border rounded-md p-3 bg-muted/30">
-              <h4 className="text-xs font-medium mb-2">
-                {muscleNames[selectedMuscle]}
-              </h4>
-              {selectedMuscleExercises.length > 0 ? (
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedMuscleExercises.map((exerciseName) => (
-                    <Badge
-                      key={exerciseName}
-                      variant="secondary"
-                      className="text-xs px-2 py-0.5"
-                    >
-                      {exerciseName}
-                    </Badge>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">
-                  Sin ejercicios registrados
-                </p>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Vista de músculos trabajados - Solo en modo view */}
-        {mode === "view" && workedMuscles.size > 0 && (
-          <div className="lg:w-72 space-y-2">
-            <div className="border rounded-lg p-4 bg-card shadow-sm">
-              <h4 className="text-xs font-semibold mb-3 flex items-center gap-2">
-                <span className="h-2 w-2 rounded-full bg-primary"></span>
-                Músculos Trabajados
-              </h4>
-              <ScrollArea className="h-[280px] pr-4">
-                <div className="space-y-2">
-                  {Array.from(workedMuscles).map((muscle) => (
-                    <div
-                      key={muscle}
-                      className="flex items-center justify-between py-2 px-3 rounded-md bg-muted/50 hover:bg-muted transition-colors"
-                    >
-                      <span className="text-xs font-medium">{muscleNames[muscle]}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {getExercisesForMuscle(muscle).length}
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-          </div>
-        )}
       </div>
+
+      {/* Panel de información - Solo en modo select */}
+      {mode === "select" && selectedMuscle && (
+        <div className="border rounded-md p-3 bg-muted/30">
+          <h4 className="text-xs font-medium mb-2">
+            {muscleNames[selectedMuscle]}
+          </h4>
+          {selectedMuscleExercises.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {selectedMuscleExercises.map((exerciseName) => (
+                <Badge
+                  key={exerciseName}
+                  variant="secondary"
+                  className="text-xs px-2 py-0.5"
+                >
+                  {exerciseName}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Sin ejercicios registrados
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
-
