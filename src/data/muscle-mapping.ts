@@ -343,6 +343,3 @@ export function getExercisesForMuscle(muscle: MuscleName): string[] {
     .filter(([, muscles]) => muscles.includes(muscle))
     .map(([exercise]) => exercise);
 }
-
-// Exportar exerciseToMuscles para uso en componentes
-export { exerciseToMuscles };
