@@ -279,6 +279,18 @@ export default function InstructorRegistrationPage() {
         throw new Error(errorData.error || "Error al registrar el instructor");
       }
 
+      // Actualizar la sesión usando el trigger "update" de NextAuth
+      // Esto hará que el callback jwt recargue los datos desde la base de datos
+      if (session?.user) {
+        await update({
+          ...session,
+          user: {
+            ...session.user,
+            isInstructor: true,
+          },
+        });
+      }
+
       // Show success step and reset countdown
       setStep(3);
       setCountdown(10);
@@ -376,7 +388,7 @@ export default function InstructorRegistrationPage() {
                 : "Ya estás registrado como instructor en nuestra plataforma."}
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center py-8">
+          <CardContent className="px-4 text-center py-8">
             <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30 mb-4">
               <svg
                 className="h-8 w-8 text-green-600 dark:text-green-400"
@@ -435,7 +447,7 @@ export default function InstructorRegistrationPage() {
             Completa la información para configurar tu método de pago
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           {step === 1 && (
             <Form {...form}>
               <form className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -996,7 +1008,7 @@ export default function InstructorRegistrationPage() {
                   variant="outline"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
-                  size="default"
+                  size="sm"
                   className="text-xs flex-1"
                 >
                   Volver

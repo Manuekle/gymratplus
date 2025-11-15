@@ -58,7 +58,7 @@ export default function GymRatLanding() {
               </Link>
               <ThemeToggle />
               <Button
-                size="default"
+                size="sm"
                 variant="outline"
                 className="xl:hidden flex text-xs"
                 asChild
@@ -66,7 +66,7 @@ export default function GymRatLanding() {
                 <Link href="/auth/signin">Iniciar sesión</Link>
               </Button>
               <Button
-                size="default"
+                size="sm"
                 className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs"
                 asChild
               >
@@ -329,7 +329,7 @@ export default function GymRatLanding() {
             {/* Plan Alumno */}
             <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-hidden">
               <div className="absolute inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
-              <CardContent className="p-6">
+              <CardContent className="px-4">
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold tracking-heading mb-2">
                     Alumno
@@ -382,7 +382,7 @@ export default function GymRatLanding() {
                   Más popular
                 </div>
               </div>
-              <CardContent className="p-6">
+              <CardContent className="px-4">
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold tracking-heading mb-2">
                     Instructor
@@ -450,7 +450,7 @@ export default function GymRatLanding() {
                   Ahorra 18%
                 </div>
               </div>
-              <CardContent className="p-6">
+              <CardContent className="px-4">
                 <div className="text-center mb-6">
                   <h3 className="text-lg font-semibold tracking-heading mb-2">
                     Instructor Anual

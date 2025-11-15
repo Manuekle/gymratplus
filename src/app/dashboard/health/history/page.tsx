@@ -90,7 +90,7 @@ export default function HealthHistoryPage() {
             <div className="h-8 w-48 rounded-md bg-muted animate-pulse mb-2" />
             <div className="h-4 w-32 rounded-md bg-muted animate-pulse" />
           </CardHeader>
-          <CardContent className="pt-4">
+          <CardContent className="px-4 pt-4">
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
@@ -156,7 +156,7 @@ export default function HealthHistoryPage() {
             {records.length} mediciones en total
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="rounded-md border">
             <Table>
               <TableHeader>

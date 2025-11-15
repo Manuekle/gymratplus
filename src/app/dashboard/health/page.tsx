@@ -106,7 +106,7 @@ export default function HealthPage() {
               <Skeleton className="h-7 w-40 mb-2" />
               <Skeleton className="h-4 w-32" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-6">
                 <div className="grid grid-cols-3 gap-4">
                   {Array.from({ length: 3 }).map((_, i) => (
@@ -128,7 +128,7 @@ export default function HealthPage() {
               <Skeleton className="h-7 w-48 mb-2" />
               <Skeleton className="h-4 w-40" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-4">
                 <Skeleton className="h-20 w-full" />
                 <Skeleton className="h-48 w-full" />
@@ -141,7 +141,7 @@ export default function HealthPage() {
             <Skeleton className="h-7 w-40 mb-2" />
             <Skeleton className="h-4 w-32" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <Skeleton className="h-32 w-full" />
           </CardContent>
         </Card>
@@ -163,7 +163,7 @@ export default function HealthPage() {
               Métricas corporales actuales
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="space-y-6">
               <div className="grid grid-cols-3 gap-4">
                 <div className="space-y-2">
@@ -250,7 +250,7 @@ export default function HealthPage() {
               Metas y nivel de actividad física
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="flex flex-col space-y-2">
@@ -351,7 +351,7 @@ export default function HealthPage() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <GoalsDashboard />
         </CardContent>
       </Card>

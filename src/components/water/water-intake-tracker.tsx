@@ -50,7 +50,7 @@ export function WaterIntakeTracker() {
               Registro diario de consumo de agua
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-row items-center justify-center gap-16">
+          <CardContent className="px-4 flex flex-row items-center justify-center gap-16">
             <Skeleton className="h-64 w-32 rounded-3xl mx-8 md:mx-56" />
             <div className="mt-6 flex flex-col justify-center gap-2">
               <Skeleton className="h-14 w-14 rounded-xl" />
@@ -68,7 +68,7 @@ export function WaterIntakeTracker() {
               Métricas de consumo de agua
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex flex-col items-center">
+          <CardContent className="px-4 flex flex-col items-center">
             <Skeleton className="h-40 w-full mt-8" />
           </CardContent>
         </Card>
@@ -87,7 +87,7 @@ export function WaterIntakeTracker() {
             Registro diario de consumo de agua
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="space-y-6">
             <div className="flex flex-row justify-center items-center">
               <WaterBottle fillPercentage={fillPercentage} />
@@ -110,7 +110,7 @@ export function WaterIntakeTracker() {
             Métricas de consumo de agua
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="space-y-6">
             <WaterHistoryChart
               history={history}

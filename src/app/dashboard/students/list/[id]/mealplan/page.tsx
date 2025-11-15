@@ -806,6 +806,17 @@ export default function CreateMealPlanPage() {
           entries: mealPlan.breakfast.map((item) => ({
             foodId: item.foodId,
             quantity: item.quantity,
+            food: {
+              id: item.food.id,
+              name: item.food.name,
+              category: item.food.category,
+              calories: item.food.calories,
+              protein: item.food.protein,
+              carbs: item.food.carbs,
+              fat: item.food.fat,
+              serving: item.food.serving,
+              servingUnit: item.food.servingUnit,
+            },
           })),
           ...calculateMealTotals(mealPlan.breakfast),
         },
@@ -813,6 +824,17 @@ export default function CreateMealPlanPage() {
           entries: mealPlan.lunch.map((item) => ({
             foodId: item.foodId,
             quantity: item.quantity,
+            food: {
+              id: item.food.id,
+              name: item.food.name,
+              category: item.food.category,
+              calories: item.food.calories,
+              protein: item.food.protein,
+              carbs: item.food.carbs,
+              fat: item.food.fat,
+              serving: item.food.serving,
+              servingUnit: item.food.servingUnit,
+            },
           })),
           ...calculateMealTotals(mealPlan.lunch),
         },
@@ -820,6 +842,17 @@ export default function CreateMealPlanPage() {
           entries: mealPlan.dinner.map((item) => ({
             foodId: item.foodId,
             quantity: item.quantity,
+            food: {
+              id: item.food.id,
+              name: item.food.name,
+              category: item.food.category,
+              calories: item.food.calories,
+              protein: item.food.protein,
+              carbs: item.food.carbs,
+              fat: item.food.fat,
+              serving: item.food.serving,
+              servingUnit: item.food.servingUnit,
+            },
           })),
           ...calculateMealTotals(mealPlan.dinner),
         },
@@ -827,6 +860,17 @@ export default function CreateMealPlanPage() {
           entries: mealPlan.snacks.map((item) => ({
             foodId: item.foodId,
             quantity: item.quantity,
+            food: {
+              id: item.food.id,
+              name: item.food.name,
+              category: item.food.category,
+              calories: item.food.calories,
+              protein: item.food.protein,
+              carbs: item.food.carbs,
+              fat: item.food.fat,
+              serving: item.food.serving,
+              servingUnit: item.food.servingUnit,
+            },
           })),
           ...calculateMealTotals(mealPlan.snacks),
         },
@@ -912,7 +956,7 @@ export default function CreateMealPlanPage() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
           {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
-              <CardContent className="p-4">
+              <CardContent className="px-4">
                 <Skeleton className="h-3 w-20 mb-2" />
                 <Skeleton className="h-6 w-16" />
               </CardContent>
@@ -923,7 +967,7 @@ export default function CreateMealPlanPage() {
           <CardHeader>
             <Skeleton className="h-5 w-32" />
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="px-4 space-y-3">
             <Skeleton className="h-2 w-full rounded-full" />
             <div className="grid grid-cols-3 gap-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -938,7 +982,7 @@ export default function CreateMealPlanPage() {
               <CardHeader>
                 <Skeleton className="h-5 w-32" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <Skeleton className="h-64 w-full rounded-lg" />
               </CardContent>
             </Card>
@@ -989,13 +1033,13 @@ export default function CreateMealPlanPage() {
           </p>
         </CardHeader>
 
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="px-4 space-y-4 sm:space-y-6">
           {loadingProfile ? (
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <Card key={i}>
-                    <CardContent className="p-4">
+                    <CardContent className="px-4">
                       <div className="flex items-center justify-between">
                         <div className="space-y-2">
                           <Skeleton className="h-3 w-20" />
@@ -1010,7 +1054,7 @@ export default function CreateMealPlanPage() {
                 ))}
               </div>
               <Card>
-                <CardContent className="p-4 sm:p-6">
+                <CardContent className="px-4">
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
                       <Skeleton className="h-4 w-20" />
@@ -1050,7 +1094,7 @@ export default function CreateMealPlanPage() {
                 <div className="lg:col-span-1">
                   <div className="sticky top-4 sm:top-6">
                     <Card className="border-muted/50">
-                      <CardContent className="p-3 sm:p-4">
+                      <CardContent className="px-4">
                         <div className="flex items-center justify-center mb-3 sm:mb-4">
                           <Skeleton className="h-24 w-24 sm:h-32 sm:w-32 rounded-full" />
                         </div>
@@ -1072,7 +1116,7 @@ export default function CreateMealPlanPage() {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Proteínas */}
                 <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-                  <CardContent className="p-3">
+                  <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h1 className="text-xs text-muted-foreground">
@@ -1108,7 +1152,7 @@ export default function CreateMealPlanPage() {
 
                 {/* Carbohidratos */}
                 <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
-                  <CardContent className="p-3">
+                  <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h1 className="text-xs text-muted-foreground">
@@ -1143,7 +1187,7 @@ export default function CreateMealPlanPage() {
 
                 {/* Grasas */}
                 <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
-                  <CardContent className="p-3">
+                  <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>
                         <h1 className="text-xs text-muted-foreground">
@@ -1447,7 +1491,7 @@ export default function CreateMealPlanPage() {
                 <div className="lg:col-span-1">
                   <div className="sticky top-4 sm:top-6 space-y-3 sm:space-y-4">
                     <Card className="border-muted/50">
-                      <CardContent className="p-3 sm:p-4">
+                      <CardContent className="px-4">
                         {mealPlan[activeMeal].length === 0 &&
                         Object.values(mealPlan).every(
                           (meal) => meal.length === 0,

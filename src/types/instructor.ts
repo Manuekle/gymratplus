@@ -21,7 +21,6 @@ export interface InstructorFilters {
   tagFilter?: string | null;
   country?: string | null;
   isRemote?: string | null;
-  isVerified?: string | null;
   maxPrice?: string | null;
   experienceLevel?: string | null;
 }

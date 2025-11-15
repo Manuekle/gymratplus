@@ -38,24 +38,21 @@ export function CancelPlanDialog({
         throw new Error(errorData.error || "Error al cancelar el plan");
       }
 
-      // 2. Update the session with the new instructor status
-      await fetch("/api/auth/session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ isInstructor: false }),
-        credentials: "include",
-      });
+      // 2. Actualizar la sesión usando el trigger "update" de NextAuth
+      // Esto hará que el callback jwt recargue los datos desde la base de datos
+      if (session?.user) {
+        await update({
+          ...session,
+          user: {
+            ...session.user,
+            isInstructor: false,
+          },
+        });
+      }
 
       // 3. Call onSuccess callback if provided
       if (onSuccess) {
         await onSuccess();
-      }
-
-      // 4. Update the local session
-      if (session?.user) {
-        await update();
       }
 
       // 4. Show success message
@@ -80,7 +77,7 @@ export function CancelPlanDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-y-auto pt-20 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <DialogContent className="overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">
             ¿Cancelar plan de instructor?

@@ -61,7 +61,7 @@ export default function SignInPage() {
               Ingresa a tu cuenta para acceder a tu perfil de fitness
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="px-4 space-y-4">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="flex flex-col gap-2">
                 <Label className="text-xs md:text-xs" htmlFor="email">

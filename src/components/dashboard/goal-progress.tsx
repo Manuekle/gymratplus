@@ -81,7 +81,7 @@ export default function GoalProgress() {
         </CardAction>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="px-4 flex-1 flex flex-col">
         <div className="space-y-3 flex-1">
           {isLoading ? (
             <div className="space-y-3">

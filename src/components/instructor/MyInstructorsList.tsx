@@ -40,7 +40,7 @@ export default function MyInstructorsList() {
             <AvatarImage src={inst.image || undefined} alt={inst.name} />
             <AvatarFallback>{inst.name?.[0] ?? "I"}</AvatarFallback>
           </Avatar>
-          <CardContent className="flex-1 p-0">
+          <CardContent className="flex-1 px-4">
             <h3 className="font-semibold text-lg">{inst.name}</h3>
             {inst.bio && (
               <p className="text-xs text-muted-foreground mb-1">{inst.bio}</p>

@@ -55,7 +55,11 @@ export async function POST(request: NextRequest) {
     });
 
     // Limpiar todas las cachés relacionadas con el usuario
-    const cacheKeys = [];
+    const cacheKeys = [
+      `user:${userId}:data`,
+      `profile:${userId}`,
+      `session:${userId}`,
+    ];
 
     // Eliminar todas las cachés
     await Promise.all(cacheKeys.map((key) => redis.del(key)));

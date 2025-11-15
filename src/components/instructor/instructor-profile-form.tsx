@@ -240,26 +240,30 @@ export function InstructorProfileForm({
   }
 
   return (
-    <div>
+    <div className="space-y-6">
       {!isEditing && profileData ? (
         <div className="space-y-6">
           {profileData.bio && (
-            <div className="w-full">
-              <h4 className="text-xs font-medium">Biografía</h4>
-              <p className="mt-1 break-words text-xs text-muted-foreground">
+            <div className="w-full p-4 rounded-lg border bg-muted/30">
+              <h4 className="text-sm font-semibold mb-2 tracking-heading">
+                Biografía
+              </h4>
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 {profileData.bio}
               </p>
             </div>
           )}
 
           {profileData.specialties?.length > 0 && (
-            <div>
-              <h4 className="text-xs font-medium">Especialidades</h4>
-              <div className="mt-1 flex flex-wrap gap-2">
+            <div className="p-4 rounded-lg border bg-muted/30">
+              <h4 className="text-sm font-semibold mb-3 tracking-heading">
+                Especialidades
+              </h4>
+              <div className="flex flex-wrap gap-2">
                 {profileData.specialties.map((specialty) => (
                   <span
                     key={specialty}
-                    className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground"
+                    className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1.5 text-xs font-medium border border-primary/20"
                   >
                     {specialty}
                   </span>
@@ -268,46 +272,72 @@ export function InstructorProfileForm({
             </div>
           )}
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(profileData.country || profileData.city) && (
+              <div className="p-4 rounded-lg border bg-muted/30">
+                <h4 className="text-sm font-semibold mb-2 tracking-heading">
+                  Ubicación
+                </h4>
+                <p className="text-xs text-muted-foreground">
+                  {[profileData.city, profileData.country]
+                    .filter(Boolean)
+                    .join(", ")}
+                  {profileData.isRemote && (
+                    <span className="block mt-1 text-primary">
+                      ✓ También atiendo de forma remota
+                    </span>
+                  )}
+                </p>
+              </div>
+            )}
+
+            {profileData.pricePerMonth && (
+              <div className="p-4 rounded-lg border bg-muted/30">
+                <h4 className="text-sm font-semibold mb-2 tracking-heading">
+                  Precio por mes
+                </h4>
+                <p className="text-lg font-semibold text-foreground">
+                  ${profileData.pricePerMonth.toLocaleString()}
+                </p>
+              </div>
+            )}
+          </div>
+
           {(profileData.contactEmail || profileData.contactPhone) && (
-            <div>
-              <h4 className="text-xs font-medium">Información de contacto</h4>
-              <div className="mt-1 space-y-1 text-xs text-muted-foreground">
+            <div className="p-4 rounded-lg border bg-muted/30">
+              <h4 className="text-sm font-semibold mb-2 tracking-heading">
+                Información de contacto
+              </h4>
+              <div className="space-y-1.5 text-xs text-muted-foreground">
                 {profileData.contactEmail && (
-                  <div>Email: {profileData.contactEmail}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Email:</span>
+                    <span>{profileData.contactEmail}</span>
+                  </div>
                 )}
                 {profileData.contactPhone && (
-                  <div>Teléfono: {profileData.contactPhone}</div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">Teléfono:</span>
+                    <span>{profileData.contactPhone}</span>
+                  </div>
                 )}
               </div>
             </div>
           )}
 
-          {(profileData.country || profileData.city) && (
-            <div>
-              <h4 className="text-xs font-medium">Ubicación</h4>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {[profileData.city, profileData.country]
-                  .filter(Boolean)
-                  .join(", ")}
-                {profileData.isRemote && " (También atiendo de forma remota)"}
-              </p>
-            </div>
-          )}
-
-          {profileData.pricePerMonth && (
-            <div>
-              <h4 className="text-xs font-medium">Precio por mes</h4>
-              <p className="mt-1 text-xs text-muted-foreground">
-                ${profileData.pricePerMonth.toLocaleString()}
-              </p>
-            </div>
-          )}
-
-          <div>
+          <div className="flex items-center justify-between pt-4 border-t">
+            <Button
+              onClick={toggleEditMode}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              Editar perfil
+            </Button>
             <Button
               variant="destructive"
               size="sm"
-              className="mt-4"
+              className="text-xs"
               onClick={() => setIsCancelDialogOpen(true)}
             >
               Cancelar plan de instructor
@@ -333,7 +363,7 @@ export function InstructorProfileForm({
                     <FormControl>
                       <Textarea
                         placeholder="Cuéntales a los estudiantes sobre ti y tu experiencia..."
-                        className="min-h-[120px]"
+                        className="min-h-[120px] resize-none"
                         {...field}
                       />
                     </FormControl>
@@ -522,18 +552,11 @@ export function InstructorProfileForm({
           </form>
         </Form>
       )}
-      <div className="flex flex-row items-center justify-between w-full pt-4">
-        {!isEditing && (
-          <Button onClick={toggleEditMode} variant="outline" size="sm">
-            Editar perfil
-          </Button>
-        )}
-        <CancelPlanDialog
-          open={isCancelDialogOpen}
-          onOpenChange={setIsCancelDialogOpen}
-          onSuccess={handleCancelSuccess}
-        />
-      </div>
+      <CancelPlanDialog
+        open={isCancelDialogOpen}
+        onOpenChange={setIsCancelDialogOpen}
+        onSuccess={handleCancelSuccess}
+      />
     </div>
   );
 }

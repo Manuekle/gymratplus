@@ -94,21 +94,43 @@ export default function FoodRecommendations() {
 
     const fetchFoods = async () => {
       try {
-        const response = await fetch("/api/foods");
-        if (!response.ok) {
-          throw new Error("Failed to fetch foods");
-        }
-        const responseData = await response.json();
+        // Cargar todos los alimentos con paginación
+        let allFoods: any[] = [];
+        let skip = 0;
+        const limit = 100;
+        let hasMore = true;
 
-        // Handle both array and paginated response formats
-        const foodsData = Array.isArray(responseData)
-          ? responseData
-          : responseData.data || [];
+        while (hasMore) {
+          const response = await fetch(
+            `/api/foods?skip=${skip}&limit=${limit}`,
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch foods");
+          }
+          const responseData = await response.json();
+
+          // Handle both array and paginated response formats
+          const foodsData = Array.isArray(responseData)
+            ? responseData
+            : responseData.data || [];
+
+          allFoods = [...allFoods, ...foodsData];
+
+          // Verificar si hay más páginas
+          if (responseData.pagination) {
+            hasMore = responseData.pagination.hasMore || false;
+            skip += limit;
+          } else {
+            hasMore = false;
+          }
+        }
 
         // Create a map of food IDs to food objects
         const foodsMap: Record<string, any> = {};
-        foodsData.forEach((food: any) => {
-          foodsMap[food.id] = food;
+        allFoods.forEach((food: any) => {
+          if (food && food.id) {
+            foodsMap[food.id] = food;
+          }
         });
 
         setFoods(foodsMap);
@@ -146,7 +168,7 @@ export default function FoodRecommendations() {
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
-            <CardContent className="flex justify-between items-center">
+            <CardContent className="px-4 flex justify-between items-center">
               <div className="space-y-1">
                 <Skeleton className="h-7 w-16" />
                 <Skeleton className="h-4 w-12" />
@@ -158,7 +180,7 @@ export default function FoodRecommendations() {
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
-            <CardContent className="flex justify-between items-center">
+            <CardContent className="px-4 flex justify-between items-center">
               <div className="space-y-1">
                 <Skeleton className="h-7 w-16" />
                 <Skeleton className="h-4 w-12" />
@@ -170,7 +192,7 @@ export default function FoodRecommendations() {
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
-            <CardContent className="flex justify-between items-center">
+            <CardContent className="px-4 flex justify-between items-center">
               <div className="space-y-1">
                 <Skeleton className="h-7 w-16" />
                 <Skeleton className="h-4 w-12" />
@@ -323,19 +345,41 @@ export default function FoodRecommendations() {
         if (parsedData.length > 0) {
           setSelectedRecommendation(parsedData[0]);
         }
-        // Reload foods as well
-        const foodsResponse = await fetch("/api/foods");
-        if (foodsResponse.ok) {
-          const foodsData = await foodsResponse.json();
-          const foodsArray = Array.isArray(foodsData)
-            ? foodsData
-            : foodsData.data || [];
-          const foodsMap: Record<string, any> = {};
-          foodsArray.forEach((food: any) => {
-            foodsMap[food.id] = food;
-          });
-          setFoods(foodsMap);
+        // Reload foods as well (con paginación)
+        let allFoods: any[] = [];
+        let skip = 0;
+        const limit = 100;
+        let hasMore = true;
+
+        while (hasMore) {
+          const foodsResponse = await fetch(
+            `/api/foods?skip=${skip}&limit=${limit}`,
+          );
+          if (foodsResponse.ok) {
+            const foodsData = await foodsResponse.json();
+            const foodsArray = Array.isArray(foodsData)
+              ? foodsData
+              : foodsData.data || [];
+            allFoods = [...allFoods, ...foodsArray];
+
+            if (foodsData.pagination) {
+              hasMore = foodsData.pagination.hasMore || false;
+              skip += limit;
+            } else {
+              hasMore = false;
+            }
+          } else {
+            hasMore = false;
+          }
         }
+
+        const foodsMap: Record<string, any> = {};
+        allFoods.forEach((food: any) => {
+          if (food && food.id) {
+            foodsMap[food.id] = food;
+          }
+        });
+        setFoods(foodsMap);
       }
     } catch (error: any) {
       console.error("Error generating plan:", error);
@@ -370,7 +414,7 @@ export default function FoodRecommendations() {
               No tienes ningún plan de alimentación guardado.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
               <div className="text-center space-y-2">
                 <h3 className="text-lg font-semibold tracking-heading">
@@ -472,73 +516,82 @@ export default function FoodRecommendations() {
       </div>
 
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle className="text-2xl font-semibold  tracking-heading">
-            Tu Plan de Alimentación
-          </CardTitle>
-          <CardDescription className="text-muted-foreground text-xs">
-            Según su perfil, hemos creado planes de nutrición para usted
-          </CardDescription>
-          <div className="flex justify-between items-center">
-            {recommendations.length > 1 && (
-              <div className="flex items-center space-x-2">
-                <span className="text-xs text-muted-foreground">
-                  Historial:
-                </span>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={cn(
-                        "w-[200px] justify-start text-left font-normal text-xs",
-                        !selectedRecommendation && "text-muted-foreground",
-                      )}
-                    >
-                      <HugeiconsIcon
-                        icon={Calendar01Icon}
-                        className="mr-2 h-4 w-4"
-                      />
-                      {selectedRecommendation ? (
-                        format(
-                          new Date(selectedRecommendation.createdAt),
-                          "PPP",
-                        )
-                      ) : (
-                        <span>Selecciona una fecha</span>
-                      )}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <div className="max-h-[300px] overflow-y-auto">
-                      {recommendations.map((rec) => (
-                        <div
-                          key={rec.id}
-                          className={cn(
-                            "p-2 text-xs cursor-pointer hover:bg-accent",
-                            selectedRecommendation?.id === rec.id &&
-                              "bg-accent",
-                          )}
-                          onClick={() => setSelectedRecommendation(rec)}
-                        >
-                          {format(new Date(rec.createdAt), "PPP")}
-                        </div>
-                      ))}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-              </div>
-            )}
+        <CardHeader className="space-y-3">
+          <div>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Tu Plan de Alimentación
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-xs mt-1">
+              Según su perfil, hemos creado planes de nutrición para usted
+            </CardDescription>
           </div>
+          {recommendations.length > 1 && (
+            <div className="space-y-2 pt-2 border-t">
+              <span className="text-xs font-semibold text-foreground">
+                Historial de Planes:
+              </span>
+              <div className="flex flex-wrap gap-2">
+                {recommendations
+                  .sort(
+                    (a, b) =>
+                      new Date(b.createdAt).getTime() -
+                      new Date(a.createdAt).getTime(),
+                  )
+                  .map((rec) => {
+                    const recMacros =
+                      typeof rec.macros === "string"
+                        ? JSON.parse(rec.macros)
+                        : rec.macros;
+                    const calorieTarget =
+                      rec.calorieTarget || recMacros?.calorieTarget;
+
+                    return (
+                      <Button
+                        key={rec.id}
+                        variant={
+                          selectedRecommendation?.id === rec.id
+                            ? "default"
+                            : "outline"
+                        }
+                        size="sm"
+                        className={cn(
+                          "text-xs h-auto py-2 px-3",
+                          selectedRecommendation?.id === rec.id &&
+                            "font-semibold",
+                        )}
+                        onClick={() => setSelectedRecommendation(rec)}
+                      >
+                        <div className="flex items-center gap-1.5">
+                          <HugeiconsIcon
+                            icon={Calendar01Icon}
+                            className="h-3.5 w-3.5 flex-shrink-0"
+                          />
+                          <div className="flex flex-col items-start">
+                            <span className="leading-tight">
+                              {format(new Date(rec.createdAt), "d MMM yyyy")}
+                            </span>
+                            {calorieTarget && (
+                              <span className="text-[10px] opacity-75 leading-tight">
+                                {calorieTarget} kcal
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </Button>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="grid grid-cols-3 gap-4 mb-6">
             {/* <div className="space-y-1">
             <p className="text-xs text-muted-foreground">Protein</p>
             
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-xs text-muted-foreground">Proteínas</h1>
@@ -560,7 +613,7 @@ export default function FoodRecommendations() {
             {formatMacro(macros.carbs)}
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-xs text-muted-foreground">
@@ -584,7 +637,7 @@ export default function FoodRecommendations() {
             {formatMacro(macros.fat)}
           </div> */}
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <h1 className="text-xs text-muted-foreground">Grasas</h1>
@@ -643,7 +696,7 @@ export default function FoodRecommendations() {
                         | Grasas: {meal.fat || 0}g
                       </CardDescription>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="px-4">
                       <div className="rounded-md border">
                         <Table>
                           <TableHeader>
@@ -669,14 +722,106 @@ export default function FoodRecommendations() {
                           <TableBody>
                             {mealEntries.length > 0 ? (
                               mealEntries.map((entry: any, index: number) => {
-                                const food = foods[entry.foodId] || {
-                                  name: `Alimento ${entry.foodId}`,
-                                  category: "Desconocido",
-                                  calories: 0,
-                                  protein: 0,
-                                  carbs: 0,
-                                  fat: 0,
-                                };
+                                const food = foods[entry.foodId];
+
+                                // Si no se encuentra el alimento, intentar cargarlo o mostrar mensaje apropiado
+                                if (!food) {
+                                  // Si el entry tiene información del alimento directamente, usarla
+                                  if (entry.food) {
+                                    const servingSize =
+                                      entry.food.serving || 100;
+                                    const multiplier =
+                                      (entry.quantity || 0) *
+                                      (servingSize / 100);
+
+                                    return (
+                                      <TableRow key={index}>
+                                        <TableCell className="font-medium">
+                                          <div className="flex flex-col">
+                                            <span>
+                                              {entry.food.name ||
+                                                "Alimento no disponible"}
+                                            </span>
+                                            <span className="text-xs text-muted-foreground">
+                                              {entry.food.category || "N/A"}
+                                            </span>
+                                          </div>
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {Math.round(
+                                            (entry.quantity || 0) * 100,
+                                          )}
+                                          g
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {Math.round(
+                                            (entry.food.calories || 0) *
+                                              multiplier,
+                                          )}
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell text-center">
+                                          {(
+                                            (entry.food.protein || 0) *
+                                            multiplier
+                                          ).toFixed(1)}
+                                          g
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell text-center">
+                                          {(
+                                            (entry.food.carbs || 0) * multiplier
+                                          ).toFixed(1)}
+                                          g
+                                        </TableCell>
+                                        <TableCell className="hidden md:table-cell text-center">
+                                          {(
+                                            (entry.food.fat || 0) * multiplier
+                                          ).toFixed(1)}
+                                          g
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  }
+
+                                  // Si no hay información del alimento, mostrar mensaje
+                                  return (
+                                    <TableRow key={index}>
+                                      <TableCell className="font-medium">
+                                        <div className="flex flex-col">
+                                          <span className="text-muted-foreground italic">
+                                            Alimento no encontrado
+                                          </span>
+                                          <span className="text-xs text-muted-foreground">
+                                            ID: {entry.foodId?.substring(0, 8)}
+                                            ...
+                                          </span>
+                                        </div>
+                                      </TableCell>
+                                      <TableCell className="text-center">
+                                        {Math.round(
+                                          (entry.quantity || 0) * 100,
+                                        )}
+                                        g
+                                      </TableCell>
+                                      <TableCell className="text-center">
+                                        -
+                                      </TableCell>
+                                      <TableCell className="hidden md:table-cell text-center">
+                                        -
+                                      </TableCell>
+                                      <TableCell className="hidden md:table-cell text-center">
+                                        -
+                                      </TableCell>
+                                      <TableCell className="hidden md:table-cell text-center">
+                                        -
+                                      </TableCell>
+                                    </TableRow>
+                                  );
+                                }
+
+                                // Calcular con el serving size correcto
+                                const servingSize = food.serving || 100;
+                                const multiplier =
+                                  (entry.quantity || 0) * (servingSize / 100);
 
                                 return (
                                   <TableRow key={index}>
@@ -684,7 +829,7 @@ export default function FoodRecommendations() {
                                       <div className="flex flex-col">
                                         <span>{food.name}</span>
                                         <span className="text-xs text-muted-foreground">
-                                          {food.category}
+                                          {food.category || "N/A"}
                                         </span>
                                       </div>
                                     </TableCell>
@@ -693,28 +838,25 @@ export default function FoodRecommendations() {
                                     </TableCell>
                                     <TableCell className="text-center">
                                       {Math.round(
-                                        (food.calories || 0) *
-                                          (entry.quantity || 0),
+                                        (food.calories || 0) * multiplier,
                                       )}
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
                                       {(
-                                        (food.protein || 0) *
-                                        (entry.quantity || 0)
+                                        (food.protein || 0) * multiplier
                                       ).toFixed(1)}
                                       g
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {(
-                                        (food.carbs || 0) *
-                                        (entry.quantity || 0)
-                                      ).toFixed(1)}
+                                      {((food.carbs || 0) * multiplier).toFixed(
+                                        1,
+                                      )}
                                       g
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {(
-                                        (food.fat || 0) * (entry.quantity || 0)
-                                      ).toFixed(1)}
+                                      {((food.fat || 0) * multiplier).toFixed(
+                                        1,
+                                      )}
                                       g
                                     </TableCell>
                                   </TableRow>

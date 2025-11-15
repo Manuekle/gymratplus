@@ -8,7 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { format, isToday } from "date-fns";
 import { es } from "date-fns/locale";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
@@ -86,8 +85,10 @@ export default function StudentDetailPage() {
 
   const [student, setStudent] = useState<StudentDetail | null>(null);
   const [workouts, setWorkouts] = useState<AssignedWorkout[]>([]);
+  const [foodPlans, setFoodPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState<boolean>(true);
+  const [loadingFoodPlans, setLoadingFoodPlans] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedWorkout, setSelectedWorkout] =
     useState<AssignedWorkout | null>(null);
@@ -172,6 +173,46 @@ export default function StudentDetailPage() {
     fetchWorkouts();
   }, [student]); // Se ejecuta cuando 'student' se ha cargado
 
+  // --- Lógica de Fetch de Planes de Alimentación ---
+  useEffect(() => {
+    const fetchFoodPlans = async () => {
+      if (!student?.studentId) return;
+
+      setLoadingFoodPlans(true);
+      try {
+        const res = await fetch(
+          `/api/instructors/students/${student.studentId}/food-plans`,
+        );
+        if (!res.ok) throw new Error("No se pudieron cargar los planes");
+        const data = await res.json();
+
+        // Parsear los JSON strings si es necesario
+        const parsedData = data.map((item: any) => ({
+          ...item,
+          macros:
+            typeof item.macros === "string"
+              ? JSON.parse(item.macros)
+              : item.macros,
+          meals:
+            typeof item.meals === "string"
+              ? JSON.parse(item.meals)
+              : item.meals,
+        }));
+
+        setFoodPlans(parsedData);
+      } catch (error) {
+        console.error("Error fetching food plans:", error);
+        toast.error("Error al cargar planes de alimentación", {
+          description: "Hubo un problema al obtener los planes asignados.",
+        });
+        setFoodPlans([]);
+      } finally {
+        setLoadingFoodPlans(false);
+      }
+    };
+    fetchFoodPlans();
+  }, [student]); // Se ejecuta cuando 'student' se ha cargado
+
   // --- Lógica del Modal (Agrupación de ejercicios por día) ---
   const groupedExercises = useMemo(() => {
     if (!selectedWorkout) return {};
@@ -204,6 +245,9 @@ export default function StudentDetailPage() {
   if (loading) {
     return (
       <div>
+        <div className="mb-4">
+          <Skeleton className="h-9 w-40" />
+        </div>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-80 space-y-3">
             <Card>
@@ -214,7 +258,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-3 w-24" />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="px-4 space-y-2">
                 <Skeleton className="h-16 w-full" />
               </CardContent>
             </Card>
@@ -225,7 +269,7 @@ export default function StudentDetailPage() {
               <CardHeader className="pb-2">
                 <Skeleton className="h-5 w-24" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
@@ -307,14 +351,15 @@ export default function StudentDetailPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="px-4 space-y-3">
               {/* Compact Stats Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="flex flex-col p-2 rounded-md bg-muted/50">
                   <span className="text-muted-foreground">Racha</span>
                   <span className="font-semibold text-xs flex items-center gap-1">
                     <HugeiconsIcon icon={FireIcon} className="h-3 w-3" />
-                    {student.currentWorkoutStreak} días
+                    {student.currentWorkoutStreak}{" "}
+                    {student.currentWorkoutStreak === 1 ? "día" : "días"}
                   </span>
                 </div>
                 <div className="flex flex-col p-2 rounded-md bg-muted/50">
@@ -400,7 +445,7 @@ export default function StudentDetailPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               {loadingWorkouts ? (
                 <div className="space-y-2">
                   <Skeleton className="h-16 w-full" />
@@ -439,17 +484,19 @@ export default function StudentDetailPage() {
                         }}
                       >
                         {/* Status Badge */}
-                        <div className="absolute top-3 right-3">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
-                          >
-                            {w.status === "completed"
-                              ? "Completado"
-                              : w.status === "in_progress"
-                                ? "En progreso"
-                                : "Pendiente"}
-                          </span>
-                        </div>
+                        {w.status !== "pending" && (
+                          <div className="absolute top-3 right-3">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
+                            >
+                              {w.status === "completed"
+                                ? "Completado"
+                                : w.status === "in_progress"
+                                  ? "En progreso"
+                                  : ""}
+                            </span>
+                          </div>
+                        )}
 
                         <div className="flex flex-col h-full">
                           {/* Workout Name */}
@@ -557,16 +604,105 @@ export default function StudentDetailPage() {
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center justify-center text-center py-8">
-                <h3 className="text-xs font-medium mb-2">
-                  No hay planes de alimentación
-                </h3>
-                <p className="text-xs text-muted-foreground max-w-sm mb-4">
-                  Crea un plan de alimentación personalizado para este alumno
-                  basado en su perfil nutricional.
-                </p>
-              </div>
+            <CardContent className="px-4">
+              {loadingFoodPlans ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
+                </div>
+              ) : foodPlans.length === 0 ? (
+                <div className="flex flex-col items-center justify-center text-center py-8">
+                  <h3 className="text-xs font-medium mb-2">
+                    No hay planes de alimentación
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-sm mb-4">
+                    Crea un plan de alimentación personalizado para este alumno
+                    basado en su perfil nutricional.
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {foodPlans.map((plan: any) => {
+                    const macros =
+                      typeof plan.macros === "string"
+                        ? JSON.parse(plan.macros)
+                        : plan.macros;
+
+                    return (
+                      <div
+                        key={plan.id}
+                        className="group relative p-4 border rounded-xl hover:shadow-md transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
+                      >
+                        <div className="flex flex-col h-full">
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="text-lg tracking-heading font-semibold pr-2">
+                              Plan de Alimentación
+                            </h3>
+                            <Badge variant="secondary" className="text-xs">
+                              {format(new Date(plan.createdAt), "d MMM yyyy", {
+                                locale: es,
+                              })}
+                            </Badge>
+                          </div>
+
+                          <div className="space-y-2 text-xs">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <HugeiconsIcon
+                                icon={FireIcon}
+                                className="h-3.5 w-3.5 flex-shrink-0"
+                              />
+                              <span>{plan.calorieTarget} kcal objetivo</span>
+                            </div>
+
+                            {macros && (
+                              <div className="space-y-1 pt-2 border-t">
+                                {macros.protein && (
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">
+                                      Proteína:
+                                    </span>
+                                    <span className="font-medium">
+                                      {macros.protein}
+                                    </span>
+                                  </div>
+                                )}
+                                {macros.carbs && (
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">
+                                      Carbohidratos:
+                                    </span>
+                                    <span className="font-medium">
+                                      {macros.carbs}
+                                    </span>
+                                  </div>
+                                )}
+                                {macros.fat && (
+                                  <div className="flex justify-between">
+                                    <span className="text-muted-foreground">
+                                      Grasas:
+                                    </span>
+                                    <span className="font-medium">
+                                      {macros.fat}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {plan.notes && (
+                              <div className="pt-2 border-t">
+                                <p className="text-xs text-muted-foreground line-clamp-2">
+                                  {plan.notes}
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -577,7 +713,7 @@ export default function StudentDetailPage() {
                 Resumen de Actividad
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-2 text-xs">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">
@@ -591,7 +727,8 @@ export default function StudentDetailPage() {
                   <span className="text-muted-foreground">Racha actual</span>
                   <span className="font-normal flex items-center gap-1">
                     <HugeiconsIcon icon={FireIcon} className="h-3 w-3 " />
-                    {student.currentWorkoutStreak} días
+                    {student.currentWorkoutStreak}{" "}
+                    {student.currentWorkoutStreak === 1 ? "día" : "días"}
                   </span>
                 </div>
                 {student.lastNutritionLog && (
@@ -713,7 +850,7 @@ export default function StudentDetailPage() {
                       ))}
                     </div>
                   </div>
-                  <ScrollArea className="max-h-[400px] w-full">
+                  <div className="max-h-[400px] w-full overflow-y-auto scroll-hidden">
                     <div className="space-y-1 pr-2">
                       {(groupedExercises[selectedDay] ?? []).map(
                         (ex: AssignedWorkoutExercise, idx: number) => (
@@ -727,11 +864,11 @@ export default function StudentDetailPage() {
                               </h4>
                               <div className="flex items-center gap-3 text-xs flex-shrink-0">
                                 <span className="text-muted-foreground whitespace-nowrap">
-                                  {ex.sets}×{ex.reps}
+                                  {ex.sets} × {ex.reps}
                                 </span>
                                 {ex.restTime && (
                                   <span className="font-medium whitespace-nowrap">
-                                    ⏱️{ex.restTime}s
+                                    ⏱️ {ex.restTime}s
                                   </span>
                                 )}
                               </div>
@@ -745,7 +882,7 @@ export default function StudentDetailPage() {
                         ),
                       )}
                     </div>
-                  </ScrollArea>
+                  </div>
                 </div>
               )}
             </div>

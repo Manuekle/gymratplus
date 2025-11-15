@@ -174,7 +174,7 @@ export function GoalsDashboard() {
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
+          <CardContent className="px-4 pt-0">
             <div className="space-y-4">
               <div className="flex flex-col gap-1.5">
                 <div className="flex justify-between items-center text-xs">
@@ -273,14 +273,6 @@ export function GoalsDashboard() {
             </div>
           ) : goals.length === 0 ? (
             <div className="text-center py-16">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 rounded-full bg-muted">
-                  <HugeiconsIcon
-                    icon={Target02Icon}
-                    className="h-10 w-10 text-muted-foreground opacity-40"
-                  />
-                </div>
-              </div>
               <h3 className="text-xs font-medium mb-2">
                 No hay objetivos activos
               </h3>
@@ -288,11 +280,6 @@ export function GoalsDashboard() {
                 Establece objetivos para hacer seguimiento de tu progreso y
                 alcanzar tus metas
               </p>
-              <Link href="/dashboard/health/goal">
-                <Button size="sm" variant="default" className="text-xs">
-                  Crear objetivo
-                </Button>
-              </Link>
             </div>
           ) : (
             <div className="space-y-4">

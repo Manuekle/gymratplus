@@ -297,7 +297,7 @@ export function ExerciseProgressChart() {
 
       {selectedExercises.length > 0 && filteredData.length > 0 ? (
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="px-4 pt-6">
             <div className="h-[300px] w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
@@ -400,7 +400,7 @@ export function ExerciseProgressChart() {
         </Card>
       ) : (
         <Card>
-          <CardContent className="">
+          <CardContent className="px-4">
             {selectedExercises.length === 0 ? (
               <p className="text-center text-xs font-medium">
                 Selecciona al menos un ejercicio para mostrar su progreso

@@ -12,22 +12,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Calendar01Icon,
-  Dollar01Icon,
-  GlobeIcon,
-  GraduateMaleIcon,
-  Mail01Icon,
-  Mail02Icon,
-  MapPinIcon,
-  PhoneOff01Icon,
-  UserGroupIcon,
-} from "@hugeicons/core-free-icons";
+import { GlobeIcon, MapPinIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { StartChatButton } from "@/components/chats/start-chat-button";
 
@@ -109,20 +98,15 @@ export default function InstructorPage() {
     fetchInstructors();
   }, [fetchInstructors]);
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("es-ES", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    }).format(new Date(date));
-  };
-
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-96" />
+        <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-48" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-9 w-40" />
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
@@ -133,22 +117,13 @@ export default function InstructorPage() {
                   <div className="space-y-2 flex-1">
                     <Skeleton className="h-5 w-32" />
                     <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-6 w-16" />
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </div>
-                <Separator />
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-20" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </div>
+              <CardContent className="px-4 space-y-4">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-8 w-full" />
+                <Skeleton className="h-9 w-full" />
               </CardContent>
             </Card>
           ))}
@@ -158,67 +133,19 @@ export default function InstructorPage() {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              Total Instructores
-            </CardTitle>
-            <HugeiconsIcon
-              icon={UserGroupIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">{instructors.length}</div>
-            <p className="text-xs text-muted-foreground">
-              {instructors.filter((i) => i.status === "active").length} activos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              Modalidades
-            </CardTitle>
-            <HugeiconsIcon
-              icon={GlobeIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
-              {instructors.filter((i) => i.isRemote).length}
-            </div>
-            <p className="text-xs text-muted-foreground">
-              instructores remotos
-            </p>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              Inversión Mensual
-            </CardTitle>
-            <HugeiconsIcon
-              icon={Dollar01Icon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl sont-semibold">
-              ${instructors.reduce((sum, i) => sum + (i.pricePerMonth || 0), 0)}
-            </div>
-            <p className="text-xs text-muted-foreground">total por mes</p>
-          </CardContent>
-        </Card>
-      </div>
-      <div className="flex justify-end">
-        <Button asChild>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl tracking-heading font-semibold">
+            Mis Instructores
+          </h1>
+          <p className="text-xs text-muted-foreground mt-1">
+            {instructors.length} instructor
+            {instructors.length !== 1 ? "es" : ""} asignado
+            {instructors.length !== 1 ? "s" : ""}
+          </p>
+        </div>
+        <Button size="sm" asChild>
           <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
         </Button>
       </div>
@@ -280,15 +207,7 @@ export default function InstructorPage() {
                         )}
                       </CardDescription>
                     </div>
-                    {instructor.studentInstructorId && (
-                      <div className="flex justify-start mb-2">
-                        <StartChatButton
-                          studentInstructorId={instructor.studentInstructorId}
-                          size="sm"
-                          variant="outline"
-                        />
-                      </div>
-                    )}
+
                     <div className="flex flex-wrap gap-1">
                       {instructor.isRemote && (
                         <Badge variant="secondary" className="text-xs">
@@ -307,7 +226,7 @@ export default function InstructorPage() {
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
+              <CardContent className="px-4 space-y-4">
                 {/* Bio */}
                 {instructor.bio && (
                   <div>
@@ -317,118 +236,72 @@ export default function InstructorPage() {
                   </div>
                 )}
 
-                {/* Price and Specialties */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
+                {/* Price */}
+                {instructor.pricePerMonth && (
+                  <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
                     <span className="text-xs font-medium">Precio acordado</span>
                     <span className="text-xs font-semibold">
-                      {instructor.pricePerMonth
-                        ? `$${instructor.pricePerMonth}/mes`
-                        : "No especificado"}
+                      ${instructor.pricePerMonth}/mes
                     </span>
                   </div>
+                )}
 
-                  {instructor.curriculum && (
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <HugeiconsIcon
-                          icon={GraduateMaleIcon}
-                          className="h-4 w-4 text-muted-foreground"
-                        />
-                        <span className="text-xs font-medium">
-                          Especialidades
-                        </span>
-                      </div>
-                      <div className="flex flex-wrap gap-2 pl-6">
-                        {instructor.curriculum
-                          .split(",")
-                          .map((item) => item.trim())
-                          .filter((item) => item) // Remove empty strings
-                          .map((specialty, index) => (
-                            <span
-                              key={index}
-                              className="inline-flex items-center rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary"
-                            >
-                              {specialty}
-                            </span>
-                          ))}
-                      </div>
+                {/* Specialties */}
+                {instructor.curriculum && (
+                  <div>
+                    <span className="text-xs font-medium text-muted-foreground mb-2 block">
+                      Especialidades
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {instructor.curriculum
+                        .split(",")
+                        .map((item) => item.trim())
+                        .filter((item) => item)
+                        .slice(0, 3)
+                        .map((specialty, index) => (
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {specialty}
+                          </Badge>
+                        ))}
+                      {instructor.curriculum
+                        .split(",")
+                        .filter((item) => item.trim()).length > 3 && (
+                        <Badge variant="outline" className="text-xs">
+                          +
+                          {instructor.curriculum
+                            .split(",")
+                            .filter((item) => item.trim()).length - 3}
+                        </Badge>
+                      )}
                     </div>
-                  )}
-
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <HugeiconsIcon icon={Calendar01Icon} className="h-3 w-3" />
-                    <span>Desde {formatDate(instructor.startDate)}</span>
                   </div>
-                </div>
-
-                <Separator />
-
-                {/* Contact Information */}
-                <div className="space-y-3">
-                  <h4 className="text-xs font-medium">Contacto</h4>
-                  <div className="space-y-2">
-                    {instructor.contactEmail ? (
-                      <div className="flex items-center gap-2">
-                        <HugeiconsIcon
-                          icon={Mail01Icon}
-                          className="h-4 w-4 text-muted-foreground"
-                        />
-                        <a
-                          href={`mailto:${instructor.contactEmail}`}
-                          className="text-xs hover:underline text-blue-600 dark:text-blue-400"
-                        >
-                          {instructor.contactEmail}
-                        </a>
-                      </div>
-                    ) : null}
-
-                    {instructor.contactPhone ? (
-                      <div className="flex items-center gap-2">
-                        <HugeiconsIcon
-                          icon={PhoneOff01Icon}
-                          className="h-4 w-4 text-muted-foreground"
-                        />
-                        <a
-                          href={`tel:${instructor.contactPhone}`}
-                          className="text-xs hover:underline text-blue-600 dark:text-blue-400"
-                        >
-                          {instructor.contactPhone}
-                        </a>
-                      </div>
-                    ) : null}
-
-                    {!instructor.contactEmail && !instructor.contactPhone && (
-                      <p className="text-xs text-muted-foreground">
-                        Información de contacto no disponible
-                      </p>
-                    )}
-                  </div>
-                </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-2 pt-2">
-                  {instructor.contactEmail && (
-                    <Button size="sm" className="flex-1" asChild>
-                      <a href={`mailto:${instructor.contactEmail}`}>
-                        <HugeiconsIcon
-                          icon={Mail02Icon}
-                          className="h-4 w-4 mr-1"
-                        />
-                        Contactar
-                      </a>
-                    </Button>
-                  )}
                   <Button
                     size="sm"
                     variant="outline"
-                    className="flex-1 bg-transparent"
+                    className="flex-1"
                     asChild
                   >
                     <Link href={`/dashboard/instructors/${instructor.userId}`}>
                       Ver Perfil
                     </Link>
                   </Button>
+                  {instructor.studentInstructorId && (
+                    <div className="flex justify-start mb-2">
+                      <StartChatButton
+                        studentInstructorId={instructor.studentInstructorId}
+                        size="sm"
+                        variant="outline"
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>

@@ -58,7 +58,7 @@ export function StartChatButton({
       className={className}
     >
       <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" />
-      {size !== "icon" && <span className="ml-2">Mensaje</span>}
+      {size !== "sm" && <span className="ml-2">Mensaje</span>}
     </Button>
   );
 }

@@ -91,7 +91,7 @@ export function MealPlan({
     return (
       <div className="space-y-4">
         <Card>
-          <CardContent className="py-12">
+          <CardContent className="px-4 py-12">
             <div className="flex flex-col items-center justify-center text-center space-y-2">
               <h3 className="text-xs font-semibold">
                 No hay información disponible
@@ -162,10 +162,10 @@ export function MealPlan({
             {translatedText}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="grid grid-cols-3 gap-4">
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-muted-foreground">Proteínas</p>
@@ -183,7 +183,7 @@ export function MealPlan({
               </CardContent>
             </Card>
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-muted-foreground">
@@ -203,7 +203,7 @@ export function MealPlan({
               </CardContent>
             </Card>
             <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-xs text-muted-foreground">Grasas</p>
@@ -256,7 +256,7 @@ export function MealPlan({
                     Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4">
                   <div className="rounded-md border">
                     <Table>
                       <TableHeader>
@@ -359,7 +359,7 @@ function MealPlanSkeleton() {
           <Skeleton className="h-6 w-40" />
           <Skeleton className="h-4 w-full max-w-md" />
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="grid grid-cols-3 gap-4">
             {Array.from({ length: 3 }).map((_, index) => (
               <div
@@ -381,7 +381,7 @@ function MealPlanSkeleton() {
             <Skeleton className="h-6 w-32" />
             <Skeleton className="h-4 w-full max-w-lg" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="rounded-md border">
               <Table>
                 <TableHeader>

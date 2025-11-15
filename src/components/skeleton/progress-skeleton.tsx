@@ -9,7 +9,7 @@ export default function ProgressSkeleton() {
         <Skeleton className="h-5 w-2/3" />
         <Skeleton className="h-6 w-16 ml-auto rounded-md" />
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4">
         <Skeleton className="h-4 w-1/4 mb-2" />
         <Skeleton className="h-3 w-full rounded-full" />
         <div className="grid grid-cols-2 gap-4 mt-4">

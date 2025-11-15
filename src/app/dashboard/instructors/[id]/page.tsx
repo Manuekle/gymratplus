@@ -9,13 +9,17 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
-import { StartChatButton } from "@/components/chats/start-chat-button";
 import {
   Mail01Icon,
   MapPinIcon,
   PhoneLockIcon,
   UserGroupIcon,
+  Dumbbell01Icon,
+  FireIcon,
+  ArrowLeft01Icon,
 } from "@hugeicons/core-free-icons";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
 // Calendar01Icon removed - unused
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -60,6 +64,10 @@ export default function InstructorProfilePage() {
   const [studentInstructorId, setStudentInstructorId] = useState<string | null>(
     null,
   );
+  const [assignedWorkouts, setAssignedWorkouts] = useState<any[]>([]);
+  const [assignedFoodPlans, setAssignedFoodPlans] = useState<any[]>([]);
+  const [loadingWorkouts, setLoadingWorkouts] = useState(false);
+  const [loadingFoodPlans, setLoadingFoodPlans] = useState(false);
 
   const loadExistingRequests = useCallback(async () => {
     try {
@@ -80,16 +88,18 @@ export default function InstructorProfilePage() {
 
       if (hiredResponse.ok) {
         const hiredInstructors = await hiredResponse.json();
+        // Los IDs en hiredInstructors son los instructorProfileId
         const hiredIds = hiredInstructors.map(
           (instructor: { id: string }) => instructor.id,
         );
         setHiredInstructors(new Set(hiredIds));
 
         // Find the studentInstructorId for the current instructor
-        const instructorId = Array.isArray(id) ? id[0] : id;
+        // El id en la URL es el userId, pero necesitamos buscar por userId
+        const instructorUserId = Array.isArray(id) ? id[0] : id;
         const currentInstructor = hiredInstructors.find(
-          (inst: { id: string; studentInstructorId?: string }) =>
-            inst.id === instructorId,
+          (inst: { userId: string; studentInstructorId?: string }) =>
+            inst.userId === instructorUserId,
         );
         if (currentInstructor?.studentInstructorId) {
           setStudentInstructorId(currentInstructor.studentInstructorId);
@@ -103,6 +113,72 @@ export default function InstructorProfilePage() {
   useEffect(() => {
     loadExistingRequests();
   }, [loadExistingRequests]);
+
+  // Cargar planes asignados si el estudiante es estudiante de este instructor
+  useEffect(() => {
+    const instructorUserId = Array.isArray(id) ? id[0] : id;
+    // Verificar si el estudiante es estudiante de este instructor
+    // hiredInstructors contiene instructorProfileId, necesitamos verificar con el instructorProfileId del instructor actual
+    if (
+      !instructor?.instructorProfileId ||
+      !hiredInstructors.has(instructor.instructorProfileId)
+    )
+      return;
+
+    const fetchAssignedPlans = async () => {
+      // Cargar rutinas asignadas
+      setLoadingWorkouts(true);
+      try {
+        const workoutsRes = await fetch("/api/students/workouts/assigned");
+        if (workoutsRes.ok) {
+          const workouts = await workoutsRes.json();
+          // Filtrar solo las rutinas asignadas por este instructor
+          // El instructorId en los workouts es el userId del instructor
+          const instructorWorkouts = workouts.filter(
+            (w: any) => w.instructor?.id === instructorUserId,
+          );
+          setAssignedWorkouts(instructorWorkouts);
+        }
+      } catch (error) {
+        console.error("Error loading assigned workouts:", error);
+      } finally {
+        setLoadingWorkouts(false);
+      }
+
+      // Cargar planes de alimentación
+      setLoadingFoodPlans(true);
+      try {
+        const foodPlansRes = await fetch("/api/food-recommendations");
+        if (foodPlansRes.ok) {
+          const foodPlans = await foodPlansRes.json();
+          // Filtrar solo los planes creados por este instructor
+          // El instructorId en los planes es el userId del instructor
+          const instructorFoodPlans = foodPlans.filter(
+            (plan: any) => plan.instructorId === instructorUserId,
+          );
+          // Parsear JSON strings si es necesario
+          const parsedPlans = instructorFoodPlans.map((plan: any) => ({
+            ...plan,
+            macros:
+              typeof plan.macros === "string"
+                ? JSON.parse(plan.macros)
+                : plan.macros,
+            meals:
+              typeof plan.meals === "string"
+                ? JSON.parse(plan.meals)
+                : plan.meals,
+          }));
+          setAssignedFoodPlans(parsedPlans);
+        }
+      } catch (error) {
+        console.error("Error loading assigned food plans:", error);
+      } finally {
+        setLoadingFoodPlans(false);
+      }
+    };
+
+    fetchAssignedPlans();
+  }, [id, instructor, hiredInstructors]);
 
   useEffect(() => {
     const storedRequests = localStorage.getItem("requestedInstructors");
@@ -245,6 +321,9 @@ export default function InstructorProfilePage() {
   if (isLoading) {
     return (
       <div>
+        <div className="mb-4">
+          <Skeleton className="h-9 w-40" />
+        </div>
         <div className="flex flex-col md:flex-row gap-4">
           <div className="w-full md:w-80 space-y-3">
             <Card>
@@ -255,7 +334,7 @@ export default function InstructorProfilePage() {
                   <Skeleton className="h-3 w-24" />
                 </div>
               </CardHeader>
-              <CardContent className="space-y-2">
+              <CardContent className="px-4 space-y-2">
                 <Skeleton className="h-8 w-full" />
                 <Skeleton className="h-16 w-full" />
               </CardContent>
@@ -267,7 +346,7 @@ export default function InstructorProfilePage() {
               <CardHeader className="pb-2">
                 <Skeleton className="h-5 w-24" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <Skeleton className="h-20 w-full" />
               </CardContent>
             </Card>
@@ -329,6 +408,17 @@ export default function InstructorProfilePage() {
           </div>
         </div>
       )}
+      <div className="mb-4">
+        <Button
+          variant="outline"
+          size="sm"
+          className="md:w-auto w-full text-xs"
+          onClick={() => router.push("/dashboard/instructors")}
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
+          Volver a instructores
+        </Button>
+      </div>
       <div className="flex flex-col md:flex-row gap-4">
         {/* Compact Sidebar */}
         <div className="w-full md:w-80 space-y-3">
@@ -386,7 +476,7 @@ export default function InstructorProfilePage() {
                 )}
               </div>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="px-4 space-y-3">
               {/* Compact Stats Grid */}
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {instructor.pricePerMonth !== null && (
@@ -438,15 +528,6 @@ export default function InstructorProfilePage() {
 
               {/* Compact Contact Info */}
               <div className="space-y-1.5">
-                {studentInstructorId && (
-                  <div className="flex justify-center pb-2">
-                    <StartChatButton
-                      studentInstructorId={studentInstructorId}
-                      size="sm"
-                      variant="outline"
-                    />
-                  </div>
-                )}
                 {instructor.contactEmail && (
                   <a
                     href={`mailto:${instructor.contactEmail}`}
@@ -527,39 +608,19 @@ export default function InstructorProfilePage() {
                   }
                   return "";
                 })()}
-              {hiredInstructors.has(instructor.instructorProfileId) && (
-                <div className="w-full text-center py-2">
-                  <span className="text-xs text-green-600 font-medium">
-                    Ya eres estudiante de este instructor
-                  </span>
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>
 
         {/* Main Content - Compact */}
         <div className="flex-1 space-y-3">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl tracking-heading font-semibold">
-              {instructor.name}
-            </h1>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.push("/dashboard/instructors")}
-            >
-              Volver a instructores
-            </Button>
-          </div>
-
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold tracking-heading">
+              <CardTitle className="text-2xl tracking-heading font-semibold">
                 Sobre Mí
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               {instructor.bio ? (
                 <div className="whitespace-pre-line break-words text-xs text-muted-foreground">
                   {instructor.bio}
@@ -574,11 +635,11 @@ export default function InstructorProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl font-semibold tracking-heading">
+              <CardTitle className="text-2xl tracking-heading font-semibold">
                 Especialidades
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               {instructor.curriculum ? (
                 <div className="flex flex-wrap gap-1.5">
                   {instructor.curriculum
@@ -603,49 +664,182 @@ export default function InstructorProfilePage() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl font-semibold tracking-heading">
-                Métodos de Enseñanza
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-2 sm:grid-cols-2">
-                <div className="p-3 border rounded-lg">
-                  <h4 className="font-medium text-xs mb-0.5">
-                    Entrenamiento Personalizado
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Programas adaptados a tus objetivos específicos.
-                  </p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <h4 className="font-medium text-xs mb-0.5">
-                    Seguimiento de Progreso
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Evaluaciones regulares para medir tu avance.
-                  </p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <h4 className="font-medium text-xs mb-0.5">
-                    Nutrición y Estilo de Vida
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Asesoramiento nutricional complementario.
-                  </p>
-                </div>
-                <div className="p-3 border rounded-lg">
-                  <h4 className="font-medium text-xs mb-0.5">
-                    Entrenamiento en Grupo
-                  </h4>
-                  <p className="text-xs text-muted-foreground">
-                    Sesiones grupales para mantener la motivación.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {/* Planes Asignados - Solo visible si el estudiante es estudiante de este instructor */}
+          {hiredInstructors.has(instructor.instructorProfileId) && (
+            <>
+              {/* Planes de Entrenamiento */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl tracking-heading font-semibold">
+                    Planes de Entrenamiento Asignados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4">
+                  {loadingWorkouts ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-16 w-full" />
+                      <Skeleton className="h-16 w-full" />
+                    </div>
+                  ) : assignedWorkouts.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">
+                      No tienes planes de entrenamiento asignados aún.
+                    </p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {assignedWorkouts.map((workout: any) => (
+                        <div
+                          key={workout.id}
+                          className="p-3 border rounded-lg hover:shadow-md transition-shadow"
+                        >
+                          <div className="flex items-start justify-between mb-2">
+                            <h3 className="text-sm font-semibold flex-1">
+                              {workout.name}
+                            </h3>
+                            <Badge variant="secondary" className="text-xs">
+                              {format(
+                                new Date(workout.assignedDate),
+                                "d MMM yyyy",
+                                { locale: es },
+                              )}
+                            </Badge>
+                          </div>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                            <HugeiconsIcon
+                              icon={Dumbbell01Icon}
+                              className="h-3.5 w-3.5"
+                            />
+                            <span>
+                              {workout.exercises?.length || 0} ejercicios
+                            </span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="mt-2 w-full text-xs h-7"
+                            onClick={() =>
+                              router.push(`/dashboard/workout/${workout.id}`)
+                            }
+                          >
+                            Ver Plan
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Planes de Alimentación */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl tracking-heading font-semibold">
+                    Planes de Alimentación Asignados
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="px-4">
+                  {loadingFoodPlans ? (
+                    <div className="space-y-2">
+                      <Skeleton className="h-16 w-full" />
+                      <Skeleton className="h-16 w-full" />
+                    </div>
+                  ) : assignedFoodPlans.length === 0 ? (
+                    <p className="text-xs text-muted-foreground italic">
+                      No tienes planes de alimentación asignados aún.
+                    </p>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {assignedFoodPlans.map((plan: any) => {
+                        const macros =
+                          typeof plan.macros === "string"
+                            ? JSON.parse(plan.macros)
+                            : plan.macros;
+
+                        return (
+                          <div
+                            key={plan.id}
+                            className="p-3 border rounded-lg hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <h3 className="text-sm font-semibold flex-1">
+                                Plan de Alimentación
+                              </h3>
+                              <Badge variant="secondary" className="text-xs">
+                                {format(
+                                  new Date(plan.createdAt),
+                                  "d MMM yyyy",
+                                  { locale: es },
+                                )}
+                              </Badge>
+                            </div>
+                            <div className="space-y-1.5 text-xs">
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <HugeiconsIcon
+                                  icon={FireIcon}
+                                  className="h-3.5 w-3.5"
+                                />
+                                <span>{plan.calorieTarget} kcal objetivo</span>
+                              </div>
+                              {macros && (
+                                <div className="pt-1 border-t space-y-0.5">
+                                  {macros.protein && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">
+                                        Proteína:
+                                      </span>
+                                      <span className="font-medium">
+                                        {macros.protein}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {macros.carbs && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">
+                                        Carbohidratos:
+                                      </span>
+                                      <span className="font-medium">
+                                        {macros.carbs}
+                                      </span>
+                                    </div>
+                                  )}
+                                  {macros.fat && (
+                                    <div className="flex justify-between">
+                                      <span className="text-muted-foreground">
+                                        Grasas:
+                                      </span>
+                                      <span className="font-medium">
+                                        {macros.fat}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                              {plan.notes && (
+                                <p className="text-xs text-muted-foreground line-clamp-2 pt-1 border-t">
+                                  {plan.notes}
+                                </p>
+                              )}
+                            </div>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="mt-2 w-full text-xs h-7"
+                              onClick={() =>
+                                router.push(
+                                  `/dashboard/nutrition/plan/${plan.id}`,
+                                )
+                              }
+                            >
+                              Ver Plan
+                            </Button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
+          )}
         </div>
       </div>
     </div>

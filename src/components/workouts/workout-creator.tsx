@@ -23,7 +23,7 @@ export default function WorkoutCreator() {
           Aquí puedes ver tus rutinas de entrenamiento
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4">
         <div>
           <WorkoutGenerator />
           <WorkoutsTable />

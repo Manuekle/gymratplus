@@ -16,7 +16,6 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils/utils";
 import { toast } from "sonner";
 import { Icons } from "../icons";
@@ -232,7 +231,7 @@ export default function WorkoutExercise({
               <Label className="text-xs font-medium">
                 Selecciona el ejercicio:
               </Label>
-              <ScrollArea className="h-[300px] rounded-md border p-4">
+              <div className="max-h-[300px] rounded-md border p-4 overflow-y-auto scroll-hidden">
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(
                     exercises.reduce<Record<string, Exercise[]>>(
@@ -287,7 +286,7 @@ export default function WorkoutExercise({
                     </div>
                   ))}
                 </div>
-              </ScrollArea>
+              </div>
             </div>
 
             {/* Detalles del ejercicio */}

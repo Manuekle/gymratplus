@@ -72,7 +72,7 @@ export default function WorkoutsPage() {
             <Skeleton className="h-7 w-48 mb-2" />
             <Skeleton className="h-4 w-56" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="space-y-6">
               <div className="space-y-2">
                 <Skeleton className="h-4 w-24" />
@@ -90,7 +90,7 @@ export default function WorkoutsPage() {
             <Skeleton className="h-7 w-44 mb-2" />
             <Skeleton className="h-4 w-52" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <Skeleton className="h-64 w-full" />
           </CardContent>
         </Card>
@@ -98,7 +98,7 @@ export default function WorkoutsPage() {
           <CardHeader className="pb-2">
             <Skeleton className="h-7 w-40 mb-2" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <Skeleton className="h-32 w-full" />
           </CardContent>
         </Card>
@@ -106,7 +106,7 @@ export default function WorkoutsPage() {
           <CardHeader className="pb-2">
             <Skeleton className="h-7 w-36 mb-2" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <Skeleton className="h-48 w-full" />
           </CardContent>
         </Card>
@@ -125,7 +125,7 @@ export default function WorkoutsPage() {
             Información sobre tu plan de entrenamiento actual
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="space-y-6">
             <div className="flex flex-col space-y-2">
               <label className="text-xs font-medium">Rutina actual</label>
@@ -170,7 +170,7 @@ export default function WorkoutsPage() {
             Evolución de tus levantamientos principales
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <ExerciseProgressChart />
         </CardContent>
       </Card>

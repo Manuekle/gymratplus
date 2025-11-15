@@ -94,6 +94,12 @@ export async function POST(req: NextRequest) {
       await Promise.all(cacheKeys.map((key) => redis.del(key)));
     } catch {}
 
+    // Limpiar también el perfil de instructor de la caché
+    try {
+      const { redis } = await import("@/lib/database/redis");
+      await redis.del(`instructorProfile:${session.user.id}`);
+    } catch {}
+
     // Crear notificación de bienvenida para el instructor
     await createNotification({
       userId: session.user.id,

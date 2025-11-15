@@ -61,6 +61,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [imageKey, setImageKey] = useState(0);
+  const [currentImage, setCurrentImage] = useState<string | null>(null);
 
   const { data: session, status, update } = useSession();
   const isInstructor = session?.user?.isInstructor || false;
@@ -95,6 +97,11 @@ export default function ProfilePage() {
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
         );
+      }
+
+      // Actualizar imagen local si hay una nueva en la sesión
+      if (user?.image) {
+        setCurrentImage(user.image);
       }
 
       // Load user tags
@@ -167,41 +174,24 @@ export default function ProfilePage() {
 
       const { url } = await uploadResponse.json();
 
-      // Actualizar la sesión con la nueva imagen
-      const updatedSession = {
+      // Actualizar la imagen local inmediatamente para que se vea el cambio
+      setCurrentImage(url);
+      setImageKey((prev) => prev + 1);
+
+      // Forzar actualización de la sesión usando el trigger "update" de NextAuth
+      // Esto hará que el callback jwt recargue los datos desde la base de datos
+      await update({
         ...session,
         user: {
           ...session?.user,
           image: url,
-          _localStorage: {
-            ...session?.user?._localStorage,
-            image: url,
-          },
         },
-      };
-
-      // Actualizar la sesión
-      await update(updatedSession);
-
-      // Forzar actualización de la sesión
-      const sessionResponse = await fetch("/api/auth/session", {
-        method: "GET",
       });
-
-      if (!sessionResponse.ok) {
-        throw new Error("Error al actualizar la sesión");
-      }
 
       // Mostrar mensaje de éxito
       toast.success("¡Imagen actualizada!", {
         description: "Tu foto de perfil ha sido actualizada correctamente.",
       });
-
-      // Forzar recarga de la página después de un pequeño retraso
-      // setTimeout(() => {
-      //   window.location.reload();
-      // }, 1000);
-      setIsEditing(false);
     } catch (error) {
       toast.error("Error", {
         description: error instanceof Error ? error.message : "Algo salió mal.",
@@ -212,6 +202,7 @@ export default function ProfilePage() {
   };
 
   const handleTagChange = async (newTagIds: string[]) => {
+    const previousTags = selectedTags;
     setSelectedTags(newTagIds);
     try {
       const res = await fetch("/api/users/me/tags", {
@@ -220,10 +211,12 @@ export default function ProfilePage() {
         body: JSON.stringify({ interests: newTagIds }),
       });
       if (!res.ok) throw new Error("No se pudo guardar los intereses");
-      await update();
+      // No llamar a update() para evitar recarga de página
       toast.success("Intereses actualizados correctamente");
     } catch {
       toast.error("Error al guardar intereses");
+      // Revertir cambios en caso de error
+      setSelectedTags(previousTags);
     }
   };
 
@@ -318,7 +311,7 @@ export default function ProfilePage() {
     return (
       <div className="space-y-6">
         <Card>
-          <CardContent className="pt-6">
+          <CardContent className="px-4 pt-6">
             <div className="flex flex-col md:flex-row gap-6 items-center">
               <Skeleton className="h-24 w-24 rounded-full" />
               <div className="space-y-4 flex-1 text-center md:text-left">
@@ -340,7 +333,7 @@ export default function ProfilePage() {
             <Skeleton className="h-7 w-48 mb-2" />
             <Skeleton className="h-4 w-64" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="space-y-2">
@@ -356,7 +349,7 @@ export default function ProfilePage() {
             <Skeleton className="h-7 w-40 mb-2" />
             <Skeleton className="h-4 w-56" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <Skeleton className="h-32 w-full" />
           </CardContent>
         </Card>
@@ -367,15 +360,15 @@ export default function ProfilePage() {
   return (
     <div className="space-y-6">
       <Card>
-        <CardContent className="pt-0">
+        <CardContent className="px-4 pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="flex flex-col items-center md:items-start relative">
               <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-background">
                   <AvatarImage
-                    src={session?.user?.image || undefined}
+                    src={currentImage || session?.user?.image || undefined}
                     alt="Profile picture"
-                    key={session?.user?.image || Date.now()}
+                    key={`${currentImage || session?.user?.image || ""}-${imageKey}`}
                   />
 
                   <AvatarFallback className="text-2xl">
@@ -425,7 +418,7 @@ export default function ProfilePage() {
                     </Badge>
                   )}
                 </div>
-                <div className="flex justify-center md:justify-start mt-3">
+                <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
                   <Button
                     asChild
                     variant="outline"
@@ -440,6 +433,22 @@ export default function ProfilePage() {
                       Ver mi código QR
                     </Link>
                   </Button>
+                  {!isInstructor && (
+                    <Button
+                      asChild
+                      variant="default"
+                      size="sm"
+                      className="text-xs"
+                    >
+                      <Link href="/dashboard/profile/payment">
+                        <HugeiconsIcon
+                          icon={StarIcon}
+                          className="h-4 w-4 mr-2"
+                        />
+                        Convertirme en instructor
+                      </Link>
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -544,7 +553,7 @@ export default function ProfilePage() {
               Datos de contacto y comunicación
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="px-4 space-y-4">
             {isEditing ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
@@ -719,44 +728,25 @@ export default function ProfilePage() {
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      <Button
-                        asChild
-                        variant="outline"
-                        className="w-full text-xs"
-                        size="sm"
+                      <Label
+                        className="text-xs md:text-xs"
+                        htmlFor="monthsTraining"
                       >
-                        <Link href="/dashboard/profile/payment">
-                          <HugeiconsIcon
-                            icon={StarIcon}
-                            className="h-4 w-4 mr-2"
-                          />
-                          Convertirme en instructor
-                        </Link>
-                      </Button>
-                      <p className="text-xs text-muted-foreground text-center">
-                        Accede a beneficios exclusivos
-                      </p>
+                        Meses entrenando
+                      </Label>
+                      <Input
+                        className="text-xs md:text-xs"
+                        id="monthsTraining"
+                        type="text"
+                        inputMode="numeric"
+                        pattern="[0-9]*"
+                        value={monthsTraining ? monthsTraining : ""}
+                        onChange={(e) =>
+                          setMonthsTraining(Number(e.target.value))
+                        }
+                      />
                     </div>
                   )}
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="monthsTraining"
-                    >
-                      Meses entrenando
-                    </Label>
-                    <Input
-                      className="text-xs md:text-xs"
-                      id="monthsTraining"
-                      type="text"
-                      inputMode="numeric"
-                      pattern="[0-9]*"
-                      value={monthsTraining ? monthsTraining : ""}
-                      onChange={(e) =>
-                        setMonthsTraining(Number(e.target.value))
-                      }
-                    />
-                  </div>
                 </div>
               </>
             ) : (
@@ -906,7 +896,7 @@ export default function ProfilePage() {
               Información sobre tus preferencias
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="px-4 space-y-4">
             {isEditing ? (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1180,7 +1170,7 @@ export default function ProfilePage() {
               y contenido relevante.
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <TagSelector
               selectedTags={selectedTags}
               onTagSelect={handleTagChange}

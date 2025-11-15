@@ -21,7 +21,6 @@ import { Icons } from "@/components/icons";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 
-import { ScrollArea } from "../ui/scroll-area";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertCircleIcon } from "@hugeicons/core-free-icons";
 
@@ -291,7 +290,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
               </div>
             </div>
             {selectedDay && (
-              <ScrollArea className="max-h-[400px] w-full">
+              <div className="max-h-[400px] w-full overflow-y-auto scroll-hidden">
                 <div className="space-y-1 pr-2">
                   {days
                     .find((day: Day) => day.day === selectedDay)
@@ -321,14 +320,14 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                       </div>
                     ))}
                 </div>
-              </ScrollArea>
+              </div>
             )}
             <DialogFooter>
               <Button
                 onClick={handleStartWorkout}
                 disabled={loading || !selectedDay}
                 className="text-xs w-full"
-                size="lg"
+                size="sm"
               >
                 {loading ? (
                   <span className="flex flex-row items-center gap-2">

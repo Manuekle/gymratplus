@@ -102,7 +102,7 @@ export default function QRCodePage() {
             <Skeleton className="h-8 w-48" />
             <Skeleton className="h-4 w-64 mt-2" />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="flex flex-col items-center gap-6">
               <Skeleton className="h-64 w-64 rounded-lg" />
               <Skeleton className="h-10 w-48" />
@@ -145,7 +145,7 @@ export default function QRCodePage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <div className="flex flex-col items-center gap-6">
             {/* User Info */}
             <div className="flex flex-col items-center gap-3">

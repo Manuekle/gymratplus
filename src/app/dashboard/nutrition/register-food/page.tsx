@@ -960,7 +960,7 @@ export default function RegisterFoodPage() {
             <Skeleton className="h-7 md:h-8 w-48 mb-2" />
             <Skeleton className="h-4 w-64" />
           </CardHeader>
-          <CardContent className="space-y-4 sm:space-y-6">
+          <CardContent className="px-4 space-y-4 sm:space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
               <div className="space-y-1.5">
                 <Skeleton className="h-3 w-24" />
@@ -1012,7 +1012,7 @@ export default function RegisterFoodPage() {
               <div className="lg:col-span-1">
                 <div className="sticky top-4 sm:top-6">
                   <Card className="border-muted/50">
-                    <CardContent className="p-3 sm:p-4">
+                    <CardContent className="px-4">
                       <div className="flex items-center justify-center mb-3 sm:mb-4">
                         <Skeleton className="h-24 w-24 sm:h-32 sm:w-32 rounded-full" />
                       </div>
@@ -1065,7 +1065,7 @@ export default function RegisterFoodPage() {
             Registrar una comida para tu plan de nutrición
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4 sm:space-y-6">
+        <CardContent className="px-4 space-y-4 sm:space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
             <div className="space-y-1.5">
               <Label className="text-xs text-muted-foreground">
@@ -1161,7 +1161,7 @@ export default function RegisterFoodPage() {
             <div className="lg:col-span-1">
               <div className="sticky top-4 sm:top-6 space-y-3 sm:space-y-4">
                 <Card className="border-muted/50">
-                  <CardContent className="p-3 sm:p-4">
+                  <CardContent className="px-4">
                     {selectedItems.length === 0 ? (
                       <div className="flex flex-col items-center justify-center py-8 text-center">
                         <h3 className="text-xs font-medium mb-2">

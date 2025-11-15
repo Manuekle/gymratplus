@@ -16,10 +16,11 @@ import {
 
 interface ProfileData {
   goal: "gain-muscle" | "lose-weight" | "maintain";
-  experienceLevel: "beginner" | "intermediate" | "advanced";
+  experienceLevel?: "beginner" | "intermediate" | "advanced";
   currentWeight: number;
   height: number;
   dietaryPreference?: "vegetarian" | "keto" | "no-preference";
+  skipWorkout?: boolean; // Para usuarios intermedios/avanzados que solo quieren nutrición
 }
 
 interface Exercise {
@@ -52,7 +53,7 @@ interface ResponseData {
       day: string;
       exercises: Exercise[];
     }>;
-  };
+  } | null;
   foodRecommendation: NutritionPlan;
   recommendations: string[];
 }
@@ -71,33 +72,33 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Get the profile data from request body
     const profileData: ProfileData = await req.json();
 
-    // Si no viene experienceLevel en el body, obtenerlo del usuario
+    // Obtener perfil una sola vez para múltiples usos
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+    });
+
+    if (!profile) {
+      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    }
+
+    // Calcular nivel de experiencia de manera optimizada
     let experienceLevel = profileData.experienceLevel;
     if (!experienceLevel) {
-      const user = await prisma.user.findUnique({ where: { id: userId } });
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { experienceLevel: true },
+      });
       experienceLevel = user?.experienceLevel as ProfileData["experienceLevel"];
     }
     if (!experienceLevel) {
-      // Obtener datos del perfil
-      const profile = await prisma.profile.findUnique({ where: { userId } });
-      if (profile) {
-        const experienceData: {
-          trainingFrequency?: number;
-          monthsTraining?: number;
-        } = {};
-
-        if (profile.trainingFrequency) {
-          experienceData.trainingFrequency = Number(profile.trainingFrequency);
-        }
-
-        if (profile.monthsTraining) {
-          experienceData.monthsTraining = Number(profile.monthsTraining);
-        }
-
-        experienceLevel = calculateExperienceLevel(
-          experienceData,
-        ) as ProfileData["experienceLevel"];
-      }
+      experienceLevel = calculateExperienceLevel({
+        trainingFrequency: profile.trainingFrequency
+          ? Number(profile.trainingFrequency)
+          : undefined,
+        monthsTraining: profile.monthsTraining
+          ? Number(profile.monthsTraining)
+          : undefined,
+      }) as ProfileData["experienceLevel"];
     }
     if (!experienceLevel) {
       return NextResponse.json(
@@ -120,15 +121,6 @@ export async function POST(req: Request): Promise<NextResponse> {
         error: `Faltan campos requeridos: ${missingFields.join(", ")}`,
         status: 400,
       });
-    }
-
-    // Get user profile
-    const profile = await prisma.profile.findUnique({
-      where: { userId },
-    });
-
-    if (!profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
     }
 
     // Get all exercises
@@ -156,90 +148,113 @@ export async function POST(req: Request): Promise<NextResponse> {
     };
     const workoutGoal = goalMap[profileData.goal] || "maintain";
 
-    // Get training frequency from profile
-    const trainingFrequency = profile.trainingFrequency ?? 3;
+    // Si skipWorkout es true, solo generar plan de nutrición
+    let workoutWithExercises = null;
+    if (!profileData.skipWorkout) {
+      // Get training frequency from profile
+      const trainingFrequency = profile.trainingFrequency ?? 3;
 
-    // Create workout first
-    const workout = await prisma.workout.create({
-      data: {
-        name: `Plan de Entrenamiento ${workoutType}`,
-        description: `Plan personalizado basado en tu objetivo: ${profileData.goal} y nivel: ${experienceLevel}`,
-        createdById: userId,
-        type: "personal",
-      },
-    });
+      // Create workout first
+      const workout = await prisma.workout.create({
+        data: {
+          name: `Plan de Entrenamiento ${workoutType}`,
+          description: `Plan personalizado basado en tu objetivo: ${profileData.goal} y nivel: ${experienceLevel}`,
+          createdById: userId,
+          type: "personal",
+        },
+      });
 
-    // Create workout plan with exercises
-    await createWorkoutPlan(
-      workout.id,
-      exercises,
-      workoutGoal,
-      profile.gender,
-      trainingFrequency,
-      workoutType,
-      [],
-      "standard",
-    );
+      // Create workout plan with exercises
+      await createWorkoutPlan(
+        workout.id,
+        exercises,
+        workoutGoal,
+        profile.gender,
+        trainingFrequency,
+        workoutType,
+        [],
+        "standard",
+      );
 
-    // Fetch the complete workout with exercises
-    const workoutWithExercises = await prisma.workout.findUnique({
-      where: { id: workout.id },
-      include: {
-        exercises: {
-          include: {
-            exercise: true,
-          },
-          orderBy: {
-            order: "asc",
+      // Fetch the complete workout with exercises
+      workoutWithExercises = await prisma.workout.findUnique({
+        where: { id: workout.id },
+        include: {
+          exercises: {
+            include: {
+              exercise: true,
+            },
+            orderBy: {
+              order: "asc",
+            },
           },
         },
-      },
-    });
+      });
 
-    if (!workoutWithExercises || !workoutWithExercises.exercises.length) {
-      return NextResponse.json(
-        { error: "Failed to create workout plan" },
-        { status: 500 },
-      );
+      if (!workoutWithExercises || !workoutWithExercises.exercises.length) {
+        return NextResponse.json(
+          { error: "Failed to create workout plan" },
+          { status: 500 },
+        );
+      }
     }
 
-    // Calculate calorie target based on goal and weight
-    let calorieTarget = Math.round(2000 * (profileData.currentWeight / 70));
+    // Función optimizada para calcular calorías y macros
+    const calculateNutritionTargets = (
+      goal: string,
+      currentWeight: number,
+      dietaryPreference?: string,
+    ) => {
+      // Calcular calorías base
+      let calorieTarget = Math.round(2000 * (currentWeight / 70));
 
-    // Adjust calories based on goal
-    if (profileData.goal === "lose-weight") {
-      calorieTarget = Math.round(calorieTarget * 0.85); // 15% deficit
-    } else if (profileData.goal === "gain-muscle") {
-      calorieTarget = Math.round(calorieTarget * 1.1); // 10% surplus
-    }
+      // Ajustar según objetivo
+      if (goal === "lose-weight") {
+        calorieTarget = Math.round(calorieTarget * 0.85); // 15% déficit
+      } else if (goal === "gain-muscle") {
+        calorieTarget = Math.round(calorieTarget * 1.1); // 10% superávit
+      }
 
-    // Calculate macros based on goal
-    let proteinPercentage = 0.3;
-    let carbsPercentage = 0.5;
-    let fatPercentage = 0.2;
+      // Calcular porcentajes de macros según objetivo
+      let proteinPercentage = 0.3;
+      let carbsPercentage = 0.5;
+      let fatPercentage = 0.2;
 
-    if (profileData.goal === "gain-muscle") {
-      proteinPercentage = 0.35;
-      carbsPercentage = 0.45;
-      fatPercentage = 0.2;
-    } else if (profileData.goal === "lose-weight") {
-      proteinPercentage = 0.35;
-      carbsPercentage = 0.35;
-      fatPercentage = 0.3;
-    }
+      if (goal === "gain-muscle") {
+        proteinPercentage = 0.35;
+        carbsPercentage = 0.45;
+        fatPercentage = 0.2;
+      } else if (goal === "lose-weight") {
+        proteinPercentage = 0.35;
+        carbsPercentage = 0.35;
+        fatPercentage = 0.3;
+      }
 
-    // Adjust for dietary preferences
-    if (profileData.dietaryPreference === "keto") {
-      proteinPercentage = 0.3;
-      carbsPercentage = 0.1;
-      fatPercentage = 0.6;
-    }
+      // Ajustar para preferencias dietéticas
+      if (dietaryPreference === "keto") {
+        proteinPercentage = 0.3;
+        carbsPercentage = 0.1;
+        fatPercentage = 0.6;
+      }
 
-    const dailyProteinTarget = Math.round(
-      (calorieTarget * proteinPercentage) / 4,
+      return {
+        calorieTarget,
+        dailyProteinTarget: Math.round((calorieTarget * proteinPercentage) / 4),
+        dailyCarbTarget: Math.round((calorieTarget * carbsPercentage) / 4),
+        dailyFatTarget: Math.round((calorieTarget * fatPercentage) / 9),
+      };
+    };
+
+    const {
+      calorieTarget,
+      dailyProteinTarget,
+      dailyCarbTarget,
+      dailyFatTarget,
+    } = calculateNutritionTargets(
+      profileData.goal,
+      profileData.currentWeight,
+      profileData.dietaryPreference,
     );
-    const dailyCarbTarget = Math.round((calorieTarget * carbsPercentage) / 4);
-    const dailyFatTarget = Math.round((calorieTarget * fatPercentage) / 9);
 
     // Create nutrition plan using nutrition-utils
     const nutritionPlan = await createNutritionPlan({
@@ -310,29 +325,33 @@ export async function POST(req: Request): Promise<NextResponse> {
     // Group all exercises in a single day with muscle groups in notes
     const days: Array<{ day: string; exercises: Exercise[] }> = [];
 
-    // Create a single day with all exercises
-    const allExercises = workoutWithExercises.exercises.map(
-      (exerciseData: PrismaExercise) => {
-        // Extract muscle group from notes (format: "Full Body - [Muscle Group]")
-        const muscleGroup = exerciseData.notes?.split(" - ")[1] || "Full Body";
+    // Solo procesar ejercicios si se creó el workout
+    if (workoutWithExercises) {
+      // Create a single day with all exercises
+      const allExercises = workoutWithExercises.exercises.map(
+        (exerciseData: PrismaExercise) => {
+          // Extract muscle group from notes (format: "Full Body - [Muscle Group]")
+          const muscleGroup =
+            exerciseData.notes?.split(" - ")[1] || "Full Body";
 
-        return {
-          id: exerciseData.id,
-          name: exerciseData.exercise.name,
-          sets: exerciseData.sets,
-          reps: exerciseData.reps,
-          restTime: exerciseData.restTime || 0,
-          notes: muscleGroup, // Store the muscle group in notes
-        };
-      },
-    );
+          return {
+            id: exerciseData.id,
+            name: exerciseData.exercise.name,
+            sets: exerciseData.sets,
+            reps: exerciseData.reps,
+            restTime: exerciseData.restTime || 0,
+            notes: muscleGroup, // Store the muscle group in notes
+          };
+        },
+      );
 
-    // Add all exercises to a single day
-    if (allExercises.length > 0) {
-      days.push({
-        day: "Full Body",
-        exercises: allExercises,
-      });
+      // Add all exercises to a single day
+      if (allExercises.length > 0) {
+        days.push({
+          day: "Full Body",
+          exercises: allExercises,
+        });
+      }
     }
 
     // Collect all food IDs from all meals
@@ -453,12 +472,14 @@ export async function POST(req: Request): Promise<NextResponse> {
 
     const responseData: ResponseData = {
       success: true,
-      workoutPlan: {
-        id: workoutWithExercises.id,
-        name: workoutWithExercises.name,
-        description: workoutWithExercises.description || "",
-        days,
-      },
+      workoutPlan: workoutWithExercises
+        ? {
+            id: workoutWithExercises.id,
+            name: workoutWithExercises.name,
+            description: workoutWithExercises.description || "",
+            days,
+          }
+        : null,
       foodRecommendation: populatedNutritionPlan,
       recommendations: [],
     };

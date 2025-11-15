@@ -61,7 +61,7 @@ export function QuickActions() {
       <div className="flex flex-wrap gap-2">
         {quickActions.map((action, index) => (
           <motion.div
-            key={action.href}
+            key={`${action.href}-${action.title}-${index}`}
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: index * 0.03, duration: 0.2 }}

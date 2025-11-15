@@ -185,13 +185,41 @@ export const authOptions: NextAuthOptions = {
         }
       }
 
-      // 2. Handle 'update' trigger
-      if (trigger === "update" && session) {
-        // Asegurar que el objeto session.user existe antes de acceder a sus propiedades
-        if (session.user?.isInstructor !== undefined) {
-          token.isInstructor = session.user.isInstructor;
+      // 2. Handle 'update' trigger - Forzar recarga desde la base de datos
+      if (trigger === "update") {
+        // Cuando se actualiza algo importante (imagen, isInstructor, etc),
+        // forzar recarga desde la base de datos para obtener los datos más recientes
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          include: {
+            profile: true,
+            instructorProfile: true,
+          },
+        });
+
+        if (dbUser) {
+          // Actualizar todos los campos desde la base de datos
+          token.id = dbUser.id;
+          token.name = dbUser.name ?? null;
+          token.email = dbUser.email ?? null;
+          token.image = dbUser.image ?? null;
+          token.isInstructor = dbUser.isInstructor ?? false;
+          token.experienceLevel = dbUser.experienceLevel ?? null;
+          token.interests = (dbUser.interests as string[]) ?? [];
+          token.profile = (dbUser.profile as ProfileType | null) ?? null;
+          token.instructorProfile =
+            (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
         }
-        // Nota: Las actualizaciones complejas deben realizarse aquí, no en el callback 'session'
+
+        // Si session tiene datos específicos, también actualizarlos
+        if (session?.user) {
+          if (session.user.image !== undefined) {
+            token.image = session.user.image;
+          }
+          if (session.user.isInstructor !== undefined) {
+            token.isInstructor = session.user.isInstructor;
+          }
+        }
       }
 
       return token as NextAuthJWT; // Aseguramos que el retorno es el tipo JWT de next-auth

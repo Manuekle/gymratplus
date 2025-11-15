@@ -616,7 +616,7 @@ export default function ActiveWorkoutPage() {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="pt-0">
+              <CardContent className="px-4 pt-0">
                 <div className="space-y-3">
                   <div className="grid grid-cols-3 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
                     <div className="col-span-1">Set</div>

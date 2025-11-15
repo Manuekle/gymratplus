@@ -16,11 +16,11 @@ export async function GET(
 
     const workoutId = params.id;
 
-    // Obtener el workout asignado
+    // Obtener el workout asignado al estudiante
     const workout = await prisma.workout.findFirst({
       where: {
         id: workoutId,
-        instructorId: session.user.id,
+        assignedToId: session.user.id,
         type: "assigned",
         status: { not: "deleted" },
       },

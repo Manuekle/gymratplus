@@ -19,19 +19,11 @@ export async function GET(request: NextRequest) {
       tagFilter: searchParams.get("tagFilter"),
       country: searchParams.get("country"),
       isRemote: searchParams.get("isRemote"),
-      isVerified: searchParams.get("isVerified"),
       maxPrice: searchParams.get("maxPrice"),
       experienceLevel: searchParams.get("experienceLevel"),
     };
 
-    const {
-      tagFilter,
-      country,
-      isRemote,
-      isVerified,
-      maxPrice,
-      experienceLevel,
-    } = filters;
+    const { tagFilter, country, isRemote, maxPrice, experienceLevel } = filters;
 
     // Obtener las etiquetas del usuario actual si no se proporcionan como parámetro
     let userTags: string[] = [];
@@ -47,24 +39,24 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir filtros básicos
-    const whereConditions: PrismaWhereConditions = {
+    const whereConditions: any = {
       isInstructor: true,
       instructorProfile: {
         isNot: null,
       },
     };
 
-    // Agregar filtros adicionales si se proporcionan
-    if (country || isRemote === "true" || isVerified === "true" || maxPrice) {
-      const profileFilters: Record<string, unknown> = {};
+    // Agregar filtros adicionales del perfil si se proporcionan
+    const profileFilters: any = {};
 
-      if (country) profileFilters.country = country;
-      if (isRemote === "true") profileFilters.isRemote = true;
-      if (isVerified === "true") profileFilters.isVerified = true;
-      if (maxPrice) {
-        profileFilters.pricePerMonth = { lte: parseFloat(maxPrice) };
-      }
+    if (country) profileFilters.country = country;
+    if (isRemote === "true") profileFilters.isRemote = true;
+    if (maxPrice) {
+      profileFilters.pricePerMonth = { lte: parseFloat(maxPrice) };
+    }
 
+    // Solo agregar filtros del perfil si hay alguno
+    if (Object.keys(profileFilters).length > 0) {
       whereConditions.instructorProfile = {
         ...whereConditions.instructorProfile,
         ...profileFilters,

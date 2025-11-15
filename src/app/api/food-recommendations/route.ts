@@ -71,9 +71,11 @@ export async function GET() {
   }
 
   try {
+    // Buscar planes donde el usuario es el dueño (userId) o donde está asignado (assignedToId)
+    // Esto asegura que los estudiantes vean los planes creados por sus instructores
     const foodRecommendations = await prisma.foodRecommendation.findMany({
       where: {
-        userId: session.user.id,
+        OR: [{ userId: session.user.id }, { assignedToId: session.user.id }],
       },
       orderBy: {
         createdAt: "desc",
@@ -81,10 +83,13 @@ export async function GET() {
       select: {
         id: true,
         userId: true,
+        instructorId: true,
+        assignedToId: true,
         date: true,
         macros: true,
         meals: true,
         calorieTarget: true,
+        notes: true,
         createdAt: true,
         updatedAt: true,
       },

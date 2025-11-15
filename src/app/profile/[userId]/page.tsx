@@ -299,7 +299,7 @@ export default function PublicProfilePage() {
                     <Skeleton className="h-3 w-24" />
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-2">
+                <CardContent className="px-4 space-y-2">
                   <Skeleton className="h-8 w-full" />
                   <Skeleton className="h-16 w-full" />
                 </CardContent>
@@ -311,7 +311,7 @@ export default function PublicProfilePage() {
                 <CardHeader className="pb-2">
                   <Skeleton className="h-5 w-24" />
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4">
                   <Skeleton className="h-20 w-full" />
                 </CardContent>
               </Card>
@@ -410,7 +410,7 @@ export default function PublicProfilePage() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="px-4 space-y-3">
                   {/* Stats */}
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     {user.instructorProfile.pricePerMonth !== null && (
@@ -517,7 +517,7 @@ export default function PublicProfilePage() {
                     Sobre Mí
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4">
                   {user.instructorProfile.bio ? (
                     <div className="whitespace-pre-line break-words text-xs text-muted-foreground">
                       {user.instructorProfile.bio}
@@ -536,7 +536,7 @@ export default function PublicProfilePage() {
                     Especialidades
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4">
                   {user.instructorProfile.curriculum ? (
                     <div className="flex flex-wrap gap-1.5">
                       {user.instructorProfile.curriculum
@@ -616,7 +616,7 @@ export default function PublicProfilePage() {
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="px-4 space-y-3">
                   {/* Request Button - Only for instructors with active subscription */}
                   {viewerInfo.isInstructor &&
                     viewerInfo.hasActiveSubscription && (
@@ -640,7 +640,7 @@ export default function PublicProfilePage() {
                   {viewerInfo.isInstructor &&
                     !viewerInfo.hasActiveSubscription && (
                       <Card>
-                        <CardContent className="p-4 space-y-3">
+                        <CardContent className="px-4 space-y-3">
                           <div className="space-y-1">
                             <p className="text-xs font-semibold">
                               Suscripción requerida
@@ -664,7 +664,7 @@ export default function PublicProfilePage() {
                   {/* Show login message if not authenticated */}
                   {!viewerInfo.isAuthenticated && (
                     <Card className="border-muted bg-muted/30">
-                      <CardContent className="p-4 space-y-3">
+                      <CardContent className="px-4 space-y-3">
                         <p className="text-xs text-muted-foreground text-center">
                           Inicia sesión como instructor para entrenar con este
                           estudiante
@@ -689,7 +689,7 @@ export default function PublicProfilePage() {
                   {/* Show message if viewer is a student */}
                   {viewerInfo.isAuthenticated && !viewerInfo.isInstructor && (
                     <Card className="border-muted bg-muted/30">
-                      <CardContent className="p-4">
+                      <CardContent className="px-4">
                         <p className="text-xs text-muted-foreground text-center">
                           Solo los instructores pueden entrenar con estudiantes
                         </p>
@@ -708,7 +708,7 @@ export default function PublicProfilePage() {
                     Información del Estudiante
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-4">
                   <div className="space-y-4">
                     {user.profile?.goal && (
                       <div className="space-y-1.5">

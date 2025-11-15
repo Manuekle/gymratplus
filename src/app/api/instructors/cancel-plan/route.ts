@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { redis } from "@/lib/database/redis";
 import { createNotification } from "@/lib/notifications/notification-service";
 
 export async function POST() {
@@ -45,6 +46,17 @@ export async function POST() {
     // if (instructor.stripeSubscriptionId) {
     //   await cancelStripeSubscription(instructor.stripeSubscriptionId);
     // }
+
+    // Limpiar todas las cachés relacionadas con el usuario
+    const cacheKeys = [
+      `user:${userId}:data`,
+      `profile:${userId}`,
+      `session:${userId}`,
+      `instructorProfile:${userId}`,
+    ];
+
+    // Eliminar todas las cachés
+    await Promise.all(cacheKeys.map((key) => redis.del(key))).catch(() => {});
 
     // Notificar al usuario sobre la cancelación
     await createNotification({

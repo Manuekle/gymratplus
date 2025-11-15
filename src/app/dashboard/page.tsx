@@ -30,7 +30,7 @@ export default function DashboardPage() {
                 <Skeleton className="h-6 w-48 mb-2" />
                 <Skeleton className="h-4 w-32" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <Skeleton className="h-64 w-full" />
               </CardContent>
             </Card>
@@ -39,7 +39,7 @@ export default function DashboardPage() {
                 <Skeleton className="h-6 w-32 mb-2" />
                 <Skeleton className="h-4 w-24" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="space-y-4">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="space-y-2">
@@ -57,7 +57,7 @@ export default function DashboardPage() {
                 <Skeleton className="h-6 w-40 mb-2" />
                 <Skeleton className="h-4 w-28" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="space-y-4">
                   <Skeleton className="h-20 w-full" />
                   <Skeleton className="h-20 w-full" />
@@ -69,7 +69,7 @@ export default function DashboardPage() {
                 <Skeleton className="h-6 w-36 mb-2" />
                 <Skeleton className="h-4 w-32" />
               </CardHeader>
-              <CardContent>
+              <CardContent className="px-4">
                 <div className="space-y-4">
                   <Skeleton className="h-16 w-full" />
                   <Skeleton className="h-16 w-full" />

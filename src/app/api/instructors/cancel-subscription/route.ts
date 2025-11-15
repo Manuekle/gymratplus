@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { redis } from "@/lib/database/redis";
 
 export async function POST() {
   try {
@@ -22,8 +23,18 @@ export async function POST() {
       },
     });
 
-    // Invalidate the session to force a refresh
-    const response = NextResponse.json(
+    // Limpiar todas las cachés relacionadas con el usuario
+    const cacheKeys = [
+      `user:${session.user.id}:data`,
+      `profile:${session.user.id}`,
+      `session:${session.user.id}`,
+      `instructorProfile:${session.user.id}`,
+    ];
+
+    // Eliminar todas las cachés
+    await Promise.all(cacheKeys.map((key) => redis.del(key))).catch(() => {});
+
+    return NextResponse.json(
       {
         success: true,
         redirectTo: "/dashboard",
@@ -31,25 +42,6 @@ export async function POST() {
       },
       { status: 200 },
     );
-
-    // Update the session cookie with the new isInstructor status
-    response.cookies.set({
-      name: "__Secure-next-auth.session-token",
-      value: JSON.stringify({
-        ...session,
-        user: {
-          ...session.user,
-          isInstructor: false,
-        },
-      }),
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-      maxAge: 30 * 24 * 60 * 60, // 30 days
-    });
-
-    return response;
   } catch {
     return new NextResponse("Internal Server Error", { status: 500 });
   }

@@ -199,7 +199,7 @@ export function MealLogCalendar({ onMealDeleted }: MealLogCalendarProps) {
               </Button>
             </div>
           </CardHeader> */}
-          <CardContent className="flex justify-center items-center">
+          <CardContent className="px-4 flex justify-center items-center">
             <Calendar
               mode="single"
               selected={selectedDate}
@@ -256,7 +256,7 @@ export function MealLogCalendar({ onMealDeleted }: MealLogCalendarProps) {
                 Registro de todas las comidas consumidas en esta fecha
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <MealLogList
                 mealLogs={mealLogs}
                 loading={loading}

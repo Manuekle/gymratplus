@@ -294,7 +294,7 @@ export default function StepOnboarding() {
           Háganos saber sobre usted para que podamos personalizar su experiencia
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-4">
         <div className="space-y-6">
           {/* Step indicator */}
           <div className="flex justify-between mb-6">

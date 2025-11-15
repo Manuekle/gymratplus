@@ -336,7 +336,7 @@ export default function GoalPage() {
             Completa la información para crear tu objetivo personalizado
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Tipo de objetivo */}
             <div className="space-y-3">

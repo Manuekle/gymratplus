@@ -60,9 +60,13 @@ export async function GET() {
                 where: { assignedToId: { not: null } },
                 select: { id: true },
               },
-              foodPlans: {
-                where: { isActive: true },
-                select: { id: true },
+              foodRecommendations: {
+                where: {
+                  instructorId: session.user.id,
+                },
+                orderBy: { createdAt: "desc" },
+                take: 1,
+                select: { id: true, assignedToId: true },
               },
               mealLogs: {
                 orderBy: { createdAt: "desc" },
@@ -109,7 +113,9 @@ export async function GET() {
           averageWorkoutsPerWeek:
             totalWorkouts > 0 ? Math.round(totalWorkouts / weeks) : 0,
           lastNutritionLog: rel.student.mealLogs[0]?.createdAt || null,
-          hasActiveMealPlan: rel.student.foodPlans.length > 0,
+          hasActiveMealPlan: rel.student.foodRecommendations.some(
+            (rec) => rec.assignedToId === rel.student.id,
+          ),
           hasActiveWorkoutPlan: rel.student.assignedWorkouts.length > 0,
         };
       });

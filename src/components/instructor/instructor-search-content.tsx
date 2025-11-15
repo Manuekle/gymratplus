@@ -53,7 +53,6 @@ export default function InstructorSearchContent() {
   // y actualizarlo con `useEffect` después de la hidratación.
   const [country, setCountry] = useState<string>("");
   const [isRemote, setIsRemote] = useState(false); // **Valor inicial por defecto**
-  const [isVerified, setIsVerified] = useState(false);
   const [maxPrice, setMaxPrice] = useState("");
   const [experience, setExperience] = useState("");
   const [instructors, setInstructors] = useState<InstructorWithProfile[]>([]);
@@ -74,29 +73,41 @@ export default function InstructorSearchContent() {
     if (searchParams) {
       setCountry(searchParams.get("country") || "");
       setIsRemote(searchParams.get("isRemote") === "true");
-      setIsVerified(searchParams.get("isVerified") === "true");
       setMaxPrice(searchParams.get("maxPrice") || "");
       setExperience(searchParams.get("experienceLevel") || "");
       setSelectedSpecialties(searchParams.get("tagFilter")?.split(",") || []);
-      // Ejecutar la primera búsqueda basada en los parámetros de la URL
-      fetchInstructors();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  // NOTA: He quitado fetchInstructors de las dependencias para evitar un loop infinito
-  // ya que `fetchInstructors` depende de los estados que estamos inicializando aquí.
-  // La primera llamada a `fetchInstructors` se hace dentro de este `useEffect`.
 
   const loadExistingRequests = useCallback(async () => {
     try {
-      // ... (código sin cambios)
-      const response = await fetch("/api/student-instructor-requests");
-      if (response.ok) {
-        const requests = await response.json();
+      const [requestsResponse, hiredResponse] = await Promise.all([
+        fetch("/api/student-instructor-requests"),
+        fetch("/api/students/my-instructors"),
+      ]);
+
+      if (requestsResponse.ok) {
+        const requests = await requestsResponse.json();
+        // Incluir todas las solicitudes (pending, active, etc.)
         const requestIds = requests.map(
           (req: { instructorProfileId: string }) => req.instructorProfileId,
         );
         setRequestedInstructors(new Set(requestIds));
+      }
+
+      if (hiredResponse.ok) {
+        const hiredInstructors = await hiredResponse.json();
+        // Agregar también los instructores ya contratados
+        // El campo 'id' en la respuesta es el instructorProfileId
+        const hiredIds = hiredInstructors
+          .map((inst: { id?: string }) => inst.id)
+          .filter(Boolean);
+        setRequestedInstructors((prev) => {
+          const newSet = new Set(prev);
+          hiredIds.forEach((id: string) => newSet.add(id));
+          return newSet;
+        });
       }
     } catch (error) {
       console.error("Error loading existing requests:", error);
@@ -107,13 +118,28 @@ export default function InstructorSearchContent() {
     loadExistingRequests();
   }, [loadExistingRequests]);
 
+  // Ejecutar búsqueda después de cargar las solicitudes y cuando cambien los filtros
+  useEffect(() => {
+    // Esperar a que se carguen las solicitudes antes de buscar
+    if (requestedInstructors.size >= 0) {
+      fetchInstructors();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    country,
+    isRemote,
+    maxPrice,
+    experience,
+    selectedSpecialties,
+    requestedInstructors,
+  ]);
+
   const fetchInstructors = useCallback(async () => {
     setIsLoading(true);
     try {
       const params = new URLSearchParams();
       if (country) params.append("country", country);
       if (isRemote) params.append("isRemote", "true");
-      if (isVerified) params.append("isVerified", "true");
       if (maxPrice) params.append("maxPrice", maxPrice);
       if (experience) params.append("experienceLevel", experience);
       if (selectedSpecialties.length > 0)
@@ -124,7 +150,14 @@ export default function InstructorSearchContent() {
         throw new Error("Error al obtener instructores.");
       }
       const data: InstructorWithProfile[] = await response.json();
-      setInstructors(data);
+
+      // Filtrar instructores que ya tienen solicitud enviada o están contratados
+      const filteredData = data.filter((instructor) => {
+        const profileId = instructor.instructorProfile?.id;
+        return profileId && !requestedInstructors.has(profileId);
+      });
+
+      setInstructors(filteredData);
     } catch (error: unknown) {
       let errorMessage = "Hubo un error al cargar los instructores.";
       if (error instanceof Error) {
@@ -140,10 +173,10 @@ export default function InstructorSearchContent() {
   }, [
     country,
     isRemote,
-    isVerified,
     maxPrice,
     experience,
     selectedSpecialties,
+    requestedInstructors,
   ]);
 
   // **MODIFICACIÓN CLAVE 2:** Eliminamos el `useEffect` anterior que llamaba a `fetchInstructors()`
@@ -160,7 +193,6 @@ export default function InstructorSearchContent() {
     const params = new URLSearchParams();
     if (country) params.set("country", country);
     if (isRemote) params.set("isRemote", "true");
-    if (isVerified) params.set("isVerified", "true");
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (experience) params.set("experienceLevel", experience);
     if (selectedSpecialties.length > 0)
@@ -247,10 +279,10 @@ export default function InstructorSearchContent() {
             Opciones de Búsqueda
           </CardTitle>
           <CardDescription className="text-xs">
-            Encuentra al instructor ideal para ti.
+            Encuentra al entrenador ideal para ti.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
+        <CardContent className="px-4 grid grid-cols-1 md:grid-cols-3 gap-3 items-center">
           <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1 md:pb-0 pb-1">
             <CountrySelector
               value={country}
@@ -298,16 +330,6 @@ export default function InstructorSearchContent() {
             </Select>
           </div>
           <div className="flex flex-row flex-wrap gap-3 items-center md:col-span-3">
-            <div className="flex items-center gap-1.5">
-              <Switch
-                id="isVerified"
-                checked={isVerified}
-                onCheckedChange={setIsVerified}
-              />
-              <Label htmlFor="isVerified" className="text-xs">
-                Solo verificados
-              </Label>
-            </div>
             <div className="flex items-center gap-1.5">
               <Switch
                 id="isRemote"
@@ -390,7 +412,7 @@ export default function InstructorSearchContent() {
                 <Skeleton className="h-5 w-3/4 mb-1.5" />
                 <Skeleton className="h-3 w-1/2" />
               </CardHeader>
-              <CardContent className="space-y-1.5">
+              <CardContent className="px-4 space-y-1.5">
                 <Skeleton className="h-3 w-full" />
                 <Skeleton className="h-3 w-2/3" />
                 <Skeleton className="h-3 w-1/4" />
@@ -402,7 +424,7 @@ export default function InstructorSearchContent() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {instructors.length === 0 ? (
             <p className="text-muted-foreground md:col-span-3 text-xs">
-              No se encontraron instructores con los criterios de búsqueda.
+              No se encontraron entrenadores con los criterios de búsqueda.
             </p>
           ) : (
             instructors.map((instructor) => {
@@ -418,7 +440,7 @@ export default function InstructorSearchContent() {
                     <Avatar className="h-12 w-12 mt-0.5">
                       <AvatarImage
                         src={instructor.image || ""}
-                        alt={instructor.name || "Instructor"}
+                        alt={instructor.name || "Entrenador"}
                       />
                       <AvatarFallback className="text-xs">
                         {instructor.name
@@ -471,10 +493,10 @@ export default function InstructorSearchContent() {
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="flex-1 py-2 space-y-2">
+                  <CardContent className="flex-1 px-4 py-2 space-y-2">
                     <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
                       {instructor.instructorProfile?.bio ||
-                        "Instructor certificado con experiencia en entrenamiento personalizado."}
+                        "Entrenador certificado con experiencia en entrenamiento personalizado."}
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {instructor.instructorProfile?.curriculum ? (
@@ -533,7 +555,7 @@ export default function InstructorSearchContent() {
                               <Button
                                 asChild
                                 size="sm"
-                                className="text-[11px] h-8 bg-transparent"
+                                className="text-[11px] bg-transparent"
                                 variant="outline"
                               >
                                 <Link
@@ -555,7 +577,7 @@ export default function InstructorSearchContent() {
                       return (
                         <div className="w-full text-center">
                           <p className="text-[10px] text-muted-foreground">
-                            Perfil de instructor no disponible
+                            Perfil de entrenador no disponible
                           </p>
                         </div>
                       );

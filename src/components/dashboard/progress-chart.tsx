@@ -292,7 +292,7 @@ export default function ProgressChart({
         </CardAction>
       </CardHeader>
 
-      <CardContent className="flex-1 flex flex-col">
+      <CardContent className="px-4 flex-1 flex flex-col">
         <div className="flex flex-col gap-3 mb-6">
           <div className="flex flex-wrap gap-2 w-full">
             <Button

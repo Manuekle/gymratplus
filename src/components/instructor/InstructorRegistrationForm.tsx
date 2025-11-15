@@ -476,7 +476,7 @@ export function InstructorRegistrationForm({
                   <Button
                     type="button"
                     disabled={isLoading || !isFormValid}
-                    size="default"
+                    size="sm"
                     className="px-8"
                     onClick={() => setStep(2)}
                   >
@@ -628,7 +628,7 @@ export function InstructorRegistrationForm({
                 <Button
                   type="button"
                   variant="outline"
-                  size="default"
+                  size="sm"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
                 >

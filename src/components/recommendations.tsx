@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Icons } from "@/components/icons";
+import { WorkoutGenerator } from "@/components/workout-generator/workout-generator";
 
 import { useRouter } from "next/navigation";
 import { WorkoutPlan } from "@/components/workouts/workout-plan";
@@ -34,7 +35,7 @@ export type Recommendations = {
         notes?: string;
       }>;
     }>;
-  };
+  } | null;
   foodRecommendation: {
     macros: {
       protein: string;
@@ -139,13 +140,16 @@ export type Recommendations = {
   };
 };
 
+type ExperienceLevel = "beginner" | "intermediate" | "advanced";
+
 export default function RecommendationsComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [recommendations, setRecommendations] =
     useState<Recommendations | null>(null);
-
+  const [experienceLevel, setExperienceLevel] =
+    useState<ExperienceLevel | null>(null);
+  const [showWorkoutGenerator, setShowWorkoutGenerator] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const [profile, setProfile] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -177,6 +181,13 @@ export default function RecommendationsComponent() {
 
     interface ProfileData {
       [key: string]: unknown;
+      experienceLevel?: ExperienceLevel;
+      trainingFrequency?: number;
+      monthsTraining?: number;
+      goal?: string;
+      currentWeight?: number;
+      height?: number;
+      dietaryPreference?: string;
     }
 
     interface ErrorResponse {
@@ -188,35 +199,102 @@ export default function RecommendationsComponent() {
     ): Promise<void> => {
       if (!profileData) return;
 
-      setIsLoading(true);
-      try {
-        const response = await fetch("/api/recommendations", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(profileData),
-        });
+      // Determinar nivel de experiencia
+      const level = determineExperienceLevel(profileData);
+      setExperienceLevel(level);
 
-        if (!response.ok) {
-          const errorData: ErrorResponse = await response.json();
-          throw new Error(errorData.error || "Failed to fetch recommendations");
+      // Si es principiante, generar automáticamente
+      if (level === "beginner") {
+        setIsLoading(true);
+        try {
+          const response = await fetch("/api/recommendations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(profileData),
+          });
+
+          if (!response.ok) {
+            const errorData: ErrorResponse = await response.json();
+            throw new Error(
+              errorData.error || "Failed to fetch recommendations",
+            );
+          }
+
+          const data: Recommendations = await response.json();
+          setRecommendations(data);
+          setError(null);
+        } catch (error: unknown) {
+          console.error("Error fetching recommendations:", error);
+          setError(
+            "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde.",
+          );
+          toast.error("Error al generar recomendaciones", {
+            description: "Por favor, inténtalo de nuevo más tarde",
+          });
+        } finally {
+          setIsLoading(false);
         }
+      } else {
+        // Intermedio/Avanzado: solo generar plan de alimentación
+        setIsLoading(true);
+        try {
+          const response = await fetch("/api/recommendations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              ...profileData,
+              skipWorkout: true, // Solo generar nutrición
+            }),
+          });
 
-        const data: Recommendations = await response.json();
-        setRecommendations(data);
-        setError(null);
-      } catch (error: unknown) {
-        console.error("Error fetching recommendations:", error);
-        setError(
-          "No se pudieron generar las recomendaciones. Por favor, inténtelo de nuevo más tarde.",
-        );
-        toast.error("Failed to generate recommendations", {
-          description: "Please try again later",
-        });
-      } finally {
-        setIsLoading(false);
+          if (!response.ok) {
+            const errorData: ErrorResponse = await response.json();
+            throw new Error(
+              errorData.error || "Failed to fetch recommendations",
+            );
+          }
+
+          const data: Recommendations = await response.json();
+          setRecommendations(data);
+          setError(null);
+        } catch (error: unknown) {
+          console.error("Error fetching recommendations:", error);
+          setError(
+            "No se pudo generar el plan de alimentación. Por favor, inténtelo de nuevo más tarde.",
+          );
+          toast.error("Error al generar plan de alimentación", {
+            description: "Por favor, inténtalo de nuevo más tarde",
+          });
+        } finally {
+          setIsLoading(false);
+        }
       }
+    };
+
+    // Función auxiliar para determinar el nivel de experiencia
+    const determineExperienceLevel = (
+      profile: ProfileData,
+    ): ExperienceLevel => {
+      // Verificar si viene en el perfil
+      if (profile.experienceLevel) {
+        return profile.experienceLevel as ExperienceLevel;
+      }
+
+      // Calcular basado en frecuencia de entrenamiento y meses entrenando
+      const trainingFrequency = profile.trainingFrequency || 0;
+      const monthsTraining = profile.monthsTraining || 0;
+
+      if (trainingFrequency <= 2 || monthsTraining < 6) {
+        return "beginner";
+      }
+      if (trainingFrequency <= 4 || monthsTraining < 18) {
+        return "intermediate";
+      }
+      return "advanced";
     };
 
     const init = async () => {
@@ -240,7 +318,7 @@ export default function RecommendationsComponent() {
           nutrición para usted
         </CardDescription>
       </CardHeader>
-      <CardContent className="p-6">
+      <CardContent className="px-4">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
@@ -266,59 +344,147 @@ export default function RecommendationsComponent() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
           >
-            <Tabs defaultValue="workout" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8 ">
-                <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
-                <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
-              </TabsList>
+            {experienceLevel === "beginner" ? (
+              // Principiante: mostrar ambos planes generados automáticamente
+              <Tabs defaultValue="workout" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-8">
+                  <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
+                  <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
+                </TabsList>
 
-              <TabsContent value="workout" className="mt-0">
-                <WorkoutPlan
-                  workoutPlan={recommendations.workoutPlan}
-                  isLoading={isLoading}
-                  defaultOpen={["Día 1-0"]}
-                />
-                <div className="mt-8 space-y-4">
-                  <h3 className="text-lg font-semibold tracking-heading">
-                    Recomendaciones
-                  </h3>
-                  <div className="space-y-3">
-                    {recommendations?.recommendations?.map(
-                      (recommendation: string, index: number) => (
-                        <div key={index} className="flex items-start gap-3">
-                          <div className="flex-shrink-0 mt-0.5">
-                            <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
-                              <span className="text-xs font-medium text-primary">
-                                {index + 1}
-                              </span>
-                            </div>
+                <TabsContent value="workout" className="mt-0">
+                  {recommendations.workoutPlan ? (
+                    <>
+                      <WorkoutPlan
+                        workoutPlan={recommendations.workoutPlan}
+                        isLoading={isLoading}
+                        defaultOpen={["Día 1-0"]}
+                      />
+                      {recommendations?.recommendations?.length > 0 && (
+                        <div className="mt-8 space-y-4">
+                          <h3 className="text-lg font-semibold tracking-heading">
+                            Recomendaciones
+                          </h3>
+                          <div className="space-y-3">
+                            {recommendations.recommendations.map(
+                              (recommendation: string, index: number) => (
+                                <div
+                                  key={index}
+                                  className="flex items-start gap-3"
+                                >
+                                  <div className="flex-shrink-0 mt-0.5">
+                                    <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
+                                      <span className="text-xs font-medium text-primary">
+                                        {index + 1}
+                                      </span>
+                                    </div>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">
+                                    {recommendation}
+                                  </p>
+                                </div>
+                              ),
+                            )}
                           </div>
-                          <p className="text-xs text-muted-foreground">
-                            {recommendation}
-                          </p>
                         </div>
-                      ),
-                    )}
-                  </div>
-                </div>
-              </TabsContent>
+                      )}
+                    </>
+                  ) : (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground text-xs mb-4">
+                        No se pudo generar el plan de entrenamiento
+                      </p>
+                    </div>
+                  )}
+                </TabsContent>
 
-              <TabsContent value="nutrition" className="mt-0">
-                <MealPlan
-                  foodRecommendation={recommendations.foodRecommendation}
-                  isLoading={isLoading}
-                />
-              </TabsContent>
-            </Tabs>
-            {/* aqui un boton de ir a profile */}
+                <TabsContent value="nutrition" className="mt-0">
+                  <MealPlan
+                    foodRecommendation={recommendations.foodRecommendation}
+                    isLoading={isLoading}
+                  />
+                </TabsContent>
+              </Tabs>
+            ) : (
+              // Intermedio/Avanzado: mostrar plan de alimentación y opción para crear entrenamiento
+              <Tabs defaultValue="nutrition" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-8">
+                  <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
+                  <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="nutrition" className="mt-0">
+                  <MealPlan
+                    foodRecommendation={recommendations.foodRecommendation}
+                    isLoading={isLoading}
+                  />
+                </TabsContent>
+
+                <TabsContent value="workout" className="mt-0">
+                  {showWorkoutGenerator ? (
+                    <div className="space-y-4">
+                      <Card>
+                        <CardHeader>
+                          <CardTitle className="text-lg font-semibold tracking-heading">
+                            Crea tu Rutina Personalizada
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            Diseña tu plan de entrenamiento según tus
+                            preferencias y objetivos
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="px-4">
+                          <WorkoutGenerator />
+                        </CardContent>
+                      </Card>
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 space-y-4">
+                      <div className="space-y-2">
+                        <h3 className="text-lg font-semibold tracking-heading">
+                          Crea tu Plan de Entrenamiento
+                        </h3>
+                        <p className="text-xs text-muted-foreground max-w-md mx-auto">
+                          Como usuario{" "}
+                          {experienceLevel === "intermediate"
+                            ? "intermedio"
+                            : "avanzado"}
+                          , puedes crear tu propio plan de entrenamiento
+                          personalizado basado en tus preferencias y objetivos.
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => setShowWorkoutGenerator(true)}
+                        className="text-xs"
+                        size="lg"
+                      >
+                        Crear Rutina Personalizada
+                      </Button>
+                      {recommendations.workoutPlan && (
+                        <div className="mt-8">
+                          <p className="text-xs text-muted-foreground mb-4">
+                            O revisa el plan sugerido:
+                          </p>
+                          <WorkoutPlan
+                            workoutPlan={recommendations.workoutPlan}
+                            isLoading={false}
+                            defaultOpen={["Día 1-0"]}
+                          />
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </TabsContent>
+              </Tabs>
+            )}
             <div className="mt-8">
               <Button
                 variant="outline"
-                onClick={() => router.push("/dashboard/profile")}
+                onClick={() => router.push("/dashboard")}
                 className="text-xs w-full"
                 size="lg"
               >
-                Volver al Perfil
+                Ir al Dashboard
               </Button>
             </div>
           </motion.div>

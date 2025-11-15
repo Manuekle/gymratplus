@@ -104,7 +104,7 @@ export default function SignUpPage() {
             Regístrate para acceder a todos los beneficios de la plataforma.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="px-4 space-y-4">
           <form onSubmit={handleSubmit} className="space-y-4 gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-xs md:text-xs" htmlFor="name">

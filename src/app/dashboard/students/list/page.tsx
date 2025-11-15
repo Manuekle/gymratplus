@@ -415,7 +415,12 @@ export default function StudentsListPage() {
                       <div className="mt-1.5 flex items-center gap-3 text-xs text-muted-foreground">
                         <div className="flex items-center gap-1">
                           <HugeiconsIcon icon={FireIcon} className="h-3 w-3" />
-                          <span>{student.currentWorkoutStreak} días</span>
+                          <span>
+                            {student.currentWorkoutStreak}{" "}
+                            {student.currentWorkoutStreak === 1
+                              ? "día"
+                              : "días"}
+                          </span>
                         </div>
                         <div className="h-3 w-px bg-border" />
                         <div>

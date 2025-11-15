@@ -171,24 +171,113 @@ export default function InstructorDashboardPage() {
 
   if (isLoadingProfile || status === "loading") {
     return (
-      <div className="space-y-6">
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-64" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
+      <div className="space-y-8">
+        {/* Stats Cards Skeleton */}
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
             <Card key={i}>
-              <CardHeader className="space-y-2">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-48" />
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <Skeleton className="h-4 w-24" />
+                <Skeleton className="h-4 w-4" />
               </CardHeader>
-              <CardContent>
-                <Skeleton className="h-16 w-full" />
+              <CardContent className="px-4">
+                <Skeleton className="h-8 w-16 mb-1" />
+                <Skeleton className="h-3 w-32" />
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {/* Pending Requests Skeleton */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+              <div className="space-y-1">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-3 w-64" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="px-4">
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="flex flex-col gap-2 md:gap-0">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-3 w-48" />
+                        <Skeleton className="h-3 w-40" />
+                      </div>
+                    </div>
+                    <Skeleton className="h-8 w-24 md:w-auto" />
+                  </div>
+                  {i < 1 && <Separator className="mt-4" />}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Active Students Skeleton */}
+        <Card>
+          <CardHeader>
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-2">
+              <div className="space-y-1">
+                <Skeleton className="h-7 w-40" />
+                <Skeleton className="h-3 w-56" />
+              </div>
+              <Skeleton className="h-4 w-24" />
+            </div>
+          </CardHeader>
+          <CardContent className="px-4">
+            <div className="space-y-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i}>
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 rounded-lg p-3 -m-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <Skeleton className="h-10 w-10 rounded-full" />
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <Skeleton className="h-3 w-32" />
+                        <Skeleton className="h-3 w-48" />
+                        <Skeleton className="h-3 w-40" />
+                        <div className="flex gap-2 mt-1">
+                          <Skeleton className="h-5 w-32" />
+                          <Skeleton className="h-5 w-28" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0">
+                      <Skeleton className="h-5 w-20" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
+                  </div>
+                  {i < 2 && <Separator className="mt-4" />}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Instructor Profile Skeleton */}
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <Skeleton className="h-7 w-48 mb-2" />
+                <Skeleton className="h-3 w-80" />
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="px-4">
+            <div className="space-y-4">
+              <Skeleton className="h-32 w-full" />
+              <Skeleton className="h-20 w-full" />
+              <Skeleton className="h-24 w-full" />
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -210,7 +299,7 @@ export default function InstructorDashboardPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="text-2xl font-semibold tracking-heading">
               {stats?.totalStudents || 0}
             </div>
@@ -230,7 +319,7 @@ export default function InstructorDashboardPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="text-2xl font-semibold tracking-heading">
               {stats?.studentsWithWorkoutPlans || 0} entrenamiento
             </div>
@@ -250,7 +339,7 @@ export default function InstructorDashboardPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="text-2xl font-semibold tracking-heading">
               {stats?.avgStreak || 0}
             </div>
@@ -266,7 +355,7 @@ export default function InstructorDashboardPage() {
               className="h-4 w-4 text-muted-foreground"
             />
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="text-2xl font-semibold tracking-heading">
               ${stats?.totalRevenue || 0}
             </div>
@@ -291,7 +380,7 @@ export default function InstructorDashboardPage() {
               </div>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-4">
             <div className="space-y-4">
               {pendingRequests.map((request, index) => (
                 <div key={request.id} className="flex flex-col gap-2 md:gap-0">
@@ -322,7 +411,7 @@ export default function InstructorDashboardPage() {
                     </div>
                     <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0">
                       <Button
-                        size="default"
+                        size="sm"
                         variant="outline"
                         onClick={() => handleAcceptRequest(request.id)}
                         className="text-xs w-full md:w-auto"
@@ -369,7 +458,7 @@ export default function InstructorDashboardPage() {
             </Link>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           {isLoadingStudents ? (
             <div className="space-y-4">
               {Array.from({ length: 3 }).map((_, i) => (
@@ -399,8 +488,12 @@ export default function InstructorDashboardPage() {
           ) : (
             <div className="space-y-4">
               {students.slice(0, 5).map((student, index) => (
-                <div key={student.id}>
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                <Link
+                  key={student.id}
+                  href={`/dashboard/students/list/${student.id}`}
+                  className="block group"
+                >
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0 rounded-lg p-3 -m-3 hover:bg-muted/50 transition-colors cursor-pointer">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <Avatar className="h-10 w-10">
                         <AvatarImage
@@ -412,7 +505,7 @@ export default function InstructorDashboardPage() {
                         </AvatarFallback>
                       </Avatar>
                       <div className="space-y-1 min-w-0">
-                        <p className="text-xs font-medium leading-none truncate">
+                        <p className="text-xs font-medium leading-none truncate group-hover:text-primary transition-colors">
                           {student.name || "Sin nombre"}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
@@ -455,7 +548,8 @@ export default function InstructorDashboardPage() {
                     <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0 text-right">
                       <div className="flex items-center gap-2">
                         <Badge variant="outline" className="text-xs">
-                          {student.currentWorkoutStreak} días
+                          {student.currentWorkoutStreak}{" "}
+                          {student.currentWorkoutStreak === 1 ? "día" : "días"}
                         </Badge>
                         <span className="text-xs text-muted-foreground">
                           {student.completedWorkoutsLast7Days} entrenos/sem
@@ -479,7 +573,7 @@ export default function InstructorDashboardPage() {
                   {index < Math.min(students.length, 5) - 1 && (
                     <Separator className="mt-4" />
                   )}
-                </div>
+                </Link>
               ))}
               {students.length > 5 && (
                 <div className="pt-4 border-t">
@@ -510,14 +604,19 @@ export default function InstructorDashboardPage() {
       {/* Instructor Profile */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl tracking-heading font-semibold">
-            Mi Perfil de Instructor
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Actualiza tu información profesional y currículum
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-2xl tracking-heading font-semibold">
+                Mi Perfil de Instructor
+              </CardTitle>
+              <CardDescription className="text-xs mt-1">
+                Gestiona tu información profesional y haz que los estudiantes te
+                encuentren
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-4">
           <InstructorProfileForm />
         </CardContent>
       </Card>

@@ -244,7 +244,7 @@ export default function NutritionPage() {
                 <Skeleton className="h-8 w-8 rounded-md" />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <div>
@@ -272,7 +272,7 @@ export default function NutritionPage() {
               <Skeleton className="h-7 md:h-8 w-36 md:w-40 mb-2" />
               <Skeleton className="h-3 md:h-4 w-48 md:w-56" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-6">
                 {Array.from({ length: 3 }).map((_, i) => (
                   <div key={i} className="space-y-2">
@@ -300,7 +300,7 @@ export default function NutritionPage() {
                 <Skeleton className="h-8 w-28 md:w-32 rounded-md" />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <Skeleton className="h-64 md:h-80 w-full rounded-md" />
             </CardContent>
           </Card>
@@ -327,7 +327,7 @@ export default function NutritionPage() {
                 <CalorieCalculator onGoalsUpdated={refreshData} />
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-6">
                 <div className="flex justify-between items-end">
                   <div>
@@ -408,7 +408,7 @@ export default function NutritionPage() {
                 Distribución de proteínas, carbohidratos y grasas
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <div className="flex justify-between">
@@ -541,7 +541,7 @@ export default function NutritionPage() {
                 </Link>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4">
               <MealLogCalendar onMealDeleted={refreshData} />
             </CardContent>
           </Card>

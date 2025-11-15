@@ -215,7 +215,7 @@ export default function WorkoutHistoryPage() {
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-          <CardContent className="pt-2">
+          <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
@@ -236,7 +236,7 @@ export default function WorkoutHistoryPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-gray-800">
-          <CardContent className="pt-2">
+          <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
@@ -257,7 +257,7 @@ export default function WorkoutHistoryPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-gray-800">
-          <CardContent className="pt-2">
+          <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
@@ -276,7 +276,7 @@ export default function WorkoutHistoryPage() {
         </Card>
 
         <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-gray-800">
-          <CardContent className="pt-2">
+          <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
                 <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
@@ -342,7 +342,7 @@ export default function WorkoutHistoryPage() {
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="pt-4">
+                <CardContent className="px-4 pt-4">
                   <div className="grid grid-cols-3 gap-4 mb-4">
                     <div className="text-center p-2 rounded-md border">
                       <p className="text-xs text-muted-foreground">Duración</p>
