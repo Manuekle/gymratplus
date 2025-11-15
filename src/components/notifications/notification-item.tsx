@@ -219,9 +219,6 @@ export function NotificationItem({
           >
             {notification.title}
           </h4>
-          {!notification.read && (
-            <div className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
-          )}
         </div>
         <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5 truncate">
           {notification.message}

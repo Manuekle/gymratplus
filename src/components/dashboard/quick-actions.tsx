@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Calendar01Icon,
   Target02Icon,
   WeightScaleIcon,
   VegetarianFoodIcon,
@@ -12,8 +11,6 @@ import {
   Activity01Icon,
   File01Icon,
 } from "@hugeicons/core-free-icons";
-import { useNotificationsContext } from "@/providers/notifications-provider";
-
 const quickActions = [
   {
     title: "Nuevo Entrenamiento",
@@ -48,8 +45,6 @@ const quickActions = [
 ];
 
 export function QuickActions() {
-  const { unreadCount } = useNotificationsContext();
-
   return (
     <div className="p-4 md:p-6 rounded-lg border bg-card">
       <div className="flex items-center justify-between mb-4">
@@ -61,21 +56,6 @@ export function QuickActions() {
             Accede rápidamente a las funciones más usadas
           </p>
         </div>
-        {unreadCount > 0 && (
-          <Link
-            href="/dashboard/notifications"
-            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors relative"
-          >
-            Notificaciones
-            <HugeiconsIcon
-              icon={Calendar01Icon}
-              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-            />
-            <span className="absolute -top-1 -right-1 px-1.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded-full">
-              {unreadCount > 9 ? "+9" : unreadCount}
-            </span>
-          </Link>
-        )}
       </div>
 
       <div className="flex flex-wrap gap-2">

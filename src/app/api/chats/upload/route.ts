@@ -112,7 +112,8 @@ export async function POST(request: NextRequest) {
       fileSize: file.size,
       mimeType: file.type,
     });
-  } catch {
+  } catch (error) {
+    console.error("[UPLOAD_CHAT_FILE_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to upload file" },
       { status: 500 },

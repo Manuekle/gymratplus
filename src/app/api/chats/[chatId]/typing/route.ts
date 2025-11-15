@@ -57,7 +57,8 @@ export async function POST(
     await publishTypingStatus(chatId, userId, isTyping === true);
 
     return NextResponse.json({ success: true }, { status: 200 });
-  } catch {
+  } catch (error) {
+    console.error("[POST_TYPING_STATUS_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -116,7 +117,8 @@ export async function GET(
       { isTyping: typingStatus?.isTyping || false },
       { status: 200 },
     );
-  } catch {
+  } catch (error) {
+    console.error("[GET_TYPING_STATUS_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

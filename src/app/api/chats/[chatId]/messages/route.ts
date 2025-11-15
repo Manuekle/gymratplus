@@ -66,7 +66,8 @@ export async function DELETE(
       },
       { status: 200 },
     );
-  } catch {
+  } catch (error) {
+    console.error("[DELETE_CHAT_MESSAGES_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to clear chat" },
       { status: 500 },

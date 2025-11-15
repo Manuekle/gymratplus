@@ -518,7 +518,7 @@ export default function ActiveWorkoutPage() {
   const progress = calculateProgress();
 
   return (
-    <div className="p-4 md:p-6">
+    <div>
       {startTime && (
         <WorkoutTimerFloat
           workoutSessionId={workoutSession.id}

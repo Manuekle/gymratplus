@@ -109,7 +109,8 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     );
-  } catch {
+  } catch (error) {
+    console.error("[CREATE_CHAT_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

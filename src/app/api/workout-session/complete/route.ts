@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-import {
-  createWorkoutCompletedNotification,
-  publishWorkoutNotification,
-} from "@/lib/notifications/workout-notifications";
+import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
 
 export async function PUT(req: NextRequest) {
@@ -106,10 +103,7 @@ export async function PUT(req: NextRequest) {
         // Default to true if not set
         const workoutName = workoutSession.workout?.name || "Entrenamiento";
 
-        // Create notification in database directly
-        await createWorkoutCompletedNotification(session.user.id, workoutName);
-
-        // Add to Redis list for polling
+        // Add to Redis list for polling (the subscriber will create the notification)
         await publishWorkoutNotification(
           session.user.id,
           workoutSessionId,
@@ -118,7 +112,7 @@ export async function PUT(req: NextRequest) {
         );
 
         console.log(
-          `Workout completion notification created for user ${session.user.id}`,
+          `Workout completion notification queued for user ${session.user.id}`,
         );
       }
     } catch (notificationError) {

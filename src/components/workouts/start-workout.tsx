@@ -224,7 +224,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           Comenzar rutina
         </Button>
       </DialogTrigger>
-      <DialogContent className="space-y-4 w-full overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <DialogContent className="space-y-4 w-full max-w-[95vw] sm:max-w-md overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Selecciona el día de entrenamiento
@@ -274,12 +274,12 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
         ) : (
           <>
             <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
-              <div className="flex flex-nowrap overflow-x-auto pb-1 gap-1.5 hide-scrollbar">
+              <div className="flex flex-wrap overflow-hidden pb-1 gap-1.5">
                 {days.map((day: Day) => (
                   <button
                     key={day.day}
                     onClick={() => setSelectedDay(day.day)}
-                    className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${
+                    className={`flex-shrink-0 px-3 py-1.5 text-xs rounded-full border transition-all ${
                       selectedDay === day.day
                         ? "bg-primary/80 dark:bg-primary/20 border-primary/20 text-white dark:text-white font-medium"
                         : "border-border/50 text-black dark:text-white hover:bg-muted/50"

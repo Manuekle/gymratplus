@@ -3,10 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
-import {
-  createGoalCreatedNotification,
-  publishGoalNotification,
-} from "@/lib/notifications/goal-notifications";
+import { publishGoalNotification } from "@/lib/notifications/goal-notifications";
 
 // GET /api/goals - Obtener objetivos del usuario
 export async function GET(req: NextRequest) {
@@ -181,14 +178,11 @@ export async function POST(req: NextRequest) {
 
       if (userProfile?.notificationsActive !== false) {
         // Default to true if not set
-        // Create notification in database directly
-        await createGoalCreatedNotification(session.user.id, title);
-
-        // Add to Redis list for polling
+        // Add to Redis list for polling (the subscriber will create the notification)
         await publishGoalNotification(session.user.id, "created", title);
 
         console.log(
-          `Goal creation notification created for user ${session.user.id}`,
+          `Goal creation notification published for user ${session.user.id}`,
         );
       }
     } catch {

@@ -14,7 +14,7 @@ export default function PricingPage() {
           <h1 className="text-4xl font-semibold tracking-heading mb-3">
             Precios simples
           </h1>
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             Elige el plan que se adapte a ti
           </p>
         </div>

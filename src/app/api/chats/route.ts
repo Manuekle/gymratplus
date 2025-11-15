@@ -152,7 +152,7 @@ export async function GET() {
     );
 
     return NextResponse.json(formattedChats, { status: 200 });
-  } catch {
+  } catch (error) {
     console.error("[GET_CHATS_ERROR]", error);
 
     // Handle Prisma errors

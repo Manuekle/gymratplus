@@ -2,10 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
-import {
-  createWorkoutStartedNotification,
-  publishWorkoutNotification,
-} from "@/lib/notifications/workout-notifications";
+import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
 
 export async function POST(req: NextRequest) {
   try {
@@ -128,10 +125,7 @@ export async function POST(req: NextRequest) {
 
       if (userProfile?.notificationsActive !== false) {
         // Default to true if not set
-        // Create notification in database directly
-        await createWorkoutStartedNotification(userId, userWorkout.name, day);
-
-        // Add to Redis list for polling
+        // Add to Redis list for polling (the subscriber will create the notification)
         await publishWorkoutNotification(
           userId,
           workoutSession.id,

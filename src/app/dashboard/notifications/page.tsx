@@ -222,7 +222,7 @@ export default function NotificationsPage() {
                 No hay notificaciones
               </h3>
               <p className="text-xs text-muted-foreground max-w-sm">
-                No tienes notificaciones en este momento.
+                No tienes notificaciones en este momento
               </p>
             </div>
           ) : (
@@ -265,7 +265,7 @@ export default function NotificationsPage() {
                 No hay notificaciones sin leer
               </h3>
               <p className="text-xs text-muted-foreground max-w-sm">
-                Has leído todas tus notificaciones.
+                Has leído todas tus notificaciones
               </p>
             </div>
           ) : (

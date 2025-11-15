@@ -193,7 +193,7 @@ export async function GET(
       },
       { status: 200 },
     );
-  } catch {
+  } catch (error) {
     console.error("[GET_CHAT_MESSAGES_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
@@ -325,7 +325,7 @@ export async function POST(
       },
       { status: 201 },
     );
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       console.error("[SEND_MESSAGE_VALIDATION_ERROR]", error.errors);
       return NextResponse.json(

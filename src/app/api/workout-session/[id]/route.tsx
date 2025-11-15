@@ -3,7 +3,6 @@ import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
 import { publishNotification } from "@/lib/database/redis";
-import { createNotification } from "@/lib/notifications/notification-service";
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -80,15 +79,7 @@ export async function DELETE(request: NextRequest) {
 
       if (userProfile?.notificationsActive !== false) {
         // Default to true if not set
-        // Create notification in database
-        await createNotification({
-          userId: session.user.id,
-          title: "Entrenamiento cancelado",
-          message: `Has cancelado la sesión de entrenamiento "${workoutName}".`,
-          type: "workout",
-        });
-
-        // Add to Redis list for polling
+        // Add to Redis list for polling (the subscriber will create the notification)
         await publishNotification(session.user.id, {
           type: "workout",
           title: "Entrenamiento cancelado",
@@ -96,13 +87,13 @@ export async function DELETE(request: NextRequest) {
         });
 
         console.log(
-          `Workout cancellation notification created for user ${session.user.id}`,
+          `Workout cancellation notification published for user ${session.user.id}`,
         );
       }
     } catch (notificationError) {
       // Log but don't fail the request if notification creation fails
       console.error(
-        "Error creating workout cancellation notification:",
+        "Error publishing workout cancellation notification:",
         notificationError,
       );
     }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useChats } from "@/hooks/use-chats";
 import { ChatList } from "@/components/chats/chat-list";
@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { BubbleChatIcon } from "@hugeicons/core-free-icons";
 
-export default function ChatsPage() {
+function ChatsContent() {
   const searchParams = useSearchParams();
   const { chats, isLoading, error } = useChats();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -108,5 +108,37 @@ export default function ChatsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ChatsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[600px]">
+            <div className="lg:col-span-1 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+              <div className="flex flex-col h-full">
+                <div className="p-3 border-b flex-shrink-0">
+                  <Skeleton className="h-9 w-full rounded-md" />
+                </div>
+                <div className="p-4 space-y-3 flex-1">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Skeleton key={i} className="h-20 w-full rounded-lg" />
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="lg:col-span-2 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+              <div className="flex-1 flex items-center justify-center p-6">
+                <Skeleton className="h-16 w-16 rounded-full mx-auto" />
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <ChatsContent />
+    </Suspense>
   );
 }

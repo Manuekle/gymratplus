@@ -127,7 +127,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="pb-3">
-          <DialogTitle className="text-base font-semibold">
+          <DialogTitle className="text-xs font-semibold">
             Actualizar Progreso
           </DialogTitle>
         </DialogHeader>

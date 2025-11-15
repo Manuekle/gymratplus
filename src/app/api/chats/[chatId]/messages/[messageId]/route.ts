@@ -121,13 +121,14 @@ export async function PATCH(
       editedAt: updatedMessage.editedAt,
       createdAt: updatedMessage.createdAt,
     });
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { error: "Invalid message content" },
         { status: 400 },
       );
     }
+    console.error("[EDIT_MESSAGE_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to edit message" },
       { status: 500 },
@@ -239,7 +240,8 @@ export async function DELETE(
       editedAt: deletedMessage.editedAt,
       createdAt: deletedMessage.createdAt,
     });
-  } catch {
+  } catch (error) {
+    console.error("[DELETE_MESSAGE_ERROR]", error);
     return NextResponse.json(
       { error: "Failed to delete message" },
       { status: 500 },

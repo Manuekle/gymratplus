@@ -293,13 +293,13 @@ export default function ProgressChart({
       </CardHeader>
 
       <CardContent className="flex-1 flex flex-col">
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mb-6 items-start sm:items-center">
-          <div className="flex flex-wrap gap-2">
+        <div className="flex flex-col gap-3 mb-6">
+          <div className="flex flex-wrap gap-2 w-full">
             <Button
               size="sm"
               variant={dataType === "weight" ? "default" : "outline"}
               onClick={() => setDataType("weight")}
-              className="text-xs"
+              className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"
             >
               Peso
             </Button>
@@ -307,7 +307,7 @@ export default function ProgressChart({
               size="sm"
               variant={dataType === "bodyFat" ? "default" : "outline"}
               onClick={() => setDataType("bodyFat")}
-              className="text-xs"
+              className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"
             >
               Grasa corporal
             </Button>
@@ -315,13 +315,13 @@ export default function ProgressChart({
               size="sm"
               variant={dataType === "muscle" ? "default" : "outline"}
               onClick={() => setDataType("muscle")}
-              className="text-xs"
+              className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"
             >
               Masa muscular
             </Button>
           </div>
 
-          <div className="flex flex-row gap-2 w-full sm:w-auto items-center">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
             <Select
               value={timePeriod}
               onValueChange={(value) => setTimePeriod(value as TimePeriod)}
@@ -344,12 +344,14 @@ export default function ProgressChart({
                 </SelectItem>
               </SelectContent>
             </Select>
-            <NewProgress
-              onSuccess={() => {
-                loadData();
-                if (onRecordAdded) onRecordAdded();
-              }}
-            />
+            <div className="w-full sm:w-auto">
+              <NewProgress
+                onSuccess={() => {
+                  loadData();
+                  if (onRecordAdded) onRecordAdded();
+                }}
+              />
+            </div>
           </div>
         </div>
 

@@ -16,6 +16,7 @@ export const DashboardHeader = () => {
     nutrition: "Nutrición",
     instructors: "Mis Instructores",
     students: "Mis Alumnos",
+    chats: "Mensajes",
   };
 
   const pathSegment = pathname.split("/")[2];

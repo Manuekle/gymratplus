@@ -8,6 +8,7 @@ import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
 import { QuickActions } from "@/components/dashboard/quick-actions";
+import { StreakSimulator } from "@/components/workout/streak-simulator";
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -134,6 +135,15 @@ export default function DashboardPage() {
             <NutritionSummary />
           </motion.div>
         </div>
+
+        {/* Simulador de Racha */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.3 }}
+        >
+          <StreakSimulator />
+        </motion.div>
       </div>
     </AnimatedLayout>
   );
