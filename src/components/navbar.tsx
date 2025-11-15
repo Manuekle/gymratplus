@@ -19,12 +19,10 @@ import { WorkoutStreak } from "./workout/workout-streak";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Door01Icon, BubbleChatIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 
 export function Navbar() {
   const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
-  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,15 +58,7 @@ export function Navbar() {
               </div>
             )}
             <Link href="/dashboard/chats">
-              <Button
-                variant="ghost"
-                size="icon"
-                className={`relative h-8 w-8 transition-colors duration-200 hover:bg-accent/50 ${
-                  pathname?.startsWith("/dashboard/chats")
-                    ? "bg-accent text-primary"
-                    : ""
-                }`}
-              >
+              <Button variant="ghost" size="icon" className="relative">
                 <HugeiconsIcon icon={BubbleChatIcon} className="h-4 w-4" />
                 <span className="sr-only">Mensajes</span>
               </Button>
