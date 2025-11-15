@@ -96,7 +96,7 @@ export default function QRCodePage() {
 
   if (status === "loading") {
     return (
-      <div className="container mx-auto p-4 md:p-6">
+      <div>
         <Card>
           <CardHeader>
             <Skeleton className="h-8 w-48" />
