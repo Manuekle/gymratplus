@@ -69,8 +69,7 @@ export default function NutritionSummary() {
       const data = await response.json();
 
       setTodayData(data);
-    } catch (error) {
-      console.error(`Error fetching ${type} data:`, error);
+    } catch {
       // toast({
       //   title: "Error",
       //   description: "No se pudieron cargar los datos de análisis",
@@ -122,8 +121,6 @@ export default function NutritionSummary() {
     });
   }, [session?.user]);
 
-  console.log(user);
-
   const macros = [
     {
       name: "Calorías",
@@ -156,16 +153,17 @@ export default function NutritionSummary() {
   };
 
   return (
-    <div className="p-4 md:p-6 rounded-lg shadow-sm border">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4">
-        <div className="flex items-center gap-2">
+    <div className="p-4 md:p-6 rounded-lg border bg-card">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-6">
+        <div>
           <h2 className="text-2xl font-semibold tracking-heading">
             Resumen Nutricional
           </h2>
+          <p className="text-xs text-muted-foreground mt-1">Consumo de hoy</p>
         </div>
         <Link
           href="/dashboard/nutrition"
-          className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors self-start sm:self-auto"
+          className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors self-start sm:self-auto"
         >
           Ver más
           <HugeiconsIcon
@@ -180,11 +178,8 @@ export default function NutritionSummary() {
           const percentage = calculatePercentage(macro.consumed, macro.goal);
           return (
             <div key={index}>
-              <div className="flex justify-between mb-1">
+              <div className="flex justify-between items-center mb-2">
                 <span className="text-xs font-medium">{macro.name}</span>
-                {/* <span className="text-xs">
-                  {macro.consumed} / {macro.goal} {macro.unit}
-                </span> */}
                 <div className="text-xs">
                   <span className="font-medium">
                     {Math.round(macro.consumed ?? 0)}
@@ -197,21 +192,7 @@ export default function NutritionSummary() {
                   </span>
                 </div>
               </div>
-              <div className="py-1">
-                <Progress value={percentage} className="h-2" />
-              </div>
-              {/* <div className="w-full bg-gray-200 rounded-full h-2.5">
-                <div
-                  className={`h-2.5 rounded-full ${
-                    percentage >= 100
-                      ? "bg-red-500"
-                      : percentage >= 80
-                      ? "bg-green-500"
-                      : "bg-blue-500"
-                  }`}
-                  style={{ width: `${percentage}%` }}
-                ></div>
-              </div> */}
+              <Progress value={percentage} className="h-1.5" />
             </div>
           );
         })}

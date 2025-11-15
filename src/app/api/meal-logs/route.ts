@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
 
       // Debug logging
       if (process.env.NODE_ENV === "development") {
-        console.debug("Filtering logs between:", {
+        console.log({
           start: start.toISOString(),
           end: end.toISOString(),
           originalDate: date,
@@ -86,8 +86,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(mealLogs);
-  } catch (error) {
-    console.error("Error fetching meal logs:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch meal logs" },
       { status: 500 },
@@ -110,8 +109,6 @@ export async function POST(req: NextRequest) {
 
     const userId = session.user.id;
     const data = await req.json();
-
-    console.log("Datos recibidos:", data);
 
     // Validate required fields
     if (!data.mealType) {
@@ -189,7 +186,6 @@ export async function POST(req: NextRequest) {
 
         // Validate date
         if (Number.isNaN(consumedAt.getTime())) {
-          console.error("Invalid date:", data.consumedAt);
           return NextResponse.json(
             { error: "Invalid date format" },
             { status: 400 },
@@ -197,8 +193,6 @@ export async function POST(req: NextRequest) {
         }
 
         if (process.env.NODE_ENV === "development") {
-          console.debug("Received date:", data.consumedAt);
-          console.debug("Date to save:", consumedAt.toISOString());
         }
       } else {
         consumedAt = new Date();
@@ -271,7 +265,6 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json({ mealLog });
     } catch (dbError) {
-      console.error("Database error:", dbError);
       return NextResponse.json(
         {
           error: "Database error",
@@ -280,8 +273,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-  } catch (error) {
-    console.error("Error creating meal log:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Failed to create meal log",

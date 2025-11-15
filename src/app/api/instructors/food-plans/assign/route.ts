@@ -103,8 +103,7 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json(foodRecommendation);
-  } catch (error) {
-    console.error("Error al crear el plan de alimentación:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Error interno del servidor al crear el plan de alimentación",

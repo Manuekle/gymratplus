@@ -23,8 +23,7 @@ export async function GET() {
   try {
     const notifications = await getUserNotifications(session.user.id);
     return NextResponse.json(notifications);
-  } catch (error) {
-    console.error("Error fetching notifications:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch notifications" },
       { status: 500 },
@@ -54,8 +53,7 @@ export async function POST(req: NextRequest) {
 
     const notification = await createNotification(notificationData);
     return NextResponse.json(notification);
-  } catch (error) {
-    console.error("Error creating notification:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to create notification" },
       { status: 500 },
@@ -77,8 +75,7 @@ export async function PATCH() {
   try {
     const result = await markAllNotificationsAsRead(session.user.id);
     return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error marking notifications as read:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to mark notifications as read" },
       { status: 500 },
@@ -100,8 +97,7 @@ export async function DELETE() {
   try {
     const result = await deleteAllNotifications(session.user.id);
     return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error deleting notifications:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete notifications" },
       { status: 500 },

@@ -1,14 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { dashboardSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Notificaciones - GymRat+",
-  description: "Revisa tus alertas, mensajes y actualizaciones importantes",
-  keywords: "notificaciones, alertas, mensajes, actualizaciones, avisos",
-  openGraph: {
-    title: "Notificaciones | Mi Aplicación",
-    description: "Mantente al día con todas tus alertas y mensajes importantes",
-  },
-};
+export const metadata = dashboardSEO.notifications();
 
 export default function NotificationsLayout({
   children,

@@ -68,16 +68,12 @@ export default function SignUpPage() {
         throw new Error(data.error || "Error al registrar usuario");
       }
 
-      console.log("Logging in with:", { email, password });
-
       // Iniciar sesión automáticamente
       const result = await signIn("credentials", {
         redirect: false,
         email,
         password,
       });
-
-      console.log(result);
 
       if (result?.error) {
         setError(result.error);
@@ -101,10 +97,10 @@ export default function SignUpPage() {
     <div className="flex h-screen items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-center text-2xl font-semibold tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading text-center">
             Crear Cuenta
           </CardTitle>
-          <CardDescription className="text-center text-xs">
+          <CardDescription className="text-muted-foreground text-xs text-center">
             Regístrate para acceder a todos los beneficios de la plataforma.
           </CardDescription>
         </CardHeader>

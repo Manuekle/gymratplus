@@ -31,25 +31,20 @@ export async function GET() {
       );
     }
 
-    console.log(user);
-
     // Actualizar Redis en segundo plano sin esperar la respuesta
     const cacheKey = `profile:${userId}`;
     redis
       .set(cacheKey, JSON.stringify(user.profile), {
         ex: PROFILE_CACHE_TTL,
       })
-      .catch((error) => {
-        console.error("Error actualizando cache Redis:", error);
-      });
+      .catch(() => {});
 
     return NextResponse.json({
       ...user.profile,
       isInstructor: user.isInstructor,
       experienceLevel: user.experienceLevel,
     });
-  } catch (error) {
-    console.error("Error fetching profile:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al obtener el perfil" },
       { status: 500 },
@@ -88,11 +83,9 @@ export async function POST(req: NextRequest) {
         if (!isNaN(dateObj.getTime())) {
           data.birthdate = dateObj;
         } else {
-          console.warn("Invalid birthdate received:", data.birthdate);
           data.birthdate = null;
         }
-      } catch (e) {
-        console.error("Error parsing birthdate:", e);
+      } catch {
         data.birthdate = null;
       }
     } else {
@@ -168,8 +161,7 @@ export async function POST(req: NextRequest) {
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     return NextResponse.json(profile);
-  } catch (error) {
-    console.error("Error in profile API:", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -262,8 +254,7 @@ export async function PUT(request: NextRequest) {
       user: updatedUser,
       session: updatedSession,
     });
-  } catch (error) {
-    console.error("Error updating profile:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update profile" },
       { status: 500 },
@@ -295,9 +286,7 @@ function calculateDailyCalories(data: {
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-    } catch (e) {
-      console.error("Error calculating age:", e);
-    }
+    } catch {}
   }
 
   // Convertir altura y peso a números
@@ -410,9 +399,7 @@ function calculateMetabolicRate(data: {
       if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
         age--;
       }
-    } catch (e) {
-      console.error("Error calculating age:", e);
-    }
+    } catch {}
   }
 
   // Convertir altura y peso a números

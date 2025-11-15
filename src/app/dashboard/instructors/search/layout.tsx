@@ -1,16 +1,18 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { customSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Buscar Instructores - GymRat+",
+export const metadata = customSEO({
+  title: "Buscar Instructores",
   description:
-    "Busca a instructores para acceder a todas las funcionalidades de nuestra aplicación",
-  keywords: "instructores, gestión, acceso, cuenta",
-  openGraph: {
-    title: "Buscar Instructores - GymRat+",
-    description:
-      "Busca a instructores para acceder a todas las funcionalidades",
-  },
-};
+    "Encuentra y contrata instructores certificados para tu entrenamiento personalizado",
+  keywords: [
+    "instructores",
+    "entrenadores",
+    "coaches",
+    "búsqueda",
+    "personal trainer",
+  ],
+});
 export default function InstructorsSearchLayout({
   children,
 }: {

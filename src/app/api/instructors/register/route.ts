@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         "[INSTRUCTOR_REGISTER] Actualizando usuario:",
         session.user.id,
       );
-      const [user, instructorProfile] = await prisma.$transaction([
+      const [, instructorProfile] = await prisma.$transaction([
         prisma.user.update({
           where: { id: session.user.id },
           data: { isInstructor: true },
@@ -72,13 +72,11 @@ export async function POST(req: NextRequest) {
           },
         }),
       ]);
-      console.log("[INSTRUCTOR_REGISTER] Usuario actualizado:", user);
       console.log(
         "[INSTRUCTOR_REGISTER] Perfil instructor actualizado/creado:",
         instructorProfile,
       );
-    } catch (err) {
-      console.error("[INSTRUCTOR_REGISTER] Error en la transacción:", err);
+    } catch {
       return NextResponse.json(
         { error: "Error actualizando usuario o perfil de instructor" },
         { status: 500 },
@@ -94,9 +92,7 @@ export async function POST(req: NextRequest) {
         `session:${session.user.id}`,
       ];
       await Promise.all(cacheKeys.map((key) => redis.del(key)));
-    } catch (e) {
-      console.error("Error limpiando cache de usuario en Redis", e);
-    }
+    } catch {}
 
     // Crear notificación de bienvenida para el instructor
     await createNotification({
@@ -126,12 +122,11 @@ export async function POST(req: NextRequest) {
       user: updatedUser,
       message: "Perfil de instructor creado correctamente",
     });
-  } catch (error) {
+  } catch {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.error("[INSTRUCTOR_REGISTER_ERROR]", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

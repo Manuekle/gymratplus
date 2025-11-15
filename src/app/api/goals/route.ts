@@ -42,9 +42,7 @@ export async function GET(req: NextRequest) {
 
     // TypeScript now understands that query.where is defined
 
-    console.log("Executing goals query:", JSON.stringify(query, null, 2));
     const goals = await prisma.goal.findMany(query);
-    console.log(`Found ${goals.length} goals`);
 
     // Asegurar que userId está presente en la respuesta
     const goalsWithUserId = goals.map((goal) => ({
@@ -53,8 +51,7 @@ export async function GET(req: NextRequest) {
     }));
 
     return NextResponse.json(goalsWithUserId);
-  } catch (error) {
-    console.error("Error al obtener objetivos:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al obtener objetivos" },
       { status: 500 },
@@ -194,14 +191,12 @@ export async function POST(req: NextRequest) {
           `Goal creation notification created for user ${session.user.id}`,
         );
       }
-    } catch (notificationError) {
+    } catch {
       // Log but don't fail the request if notification creation fails
-      console.error("Error creating goal notification:", notificationError);
     }
 
     return NextResponse.json(newGoal);
-  } catch (error) {
-    console.error("Error al crear objetivo:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al crear objetivo" },
       { status: 500 },

@@ -2,10 +2,12 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
+import { motion } from "framer-motion";
 import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
+import { QuickActions } from "@/components/dashboard/quick-actions";
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -83,16 +85,54 @@ export default function DashboardPage() {
   return (
     <AnimatedLayout>
       <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <ProgressChart
-            refreshKey={refreshKey}
-            onRecordAdded={handleRecordAdded}
-          />
-          <GoalProgress />
+        {/* Accesos Rápidos */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <QuickActions />
+        </motion.div>
+
+        {/* Progreso y Objetivos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
+            className="h-full"
+          >
+            <ProgressChart
+              refreshKey={refreshKey}
+              onRecordAdded={handleRecordAdded}
+            />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+            className="h-full"
+          >
+            <GoalProgress />
+          </motion.div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <WorkoutSummary />
-          <NutritionSummary />
+
+        {/* Resúmenes */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
+            <WorkoutSummary />
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.3 }}
+          >
+            <NutritionSummary />
+          </motion.div>
         </div>
       </div>
     </AnimatedLayout>

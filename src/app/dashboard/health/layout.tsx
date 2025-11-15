@@ -1,10 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { dashboardSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Salud - GymRat+",
-  description: "Monitorea tus métricas de salud y bienestar general",
-  keywords: "salud, métricas, bienestar, seguimiento médico, indicadores",
-};
+export const metadata = dashboardSEO.health();
 
 export default function HealthLayout({
   children,

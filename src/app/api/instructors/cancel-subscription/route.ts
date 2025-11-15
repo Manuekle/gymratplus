@@ -50,8 +50,7 @@ export async function POST() {
     });
 
     return response;
-  } catch (error) {
-    console.error("Error canceling subscription:", error);
+  } catch {
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

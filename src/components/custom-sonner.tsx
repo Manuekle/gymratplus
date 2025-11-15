@@ -1,16 +1,18 @@
+"use client";
+
 import { Inter } from "next/font/google";
-import { Toaster as Sonner } from "sonner";
-// At the top of the file, import the Inter font
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, ToasterProps } from "sonner";
 
 // Initialize the Inter font
 const inter = Inter({ subsets: ["latin"] });
 
-type ToasterProps = React.ComponentProps<typeof Sonner>;
-
 const CustomSonner = ({ ...props }: ToasterProps) => {
+  const { theme = "system" } = useTheme();
+
   return (
     <Sonner
-      theme="light"
+      theme={theme as ToasterProps["theme"]}
       className={`toaster group ${inter.className}`}
       toastOptions={{
         classNames: {

@@ -28,9 +28,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate a unique filename with user ID
+    // Generate a unique filename with organized folder structure: profile/[userId]/
     const userId = session.user.id;
-    const filename = `${userId}-${Date.now()}-${file.name}`;
+    const timestamp = Date.now();
+    const fileExtension = file.name.split(".").pop() || "jpg";
+    const filename = `profile/${userId}/${timestamp}.${fileExtension}`;
 
     // Verificar que el token esté configurado
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
@@ -53,11 +55,7 @@ export async function POST(request: NextRequest) {
     });
 
     // Limpiar todas las cachés relacionadas con el usuario
-    const cacheKeys = [
-      `user:${userId}:data`,
-      `profile:${userId}`,
-      `session:${userId}`,
-    ];
+    const cacheKeys = [];
 
     // Eliminar todas las cachés
     await Promise.all(cacheKeys.map((key) => redis.del(key)));
@@ -80,8 +78,7 @@ export async function POST(request: NextRequest) {
       user: updatedUser,
       message: "Imagen actualizada correctamente",
     });
-  } catch (error) {
-    console.error("Error uploading file:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to upload file" },
       { status: 500 },

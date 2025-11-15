@@ -9,8 +9,7 @@ export async function GET() {
       success: true,
       message: "Redis subscriber initialized",
     });
-  } catch (error) {
-    console.error("Failed to initialize Redis subscriber:", error);
+  } catch {
     return NextResponse.json(
       { success: false, error: "Failed to initialize Redis subscriber" },
       { status: 500 },

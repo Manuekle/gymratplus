@@ -1,11 +1,19 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { customSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Planes de Alimentación - GymRat+",
+export const metadata = customSEO({
+  title: "Planes de Alimentación",
   description: "Crea y sigue planes de alimentación personalizados",
-  keywords:
-    "nutrición, dieta, alimentos, calorías, macronutrientes, alimentación, planes de alimentación",
-};
+  keywords: [
+    "nutrición",
+    "dieta",
+    "alimentos",
+    "calorías",
+    "macronutrientes",
+    "alimentación",
+    "planes de alimentación",
+  ],
+});
 
 export default function FoodPlansLayout({
   children,

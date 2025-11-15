@@ -93,15 +93,37 @@ export async function getUnreadNotificationsCount(
 
 export async function markNotificationAsRead(
   id: string,
-): Promise<Notification> {
-  return prisma.notification.update({
-    where: {
-      id,
-    },
-    data: {
-      read: true,
-    },
-  });
+): Promise<Notification | null> {
+  try {
+    // Verificar que la notificación existe antes de actualizar
+    const notification = await prisma.notification.findUnique({
+      where: { id },
+    });
+
+    if (!notification) {
+      return null; // Retornar null si no existe
+    }
+
+    return prisma.notification.update({
+      where: {
+        id,
+      },
+      data: {
+        read: true,
+      },
+    });
+  } catch (error) {
+    // Si es un error de registro no encontrado, retornar null
+    if (
+      error &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2025"
+    ) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export async function markAllNotificationsAsRead(

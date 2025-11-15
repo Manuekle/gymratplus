@@ -57,8 +57,7 @@ export async function POST(req: Request) {
         currentPeriodEnd,
       },
     });
-  } catch (error) {
-    console.error("Error al procesar la suscripción:", error);
+  } catch {
     return new NextResponse(
       JSON.stringify({
         error: "Error al procesar la suscripción",

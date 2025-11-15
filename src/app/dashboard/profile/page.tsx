@@ -51,6 +51,7 @@ import {
   SteakIcon,
   Target02Icon,
   WorkoutGymnasticsIcon,
+  QrCodeIcon,
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
 
@@ -72,14 +73,28 @@ export default function ProfilePage() {
       // Set form fields from user data
       if (user) {
         setName(user.name || "");
-        setPhone(user.profile?.phone || "");
-        setBirthdate(user.profile?.birthdate?.toString() || "");
+        setPhone((user.profile as { phone?: string })?.phone || "");
+        setBirthdate(
+          (
+            user.profile as { birthdate?: Date | string }
+          )?.birthdate?.toString() || "",
+        );
         setExperienceLevel(user.experienceLevel || "");
-        setPreferredWorkoutTime(user.profile?.preferredWorkoutTime || "");
-        setDailyActivity(user.profile?.dailyActivity || "");
-        setGoal(user.profile?.goal || "");
-        setDietaryPreference(user.profile?.dietaryPreference || "");
-        setMonthsTraining(user.profile?.monthsTraining || 0);
+        setPreferredWorkoutTime(
+          (user.profile as { preferredWorkoutTime?: string })
+            ?.preferredWorkoutTime || "",
+        );
+        setDailyActivity(
+          (user.profile as { dailyActivity?: string })?.dailyActivity || "",
+        );
+        setGoal((user.profile as { goal?: string })?.goal || "");
+        setDietaryPreference(
+          (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
+            "",
+        );
+        setMonthsTraining(
+          (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
+        );
       }
 
       // Load user tags
@@ -87,8 +102,7 @@ export default function ProfilePage() {
         .then((res) => res.json())
         .then((interests: string[]) => {
           setSelectedTags(interests);
-        })
-        .catch(console.error);
+        });
     }
   }, [session]);
 
@@ -189,7 +203,6 @@ export default function ProfilePage() {
       // }, 1000);
       setIsEditing(false);
     } catch (error) {
-      console.error("Error al subir la imagen:", error);
       toast.error("Error", {
         description: error instanceof Error ? error.message : "Algo salió mal.",
       });
@@ -292,8 +305,7 @@ export default function ProfilePage() {
 
       // isEditing
       // setIsEditing(false);
-    } catch (error) {
-      console.error("Error updating profile:", error);
+    } catch {
       toast.error("Error", {
         description: "No se pudo actualizar el perfil.",
       });
@@ -302,7 +314,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (!session || status === "loading") {
+  if (!session || status !== "authenticated") {
     return (
       <div className="space-y-6">
         <Card>
@@ -413,6 +425,22 @@ export default function ProfilePage() {
                     </Badge>
                   )}
                 </div>
+                <div className="flex justify-center md:justify-start mt-3">
+                  <Button
+                    asChild
+                    variant="outline"
+                    size="sm"
+                    className="text-xs"
+                  >
+                    <Link href="/dashboard/profile/qr">
+                      <HugeiconsIcon
+                        icon={QrCodeIcon}
+                        className="h-4 w-4 mr-2"
+                      />
+                      Ver mi código QR
+                    </Link>
+                  </Button>
+                </div>
               </div>
 
               <div className="flex flex-wrap gap-4 justify-center md:justify-start">
@@ -427,7 +455,7 @@ export default function ProfilePage() {
                       if (!birthdate) return "Edad no disponible";
 
                       const today = new Date();
-                      const birthDate = new Date(birthdate);
+                      const birthDate = new Date(birthdate as string);
                       let age = today.getFullYear() - birthDate.getFullYear();
                       const monthDiff = today.getMonth() - birthDate.getMonth();
 
@@ -456,10 +484,13 @@ export default function ProfilePage() {
                         session?.user as { profile?: { createdAt?: string } }
                       )?.profile?.createdAt;
                       return createdAt
-                        ? new Date(createdAt).toLocaleDateString("es-ES", {
-                            month: "long",
-                            year: "numeric",
-                          })
+                        ? new Date(createdAt as string).toLocaleDateString(
+                            "es-ES",
+                            {
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )
                         : "";
                     })()}
                   </span>
@@ -506,10 +537,10 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-semibold  tracking-heading">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               Información de contacto
             </CardTitle>
-            <CardDescription className="text-xs">
+            <CardDescription className="text-muted-foreground text-xs">
               Datos de contacto y comunicación
             </CardDescription>
           </CardHeader>
@@ -620,10 +651,10 @@ export default function ProfilePage() {
                       >
                         <DialogContent className="sm:max-w-[425px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                           <DialogHeader>
-                            <DialogTitle className="text-2xl tracking-heading font-semibold">
+                            <DialogTitle className="text-2xl font-semibold tracking-heading">
                               Confirmar cancelación
                             </DialogTitle>
-                            <DialogDescription className="text-xs md:text-xs">
+                            <DialogDescription className="text-xs text-muted-foreground">
                               ¿Estás seguro de que deseas cancelar tu
                               suscripción de instructor? Tus datos se
                               conservarán para futuras suscripciones.
@@ -660,8 +691,7 @@ export default function ProfilePage() {
                                       "Error al cancelar la suscripción",
                                     );
                                   }
-                                } catch (error) {
-                                  console.error("Error:", error);
+                                } catch {
                                   toast.error(
                                     "Error al cancelar la suscripción",
                                   );
@@ -770,11 +800,14 @@ export default function ProfilePage() {
                             }
                           )?.profile?.birthdate;
                           return birthdate
-                            ? new Date(birthdate).toLocaleDateString("es-ES", {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              })
+                            ? new Date(birthdate as string).toLocaleDateString(
+                                "es-ES",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                },
+                              )
                             : "Fecha no disponible";
                         })()}
                       </div>
@@ -1139,7 +1172,7 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle className="tracking-heading font-semibold text-2xl">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               Tus intereses
             </CardTitle>
             <CardDescription>

@@ -128,14 +128,11 @@ export async function POST(req: NextRequest) {
       .set(cacheKey, JSON.stringify(result), {
         ex: CALCULATION_CACHE_TTL,
       })
-      .catch((error) => {
-        console.error("Error guardando en Redis:", error);
-      });
+      .catch(() => {});
 
     // Devolver los resultados calculados
     return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error al calcular objetivos calóricos:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al calcular objetivos calóricos" },
       { status: 500 },

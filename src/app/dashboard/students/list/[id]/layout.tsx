@@ -1,16 +1,19 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { customSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Alumno - GymRat+",
+export const metadata = customSEO({
+  title: "Detalle de Alumno",
   description:
-    "Gestiona a tus alumno para acceder a todas las funcionalidades de nuestra aplicación",
-  keywords: "alumnos, gestión, acceso, cuenta",
-  openGraph: {
-    title: "Alumno - GymRat+",
-    description:
-      "Gestiona a tus alumno para acceder a todas las funcionalidades",
-  },
-};
+    "Gestiona el perfil, planes de entrenamiento y nutrición de tu alumno",
+  keywords: [
+    "alumno",
+    "estudiante",
+    "gestión",
+    "planes de entrenamiento",
+    "perfil",
+  ],
+  noindex: true,
+});
 export default function StudentsItemLayout({
   children,
 }: {

@@ -1,10 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { onboardingSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Recomendaciones - GymRat+",
-  description: "Recomendaciones para tu rutina de entrenamiento",
-  keywords: "recomendaciones, rutina, entrenamiento, fitness, progreso físico",
-};
+export const metadata = onboardingSEO.recommendations();
 
 export default function RecommendationsLayout({
   children,

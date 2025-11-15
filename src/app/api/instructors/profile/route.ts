@@ -37,8 +37,7 @@ export async function GET() {
     }
 
     return NextResponse.json(instructorProfile, { status: 200 });
-  } catch (error) {
-    console.error("[GET_INSTRUCTOR_PROFILE_ERROR]", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -82,12 +81,11 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(updatedProfile, { status: 200 });
-  } catch (error) {
+  } catch {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.error("[INSTRUCTOR_PROFILE_UPDATE_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },
@@ -126,8 +124,7 @@ export async function DELETE() {
       { message: "Instructor profile deleted successfully" },
       { status: 200 },
     );
-  } catch (error) {
-    console.error("[DELETE_INSTRUCTOR_PROFILE_ERROR]", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

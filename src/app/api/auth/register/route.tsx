@@ -73,7 +73,6 @@ export async function POST(request: Request) {
       { status: 201 },
     );
   } catch (error: unknown) {
-    console.error("Error en registro:", error);
     let message = "Unknown error";
     if (error instanceof Error) {
       message = error.message;

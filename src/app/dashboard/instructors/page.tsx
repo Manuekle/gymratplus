@@ -29,9 +29,11 @@ import {
   UserGroupIcon,
 } from "@hugeicons/core-free-icons";
 import Link from "next/link";
+import { StartChatButton } from "@/components/chats/start-chat-button";
 
 interface InstructorData {
   id: string;
+  studentInstructorId?: string; // ID de la relación para crear chats
   userId: string;
   name: string | null;
   image: string | null;
@@ -72,7 +74,7 @@ export default function InstructorPage() {
         for (const c of uniqueCountries) {
           try {
             const flagResponse = await fetch(
-              `https://restcountries.com/v3.1/alpha/${c}`,
+              `https://restcountries.com/v3.1/name/${c}`,
             );
             if (flagResponse.ok) {
               const countryData = await flagResponse.json();
@@ -84,8 +86,8 @@ export default function InstructorPage() {
                 flags[c] = countryData[0].flags.svg;
               }
             }
-          } catch (flagError) {
-            console.error(`Error fetching flag for ${c}:`, flagError);
+          } catch {
+            // Do nothing
           }
         }
         setCountryFlags(flags);
@@ -98,7 +100,6 @@ export default function InstructorPage() {
         errorMessage = error;
       }
       toast.error(errorMessage);
-      console.error("Error fetching my instructors:", error);
     } finally {
       setIsLoading(false);
     }
@@ -162,7 +163,7 @@ export default function InstructorPage() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               Total Instructores
             </CardTitle>
             <HugeiconsIcon
@@ -180,7 +181,9 @@ export default function InstructorPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Modalidades</CardTitle>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Modalidades
+            </CardTitle>
             <HugeiconsIcon
               icon={GlobeIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -198,7 +201,7 @@ export default function InstructorPage() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               Inversión Mensual
             </CardTitle>
             <HugeiconsIcon
@@ -250,10 +253,10 @@ export default function InstructorPage() {
                   </Avatar>
                   <div className="flex-1 space-y-2">
                     <div>
-                      <CardTitle className="text-lg tracking-heading leading-tight">
+                      <CardTitle className="text-2xl font-semibold tracking-heading">
                         {instructor.name || "Sin nombre"}
                       </CardTitle>
-                      <CardDescription className="flex items-center gap-2 mt-1">
+                      <CardDescription className="text-muted-foreground text-xs flex items-center gap-2 mt-1">
                         <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
                         {instructor.city && instructor.country ? (
                           <span className="flex items-center gap-1">
@@ -277,6 +280,15 @@ export default function InstructorPage() {
                         )}
                       </CardDescription>
                     </div>
+                    {instructor.studentInstructorId && (
+                      <div className="flex justify-start mb-2">
+                        <StartChatButton
+                          studentInstructorId={instructor.studentInstructorId}
+                          size="sm"
+                          variant="outline"
+                        />
+                      </div>
+                    )}
                     <div className="flex flex-wrap gap-1">
                       {instructor.isRemote && (
                         <Badge variant="secondary" className="text-xs">

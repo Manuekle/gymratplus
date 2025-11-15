@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 // import { useTheme } from "next-themes";
@@ -43,9 +44,10 @@ export function GoalsDashboard() {
 
   const loadGoals = useCallback(async () => {
     if (activeTab === "all") {
-      await fetchGoals(undefined); // O manejarlo de otra forma
+      // Solo mostrar objetivos activos en el dashboard
+      await fetchGoals(undefined, "active");
     } else {
-      await fetchGoals(activeTab);
+      await fetchGoals(activeTab, "active");
     }
   }, [activeTab, fetchGoals]);
 
@@ -136,75 +138,100 @@ export function GoalsDashboard() {
     return "En progreso";
   };
 
-  const renderGoalCard = (goal: Goal) => {
+  const renderGoalCard = (goal: Goal, index: number) => {
     const progressValue = goal.progress || 0;
 
     return (
-      <Card key={goal.id} className="w-full mb-6">
-        <CardHeader className="pb-2">
-          <div className="flex justify-between items-center">
-            <div className="flex flex-row gap-2 items-center justify-center">
-              {getGoalTypeIcon(goal.type as GoalType)}
-              <CardTitle className="text-xs font-medium tracking-heading capitalize">
-                {goal.title}
-              </CardTitle>
-            </div>
-            <Badge
-              variant="outline"
-              className={`${getGoalStatusColor(goal)} text-black dark:text-white text-xs`}
-            >
-              {getGoalStatusText(goal)}
-            </Badge>
-          </div>
-          <CardDescription className="text-xs">
-            {goal.description}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="flex flex-col gap-1">
-              <div className="flex justify-between text-xs">
-                <span>Progreso:</span>
-                <span className="font-medium">{progressValue.toFixed(0)}%</span>
+      <motion.div
+        key={goal.id}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.1, duration: 0.3 }}
+      >
+        <Card className="w-full mb-4 border rounded-lg hover:bg-muted/50 transition-colors">
+          <CardHeader className="pb-3">
+            <div className="flex justify-between items-start">
+              <div className="flex items-start gap-3 flex-1">
+                <div className="p-2 rounded-lg bg-muted mt-0.5">
+                  {getGoalTypeIcon(goal.type as GoalType)}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <CardTitle className="text-2xl font-semibold tracking-heading mb-1">
+                    {goal.title}
+                  </CardTitle>
+                  {goal.description && (
+                    <CardDescription className="text-muted-foreground text-xs line-clamp-2">
+                      {goal.description}
+                    </CardDescription>
+                  )}
+                </div>
               </div>
-              <Progress value={progressValue} className="h-2" />
+              <Badge
+                variant="outline"
+                className={`${getGoalStatusColor(goal)} text-xs flex-shrink-0`}
+              >
+                {getGoalStatusText(goal)}
+              </Badge>
             </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-4">
+              <div className="flex flex-col gap-1.5">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="text-muted-foreground">Progreso</span>
+                  <span className="font-semibold text-primary">
+                    {progressValue.toFixed(0)}%
+                  </span>
+                </div>
+                <Progress value={progressValue} className="h-2" />
+              </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs">
-              <div>
-                <span className="text-muted-foreground">Valor inicial:</span>
-                <p className="font-medium">
-                  {goal.initialValue} {goal.unit}
-                </p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Valor actual:</span>
-                <p className="font-medium">
-                  {goal.currentValue} {goal.unit}
-                </p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Objetivo:</span>
-                <p className="font-medium">
-                  {goal.targetValue} {goal.unit}
-                </p>
-              </div>
-              <div>
-                <span className="text-muted-foreground">Fecha inicio:</span>
-                <p className="font-medium">
-                  {format(new Date(goal.startDate), "d MMM yyyy", {
-                    locale: es,
-                  })}
-                </p>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                <div className="space-y-0.5">
+                  <span className="text-muted-foreground text-[10px]">
+                    Valor inicial
+                  </span>
+                  <p className="font-medium">
+                    {goal.initialValue} {goal.unit}
+                  </p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-muted-foreground text-[10px]">
+                    Valor actual
+                  </span>
+                  <p className="font-medium text-primary">
+                    {goal.currentValue} {goal.unit}
+                  </p>
+                </div>
+                <div className="space-y-0.5">
+                  <span className="text-muted-foreground text-[10px]">
+                    Objetivo
+                  </span>
+                  <p className="font-medium">
+                    {goal.targetValue} {goal.unit}
+                  </p>
+                </div>
+                {goal.targetDate && (
+                  <div className="space-y-0.5">
+                    <span className="text-muted-foreground text-[10px]">
+                      Fecha objetivo
+                    </span>
+                    <p className="font-medium">
+                      {format(new Date(goal.targetDate), "d MMM yyyy", {
+                        locale: es,
+                      })}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        </CardContent>
-        <CardFooter className="flex justify-end pt-2 gap-2">
-          <UpdateGoal goal={goal} onSuccess={handleFormSuccess} />
-          <DeleteGoal goal={goal} onSuccess={handleFormSuccess} />
-        </CardFooter>
-      </Card>
+          </CardContent>
+          <CardFooter className="flex justify-end pt-3 gap-2 border-t">
+            <UpdateGoal goal={goal} onSuccess={handleFormSuccess} />
+            <DeleteGoal goal={goal} onSuccess={handleFormSuccess} />
+          </CardFooter>
+        </Card>
+      </motion.div>
     );
   };
 
@@ -215,7 +242,7 @@ export function GoalsDashboard() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
-        <div className="flex md:flex-row flex-col gap-4 md:gap-0 justify-between">
+        <div className="flex md:flex-row flex-col gap-4 md:gap-0 justify-between items-center">
           <TabsList className="flex flex-wrap h-auto gap-4 px-2">
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="weight">Peso</TabsTrigger>
@@ -224,11 +251,18 @@ export function GoalsDashboard() {
             <TabsTrigger value="activity">Actividad</TabsTrigger>
           </TabsList>
 
-          <Link href="/dashboard/health/goal">
-            <Button size="sm" className="text-xs w-full" variant="default">
-              Nuevo objetivo
-            </Button>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard/health/goals/history">
+              <Button size="sm" className="text-xs" variant="outline">
+                Ver historial
+              </Button>
+            </Link>
+            <Link href="/dashboard/health/goal">
+              <Button size="sm" className="text-xs w-full" variant="default">
+                Nuevo objetivo
+              </Button>
+            </Link>
+          </div>
         </div>
 
         <TabsContent value={activeTab} className="mt-0">
@@ -238,18 +272,32 @@ export function GoalsDashboard() {
               <ProgressSkeleton />
             </div>
           ) : goals.length === 0 ? (
-            <div className="text-center py-28">
-              <h3 className="text-xs font-medium mb-2">No hay objetivos</h3>
-              <p className="text-muted-foreground text-xs mb-4">
-                Establece objetivos para hacer seguimiento de tu progreso
+            <div className="text-center py-16">
+              <div className="flex justify-center mb-4">
+                <div className="p-4 rounded-full bg-muted">
+                  <HugeiconsIcon
+                    icon={Target02Icon}
+                    className="h-10 w-10 text-muted-foreground opacity-40"
+                  />
+                </div>
+              </div>
+              <h3 className="text-xs font-medium mb-2">
+                No hay objetivos activos
+              </h3>
+              <p className="text-muted-foreground text-xs mb-4 max-w-sm mx-auto">
+                Establece objetivos para hacer seguimiento de tu progreso y
+                alcanzar tus metas
               </p>
-              {/* <NewGoal
-                onSuccess={handleFormSuccess}
-                initialData={editingGoal || undefined}
-              /> */}
+              <Link href="/dashboard/health/goal">
+                <Button size="sm" variant="default" className="text-xs">
+                  Crear objetivo
+                </Button>
+              </Link>
             </div>
           ) : (
-            <div className="gap-4">{goals.map(renderGoalCard)}</div>
+            <div className="space-y-4">
+              {goals.map((goal, index) => renderGoalCard(goal, index))}
+            </div>
           )}
         </TabsContent>
       </Tabs>

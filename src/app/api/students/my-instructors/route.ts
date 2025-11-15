@@ -38,6 +38,7 @@ export async function GET() {
     // Formatear los datos para la respuesta, incluyendo la información de contacto del instructor
     const instructorsData = studentInstructorRelationships.map((rel) => ({
       id: rel.instructor.id,
+      studentInstructorId: rel.id, // ID de la relación para crear chats
       userId: rel.instructor.userId,
       name: rel.instructor.user.name,
       image: rel.instructor.user.image,
@@ -54,8 +55,7 @@ export async function GET() {
     }));
 
     return NextResponse.json(instructorsData, { status: 200 });
-  } catch (error) {
-    console.error("[GET_STUDENT_INSTRUCTORS_ERROR]", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

@@ -30,9 +30,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardAction,
+} from "@/components/ui/card";
 import { NewProgress } from "../progress/new-progress";
 import ChartSkeleton from "../skeleton/charts-skeleton";
 import { ProgressRecord } from "@/types/progress"; // Import the type definition for progress records
+import Link from "next/link";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -261,192 +272,195 @@ export default function ProgressChart({
   };
 
   return (
-    <div className="p-6 rounded-lg shadow-sm border">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold  tracking-heading">
+    <Card className="h-full flex flex-col">
+      <CardHeader>
+        <CardTitle className="text-2xl font-semibold tracking-heading">
           Seguimiento de Progreso
-        </h2>
-      </div>
+        </CardTitle>
+        <CardDescription>Gráfico de evolución física</CardDescription>
+        <CardAction>
+          <Link
+            href="/dashboard/health"
+            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Ver más
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
+        </CardAction>
+      </CardHeader>
 
-      <div className="flex flex-col sm:flex-row sm:justify-between gap-2 mb-4 items-center">
-        <div className="flex space-x-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setDataType("weight")}
-            className={`px-3 py-1 text-xs rounded-md ${
-              dataType === "weight"
-                ? "bg-[#578FCA] text-white dark:text-[#578FCA]"
-                : "text-muted-foreground "
-            }`}
-          >
-            Peso
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setDataType("bodyFat")}
-            className={`px-3 py-1 text-xs rounded-md ${
-              dataType === "bodyFat"
-                ? "bg-[#FBA518] text-white dark:text-[#FBA518]"
-                : "text-muted-foreground"
-            }`}
-          >
-            Grasa corporal
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setDataType("muscle")}
-            className={`px-3 py-1 text-xs rounded-md ${
-              dataType === "muscle"
-                ? "bg-destructive text-white dark:text-destructive"
-                : "text-muted-foreground"
-            }`}
-          >
-            Masa muscular
-          </Button>
-        </div>
-
-        <div className="flex flex-row gap-2 w-full sm:w-auto items-center">
-          <Select
-            value={timePeriod}
-            onValueChange={(value) => setTimePeriod(value as TimePeriod)}
-          >
-            <SelectTrigger className="w-full sm:w-[180px] text-xs">
-              <SelectValue placeholder="Seleccionar período" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem className="text-xs" value="all">
-                Todo el tiempo
-              </SelectItem>
-              <SelectItem className="text-xs" value="week">
-                Última semana
-              </SelectItem>
-              <SelectItem className="text-xs" value="month">
-                Último mes
-              </SelectItem>
-              <SelectItem className="text-xs" value="year">
-                Último año
-              </SelectItem>
-            </SelectContent>
-          </Select>
-          <NewProgress
-            onSuccess={() => {
-              loadData();
-              if (onRecordAdded) onRecordAdded();
-            }}
-          />
-        </div>
-      </div>
-
-      <div className="w-full h-[250px]">
-        {isLoading ? (
-          <div className="flex items-center justify-center h-full">
-            <ChartSkeleton />
-          </div>
-        ) : error ? (
-          <div className="flex flex-col items-center justify-center h-full">
-            <p className="text-red-500 mb-2">Error: {error}</p>
-            <button
-              onClick={() => loadData()}
-              className="px-3 py-1 bg-primary text-white rounded-md text-xs"
+      <CardContent className="flex-1 flex flex-col">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-3 mb-6 items-start sm:items-center">
+          <div className="flex flex-wrap gap-2">
+            <Button
+              size="sm"
+              variant={dataType === "weight" ? "default" : "outline"}
+              onClick={() => setDataType("weight")}
+              className="text-xs"
             >
-              Reintentar
-            </button>
+              Peso
+            </Button>
+            <Button
+              size="sm"
+              variant={dataType === "bodyFat" ? "default" : "outline"}
+              onClick={() => setDataType("bodyFat")}
+              className="text-xs"
+            >
+              Grasa corporal
+            </Button>
+            <Button
+              size="sm"
+              variant={dataType === "muscle" ? "default" : "outline"}
+              onClick={() => setDataType("muscle")}
+              className="text-xs"
+            >
+              Masa muscular
+            </Button>
           </div>
-        ) : chartData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2">
-            <h3 className="text-xs font-medium">No hay datos disponibles</h3>
-            <p className="text-xs text-muted-foreground text-center max-w-sm">
-              Asegúrate de establecer un objetivo para hacer seguimiento de tu
-              progreso.
-            </p>
-          </div>
-        ) : filteredData.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full gap-2">
-            <h3 className="text-xs font-medium">
-              No hay datos para el período seleccionado
-            </h3>
-            <p className="text-xs text-muted-foreground text-center max-w-sm">
-              Intenta seleccionar un rango de fechas diferente para ver tu
-              progreso.
-            </p>
-          </div>
-        ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={filteredData}
-              margin={{
-                top: 5,
-                right: 10,
-                left: 0,
-                bottom: 5,
+
+          <div className="flex flex-row gap-2 w-full sm:w-auto items-center">
+            <Select
+              value={timePeriod}
+              onValueChange={(value) => setTimePeriod(value as TimePeriod)}
+            >
+              <SelectTrigger className="w-full sm:w-[180px] text-xs">
+                <SelectValue placeholder="Seleccionar período" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem className="text-xs" value="all">
+                  Todo el tiempo
+                </SelectItem>
+                <SelectItem className="text-xs" value="week">
+                  Última semana
+                </SelectItem>
+                <SelectItem className="text-xs" value="month">
+                  Último mes
+                </SelectItem>
+                <SelectItem className="text-xs" value="year">
+                  Último año
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <NewProgress
+              onSuccess={() => {
+                loadData();
+                if (onRecordAdded) onRecordAdded();
               }}
-            >
-              <CartesianGrid
-                strokeDasharray="3 3"
-                stroke={isDark ? "#3D3D3E" : "#e5e7eb"}
-              />
-              <XAxis
-                dataKey="date"
-                stroke={isDark ? "#9ca3af" : "#6b7280"}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                domain={["dataMin - 2", "dataMax + 2"]}
-                stroke={isDark ? "#9ca3af" : "#6b7280"}
-                tick={{ fontSize: 12 }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: isDark ? "#121212" : "#ffffff",
-                  border: `1px solid ${isDark ? "#3D3D3E" : "#e5e7eb"}`,
-                  borderRadius: "0.375rem",
-                }}
-                labelStyle={{
-                  fontSize: 12,
-                  fontWeight: "bold",
-                  color: isDark ? "#e5e7eb" : "#121212",
-                }}
-                itemStyle={{
-                  fontSize: 12,
-                  color: isDark ? "#e5e7eb" : "#121212",
-                }}
-                formatter={(value) => [
-                  `${value}${chartConfig.unit}`,
-                  chartConfig.title,
-                ]}
-              />
-              <Line
-                type="monotone"
-                dataKey={chartConfig.dataKey}
-                stroke={chartConfig.color}
-                strokeWidth={2}
-                dot={{ fill: isDark ? "#000" : "#eee", r: 4 }}
-                activeDot={{ r: 6 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      <div className="mt-4 text-center">
-        {filteredData.length > 0 ? (
-          <div>
-            <p className="text-xs font-medium">{getTimePeriodLabel()}</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              {getProgressMessage()}
-            </p>
+            />
           </div>
-        ) : (
-          <p className="text-xs text-muted-foreground">
-            {chartData.length > 0
-              ? "Selecciona otro período para ver tu progreso"
-              : ""}
-          </p>
-        )}
-      </div>
+        </div>
+
+        <div className="w-full h-[250px]">
+          {isLoading ? (
+            <div className="flex items-center justify-center h-full">
+              <ChartSkeleton />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center h-full">
+              <p className="text-red-500 mb-2">Error: {error}</p>
+              <button
+                onClick={() => loadData()}
+                className="px-3 py-1 bg-primary text-white rounded-md text-xs"
+              >
+                Reintentar
+              </button>
+            </div>
+          ) : chartData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full gap-2">
+              <h3 className="text-xs font-medium">No hay datos disponibles</h3>
+              <p className="text-xs text-muted-foreground text-center max-w-sm">
+                Asegúrate de establecer un objetivo para hacer seguimiento de tu
+                progreso.
+              </p>
+            </div>
+          ) : filteredData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full gap-2">
+              <h3 className="text-xs font-medium">
+                No hay datos para el período seleccionado
+              </h3>
+              <p className="text-xs text-muted-foreground text-center max-w-sm">
+                Intenta seleccionar un rango de fechas diferente para ver tu
+                progreso.
+              </p>
+            </div>
+          ) : (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={filteredData}
+                margin={{
+                  top: 5,
+                  right: 10,
+                  left: 0,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={isDark ? "#3D3D3E" : "#e5e7eb"}
+                />
+                <XAxis
+                  dataKey="date"
+                  stroke={isDark ? "#9ca3af" : "#6b7280"}
+                  tick={{ fontSize: 12 }}
+                />
+                <YAxis
+                  domain={["dataMin - 2", "dataMax + 2"]}
+                  stroke={isDark ? "#9ca3af" : "#6b7280"}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: isDark ? "#121212" : "#ffffff",
+                    border: `1px solid ${isDark ? "#3D3D3E" : "#e5e7eb"}`,
+                    borderRadius: "0.375rem",
+                  }}
+                  labelStyle={{
+                    fontSize: 12,
+                    fontWeight: "bold",
+                    color: isDark ? "#e5e7eb" : "#121212",
+                  }}
+                  itemStyle={{
+                    fontSize: 12,
+                    color: isDark ? "#e5e7eb" : "#121212",
+                  }}
+                  formatter={(value) => [
+                    `${value}${chartConfig.unit}`,
+                    chartConfig.title,
+                  ]}
+                />
+                <Line
+                  type="monotone"
+                  dataKey={chartConfig.dataKey}
+                  stroke={chartConfig.color}
+                  strokeWidth={2}
+                  dot={{ fill: isDark ? "#000" : "#eee", r: 4 }}
+                  activeDot={{ r: 6 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          )}
+        </div>
+
+        <div className="mt-6 text-center">
+          {filteredData.length > 0 ? (
+            <div>
+              <p className="text-xs font-medium">{getTimePeriodLabel()}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {getProgressMessage()}
+              </p>
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              {chartData.length > 0
+                ? "Selecciona otro período para ver tu progreso"
+                : ""}
+            </p>
+          )}
+        </div>
+      </CardContent>
 
       {/* {showAddForm && (
         <ProgressForm
@@ -457,6 +471,6 @@ export default function ProgressChart({
           }}
         />
       )} */}
-    </div>
+    </Card>
   );
 }

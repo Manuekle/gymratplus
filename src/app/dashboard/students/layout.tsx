@@ -1,16 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { dashboardSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Alumnos - GymRat+",
-  description:
-    "Gestiona a tus alumnos en tu cuenta para acceder a todas las funcionalidades de nuestra aplicación",
-  keywords: "alumnos, gestión, acceso, cuenta",
-  openGraph: {
-    title: "Alumnos - GymRat+",
-    description:
-      "Gestiona a tus alumnos en tu cuenta para acceder a todas las funcionalidades",
-  },
-};
+export const metadata = dashboardSEO.students();
 export default function StudentsLayout({
   children,
 }: {

@@ -1,16 +1,18 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { customSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Instructor - GymRat+",
+export const metadata = customSEO({
+  title: "Perfil de Instructor",
   description:
-    "Gestiona a tu instructor en tu cuenta para acceder a todas las funcionalidades de nuestra aplicación",
-  keywords: "instructor, gestión, acceso, cuenta",
-  openGraph: {
-    title: "Instructor - GymRat+",
-    description:
-      "Gestiona a tu instructor en tu cuenta para acceder a todas las funcionalidades",
-  },
-};
+    "Conoce el perfil, experiencia y planes disponibles del instructor",
+  keywords: [
+    "instructor",
+    "entrenador",
+    "coach",
+    "perfil",
+    "planes de entrenamiento",
+  ],
+});
 export default function InstructorsIdLayout({
   children,
 }: {

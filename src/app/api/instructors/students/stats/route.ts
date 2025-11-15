@@ -119,8 +119,7 @@ export async function GET() {
     };
 
     return NextResponse.json(stats, { status: 200 });
-  } catch (error) {
-    console.error("[GET_INSTRUCTOR_STUDENTS_STATS_ERROR]", error);
+  } catch {
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 },

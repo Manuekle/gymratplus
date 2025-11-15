@@ -43,9 +43,7 @@ export async function initNotificationSubscriber() {
                 `Notification created for user ${userId}: ${notification.title}`,
               );
             }
-          } catch (error) {
-            console.error("Error processing notification message:", error);
-          }
+          } catch {}
         }
 
         // Clear processed notifications
@@ -56,9 +54,7 @@ export async function initNotificationSubscriber() {
             -1,
           );
         }
-      } catch (error) {
-        console.error("Error checking notifications:", error);
-      }
+      } catch {}
     };
 
     // Check water intake (only update UI, notifications are handled in the water-intake route)
@@ -78,9 +74,7 @@ export async function initNotificationSubscriber() {
             -1,
           );
         }
-      } catch (error) {
-        console.error("Error checking water intake:", error);
-      }
+      } catch {}
     };
 
     // Check workout notifications
@@ -153,9 +147,7 @@ export async function initNotificationSubscriber() {
             -1,
           );
         }
-      } catch (error) {
-        console.error("Error checking workout notifications:", error);
-      }
+      } catch {}
     };
 
     // Set up interval for polling
@@ -170,16 +162,13 @@ export async function initNotificationSubscriber() {
       POLLING_INTERVAL,
     );
 
-    console.log("Redis polling initialized with 15-second intervals");
-
     // Return a function to clean up intervals if needed
     return () => {
       clearInterval(notificationInterval);
       clearInterval(waterIntakeInterval);
       clearInterval(workoutInterval);
     };
-  } catch (error) {
-    console.error("Failed to initialize Redis polling:", error);
+  } catch {
     // Devolvemos una función vacía en caso de error para mantener consistencia en el tipo de retorno
     return () => {};
   }

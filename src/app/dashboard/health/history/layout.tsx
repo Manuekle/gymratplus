@@ -1,10 +1,20 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { customSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Historial - GymRat+",
-  description: "Revisa y gestiona tu historial de mediciones",
-  keywords: "salud, métricas, bienestar, seguimiento médico, indicadores",
-};
+export const metadata = customSEO({
+  title: "Historial",
+  description:
+    "Revisa y gestiona tu historial de mediciones y métricas de salud",
+  keywords: [
+    "historial",
+    "salud",
+    "métricas",
+    "bienestar",
+    "seguimiento médico",
+    "indicadores",
+  ],
+  noindex: true,
+});
 
 export default function HistoryLayout({
   children,

@@ -29,8 +29,6 @@ export async function POST(request: NextRequest) {
     }
 
     // LOGS DE DEPURACIÓN
-    console.log("API progreso - id:", id);
-    console.log("API progreso - session.user.email:", session?.user?.email);
 
     const body = await request.json();
     const { value, date, notes } = body;
@@ -38,8 +36,6 @@ export async function POST(request: NextRequest) {
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
     });
-
-    console.log("API progreso - user.id:", user?.id);
 
     if (!user) {
       return NextResponse.json(
@@ -55,8 +51,6 @@ export async function POST(request: NextRequest) {
         userId: user.id,
       },
     });
-
-    console.log("API progreso - goal encontrado:", goal);
 
     if (!goal) {
       return NextResponse.json(
@@ -199,8 +193,6 @@ export async function POST(request: NextRequest) {
             goalTitle,
             progress,
           );
-
-          console.log(`Goal progress notification created for user ${user.id}`);
         }
       }
     } catch (notificationError) {
@@ -212,8 +204,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(newProgressUpdate);
-  } catch (error) {
-    console.error("Error al añadir actualización de progreso:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al añadir actualización de progreso" },
       { status: 500 },

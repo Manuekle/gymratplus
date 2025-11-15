@@ -54,10 +54,10 @@ export default function SignInPage() {
       <div className="relative flex h-screen items-center justify-center p-4">
         <Card className="w-full max-w-md shadow-lg">
           <CardHeader className="space-y-1">
-            <CardTitle className="text-center text-2xl font-semibold  tracking-heading">
+            <CardTitle className="text-2xl font-semibold tracking-heading text-center">
               Iniciar Sesión
             </CardTitle>
-            <CardDescription className="text-center text-xs">
+            <CardDescription className="text-muted-foreground text-xs text-center">
               Ingresa a tu cuenta para acceder a tu perfil de fitness
             </CardDescription>
           </CardHeader>

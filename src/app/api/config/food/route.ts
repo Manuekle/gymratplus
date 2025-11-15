@@ -78,8 +78,7 @@ export async function PUT() {
       message: `Se cargaron ${foods.length} alimentos base correctamente`,
       count: foods.length,
     });
-  } catch (error) {
-    console.error("Error al cargar alimentos:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Error al cargar los alimentos",

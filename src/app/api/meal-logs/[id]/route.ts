@@ -49,8 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(mealLog);
-  } catch (error) {
-    console.error("Error fetching meal log:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch meal log" },
       { status: 500 },
@@ -106,8 +105,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting meal log:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete meal log" },
       { status: 500 },

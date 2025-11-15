@@ -84,8 +84,7 @@ export async function GET(
     }
 
     return NextResponse.json(studentProfile);
-  } catch (error) {
-    console.error("Error al obtener el perfil del estudiante:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Error interno del servidor al obtener el perfil del estudiante",

@@ -288,8 +288,7 @@ export default function GoalPage() {
 
       await createGoal(data as Goal);
       router.push("/dashboard"); // Redirigir al dashboard
-    } catch (error) {
-      console.error("Error al guardar:", error);
+    } catch {
       setError(
         "Ocurrió un error al guardar el objetivo. Por favor, intenta de nuevo.",
       );
@@ -330,7 +329,7 @@ export default function GoalPage() {
       {/* Main Form Card */}
       <Card className="w-full overflow-hidden">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
             Detalles del objetivo
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">

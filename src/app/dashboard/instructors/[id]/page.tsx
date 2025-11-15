@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { StartChatButton } from "@/components/chats/start-chat-button";
 import {
   Mail01Icon,
   MapPinIcon,
@@ -56,12 +57,15 @@ export default function InstructorProfilePage() {
   const [hiredInstructors, setHiredInstructors] = useState<Set<string>>(
     new Set(),
   );
+  const [studentInstructorId, setStudentInstructorId] = useState<string | null>(
+    null,
+  );
 
   const loadExistingRequests = useCallback(async () => {
     try {
       const [requestsResponse, hiredResponse] = await Promise.all([
         fetch("/api/student-instructor-requests"),
-        fetch("/api/student-instructors?status=active"),
+        fetch("/api/students/my-instructors"), // Use this endpoint which includes studentInstructorId
       ]);
 
       if (requestsResponse.ok) {
@@ -77,15 +81,24 @@ export default function InstructorProfilePage() {
       if (hiredResponse.ok) {
         const hiredInstructors = await hiredResponse.json();
         const hiredIds = hiredInstructors.map(
-          (instructor: { instructorProfileId: string }) =>
-            instructor.instructorProfileId,
+          (instructor: { id: string }) => instructor.id,
         );
         setHiredInstructors(new Set(hiredIds));
+
+        // Find the studentInstructorId for the current instructor
+        const instructorId = Array.isArray(id) ? id[0] : id;
+        const currentInstructor = hiredInstructors.find(
+          (inst: { id: string; studentInstructorId?: string }) =>
+            inst.id === instructorId,
+        );
+        if (currentInstructor?.studentInstructorId) {
+          setStudentInstructorId(currentInstructor.studentInstructorId);
+        }
       }
     } catch (error) {
       console.error("Error loading instructor data:", error);
     }
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     loadExistingRequests();
@@ -226,7 +239,7 @@ export default function InstructorProfilePage() {
         setRequestingInstructorId(null);
       }
     },
-    [requestedInstructors],
+    [requestedInstructors, hiredInstructors],
   );
 
   if (isLoading) {
@@ -425,6 +438,15 @@ export default function InstructorProfilePage() {
 
               {/* Compact Contact Info */}
               <div className="space-y-1.5">
+                {studentInstructorId && (
+                  <div className="flex justify-center pb-2">
+                    <StartChatButton
+                      studentInstructorId={studentInstructorId}
+                      size="sm"
+                      variant="outline"
+                    />
+                  </div>
+                )}
                 {instructor.contactEmail && (
                   <a
                     href={`mailto:${instructor.contactEmail}`}
@@ -533,7 +555,7 @@ export default function InstructorProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg tracking-heading">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
                 Sobre Mí
               </CardTitle>
             </CardHeader>
@@ -552,7 +574,7 @@ export default function InstructorProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg tracking-heading">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
                 Especialidades
               </CardTitle>
             </CardHeader>
@@ -583,7 +605,7 @@ export default function InstructorProfilePage() {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg tracking-heading">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
                 Métodos de Enseñanza
               </CardTitle>
             </CardHeader>

@@ -17,8 +17,7 @@ export async function GET() {
     });
 
     return NextResponse.json(user?.interests ?? []);
-  } catch (error) {
-    console.error("Error fetching user interests:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error fetching user interests" },
       { status: 500 },

@@ -41,8 +41,7 @@ export default function HealthHistoryPage() {
         (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
       );
       setRecords(sortedData);
-    } catch (error) {
-      console.error("Error loading records:", error);
+    } catch {
       toast.error("Error al cargar el historial");
     } finally {
       setIsLoading(false);
@@ -69,8 +68,7 @@ export default function HealthHistoryPage() {
         prevRecords.filter((record) => record.id !== id),
       );
       toast.success("Registro eliminado correctamente");
-    } catch (error) {
-      console.error("Error deleting record:", error);
+    } catch {
       toast.error("Error al eliminar el registro");
     } finally {
       setIsDeleting(null);
@@ -127,10 +125,10 @@ export default function HealthHistoryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
+      <div className="mb-4 w-full md:w-auto flex md:flex-row flex-col justify-between  items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full md:w-auto"
           size="sm"
           onClick={() => router.push("/dashboard/health")}
         >
@@ -151,7 +149,7 @@ export default function HealthHistoryPage() {
           </div>
         </CardHeader> */}
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
             Historial de mediciones
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">

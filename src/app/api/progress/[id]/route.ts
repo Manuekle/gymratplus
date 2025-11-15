@@ -48,8 +48,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(progressEntry);
-  } catch (error) {
-    console.error("Error al obtener registro de progreso:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al obtener registro de progreso" },
       { status: 500 },
@@ -164,8 +163,7 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(updatedEntry);
-  } catch (error) {
-    console.error("Error al actualizar registro de progreso:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al actualizar registro de progreso" },
       { status: 500 },
@@ -252,8 +250,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error al eliminar registro de progreso:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al eliminar registro de progreso" },
       { status: 500 },

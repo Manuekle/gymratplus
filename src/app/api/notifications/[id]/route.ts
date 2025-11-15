@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
-import { deleteNotification } from "@/lib/notifications/notification-service";
+import {
+  deleteNotification,
+  markNotificationAsRead,
+} from "@/lib/notifications/notification-service";
 import { prisma } from "@/lib/database/prisma";
 
 export async function PATCH(request: NextRequest) {
@@ -37,9 +40,19 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    return NextResponse.json(notification);
-  } catch (error) {
-    console.error("Error fetching notification:", error);
+    // Marcar la notificación como leída
+    const updatedNotification = await markNotificationAsRead(id);
+
+    if (!updatedNotification) {
+      // Si la notificación ya no existe (fue eliminada), retornar 404
+      return NextResponse.json(
+        { error: "Notificación no encontrada" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(updatedNotification);
+  } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }
@@ -79,8 +92,7 @@ export async function DELETE(request: NextRequest) {
 
     const deletedNotification = await deleteNotification(id);
     return NextResponse.json(deletedNotification);
-  } catch (error) {
-    console.error("Error deleting notification:", error);
+  } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

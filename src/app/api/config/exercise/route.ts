@@ -26,8 +26,7 @@ export async function POST(_req: NextRequest) {
     });
 
     return NextResponse.json(newExercises);
-  } catch (error) {
-    console.error("Error adding exercises:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to add exercises" },
       { status: 500 },
@@ -69,8 +68,7 @@ export async function DELETE(_req: NextRequest) {
     return NextResponse.json({
       message: "Ejercicios duplicados eliminados correctamente",
     });
-  } catch (error) {
-    console.error("Error eliminando duplicados:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error eliminando duplicados" },
       { status: 500 },

@@ -42,8 +42,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(food);
-  } catch (error) {
-    console.error("Error fetching food:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch food" },
       { status: 500 },
@@ -118,8 +117,7 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(updatedFood);
-  } catch (error) {
-    console.error("Error updating food:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update food" },
       { status: 500 },
@@ -180,8 +178,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting food:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete food" },
       { status: 500 },

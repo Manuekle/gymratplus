@@ -79,6 +79,7 @@ model User {
   assignedFoodPlans    FoodRecommendation[] @relation("FoodRecommendationAssigned")
   foodPlans            FoodPlan[]
   studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
+  chatMessages         ChatMessage[]        @relation("ChatMessageSender")
 }
 
 model Profile {
@@ -503,8 +504,52 @@ model StudentInstructor {
   agreedPrice         Float?
   startDate           DateTime          @default(now())
   updatedAt           DateTime          @updatedAt
+  chats               Chat[]            @relation("StudentInstructorChat")
 
   @@unique([studentId, instructorProfileId])
   @@index([studentId])
   @@index([instructorProfileId])
+}
+
+model Chat {
+  id                  String            @id @default(cuid())
+  studentInstructorId String
+  studentInstructor   StudentInstructor @relation("StudentInstructorChat", fields: [studentInstructorId], references: [id], onDelete: Cascade)
+  messages            ChatMessage[]
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  @@unique([studentInstructorId])
+  @@index([studentInstructorId])
+}
+
+model ChatMessage {
+  id        String       @id @default(cuid())
+  chatId    String
+  chat      Chat         @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  senderId  String
+  sender    User         @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  content   String?      @db.Text
+  type      String       @default("text") // text, image, audio, video, file
+  fileUrl   String?
+  fileName  String?
+  fileSize  Int?         // in bytes
+  mimeType  String?
+  duration  Int?         // for audio/video in seconds
+  thumbnail String?      // for video/image preview
+  read      Boolean      @default(false)
+  deleted   Boolean      @default(false)
+  deletedAt DateTime?
+  edited    Boolean      @default(false)
+  editedAt  DateTime?
+  replyToId String?
+  replyTo   ChatMessage? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies   ChatMessage[] @relation("MessageReplies")
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([chatId])
+  @@index([senderId])
+  @@index([createdAt])
+  @@index([replyToId])
 }

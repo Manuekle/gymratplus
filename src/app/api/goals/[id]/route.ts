@@ -128,8 +128,6 @@ export async function PUT(request: NextRequest) {
 
           // Add to Redis list for polling
           await publishGoalNotification(user.id, "updated", goalTitle);
-
-          console.log(`Goal update notification created for user ${user.id}`);
         }
       }
     } catch (notificationError) {
@@ -141,8 +139,7 @@ export async function PUT(request: NextRequest) {
     }
 
     return NextResponse.json(updatedGoal);
-  } catch (error) {
-    console.error("Error al actualizar objetivo:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al actualizar objetivo" },
       { status: 500 },
@@ -201,8 +198,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ message: "Objetivo eliminado exitosamente" });
-  } catch (error) {
-    console.error("Error al eliminar objetivo:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al eliminar objetivo" },
       { status: 500 },

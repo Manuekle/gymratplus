@@ -26,8 +26,7 @@ export async function DELETE(req: NextRequest) {
     });
 
     return NextResponse.json(deletedExercise);
-  } catch (error) {
-    console.error("Error deleting exercise:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete exercise" },
       { status: 500 },

@@ -460,18 +460,11 @@ export async function POST(req: Request): Promise<NextResponse> {
         days,
       },
       foodRecommendation: populatedNutritionPlan,
-      recommendations: [
-        `Mantén una rutina consistente de entrenamiento, especialmente ${profileData.goal === "gain-muscle" ? "de fuerza" : "cardio"}`,
-        `Consume ${dailyProteinTarget}g de proteína de alta calidad diariamente`,
-        `Descansa lo suficiente entre sesiones (48-72 horas por grupo muscular)`,
-        `Mantén una hidratación adecuada (2-3 litros de agua al día)`,
-        `${profileData.goal === "gain-muscle" ? "Consume un superávit calórico moderado" : profileData.goal === "lose-weight" ? "Mantén un déficit calórico controlado" : "Mantén tu ingesta calórica estable"}`,
-      ],
+      recommendations: [],
     };
 
     return NextResponse.json(responseData);
-  } catch (error) {
-    console.error("Error generating recommendations:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Error generating recommendations",

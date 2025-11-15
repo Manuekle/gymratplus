@@ -155,8 +155,7 @@ export async function GET(req: NextRequest) {
     }
 
     return NextResponse.json(responseData);
-  } catch (error) {
-    console.error("Error fetching nutrition analytics:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch nutrition analytics" },
       { status: 500 },

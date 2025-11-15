@@ -137,6 +137,123 @@ export default function ActiveWorkoutPage() {
     }
   }, [workoutSession]);
 
+  // Formatear tiempo en formato mm:ss
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  /**
+   * Envía la actualización del set a la API y maneja el estado local.
+   * También inicia el temporizador de descanso si el set tiene datos.
+   */
+  const updateSet = useCallback(
+    async (
+      setId: string,
+      exerciseId: string,
+      data: Partial<Set>,
+      retryCount = 0,
+    ) => {
+      setIsUpdating((prev) => ({ ...prev, [setId]: true }));
+
+      try {
+        const response = await fetch("/api/workout-session/set", {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ setId, ...data }),
+        });
+
+        // Si la respuesta es 401 (no autorizado), revalidar sesión y reintentar
+        if (response.status === 401) {
+          try {
+            await updateSession();
+            // Reintentar una vez después de revalidar
+            if (retryCount === 0) {
+              return updateSet(setId, exerciseId, data, 1);
+            }
+          } catch (error) {
+            console.error("Error revalidando sesión:", error);
+          }
+
+          // Si falla después de reintentar, agregar a la cola de reintentos
+          failedRequests.current.push({ setId, exerciseId, data });
+          toast.error("Error de autenticación", {
+            description:
+              "La sesión expiró. Los cambios se guardarán cuando vuelvas a la app.",
+          });
+          setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
+        if (response.ok) {
+          setWorkoutSession((prev) => {
+            if (!prev) return prev;
+
+            const newWorkoutSession = {
+              ...prev,
+              exercises: prev.exercises.map((ex) => ({
+                ...ex,
+                sets: ex.sets.map((set) =>
+                  set.id === setId ? { ...set, ...data } : set,
+                ),
+              })),
+            };
+
+            // Lógica para marcar como completado si hay peso o reps
+            const currentExercise = newWorkoutSession.exercises.find(
+              (ex) => ex.id === exerciseId,
+            );
+            const currentSet = currentExercise?.sets.find(
+              (set) => set.id === setId,
+            );
+            const setCompleted = !!(
+              currentSet?.weight !== null &&
+              currentSet?.weight !== undefined &&
+              currentSet?.reps !== null &&
+              currentSet?.reps !== undefined
+            );
+
+            // Si el set se ha completado, iniciar el temporizador de descanso
+            if (setCompleted) {
+              const restTime = currentExercise?.exercise.restTime;
+              if (restTime && restTime > 0) {
+                setRestTimer({
+                  active: true,
+                  timeLeft: restTime,
+                  exerciseId: exerciseId,
+                });
+              }
+
+              // Marcar el set como completado en el estado local después de guardar en DB
+              newWorkoutSession.exercises = newWorkoutSession.exercises.map(
+                (ex) => ({
+                  ...ex,
+                  sets: ex.sets.map((set) =>
+                    set.id === setId ? { ...set, completed: true } : set,
+                  ),
+                }),
+              );
+            }
+            return newWorkoutSession;
+          });
+        }
+      } catch (error) {
+        console.error("Error updating set:", error);
+        toast.error("Error", {
+          description: "No se pudo actualizar el set",
+        });
+      } finally {
+        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
+      }
+    },
+    [updateSession],
+  );
+
   // Revalidar sesión cuando la página vuelve al foreground
   useEffect(() => {
     const handleVisibilityChange = async () => {
@@ -182,14 +299,13 @@ export default function ActiveWorkoutPage() {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.removeEventListener("focus", handleFocus);
     };
-  }, [updateSession]);
+  }, [updateSession, updateSet]);
 
   // Limpiar temporizadores al desmontar
   useEffect(() => {
+    const timers = debounceTimers.current;
     return () => {
-      Object.values(debounceTimers.current).forEach((timer) =>
-        clearTimeout(timer),
-      );
+      Object.values(timers).forEach((timer) => clearTimeout(timer));
     };
   }, []);
 
@@ -230,120 +346,6 @@ export default function ActiveWorkoutPage() {
     );
 
     return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
-  };
-
-  // Formatear tiempo en formato mm:ss
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  /**
-   * Envía la actualización del set a la API y maneja el estado local.
-   * También inicia el temporizador de descanso si el set tiene datos.
-   */
-  const updateSet = async (
-    setId: string,
-    exerciseId: string,
-    data: Partial<Set>,
-    retryCount = 0,
-  ) => {
-    setIsUpdating((prev) => ({ ...prev, [setId]: true }));
-
-    try {
-      const response = await fetch("/api/workout-session/set", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ setId, ...data }),
-      });
-
-      // Si la respuesta es 401 (no autorizado), revalidar sesión y reintentar
-      if (response.status === 401) {
-        try {
-          await updateSession();
-          // Reintentar una vez después de revalidar
-          if (retryCount === 0) {
-            return updateSet(setId, exerciseId, data, 1);
-          }
-        } catch (error) {
-          console.error("Error revalidando sesión:", error);
-        }
-
-        // Si falla después de reintentar, agregar a la cola de reintentos
-        failedRequests.current.push({ setId, exerciseId, data });
-        toast.error("Error de autenticación", {
-          description:
-            "La sesión expiró. Los cambios se guardarán cuando vuelvas a la app.",
-        });
-        setIsUpdating((prev) => ({ ...prev, [setId]: false }));
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
-      if (response.ok) {
-        setWorkoutSession((prev) => {
-          if (!prev) return prev;
-
-          const newWorkoutSession = {
-            ...prev,
-            exercises: prev.exercises.map((ex) => ({
-              ...ex,
-              sets: ex.sets.map((set) =>
-                set.id === setId ? { ...set, ...data } : set,
-              ),
-            })),
-          };
-
-          // Lógica para marcar como completado si hay peso o reps
-          const currentExercise = newWorkoutSession.exercises.find(
-            (ex) => ex.id === exerciseId,
-          );
-          const currentSet = currentExercise?.sets.find(
-            (set) => set.id === setId,
-          );
-          const setCompleted = !!(
-            currentSet?.weight !== null &&
-            currentSet?.weight !== undefined &&
-            currentSet?.reps !== null &&
-            currentSet?.reps !== undefined
-          );
-
-          // Si el set se ha completado, iniciar el temporizador de descanso
-          if (setCompleted) {
-            const restTime = currentExercise?.exercise.restTime;
-            if (restTime && restTime > 0) {
-              setRestTimer({
-                active: true,
-                timeLeft: restTime,
-                exerciseId: exerciseId,
-              });
-            }
-
-            // Marcar el set como completado en el estado local después de guardar en DB
-            newWorkoutSession.exercises = newWorkoutSession.exercises.map(
-              (ex) => ({
-                ...ex,
-                sets: ex.sets.map((set) =>
-                  set.id === setId ? { ...set, completed: true } : set,
-                ),
-              }),
-            );
-          }
-          return newWorkoutSession;
-        });
-      }
-    } catch (error) {
-      console.error("Error updating set:", error);
-      toast.error("Error", {
-        description: "No se pudo actualizar el set",
-      });
-    } finally {
-      setIsUpdating((prev) => ({ ...prev, [setId]: false }));
-    }
   };
 
   /**
@@ -398,7 +400,7 @@ export default function ActiveWorkoutPage() {
 
       debounceTimers.current[setId] = newTimer;
     },
-    [inputValues], // Dependencia de inputValues para obtener los valores cruzados
+    [inputValues, updateSet], // Dependencia de inputValues para obtener los valores cruzados
   );
 
   // Completar un ejercicio

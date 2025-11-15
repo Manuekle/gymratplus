@@ -88,7 +88,6 @@ export async function GET(
     const studentCount = instructorProfile?.students?.length || 0;
 
     if (!instructorProfile) {
-      console.error(`[INSTRUCTOR_NOT_FOUND] ID: ${id}`);
       return NextResponse.json(
         { error: "Instructor not found or doesn't have a profile" },
         { status: 404 },
@@ -122,9 +121,7 @@ export async function GET(
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch (error) {
-    console.error("[GET_INSTRUCTOR_BY_ID_ERROR]", error);
-
+  } catch {
     // Handle Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {
@@ -144,7 +141,6 @@ export async function GET(
             { status: 409 },
           );
         default:
-          console.error("Prisma error code:", error.code);
           break;
       }
     }

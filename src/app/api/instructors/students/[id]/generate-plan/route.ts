@@ -101,7 +101,6 @@ export async function POST(
     });
 
     // Log de verificación: mostrar qué se está enviando
-    console.log(`\n📤 [API] Enviando plan nutricional al frontend:`);
     console.log(
       `   └─ Breakfast: P=${nutritionPlan.breakfast.protein.toFixed(1)}g, C=${nutritionPlan.breakfast.carbs.toFixed(1)}g, F=${nutritionPlan.breakfast.fat.toFixed(1)}g, Cal=${nutritionPlan.breakfast.calories}kcal, Entries=${nutritionPlan.breakfast.entries.length}`,
     );
@@ -189,8 +188,7 @@ export async function POST(
 
     // Solo devolver el plan generado, NO guardar en BD
     return NextResponse.json(roundedPlan);
-  } catch (error) {
-    console.error("Error al generar el plan:", error);
+  } catch {
     return NextResponse.json(
       {
         error: "Error interno del servidor al generar el plan",

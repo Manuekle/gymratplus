@@ -1,10 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { dashboardSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Perfil - GymRat+",
-  description: "Gestiona tu información personal y preferencias de cuenta",
-  keywords: "perfil, cuenta, usuario, información personal, preferencias",
-};
+export const metadata = dashboardSEO.profile();
 
 export default function ProfileLayout({
   children,

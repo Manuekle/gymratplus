@@ -49,7 +49,6 @@ export async function GET() {
     });
 
     // Log raw database history for debugging
-    console.log("Raw database history:", JSON.stringify(dbHistory, null, 2));
 
     // Format dates to YYYY-MM-DD in local timezone
     const formattedHistory = dbHistory.map((entry) => {
@@ -60,15 +59,12 @@ export async function GET() {
       const day = String(date.getUTCDate()).padStart(2, "0");
       const dateString = `${year}-${month}-${day}`;
 
-      console.log("Processing date:", {
+      return {
         original: entry.date,
         utc: date.toISOString(),
         local: date.toString(),
         formatted: dateString,
         utcParts: { year, month, day },
-      });
-
-      return {
         date: dateString,
         liters: entry.intake,
       };
@@ -89,19 +85,14 @@ export async function GET() {
         }),
       );
 
-      Promise.all(promises).catch((error) => {
-        console.error("Error actualizando cache Redis:", error);
-      });
+      Promise.all(promises).catch(() => {});
 
       // Establecer expiración para mantener solo los últimos 30 días
-      redis.expire(historyKey, 60 * 60 * 24 * 30).catch((error) => {
-        console.error("Error estableciendo expiración en Redis:", error);
-      });
+      redis.expire(historyKey, 60 * 60 * 24 * 30).catch(() => {});
     }
 
     return NextResponse.json(formattedHistory);
-  } catch (error) {
-    console.error("Error fetching water intake history:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al obtener el historial de consumo de agua" },
       { status: 500 },

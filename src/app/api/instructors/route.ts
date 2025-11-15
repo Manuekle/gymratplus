@@ -144,8 +144,7 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch (error) {
-    console.error("Error fetching instructors:", error);
+  } catch {
     return NextResponse.json<{ error: string }>(
       { error: "Error al cargar instructores" },
       { status: 500 },

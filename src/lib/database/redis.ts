@@ -93,16 +93,14 @@ export async function getWaterIntakeHistory(
           dateSet.add(date);
           result.push({ date, liters });
         }
-      } catch (error) {
-        console.error("Error processing history entry:", item, error);
+      } catch {
         continue;
       }
     }
 
     // Sort by date in ascending order
     return result.sort((a, b) => a.date.localeCompare(b.date));
-  } catch (error) {
-    console.error("Error in getWaterIntakeHistory:", error);
+  } catch {
     return [];
   }
 }

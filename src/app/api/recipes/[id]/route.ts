@@ -49,8 +49,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(recipe);
-  } catch (error) {
-    console.error("Error fetching recipe:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch recipe" },
       { status: 500 },
@@ -225,8 +224,7 @@ export async function PUT(request: NextRequest) {
     });
 
     return NextResponse.json(updatedRecipe);
-  } catch (error) {
-    console.error("Error updating recipe:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to update recipe" },
       { status: 500 },
@@ -287,8 +285,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error("Error deleting recipe:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to delete recipe" },
       { status: 500 },

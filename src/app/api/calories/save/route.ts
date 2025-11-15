@@ -85,9 +85,7 @@ export async function POST(req: NextRequest) {
       .set(cacheKey, JSON.stringify(updatedProfile), {
         ex: PROFILE_CACHE_TTL,
       })
-      .catch((error) => {
-        console.error("Error actualizando cache Redis:", error);
-      });
+      .catch(() => {});
 
     // Devolver respuesta exitosa
     return NextResponse.json({
@@ -95,8 +93,7 @@ export async function POST(req: NextRequest) {
       message: "Objetivos calóricos actualizados correctamente",
       profile: updatedProfile,
     });
-  } catch (error) {
-    console.error("Error al guardar objetivos calóricos:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al guardar objetivos calóricos" },
       { status: 500 },

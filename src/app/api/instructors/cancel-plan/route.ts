@@ -59,12 +59,10 @@ export async function POST() {
       { message: "Plan cancelado exitosamente" },
       { status: 200 },
     );
-  } catch (error) {
-    console.error("[INSTRUCTOR_CANCEL_PLAN_ERROR]", error);
-
+  } catch {
     // Log more detailed error information
     if (error instanceof Error) {
-      console.error("Error details:", {
+      console.error({
         message: error.message,
         name: error.name,
         stack: error.stack,

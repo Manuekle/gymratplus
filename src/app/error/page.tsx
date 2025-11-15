@@ -7,9 +7,7 @@ import { useRouter } from "next/navigation";
 export default function ErrorPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    console.error("Se ha producido un error en la aplicación.");
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center text-center p-6">

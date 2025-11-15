@@ -83,20 +83,82 @@ npm install
 
 3. **Configurar variables de entorno**
 
-```bash
-cp .env.example .env
-```
-
-Edita el archivo `.env` con tus credenciales:
+Crea un archivo `.env.local` en la raíz del proyecto con las siguientes variables:
 
 ```env
-DATABASE_URL="postgresql://usuario:password@localhost:5432/gymratplus"
-NEXTAUTH_SECRET="tu-secret-key-aqui"
+# ============================================
+# Base de Datos
+# ============================================
+# URL de conexión a PostgreSQL para desarrollo
+DATABASE_URL_DEV="postgresql://usuario:password@localhost:5432/gymratplus"
+
+# URL de conexión a PostgreSQL para producción
+DATABASE_URL_PRO="postgresql://usuario:password@host:5432/gymratplus"
+
+# ============================================
+# Autenticación (NextAuth.js)
+# ============================================
+# Secret usado para encriptar tokens JWT (genera uno con: openssl rand -base64 32)
+NEXTAUTH_SECRET="tu-secret-key-aqui-genera-uno-seguro"
+
+# URL base de tu aplicación
+# Desarrollo: http://localhost:3000
+# Producción: https://tu-dominio.com
 NEXTAUTH_URL="http://localhost:3000"
-REDIS_URL="tu-redis-url"
-UPSTASH_REDIS_REST_URL="tu-upstash-url"
-UPSTASH_REDIS_REST_TOKEN="tu-upstash-token"
+
+# ============================================
+# OAuth - Google (Opcional)
+# ============================================
+# Para habilitar login con Google, crea un proyecto en:
+# https://console.cloud.google.com/apis/credentials
+GOOGLE_CLIENT_ID="tu-google-client-id"
+GOOGLE_CLIENT_SECRET="tu-google-client-secret"
+
+# ============================================
+# Redis / Upstash (Notificaciones en tiempo real)
+# ============================================
+# Obtén estas credenciales desde: https://console.upstash.com/
+UPSTASH_REDIS_REST_URL="https://tu-instancia.upstash.io"
+UPSTASH_REDIS_REST_TOKEN="tu-token-de-upstash"
+
+# ============================================
+# Vercel Blob Storage (Almacenamiento de archivos)
+# ============================================
+# Para subir imágenes y archivos en los chats
+# Obtén el token desde: https://vercel.com/dashboard/stores
+BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token_aqui"
+
+# ============================================
+# Entorno
+# ============================================
+# Automático: 'development' o 'production'
+# No es necesario configurarlo manualmente
+NODE_ENV="development"
 ```
+
+### Variables Requeridas vs Opcionales
+
+**Requeridas (la aplicación no funcionará sin estas):**
+
+- `DATABASE_URL_DEV` o `DATABASE_URL_PRO`
+- `NEXTAUTH_SECRET`
+- `NEXTAUTH_URL`
+
+**Opcionales (funcionalidades específicas):**
+
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` - Solo si quieres login con Google
+- `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - Solo si quieres notificaciones en tiempo real
+- `BLOB_READ_WRITE_TOKEN` - Solo si quieres subir archivos en los chats
+
+### Generar NEXTAUTH_SECRET
+
+Para generar un `NEXTAUTH_SECRET` seguro, ejecuta:
+
+```bash
+openssl rand -base64 32
+```
+
+O usa un generador online: https://generate-secret.vercel.app/32
 
 4. **Configurar la base de datos**
 

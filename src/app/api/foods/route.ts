@@ -97,8 +97,7 @@ export async function GET(req: NextRequest) {
         hasMore: skip + limit < total,
       },
     });
-  } catch (error) {
-    console.error("Error fetching foods:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch foods" },
       { status: 500 },
@@ -152,8 +151,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(food);
-  } catch (error) {
-    console.error("Error creating food:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to create food" },
       { status: 500 },
@@ -201,8 +199,7 @@ export async function PUT() {
     );
 
     return NextResponse.json({ message: `Seeded ${foods.length} foods` });
-  } catch (error) {
-    console.error("Error seeding foods:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to seed foods" },
       { status: 500 },

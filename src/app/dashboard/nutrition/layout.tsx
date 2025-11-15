@@ -1,11 +1,7 @@
 import AnimatedLayout from "@/components/layout/animated-layout";
+import { dashboardSEO } from "@/lib/seo/seo";
 
-export const metadata = {
-  title: "Nutrición - GymRat+",
-  description: "Seguimiento de tu dieta, calorías y macronutrientes diarios",
-  keywords:
-    "nutrición, dieta, alimentos, calorías, macronutrientes, alimentación",
-};
+export const metadata = dashboardSEO.nutrition();
 
 export default function NutritionLayout({
   children,

@@ -46,8 +46,7 @@ export async function GET() {
     });
 
     return NextResponse.json(requests);
-  } catch (error) {
-    console.error("[GET_STUDENT_INSTRUCTOR_REQUESTS_ERROR]", error);
+  } catch {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }
@@ -173,12 +172,11 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(studentInstructorRequest, { status: 200 });
-  } catch (error) {
+  } catch {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
 
-    console.error("[STUDENT_INSTRUCTOR_REQUEST_ERROR]", error);
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 }

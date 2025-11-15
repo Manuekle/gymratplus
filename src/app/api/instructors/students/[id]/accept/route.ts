@@ -37,17 +37,24 @@ export async function POST(request: NextRequest) {
     if (!instructorProfile || instructorProfile.userId !== session.user.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 403 });
     }
-    if (relation.status === "accepted") {
+    if (relation.status === "active" || relation.status === "accepted") {
+      // Si ya está activo, actualizar a active para consistencia
+      if (relation.status === "accepted") {
+        const updated = await prisma.studentInstructor.update({
+          where: { id },
+          data: { status: "active" },
+        });
+        return NextResponse.json(updated);
+      }
       return NextResponse.json(relation);
     }
-    // Actualizar status
+    // Actualizar status a active
     const updated = await prisma.studentInstructor.update({
       where: { id },
-      data: { status: "accepted" },
+      data: { status: "active" },
     });
     return NextResponse.json(updated);
-  } catch (error) {
-    console.error("[ACCEPT_STUDENT_ERROR]", error);
+  } catch {
     return NextResponse.json({ error: "Error interno" }, { status: 500 });
   }
 }

@@ -49,8 +49,7 @@ export async function POST(req: NextRequest) {
       message: "Peso actualizado correctamente en el perfil",
       profile: updatedProfile,
     });
-  } catch (error) {
-    console.error("Error al actualizar peso en perfil:", error);
+  } catch {
     return NextResponse.json(
       { error: "Error al actualizar peso en perfil" },
       { status: 500 },

@@ -51,8 +51,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(foodRecommendation);
-  } catch (error: unknown) {
-    console.error("Error saving food recommendation:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to save food recommendation" },
       { status: 500 },
@@ -92,8 +91,7 @@ export async function GET() {
     });
 
     return NextResponse.json(foodRecommendations);
-  } catch (error: unknown) {
-    console.error("Error fetching food recommendations:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch food recommendations" },
       { status: 500 },
