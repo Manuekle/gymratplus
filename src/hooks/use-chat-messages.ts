@@ -39,6 +39,7 @@ export function useChatMessages(chatId: string | null) {
   const isInitialLoadRef = useRef(true);
   const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
+  const isSendingRef = useRef(false);
 
   const scrollToBottom = useCallback(() => {
     if (messagesEndRef.current) {
@@ -191,6 +192,7 @@ export function useChatMessages(chatId: string | null) {
         return updated;
       });
       setIsSending(true);
+      isSendingRef.current = true;
       // Wait for DOM update before scrolling
       setTimeout(() => {
         scrollToBottom();
@@ -241,9 +243,10 @@ export function useChatMessages(chatId: string | null) {
         setError(err instanceof Error ? err.message : "Error al enviar");
       } finally {
         setIsSending(false);
+        isSendingRef.current = false;
       }
     },
-    [chatId, session, isSending, scrollToBottom],
+    [chatId, session, scrollToBottom],
   );
 
   useEffect(() => {
@@ -262,9 +265,9 @@ export function useChatMessages(chatId: string | null) {
     // Initial load
     fetchMessages(true);
 
-    // Only poll when tab is visible and user is not typing
+    // Only poll when tab is visible and user is not sending
     const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible" && !isSending) {
+      if (document.visibilityState === "visible" && !isSendingRef.current) {
         const timeSinceLastFetch = Date.now() - lastFetchTimeRef.current;
         // Only fetch if it's been at least 20 seconds
         if (timeSinceLastFetch > 20000) {
@@ -273,9 +276,9 @@ export function useChatMessages(chatId: string | null) {
       }
     };
 
-    // Poll for new messages every 30 seconds (only when visible)
+    // Poll for new messages every 30 seconds (only when visible and not sending)
     pollingIntervalRef.current = setInterval(() => {
-      if (document.visibilityState === "visible" && !isSending) {
+      if (document.visibilityState === "visible" && !isSendingRef.current) {
         fetchMessages(false);
       }
     }, 30000);
@@ -289,7 +292,7 @@ export function useChatMessages(chatId: string | null) {
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [chatId, fetchMessages, isSending]);
+  }, [chatId, fetchMessages]);
 
   useEffect(() => {
     // Use requestAnimationFrame to ensure DOM is updated

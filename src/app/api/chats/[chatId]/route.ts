@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { publishChatMessage } from "@/lib/database/chat-redis";
+import { publishNotification } from "@/lib/database/redis";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
 
@@ -300,6 +301,30 @@ export async function POST(
       senderId: message.senderId,
       content: message.content,
       createdAt: message.createdAt.toISOString(),
+    });
+
+    // Create notification for the recipient
+    const recipientId = isStudent
+      ? chat.studentInstructor.instructor.userId
+      : chat.studentInstructor.studentId;
+
+    const senderName = message.sender.name || "Usuario";
+    const messagePreview =
+      message.type === "text"
+        ? message.content || "Nuevo mensaje"
+        : message.type === "image"
+          ? "📷 Imagen"
+          : message.type === "audio"
+            ? "🎤 Audio"
+            : message.type === "video"
+              ? "🎥 Video"
+              : "📎 Archivo";
+
+    // Publish notification to Redis
+    await publishNotification(recipientId, {
+      type: "chat",
+      title: `Nuevo mensaje de ${senderName}`,
+      message: messagePreview,
     });
 
     return NextResponse.json(

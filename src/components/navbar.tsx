@@ -19,10 +19,14 @@ import { WorkoutStreak } from "./workout/workout-streak";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Door01Icon, BubbleChatIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
+import { useChatUnreadCount } from "@/hooks/use-chat-unread-count";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils/utils";
 
 export function Navbar() {
   const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
+  const { unreadCount } = useChatUnreadCount();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -60,6 +64,15 @@ export function Navbar() {
             <Link href="/dashboard/chats">
               <Button variant="ghost" size="icon" className="relative">
                 <HugeiconsIcon icon={BubbleChatIcon} className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <Badge
+                    className={cn(
+                      "absolute -top-1 -right-1 px-1 py-0 text-[8px] min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold",
+                    )}
+                  >
+                    {unreadCount > 9 ? "+9" : unreadCount}
+                  </Badge>
+                )}
                 <span className="sr-only">Mensajes</span>
               </Button>
             </Link>

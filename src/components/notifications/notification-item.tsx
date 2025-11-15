@@ -189,6 +189,8 @@ export function NotificationItem({
         return "⚖️"; // Emoji de balanza
       case "goal":
         return "📏"; // Emoji de regla
+      case "chat":
+        return "💬"; // Emoji de mensaje
       default:
         return "⚠️"; // Emoji de alerta
     }

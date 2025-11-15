@@ -500,7 +500,12 @@ export function ChatWindow({ chatId, chat, onTypingChange }: ChatWindowProps) {
 
             {/* Botón de enviar */}
             <Button
-              onClick={handleSend}
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleSend();
+              }}
               disabled={!inputValue.trim() || isSending}
               size="icon"
               className="h-11 w-11 flex-shrink-0 rounded-full bg-primary text-primary-foreground shadow-sm hover:shadow transition-all disabled:opacity-40 disabled:cursor-not-allowed"

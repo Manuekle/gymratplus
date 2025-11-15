@@ -35,6 +35,8 @@ export function NotificationBell() {
         return "⚖️";
       case "goal":
         return "📏";
+      case "chat":
+        return "💬";
       default:
         return "🔔";
     }

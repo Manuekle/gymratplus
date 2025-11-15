@@ -7,7 +7,8 @@ export type NotificationType =
   | "water"
   | "weight"
   | "goal"
-  | "system";
+  | "system"
+  | "chat";
 
 export interface CreateNotificationParams {
   userId: string;

@@ -154,7 +154,7 @@ export default function HealthPage() {
       {/* Datos Físicos y Objetivos/Actividad */}
       <div className="grid gap-6 lg:grid-cols-2">
         {/* Datos Físicos */}
-        <Card className="p-4 md:p-6 rounded-lg border bg-card">
+        <Card className="rounded-lg border bg-card">
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-semibold tracking-heading">
               Datos Físicos
@@ -241,7 +241,7 @@ export default function HealthPage() {
         </Card>
 
         {/* Objetivos y Actividad */}
-        <Card className="p-4 md:p-6 rounded-lg border bg-card">
+        <Card className="rounded-lg border bg-card">
           <CardHeader className="pb-4">
             <CardTitle className="text-2xl font-semibold tracking-heading">
               Objetivos y Actividad
@@ -328,8 +328,8 @@ export default function HealthPage() {
       </div>
 
       {/* Progreso de Objetivos */}
-      <Card className="p-4 md:p-6 rounded-lg border bg-card">
-        <CardHeader className="pb-4">
+      <Card className="rounded-lg border bg-card">
+        <CardHeader>
           <div className="flex justify-between items-center">
             <div>
               <CardTitle className="text-2xl font-semibold tracking-heading">
