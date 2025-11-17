@@ -50,6 +50,9 @@ export default function WorkoutExercise({
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const [currentDay, setCurrentDay] = useState<string>(selectedDay);
   const [isLoading, setIsLoading] = useState(false);
+  const [currentDayExercises, setCurrentDayExercises] = useState<
+    { id: string; exerciseId: string }[]
+  >([]);
   const [exerciseData, setExerciseData] = useState({
     sets: 0,
     reps: 0,
@@ -62,6 +65,66 @@ export default function WorkoutExercise({
       setCurrentDay(selectedDay);
     }
   }, [selectedDay]);
+
+  // Obtener los ejercicios del día actual
+  const fetchCurrentDayExercises = useCallback(async () => {
+    if (!workoutId || !currentDay) {
+      setCurrentDayExercises([]);
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/workouts/${workoutId}`, {
+        headers: {
+          "Cache-Control": "no-cache",
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        // Buscar el día actual en los datos
+        const dayData = data.days?.find(
+          (day: { day: string; exercises: Exercise[] }) =>
+            day.day === currentDay,
+        );
+
+        // Si encontramos el día, obtener los IDs de los ejercicios
+        if (dayData && dayData.exercises) {
+          const exerciseIds = dayData.exercises.map(
+            (ex: { id: string; exerciseId: string }) => ({
+              id: ex.id,
+              exerciseId: ex.exerciseId, // Usar el exerciseId real
+            }),
+          );
+          setCurrentDayExercises(exerciseIds);
+        } else {
+          setCurrentDayExercises([]);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching current day exercises:", error);
+      setCurrentDayExercises([]);
+    }
+  }, [workoutId, currentDay]);
+
+  // Actualizar los ejercicios del día cuando cambia el día o se abre el modal
+  useEffect(() => {
+    if (isOpen && currentDay) {
+      fetchCurrentDayExercises();
+      // Limpiar la selección cuando cambia el día
+      setSelectedExercise(null);
+    }
+  }, [isOpen, currentDay, fetchCurrentDayExercises]);
+
+  // Limpiar la selección si el ejercicio seleccionado ya está en el día actual
+  useEffect(() => {
+    if (
+      selectedExercise &&
+      currentDayExercises.some((ex) => ex.exerciseId === selectedExercise)
+    ) {
+      setSelectedExercise(null);
+    }
+  }, [currentDayExercises, selectedExercise]);
 
   const fetchExercises = useCallback(async () => {
     try {
@@ -110,6 +173,14 @@ export default function WorkoutExercise({
       return;
     }
 
+    // Validar que el ejercicio no esté duplicado para este día
+    if (isExerciseSelected(selectedExercise)) {
+      toast.error("Ejercicio duplicado", {
+        description: `Este ejercicio ya está seleccionado para ${currentDay}. No puedes agregarlo dos veces al mismo día.`,
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       console.log("Enviando datos:", {
@@ -145,6 +216,9 @@ export default function WorkoutExercise({
           restTime: 0,
         });
         setSelectedExercise(null);
+
+        // Actualizar los ejercicios del día actual
+        await fetchCurrentDayExercises();
 
         // Cerrar el diálogo
         onClose();
@@ -186,9 +260,10 @@ export default function WorkoutExercise({
     }
   };
 
+  // Verificar si un ejercicio ya está seleccionado para el día actual
   const isExerciseSelected = (exerciseId: string) => {
     return (
-      existingExercises?.some((ex) => ex.exerciseId === exerciseId) ?? false
+      currentDayExercises?.some((ex) => ex.exerciseId === exerciseId) ?? false
     );
   };
 
@@ -208,13 +283,13 @@ export default function WorkoutExercise({
             {/* Selección de día */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Selecciona el día:</Label>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 {days.map((day) => (
                   <Badge
                     key={day}
                     variant={currentDay === day ? "default" : "outline"}
                     className={cn(
-                      "cursor-pointer px-4 py-1 text-xs transition-colors",
+                      "cursor-pointer px-4 py-1 text-xs transition-colors w-full sm:w-auto",
                       currentDay === day &&
                         "bg-primary text-primary-foreground",
                     )}
@@ -261,20 +336,26 @@ export default function WorkoutExercise({
                           return (
                             <div
                               key={exercise.id}
-                              onClick={() =>
-                                !isDisabled && setSelectedExercise(exercise.id)
-                              }
+                              onClick={() => {
+                                if (!isDisabled) {
+                                  setSelectedExercise(exercise.id);
+                                } else {
+                                  toast.error("Ejercicio ya seleccionado", {
+                                    description: `Este ejercicio ya está en ${currentDay}. No puedes agregarlo dos veces al mismo día.`,
+                                  });
+                                }
+                              }}
                               className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 cursor-pointer border border-border",
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 border",
                                 isSelected
-                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                  : "bg-background hover:bg-secondary",
-                                isDisabled &&
-                                  "bg-red-100 text-red-700 cursor-not-allowed opacity-50",
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
+                                  : isDisabled
+                                    ? "bg-red-500 text-white cursor-not-allowed border-red-600"
+                                    : "bg-background hover:bg-secondary cursor-pointer border-border",
                               )}
                               title={
                                 isDisabled
-                                  ? "Este ejercicio ya está en el entrenamiento"
+                                  ? `Este ejercicio ya está seleccionado para ${currentDay}`
                                   : ""
                               }
                             >
@@ -367,7 +448,14 @@ export default function WorkoutExercise({
               size="sm"
               type="submit"
               className="text-xs"
-              disabled={!selectedExercise || !currentDay || isLoading}
+              disabled={
+                !selectedExercise ||
+                !currentDay ||
+                isLoading ||
+                (selectedExercise
+                  ? isExerciseSelected(selectedExercise)
+                  : false)
+              }
             >
               {isLoading ? (
                 <>

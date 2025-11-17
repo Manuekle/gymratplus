@@ -92,6 +92,7 @@ type WorkoutExerciseFromDB = {
 
 interface FormattedExercise {
   id: string;
+  exerciseId: string; // ID real del ejercicio
   name: string;
   sets: number;
   reps: number;
@@ -128,6 +129,7 @@ function formatWorkoutPlan(
       day: muscleGroup, // Usamos el grupo muscular como identificador del día
       exercises: exercises.map((ex) => ({
         id: ex.id,
+        exerciseId: ex.exercise.id, // ID real del ejercicio
         name: ex.exercise.name || "Ejercicio",
         sets: ex.sets,
         reps: ex.reps,
