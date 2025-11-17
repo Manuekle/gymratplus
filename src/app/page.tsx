@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useLayoutEffect } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -69,6 +69,7 @@ export default function GymRatLanding() {
         }
       };
     }
+    return undefined;
   }, []);
 
   // Prioridad: resolvedTheme > systemTheme > detectedTheme
@@ -78,6 +79,36 @@ export default function GymRatLanding() {
       : mounted && systemTheme
         ? systemTheme
         : detectedTheme;
+
+  // Carrusel automático de imágenes
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  // Array con 4 imágenes - puedes cambiar las rutas por tus imágenes específicas
+  const images = [
+    {
+      light: "/images/pic_light.png",
+      dark: "/images/pic_dark.png",
+    },
+    {
+      light: "/images/pic_light.png", // Cambia por tu segunda imagen light
+      dark: "/images/pic_dark.png", // Cambia por tu segunda imagen dark
+    },
+    {
+      light: "/images/pic_light.png", // Cambia por tu tercera imagen light
+      dark: "/images/pic_dark.png", // Cambia por tu tercera imagen dark
+    },
+    {
+      light: "/images/pic_light.png", // Cambia por tu cuarta imagen light
+      dark: "/images/pic_dark.png", // Cambia por tu cuarta imagen dark
+    },
+  ];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    }, 4000); // Cambia cada 4 segundos
+
+    return () => clearInterval(interval);
+  }, [images.length]);
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white relative overflow-hidden transition-colors">
@@ -178,7 +209,7 @@ export default function GymRatLanding() {
             </Button>
             <Button
               variant="outline"
-              className="px-8 py-3 text-xs border-2"
+              className="px-8 py-3 text-xs border"
               asChild
             >
               <Link href="#caracteristicas">Ver características</Link>
@@ -261,7 +292,7 @@ export default function GymRatLanding() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xl">
                       Entrenamientos Personalizados
                     </h3>
                     <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
@@ -280,7 +311,7 @@ export default function GymRatLanding() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xl">
                       Nutrición Inteligente
                     </h3>
                     <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
@@ -299,7 +330,7 @@ export default function GymRatLanding() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xl">
                       Seguimiento Avanzado
                     </h3>
                     <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
@@ -318,7 +349,7 @@ export default function GymRatLanding() {
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xl">
                       Entrenadores Expertos
                     </h3>
                     <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
@@ -331,19 +362,24 @@ export default function GymRatLanding() {
             </div>
 
             <div className="flex justify-center items-end h-full">
-              <div className="relative">
-                <Image
-                  key={currentTheme}
-                  src={
-                    currentTheme === "dark"
-                      ? "/images/pic_dark.png"
-                      : "/images/pic_light.png"
-                  }
-                  alt="Dashboard GymRat+"
-                  width={1200}
-                  height={800}
-                  className="relative rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-2xl"
-                />
+              <div className="relative w-full max-w-4xl aspect-video">
+                {images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
+                      index === currentImageIndex ? "opacity-100" : "opacity-0"
+                    }`}
+                  >
+                    <Image
+                      key={`${currentTheme}-${index}`}
+                      src={currentTheme === "dark" ? image.dark : image.light}
+                      alt={`Dashboard GymRat+ ${index + 1}`}
+                      width={1200}
+                      height={800}
+                      className="w-full h-full object-contain rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-2xl"
+                    />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -384,7 +420,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-orange-600 dark:text-orange-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Racha de Entrenamiento
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -403,7 +439,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-blue-600 dark:text-blue-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Seguimiento de Peso
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -422,7 +458,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-green-600 dark:text-green-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Objetivos y Metas
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -441,7 +477,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-purple-600 dark:text-purple-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Historial Completo
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -460,7 +496,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Analíticas Avanzadas
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -479,7 +515,7 @@ export default function GymRatLanding() {
                     className="w-6 h-6 text-pink-600 dark:text-pink-400"
                   />
                 </div>
-                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                <h3 className="font-semibold tracking-heading mb-2 text-xl">
                   Comunicación Directa
                 </h3>
                 <p className="text-muted-foreground text-xs leading-relaxed">
@@ -523,7 +559,7 @@ export default function GymRatLanding() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold tracking-heading mb-1">
+                  <h3 className="font-semibold tracking-heading mb-1 text-xl">
                     Resumen de Entrenamientos
                   </h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">
@@ -540,7 +576,7 @@ export default function GymRatLanding() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold tracking-heading mb-1">
+                  <h3 className="font-semibold tracking-heading mb-1 text-xl">
                     Resumen Nutricional
                   </h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">
@@ -557,7 +593,7 @@ export default function GymRatLanding() {
                   />
                 </div>
                 <div>
-                  <h3 className="font-semibold tracking-heading mb-1">
+                  <h3 className="font-semibold tracking-heading mb-1 text-xl">
                     Progreso de Objetivos
                   </h3>
                   <p className="text-muted-foreground text-xs leading-relaxed">
@@ -859,68 +895,80 @@ export default function GymRatLanding() {
       {/* Pricing */}
       <section
         id="precios"
-        className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50"
+        className="relative z-10 py-24 border-t border-zinc-200 dark:border-zinc-800/50 bg-zinc-50/30 dark:bg-zinc-950/30"
       >
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="text-center mb-12 pb-12">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-16">
             <Badge
               variant="outline"
-              className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+              className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-full dark:bg-zinc-900 py-1.5 mb-6"
             >
-              <span className="text-xs text-foreground font-normal">
+              <span className="text-sm text-foreground font-medium">
                 Precios
               </span>
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+            <h2 className="text-4xl md:text-5xl font-semibold tracking-heading mb-4">
               Precios simples
             </h2>
-            <p className="text-muted-foreground text-xs md:text-xs">
+            <p className="text-base text-muted-foreground max-w-2xl mx-auto">
               Elige el plan que se adapte a ti
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 xl:gap-6 gap-20 max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-6xl mx-auto">
             {/* Plan Alumno */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-hidden">
-              <div className="absolute inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
-              <CardContent className="px-4">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold tracking-heading mb-2">
+            <Card className="relative flex flex-col shadow-md dark:shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-visible">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-green-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg">
+                  Gratis
+                </div>
+              </div>
+              <CardContent className="p-8 flex flex-col flex-1 pt-12">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-semibold tracking-heading mb-3">
                     Alumno
                   </h3>
-                  <div className="text-3xl font-semibold tracking-heading mb-1">
-                    Gratis
+                  <div className="mb-2">
+                    <span className="text-5xl font-bold tracking-tight">
+                      $0
+                    </span>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-sm text-muted-foreground mt-2">
                     Perfecto para empezar tu journey fitness
                   </p>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-xs">
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
+                      className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Planes de entrenamiento básicos</span>
+                    <span className="text-sm leading-relaxed">
+                      Planes de entrenamiento básicos
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
+                      className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Seguimiento de progreso</span>
+                    <span className="text-sm leading-relaxed">
+                      Seguimiento de progreso
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-foreground flex-shrink-0"
+                      className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Acceso a la comunidad</span>
+                    <span className="text-sm leading-relaxed">
+                      Acceso a la comunidad
+                    </span>
                   </li>
                 </ul>
                 <Button
                   variant="default"
-                  className="text-xs w-full text-white bg-green-600 hover:bg-green-600/90 backdrop-blur-sm transition-colors shadow-sm hover:shadow-md"
+                  className="w-full text-sm py-3 text-white bg-green-600 hover:bg-green-700 transition-colors shadow-lg"
                   asChild
                 >
                   <Link href="/dashboard">Comenzar gratis</Link>
@@ -929,64 +977,69 @@ export default function GymRatLanding() {
             </Card>
 
             {/* Plan Instructor Mensual */}
-            <Card className="relative flex flex-col shadow-lg dark:shadow-xl transition-all duration-200 hover:shadow-xl hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm border border-zinc-200 dark:border-zinc-800 px-4 pt-8 pb-4 min-h-[280px] -mt-5 mb-1 overflow-visible transform xl:scale-102 scale-100 ">
-              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                <div className="bg-black dark:bg-white text-white dark:text-black px-3 py-1 rounded-full text-xs font-medium">
+            <Card className="relative flex flex-col shadow-xl dark:shadow-2xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-black dark:border-white overflow-visible scale-105 z-10">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-black dark:bg-white text-white dark:text-black px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg">
                   Más popular
                 </div>
               </div>
-              <CardContent className="px-4">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold tracking-heading mb-2">
+              <CardContent className="p-8 flex flex-col flex-1 pt-12">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-semibold tracking-heading mb-3">
                     Instructor
                   </h3>
-                  <div className="text-3xl font-semibold tracking-heading mb-1">
-                    $5
-                    <span className="text-lg text-foreground font-normal">
+                  <div className="mb-2">
+                    <span className="text-5xl font-bold tracking-tight">
+                      $5
+                    </span>
+                    <span className="text-xl text-muted-foreground font-normal ml-1">
                       /mes
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-sm text-muted-foreground mt-2">
                     Para entrenadores profesionales
                   </p>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-xs">
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
+                      className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                     />
-                    <span className="text-xs">Todo lo del plan Alumno</span>
+                    <span className="text-sm leading-relaxed">
+                      Todo lo del plan Alumno
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
+                      className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                     />
-                    <span className="text-xs">Gestión de clientes</span>
+                    <span className="text-sm leading-relaxed">
+                      Gestión de clientes
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
+                      className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                     />
-                    <span className="text-xs">
+                    <span className="text-sm leading-relaxed">
                       Creación de entrenamientos personalizados
                     </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-black dark:text-white flex-shrink-0"
+                      className="w-5 h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                     />
-                    <span className="text-xs">
+                    <span className="text-sm leading-relaxed">
                       Dashboard de analíticas avanzadas
                     </span>
                   </li>
                 </ul>
                 <Button
-                  className="text-xs w-full bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-md hover:shadow-lg"
+                  className="w-full text-sm py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-lg"
                   asChild
                 >
                   <Link href="/dashboard/profile/payment">
@@ -997,54 +1050,61 @@ export default function GymRatLanding() {
             </Card>
 
             {/* Plan Instructor Anual */}
-            <Card className="relative flex flex-col shadow-sm dark:shadow-md transition-all duration-200 hover:shadow-lg hover:bg-gradient-to-br hover:from-zinc-100/90 hover:to-zinc-200/90 dark:hover:from-zinc-900/90 dark:hover:to-zinc-800/90 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-sm border px-4 py-3 min-h-[240px] overflow-visible">
-              <div className="absolute rounded-2xl inset-0 -z-10 bg-gradient-to-br from-zinc-50/50 to-zinc-100/50 dark:from-zinc-900/50 dark:to-zinc-800/50" />
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2">
-                <div className="bg-sky-600 text-white dark:text-white px-3 py-1 rounded-full text-xs font-medium">
+            <Card className="relative flex flex-col shadow-md dark:shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-visible">
+              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                <div className="bg-sky-600 text-white px-4 py-1.5 rounded-full text-xs font-semibold shadow-lg">
                   Ahorra 18%
                 </div>
               </div>
-              <CardContent className="px-4">
-                <div className="text-center mb-6">
-                  <h3 className="text-lg font-semibold tracking-heading mb-2">
+              <CardContent className="p-8 flex flex-col flex-1 pt-12">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl font-semibold tracking-heading mb-3">
                     Instructor Anual
                   </h3>
-                  <div className="text-3xl font-semibold tracking-heading mb-1">
-                    $49
-                    <span className="text-lg text-zinc-600 dark:text-zinc-200 font-normal">
+                  <div className="mb-2">
+                    <span className="text-5xl font-bold tracking-tight">
+                      $49
+                    </span>
+                    <span className="text-xl text-muted-foreground font-normal ml-1">
                       /año
                     </span>
                   </div>
-                  <p className="text-muted-foreground text-xs">
+                  <p className="text-sm text-muted-foreground mt-2">
                     Paga una vez y olvídate todo el año
                   </p>
                 </div>
-                <ul className="space-y-3 mb-6">
-                  <li className="flex items-center text-xs">
+                <ul className="space-y-4 mb-8 flex-1">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
+                      className="w-5 h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Todo lo del plan Instructor</span>
+                    <span className="text-sm leading-relaxed">
+                      Todo lo del plan Instructor
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
+                      className="w-5 h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Soporte prioritario</span>
+                    <span className="text-sm leading-relaxed">
+                      Soporte prioritario
+                    </span>
                   </li>
-                  <li className="flex items-center text-xs">
+                  <li className="flex items-start gap-3">
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="w-4 h-4 mr-3 text-sky-600 dark:text-sky-300 flex-shrink-0"
+                      className="w-5 h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                     />
-                    <span>Acceso anticipado a nuevas funciones</span>
+                    <span className="text-sm leading-relaxed">
+                      Acceso anticipado a nuevas funciones
+                    </span>
                   </li>
                 </ul>
                 <Button
                   variant="default"
-                  className="text-xs w-full text-white bg-sky-600 hover:bg-sky-600/90 backdrop-blur-sm transition-colors shadow-sm hover:shadow-md"
+                  className="w-full text-sm py-3 text-white bg-sky-600 hover:bg-sky-700 transition-colors shadow-lg"
                   asChild
                 >
                   <Link href="/dashboard/profile/payment">Elegir anual</Link>

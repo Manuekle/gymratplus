@@ -1,15 +1,44 @@
-"use client";
-
+import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import "./globals.css";
-import { Analytics } from "@vercel/analytics/react";
-import { ThemeProvider } from "@/components/layout/theme/theme-provider";
-import { AuthProvider } from "@/providers/auth-provider";
-import RedisInitializer from "@/components/init/redis-initializer";
-import { motion, AnimatePresence } from "framer-motion";
-import { StreakAlertProvider } from "@/providers/streak-alert-provider";
-import { NotificationsProvider } from "@/providers/notifications-provider";
+import { generateMetadata as generateSEOMetadata } from "@/lib/seo/seo";
+import ClientLayout from "./client-layout";
+
+// Metadata SEO para la página principal y por defecto
+export const metadata: Metadata = generateSEOMetadata({
+  title: "GymRat+ - Plataforma Inteligente de Fitness",
+  description:
+    "La plataforma inteligente que conecta entrenadores y atletas para experiencias de entrenamiento personalizadas. Planes de nutrición inteligentes, seguimiento avanzado y coaching profesional en un solo lugar.",
+  keywords: [
+    "fitness",
+    "entrenamiento personalizado",
+    "nutrición inteligente",
+    "coaching profesional",
+    "entrenadores",
+    "atletas",
+    "planes de entrenamiento",
+    "seguimiento de progreso",
+    "app fitness",
+    "gymrat",
+    "rutinas de ejercicio",
+    "macronutrientes",
+    "calorías",
+    "analíticas fitness",
+  ],
+  openGraph: {
+    title: "GymRat+ - Transforma tu cuerpo, transforma tu vida",
+    description:
+      "Plataforma inteligente de fitness con planes de entrenamiento personalizados, nutrición inteligente y coaching profesional.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "GymRat+ - Plataforma Inteligente de Fitness",
+    description:
+      "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
+  },
+});
 
 export default function RootLayout({
   children,
@@ -23,41 +52,8 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background antialiased">
-        <ClientProviders>
-          {children}
-          <Analytics />
-        </ClientProviders>
+        <ClientLayout>{children}</ClientLayout>
       </body>
     </html>
-  );
-}
-
-function ClientProviders({ children }: { children: React.ReactNode }) {
-  return (
-    <ThemeProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-    >
-      <AuthProvider>
-        <RedisInitializer />
-        <StreakAlertProvider>
-          <NotificationsProvider>
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="min-h-screen flex flex-col"
-              >
-                {children}
-              </motion.div>
-            </AnimatePresence>
-          </NotificationsProvider>
-        </StreakAlertProvider>
-      </AuthProvider>
-    </ThemeProvider>
   );
 }

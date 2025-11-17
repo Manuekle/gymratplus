@@ -178,7 +178,7 @@ export default function QRCodePage() {
             {/* QR Code */}
             {qrUrl && (
               <div className="flex flex-col items-center gap-4">
-                <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+                <div className="p-4 bg-white rounded-lg border border-gray-200">
                   <QRCodeCanvas
                     value={qrUrl}
                     size={256}
