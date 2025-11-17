@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { format, isToday } from "date-fns";
+import { format, isToday, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
 
@@ -16,6 +16,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import {
   Activity02Icon,
+  EyeIcon,
   FireIcon,
   Note05Icon,
   Calendar01Icon,
@@ -380,11 +381,26 @@ export default function StudentDetailPage() {
                   <span className="text-muted-foreground">Último</span>
                   <span className="font-semibold text-xs">
                     {student.lastWorkoutAt
-                      ? isToday(new Date(student.lastWorkoutAt))
-                        ? "Hoy"
-                        : format(new Date(student.lastWorkoutAt), "d MMM", {
-                            locale: es,
-                          })
+                      ? (() => {
+                          const lastWorkoutDate = new Date(
+                            student.lastWorkoutAt,
+                          );
+                          lastWorkoutDate.setHours(0, 0, 0, 0);
+                          const today = new Date();
+                          today.setHours(0, 0, 0, 0);
+                          const daysDiff = differenceInDays(
+                            today,
+                            lastWorkoutDate,
+                          );
+
+                          if (daysDiff === 0) {
+                            return "Hoy";
+                          } else if (daysDiff === 1) {
+                            return "Ayer";
+                          } else {
+                            return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                          }
+                        })()
                       : "N/A"}
                   </span>
                 </div>
@@ -631,12 +647,15 @@ export default function StudentDetailPage() {
                     return (
                       <div
                         key={plan.id}
-                        className="group relative p-4 border rounded-xl hover:shadow-md transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
+                        onClick={() =>
+                          router.push(`/dashboard/nutrition/plan/${plan.id}`)
+                        }
+                        className="group relative p-4 border rounded-xl hover:shadow-md transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden cursor-pointer"
                       >
                         <div className="flex flex-col h-full">
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="text-lg tracking-heading font-semibold pr-2">
-                              Plan de Alimentación
+                              {plan.name || "Plan de Alimentación"}
                             </h3>
                             <Badge variant="secondary" className="text-xs">
                               {format(new Date(plan.createdAt), "d MMM yyyy", {
@@ -696,6 +715,16 @@ export default function StudentDetailPage() {
                                 </p>
                               </div>
                             )}
+
+                            <div className="pt-2 border-t mt-2">
+                              <div className="flex items-center gap-1.5 text-primary text-xs font-medium group-hover:underline">
+                                <HugeiconsIcon
+                                  icon={EyeIcon}
+                                  className="h-3.5 w-3.5"
+                                />
+                                Ver detalles del plan
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>

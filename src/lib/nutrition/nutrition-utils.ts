@@ -452,17 +452,18 @@ async function createMealLog(
       baseQuantity *= 0.5;
     }
 
+    // Calcular cantidad en gramos basada en el serving del alimento
     const quantityInGrams = (food.serving || 100) * baseQuantity;
-    const quantityRatio = quantityInGrams / 100;
 
-    totalCalories += food.calories * quantityRatio;
-    totalProtein += food.protein * quantityRatio;
-    totalCarbs += food.carbs * quantityRatio;
-    totalFat += food.fat * quantityRatio;
+    totalCalories += food.calories * (quantityInGrams / 100);
+    totalProtein += food.protein * (quantityInGrams / 100);
+    totalCarbs += food.carbs * (quantityInGrams / 100);
+    totalFat += food.fat * (quantityInGrams / 100);
 
+    // Guardar quantity en gramos (no como ratio)
     mealEntries.push({
       foodId: food.id.toString(),
-      quantity: quantityRatio,
+      quantity: quantityInGrams,
     });
   }
 
@@ -1097,21 +1098,18 @@ async function createMealLogWithTargets(
     const quantityRatio = bestIndividual[i] || 0;
     if (quantityRatio <= 0.01) continue; // Ignorar cantidades muy pequeñas
 
-    // Convertir quantityRatio (relativo a 100g) a porciones (servings)
+    // Convertir quantityRatio (relativo a 100g) a gramos
     // quantityRatio * 100g = gramos totales
-    // gramos totales / serving = número de porciones
-    const servingSize = food.serving || 100;
-    const servingRatio = (quantityRatio * 100) / servingSize;
+    const quantityInGrams = quantityRatio * 100;
 
     mealEntries.push({
       foodId: food.id.toString(),
-      quantity: servingRatio, // En porciones (servings)
+      quantity: quantityInGrams, // En gramos (estandarizado)
     });
 
-    // Calcular macros usando la misma fórmula que el frontend:
-    // macros = food.macro * quantity * (serving / 100)
-    // donde quantity está en porciones
-    const multiplier = servingRatio * (servingSize / 100);
+    // Calcular macros: los valores nutricionales están por 100g
+    // multiplier = quantityInGrams / 100
+    const multiplier = quantityInGrams / 100;
     totalProtein += (food.protein || 0) * multiplier;
     totalCarbs += (food.carbs || 0) * multiplier;
     totalFat += (food.fat || 0) * multiplier;
@@ -1215,8 +1213,8 @@ async function createMealLogWithTargets(
     );
     if (food && food.name) {
       const servingSize = food.serving || 100;
-      const quantityInGrams = entry.quantity * servingSize; // quantity está en porciones
-      const multiplier = entry.quantity * (servingSize / 100);
+      // quantity está en gramos (estandarizado)
+      const multiplier = entry.quantity / 100;
       const proteinFromFood = (food.protein || 0) * multiplier;
       const carbsFromFood = (food.carbs || 0) * multiplier;
       const fatFromFood = (food.fat || 0) * multiplier;
@@ -1224,10 +1222,10 @@ async function createMealLogWithTargets(
 
       console.log(`      ${idx + 1}. ${food.name}:`);
       console.log(
-        `         └─ Cantidad: ${entry.quantity.toFixed(3)} porciones (${quantityInGrams.toFixed(1)}g, serving=${servingSize}g)`,
+        `         └─ Cantidad: ${entry.quantity.toFixed(1)}g (serving=${servingSize}g)`,
       );
       console.log(
-        `         └─ Multiplicador: ${multiplier.toFixed(3)} (quantity * serving/100)`,
+        `         └─ Multiplicador: ${multiplier.toFixed(3)} (quantity / 100)`,
       );
       console.log(
         `         └─ Macros: P=${proteinFromFood.toFixed(1)}g, C=${carbsFromFood.toFixed(1)}g, F=${fatFromFood.toFixed(1)}g, Cal=${caloriesFromFood.toFixed(0)}kcal`,
@@ -1252,7 +1250,8 @@ async function createMealLogWithTargets(
     );
     if (food) {
       const servingSize = food.serving || 100;
-      const multiplier = entry.quantity * (servingSize / 100);
+      // quantity está en gramos (estandarizado)
+      const multiplier = entry.quantity / 100;
       sumProtein += (food.protein || 0) * multiplier;
       sumCarbs += (food.carbs || 0) * multiplier;
       sumFat += (food.fat || 0) * multiplier;
@@ -1357,7 +1356,8 @@ async function createMealLogWithTargets(
     );
     if (food) {
       const servingSize = food.serving || 100;
-      const multiplier = entry.quantity * (servingSize / 100);
+      // quantity está en gramos (estandarizado)
+      const multiplier = entry.quantity / 100;
       verificationProtein += (food.protein || 0) * multiplier;
       verificationCarbs += (food.carbs || 0) * multiplier;
       verificationFat += (food.fat || 0) * multiplier;

@@ -154,9 +154,9 @@ export default function NutritionSummary() {
 
   return (
     <div className="p-4 md:p-6 rounded-lg border bg-card">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
         <div>
-          <h2 className="text-2xl font-semibold tracking-heading">
+          <h2 className="text-xl sm:text-2xl font-semibold tracking-heading">
             Resumen Nutricional
           </h2>
           <p className="text-xs text-muted-foreground mt-1">Consumo de hoy</p>

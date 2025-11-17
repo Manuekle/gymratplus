@@ -4,10 +4,17 @@ import { useState, useEffect } from "react";
 
 import { es } from "date-fns/locale";
 import { Skeleton } from "../ui/skeleton";
-import { formatDistanceToNow } from "date-fns";
+import {
+  formatDistanceToNow,
+  differenceInDays,
+  isToday,
+  isYesterday,
+} from "date-fns";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon, Clock01Icon } from "@hugeicons/core-free-icons";
+import { EmptyState } from "@/components/ui/empty-state";
+import { WorkoutReminderAlert } from "@/components/workout/workout-reminder-alert";
 
 interface Exercise {
   // Define the exercise properties as needed, for example:
@@ -27,22 +34,30 @@ interface WorkoutSession {
 export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
   const [workoutSessions, setWorkoutSessions] = useState<WorkoutSession[]>([]);
+  const [lastWorkoutDate, setLastWorkoutDate] = useState<Date | null>(null);
+
+  const fetchWorkoutHistory = async () => {
+    try {
+      const response = await fetch("/api/workout-session/history");
+      if (response.ok) {
+        const data = await response.json();
+        setWorkoutSessions(data);
+        // Obtener la fecha del último entrenamiento
+        if (data && data.length > 0) {
+          const lastSession = data[0];
+          setLastWorkoutDate(new Date(lastSession.date));
+        } else {
+          setLastWorkoutDate(null);
+        }
+      }
+    } catch (error) {
+      console.error("Error al cargar el historial de entrenamientos:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchWorkoutHistory = async () => {
-      try {
-        const response = await fetch("/api/workout-session/history");
-        if (response.ok) {
-          const data = await response.json();
-          setWorkoutSessions(data);
-        }
-      } catch (error) {
-        console.error("Error al cargar el historial de entrenamientos:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchWorkoutHistory();
   }, []);
 
@@ -65,6 +80,17 @@ export default function WorkoutSummary() {
           />
         </Link>
       </div>
+
+      {/* Alerta de recordatorio si no ha entrenado en varios días */}
+      {!loading && (
+        <WorkoutReminderAlert
+          lastWorkoutAt={lastWorkoutDate}
+          onRestDayMarked={() => {
+            // Refrescar los datos después de marcar un día de descanso
+            fetchWorkoutHistory();
+          }}
+        />
+      )}
 
       {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="border p-4 rounded-lg">
@@ -118,27 +144,37 @@ export default function WorkoutSummary() {
             ))}
           </div>
         ) : workoutSessions.length === 0 ? (
-          <div className="justify-center py-16 items-center flex flex-col">
-            <h2 className="text-xs font-medium">
-              No hay entrenamientos recientes.
-            </h2>
-            <p className="text-muted-foreground text-xs">
-              Inicia un nuevo entrenamiento para ver tu historial aquí.
-            </p>
-          </div>
+          <EmptyState
+            title="No hay entrenamientos recientes"
+            description="Inicia un nuevo entrenamiento para ver tu historial aquí."
+            action={{
+              label: "Iniciar entrenamiento",
+              href: "/dashboard/workout/active",
+            }}
+          />
         ) : (
           workoutSessions.slice(0, 2).map((session) => (
-            <div key={session.id} className="p-3 border rounded-lg">
-              <div className="flex justify-between">
-                <h4 className="font-semibold  tracking-heading text-lg">
-                  {" "}
+            <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                <h4 className="font-semibold tracking-heading text-base sm:text-lg">
                   {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                 </h4>
-                <span className="text-xs text-muted-foreground">
-                  {formatDistanceToNow(new Date(session.date), {
-                    addSuffix: true,
-                    locale: es,
-                  })}
+                <span className="text-xs text-muted-foreground sm:text-right">
+                  {(() => {
+                    const sessionDate = new Date(session.date);
+                    sessionDate.setHours(0, 0, 0, 0);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    const daysDiff = differenceInDays(today, sessionDate);
+
+                    if (daysDiff === 0) {
+                      return "Hoy";
+                    } else if (daysDiff === 1) {
+                      return "Ayer";
+                    } else {
+                      return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                    }
+                  })()}
                 </span>
               </div>
               <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">

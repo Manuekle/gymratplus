@@ -85,6 +85,7 @@ export default function CreateMealPlanPage() {
   const studentRelationId = params?.id as string;
 
   const [student, setStudent] = useState<StudentDetail | null>(null);
+  const [planName, setPlanName] = useState("");
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -381,10 +382,15 @@ export default function CreateMealPlanPage() {
                 validEntries++;
                 const servingSize = food.serving || 100;
 
-                // Redondear la cantidad a 2 decimales máximo cuando se genera automáticamente
-                // Esto evita decimales muy largos como 0.606586956657336
+                // entry.quantity viene en gramos desde la base de datos
+                // Necesitamos convertirlo a servings para el frontend
+                // servings = gramos / servingSize
+                const quantityInGrams = entry.quantity || 0;
+                const quantityInServings = quantityInGrams / servingSize;
+
+                // Redondear la cantidad a 2 decimales máximo
                 const roundedQuantity =
-                  Math.round((entry.quantity || 1) * 100) / 100;
+                  Math.round(quantityInServings * 100) / 100;
 
                 const multiplier = roundedQuantity * (servingSize / 100);
                 const calculatedProtein = (food.protein || 0) * multiplier;
@@ -410,7 +416,7 @@ export default function CreateMealPlanPage() {
                     `         └─ ¿Coinciden?: ${String(entry.foodId) === String(food.id)}`,
                   );
                   console.log(
-                    `         └─ quantity recibido: ${entry.quantity}, quantity redondeado: ${roundedQuantity}, serving: ${servingSize}g`,
+                    `         └─ quantity recibido (gramos): ${entry.quantity}, quantity en servings: ${quantityInServings.toFixed(3)}, quantity redondeado: ${roundedQuantity}, serving: ${servingSize}g`,
                   );
                   console.log(
                     `         └─ multiplier: ${multiplier.toFixed(3)}`,
@@ -735,6 +741,16 @@ export default function CreateMealPlanPage() {
     );
   };
 
+  // Helper para redondear los totales de una comida antes de enviarlos
+  const roundMealTotals = (totals: ReturnType<typeof calculateMealTotals>) => {
+    return {
+      totalCalories: Math.round(totals.calories),
+      totalProtein: Math.round(totals.protein * 10) / 10, // Redondear a 1 decimal
+      totalCarbs: Math.round(totals.carbs * 10) / 10,
+      totalFat: Math.round(totals.fat * 10) / 10,
+    };
+  };
+
   const calculateDailyTotals = () => {
     const breakfast = calculateMealTotals(mealPlan.breakfast);
     const lunch = calculateMealTotals(mealPlan.lunch);
@@ -801,11 +817,23 @@ export default function CreateMealPlanPage() {
 
     setIsSubmitting(true);
     try {
+      const breakfastTotals = calculateMealTotals(mealPlan.breakfast);
+      const lunchTotals = calculateMealTotals(mealPlan.lunch);
+      const dinnerTotals = calculateMealTotals(mealPlan.dinner);
+      const snacksTotals = calculateMealTotals(mealPlan.snacks);
+
+      // Convertir quantity de servings a gramos antes de guardar
+      const convertToGrams = (item: SelectedFood) => {
+        const servingSize = item.food.serving || 100;
+        // quantity está en servings, convertir a gramos
+        return item.quantity * servingSize;
+      };
+
       const meals = {
         breakfast: {
           entries: mealPlan.breakfast.map((item) => ({
             foodId: item.foodId,
-            quantity: item.quantity,
+            quantity: convertToGrams(item), // Convertir a gramos
             food: {
               id: item.food.id,
               name: item.food.name,
@@ -818,12 +846,12 @@ export default function CreateMealPlanPage() {
               servingUnit: item.food.servingUnit,
             },
           })),
-          ...calculateMealTotals(mealPlan.breakfast),
+          ...roundMealTotals(breakfastTotals),
         },
         lunch: {
           entries: mealPlan.lunch.map((item) => ({
             foodId: item.foodId,
-            quantity: item.quantity,
+            quantity: convertToGrams(item), // Convertir a gramos
             food: {
               id: item.food.id,
               name: item.food.name,
@@ -836,12 +864,12 @@ export default function CreateMealPlanPage() {
               servingUnit: item.food.servingUnit,
             },
           })),
-          ...calculateMealTotals(mealPlan.lunch),
+          ...roundMealTotals(lunchTotals),
         },
         dinner: {
           entries: mealPlan.dinner.map((item) => ({
             foodId: item.foodId,
-            quantity: item.quantity,
+            quantity: convertToGrams(item), // Convertir a gramos
             food: {
               id: item.food.id,
               name: item.food.name,
@@ -854,12 +882,12 @@ export default function CreateMealPlanPage() {
               servingUnit: item.food.servingUnit,
             },
           })),
-          ...calculateMealTotals(mealPlan.dinner),
+          ...roundMealTotals(dinnerTotals),
         },
         snacks: {
           entries: mealPlan.snacks.map((item) => ({
             foodId: item.foodId,
-            quantity: item.quantity,
+            quantity: convertToGrams(item), // Convertir a gramos
             food: {
               id: item.food.id,
               name: item.food.name,
@@ -872,7 +900,7 @@ export default function CreateMealPlanPage() {
               servingUnit: item.food.servingUnit,
             },
           })),
-          ...calculateMealTotals(mealPlan.snacks),
+          ...roundMealTotals(snacksTotals),
         },
       };
 
@@ -896,6 +924,7 @@ export default function CreateMealPlanPage() {
         },
         body: JSON.stringify({
           studentId: student.studentId,
+          name: planName.trim() || undefined, // Nombre personalizado del plan
           meals,
           macros,
           calorieTarget: Math.round(dailyTotals.calories),
@@ -2047,14 +2076,44 @@ export default function CreateMealPlanPage() {
                               </div>
                             </div>
 
-                            <div className="space-y-2 mb-4">
-                              <Textarea
-                                placeholder="Notas (opcional)..."
-                                value={notes}
-                                onChange={(e) => setNotes(e.target.value)}
-                                className="min-h-[60px] resize-none text-xs"
-                                disabled={isSubmitting}
-                              />
+                            <div className="space-y-4 mb-4">
+                              <div className="space-y-2">
+                                <label
+                                  htmlFor="planName"
+                                  className="text-xs font-semibold text-foreground"
+                                >
+                                  Nombre del Plan (opcional)
+                                </label>
+                                <Input
+                                  id="planName"
+                                  placeholder="Ej: Plan de Volumen, Plan de Definición..."
+                                  value={planName}
+                                  onChange={(e) => setPlanName(e.target.value)}
+                                  className="text-xs"
+                                  disabled={isSubmitting}
+                                  maxLength={100}
+                                />
+                                <p className="text-xs text-muted-foreground">
+                                  Si no especificas un nombre, se usará "Plan de
+                                  Alimentación"
+                                </p>
+                              </div>
+                              <div className="space-y-2">
+                                <label
+                                  htmlFor="notes"
+                                  className="text-xs font-semibold text-foreground"
+                                >
+                                  Notas (opcional)
+                                </label>
+                                <Textarea
+                                  id="notes"
+                                  placeholder="Agrega notas adicionales para el estudiante..."
+                                  value={notes}
+                                  onChange={(e) => setNotes(e.target.value)}
+                                  className="min-h-[60px] resize-none text-xs"
+                                  disabled={isSubmitting}
+                                />
+                              </div>
                             </div>
 
                             <Button

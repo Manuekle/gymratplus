@@ -19,6 +19,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { GlobeIcon, MapPinIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { StartChatButton } from "@/components/chats/start-chat-button";
+import { useCountries } from "@/hooks/use-countries";
 
 interface InstructorData {
   id: string;
@@ -41,7 +42,7 @@ interface InstructorData {
 export default function InstructorPage() {
   const [instructors, setInstructors] = useState<InstructorData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [countryFlags, setCountryFlags] = useState<Record<string, string>>({});
+  const { countries } = useCountries();
 
   const fetchInstructors = useCallback(async () => {
     setIsLoading(true);
@@ -52,35 +53,6 @@ export default function InstructorPage() {
       }
       const data: InstructorData[] = await response.json();
       setInstructors(data);
-
-      // Obtener banderas de los países únicos
-      const uniqueCountries = Array.from(
-        new Set(data.map((i) => i.country).filter(Boolean)),
-      ) as string[];
-
-      if (uniqueCountries.length > 0) {
-        const flags: Record<string, string> = {};
-        for (const c of uniqueCountries) {
-          try {
-            const flagResponse = await fetch(
-              `https://restcountries.com/v3.1/name/${c}`,
-            );
-            if (flagResponse.ok) {
-              const countryData = await flagResponse.json();
-              if (
-                countryData &&
-                countryData.length > 0 &&
-                countryData[0].flags?.svg
-              ) {
-                flags[c] = countryData[0].flags.svg;
-              }
-            }
-          } catch {
-            // Do nothing
-          }
-        }
-        setCountryFlags(flags);
-      }
     } catch (error: unknown) {
       let errorMessage = "Hubo un error al cargar tus instructores.";
       if (error instanceof Error) {
@@ -185,22 +157,42 @@ export default function InstructorPage() {
                       </CardTitle>
                       <CardDescription className="text-muted-foreground text-xs flex items-center gap-2 mt-1">
                         <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
-                        {instructor.city && instructor.country ? (
-                          <span className="flex items-center gap-1">
-                            {instructor.city}, {instructor.country}
-                            {instructor.country &&
-                              countryFlags[instructor.country] && (
-                                <Image
-                                  src={
-                                    countryFlags[instructor.country] ||
-                                    "/placeholder.svg"
-                                  }
-                                  alt={`Bandera de ${instructor.country}`}
-                                  width={48}
-                                  height={48}
-                                  className="w-4 h-3 object-cover rounded-sm shadow-sm"
-                                />
-                              )}
+                        {instructor.city || instructor.country ? (
+                          <span className="flex items-center gap-1.5">
+                            {(() => {
+                              // El país se guarda como código cca2 (ej: "US", "MX", "ES")
+                              const countryData = countries.find(
+                                (c) => c.cca2 === instructor.country,
+                              );
+
+                              return countryData ? (
+                                <span className="flex items-center gap-1">
+                                  <Image
+                                    src={
+                                      countryData.flags.svg ||
+                                      "/placeholder.svg"
+                                    }
+                                    alt={countryData.name.common}
+                                    width={14}
+                                    height={10}
+                                    className="w-3.5 h-2.5 object-cover rounded-sm"
+                                  />
+                                  <span>
+                                    {instructor.city
+                                      ? `${instructor.city}, `
+                                      : ""}
+                                    {countryData.name.common}
+                                  </span>
+                                </span>
+                              ) : (
+                                <span>
+                                  {instructor.city
+                                    ? `${instructor.city}${instructor.country ? ", " : ""}`
+                                    : ""}
+                                  {instructor.country || ""}
+                                </span>
+                              );
+                            })()}
                           </span>
                         ) : (
                           "Ubicación no especificada"

@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { createFoodRecommendationNormalized } from "@/lib/nutrition/food-recommendation-helpers";
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,8 +25,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { studentId, meals, macros, calorieTarget, notes } =
+    const { studentId, name, meals, macros, calorieTarget, notes } =
       await request.json();
+
+    // Validar que name sea string si está presente
+    const planName = name && typeof name === "string" ? name.trim() : undefined;
 
     if (!studentId) {
       return NextResponse.json(
@@ -76,34 +80,65 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Crear el plan de alimentación asignado al estudiante con los alimentos seleccionados
-    const foodRecommendation = await prisma.foodRecommendation.create({
-      data: {
-        userId: studentId, // El estudiante es el dueño del plan
-        instructorId: session.user.id, // El instructor que lo creó
-        assignedToId: studentId, // Asignado al estudiante
-        macros: JSON.stringify(macros),
-        meals: JSON.stringify(meals),
-        calorieTarget: Math.round(calorieTarget),
-        notes: notes || null,
-      },
-      select: {
-        id: true,
-        userId: true,
-        instructorId: true,
-        assignedToId: true,
-        date: true,
-        macros: true,
-        meals: true,
-        calorieTarget: true,
-        notes: true,
-        createdAt: true,
-        updatedAt: true,
+    // Extraer valores numéricos de macros si están en formato "224g (39%)"
+    let proteinTarget: number | undefined;
+    let carbsTarget: number | undefined;
+    let fatTarget: number | undefined;
+
+    if (macros.protein) {
+      const proteinMatch = String(macros.protein).match(/(\d+(?:\.\d+)?)/);
+      if (proteinMatch) {
+        proteinTarget = parseFloat(proteinMatch[1]);
+      }
+    }
+    if (macros.carbs) {
+      const carbsMatch = String(macros.carbs).match(/(\d+(?:\.\d+)?)/);
+      if (carbsMatch) {
+        carbsTarget = parseFloat(carbsMatch[1]);
+      }
+    }
+    if (macros.fat) {
+      const fatMatch = String(macros.fat).match(/(\d+(?:\.\d+)?)/);
+      if (fatMatch) {
+        fatTarget = parseFloat(fatMatch[1]);
+      }
+    }
+
+    // Crear el plan usando la nueva estructura normalizada
+    const foodRecommendation = await createFoodRecommendationNormalized({
+      userId: studentId,
+      instructorId: session.user.id,
+      assignedToId: studentId,
+      name: planName, // Nombre personalizado del plan
+      calorieTarget: Math.round(calorieTarget),
+      proteinTarget,
+      carbsTarget,
+      fatTarget,
+      description: macros.description,
+      notes: notes || undefined,
+      meals: {
+        breakfast: meals.breakfast,
+        lunch: meals.lunch,
+        dinner: meals.dinner,
+        snacks: meals.snacks,
       },
     });
 
-    return NextResponse.json(foodRecommendation);
-  } catch {
+    // Retornar en formato compatible
+    return NextResponse.json({
+      id: foodRecommendation.id,
+      userId: foodRecommendation.userId,
+      instructorId: foodRecommendation.instructorId,
+      assignedToId: foodRecommendation.assignedToId,
+      date: foodRecommendation.date,
+      name: foodRecommendation.name,
+      calorieTarget: foodRecommendation.calorieTarget,
+      notes: foodRecommendation.notes,
+      createdAt: foodRecommendation.createdAt,
+      updatedAt: foodRecommendation.updatedAt,
+    });
+  } catch (error) {
+    console.error("Error al crear el plan de alimentación:", error);
     return NextResponse.json(
       {
         error: "Error interno del servidor al crear el plan de alimentación",

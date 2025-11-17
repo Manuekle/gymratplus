@@ -22,6 +22,7 @@ import {
   Calendar01Icon,
 } from "@hugeicons/core-free-icons";
 import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export default function GoalProgress() {
   const [mounted, setMounted] = useState(false);
@@ -63,10 +64,12 @@ export default function GoalProgress() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold tracking-heading">
+        <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
           Progreso de Objetivos
         </CardTitle>
-        <CardDescription>Objetivos activos en progreso</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          Objetivos activos en progreso
+        </CardDescription>
         <CardAction>
           <Link
             href="/dashboard/health"
@@ -82,37 +85,31 @@ export default function GoalProgress() {
       </CardHeader>
 
       <CardContent className="px-4 flex-1 flex flex-col">
-        <div className="space-y-3 flex-1">
-          {isLoading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 2 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-4 w-12" />
-                  </div>
-                  <Skeleton className="h-2 w-full" />
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-12" />
                 </div>
-              ))}
-            </div>
-          ) : displayGoals.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
-              <p className="text-xs text-muted-foreground mb-3">
-                No hay objetivos activos
-              </p>
-              <Link
-                href="/dashboard/health/goal"
-                className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-              >
-                Crear objetivo
-                <HugeiconsIcon
-                  icon={ArrowRight01Icon}
-                  className="h-3.5 w-3.5"
-                />
-              </Link>
-            </div>
-          ) : (
-            displayGoals.map((goal, index) => {
+                <Skeleton className="h-2 w-full" />
+              </div>
+            ))}
+          </div>
+        ) : displayGoals.length === 0 ? (
+          <EmptyState
+            title="No hay objetivos activos"
+            description="Crea un objetivo para comenzar a hacer seguimiento de tu progreso."
+            action={{
+              label: "Crear objetivo",
+              href: "/dashboard/health/goal",
+            }}
+            className="flex-1 h-full"
+          />
+        ) : (
+          <div className="space-y-3 flex-1">
+            {displayGoals.map((goal, index) => {
               const progressValue = goal.progress || 0;
               const Icon = getGoalTypeIcon(goal.type as GoalType);
 
@@ -124,13 +121,13 @@ export default function GoalProgress() {
                   transition={{ delay: index * 0.1, duration: 0.2 }}
                   className="p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
-                  <div className="flex items-start justify-between mb-2">
+                  <div className="flex items-start justify-between mb-2 gap-2">
                     <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="p-1.5 rounded bg-muted flex-shrink-0">
                         <HugeiconsIcon icon={Icon} className="h-3.5 w-3.5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xs font-semibold truncate">
+                        <h3 className="text-xs sm:text-sm font-semibold truncate">
                           {goal.title}
                         </h3>
                       </div>
@@ -140,7 +137,7 @@ export default function GoalProgress() {
                     </span>
                   </div>
                   <Progress value={progressValue} className="h-1.5 mb-2" />
-                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
                     <span>
                       {goal.currentValue} {goal.unit}
                     </span>
@@ -150,20 +147,20 @@ export default function GoalProgress() {
                   </div>
                 </motion.div>
               );
-            })
-          )}
+            })}
 
-          {!isLoading && goals.length > 3 && (
-            <Link
-              href="/dashboard/health/goals"
-              className="block text-center pt-2 group"
-            >
-              <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
-                Ver todos los objetivos ({goals.length})
-              </span>
-            </Link>
-          )}
-        </div>
+            {!isLoading && goals.length > 3 && (
+              <Link
+                href="/dashboard/health/goals"
+                className="block text-center pt-2 group"
+              >
+                <span className="text-xs font-medium text-muted-foreground group-hover:text-foreground transition-colors">
+                  Ver todos los objetivos ({goals.length})
+                </span>
+              </Link>
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

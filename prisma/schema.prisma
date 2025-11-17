@@ -201,6 +201,7 @@ model Food {
   userId           String?
   RecipeIngredient RecipeIngredient[]
   MealLog          MealLog[]
+  MealPlanEntry    MealPlanEntry[]
 }
 
 // Nuevo modelo Recipe
@@ -431,16 +432,61 @@ model FoodRecommendation {
   assignedToId  String?
   assignedTo    User?    @relation("FoodRecommendationAssigned", fields: [assignedToId], references: [id])
   date          DateTime @default(now())
-  macros        Json // Stores protein, carbs, fat, description
-  meals         Json // Stores breakfast, lunch, dinner, snacks with their entries
+  
+  // Campos normalizados
+  name          String?  // Nombre personalizado del plan (ej: "Plan de Volumen", "Plan de Definición")
   calorieTarget Int
-  notes         String? // Notas del instructor
+  proteinTarget Float?   // en gramos
+  carbsTarget   Float?   // en gramos
+  fatTarget     Float?   // en gramos
+  description   String?  @db.Text // Descripción del plan
+  
+  notes         String?  @db.Text // Notas del instructor
+  
+  // Relaciones con nuevas tablas
+  mealPlanMeals MealPlanMeal[]
+  
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   @@index([userId])
   @@index([instructorId])
   @@index([assignedToId])
+}
+
+model MealPlanMeal {
+  id                  String              @id @default(cuid())
+  foodRecommendationId String
+  foodRecommendation   FoodRecommendation @relation(fields: [foodRecommendationId], references: [id], onDelete: Cascade)
+  mealType            String              // "breakfast", "lunch", "dinner", "snacks"
+  order               Int?                @default(0) // Para ordenar las comidas si es necesario
+  
+  // Relaciones
+  entries             MealPlanEntry[]
+  
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  @@index([foodRecommendationId])
+  @@index([mealType])
+}
+
+model MealPlanEntry {
+  id            String        @id @default(cuid())
+  mealPlanMealId String
+  mealPlanMeal   MealPlanMeal @relation(fields: [mealPlanMealId], references: [id], onDelete: Cascade)
+  foodId        String
+  food          Food          @relation(fields: [foodId], references: [id], onDelete: Restrict) // Restrict para evitar eliminar alimentos usados
+  quantity      Float         // Cantidad en unidades de serving del alimento
+  
+  // Orden dentro de la comida (opcional)
+  order         Int?          @default(0)
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([mealPlanMealId])
+  @@index([foodId])
 }
 
 model FoodPlan {

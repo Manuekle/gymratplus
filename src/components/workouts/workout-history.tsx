@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CardTitle, CardDescription } from "@/components/ui/card";
-import { formatDistanceToNow } from "date-fns";
+import { differenceInDays, isToday, isYesterday } from "date-fns";
 import { es } from "date-fns/locale";
 
 import Link from "next/link";
@@ -133,10 +133,21 @@ export default function WorkoutSummary() {
                     {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                   </h4>
                   <span className="text-xs text-muted-foreground">
-                    {formatDistanceToNow(new Date(session.date), {
-                      addSuffix: true,
-                      locale: es,
-                    })}
+                    {(() => {
+                      const sessionDate = new Date(session.date);
+                      sessionDate.setHours(0, 0, 0, 0);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const daysDiff = differenceInDays(today, sessionDate);
+
+                      if (daysDiff === 0) {
+                        return "Hoy";
+                      } else if (daysDiff === 1) {
+                        return "Ayer";
+                      } else {
+                        return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                      }
+                    })()}
                   </span>
                 </div>
                 <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">

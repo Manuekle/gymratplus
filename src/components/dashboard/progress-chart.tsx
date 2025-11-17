@@ -44,6 +44,7 @@ import { ProgressRecord } from "@/types/progress"; // Import the type definition
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon } from "@hugeicons/core-free-icons";
+import { EmptyState } from "@/components/ui/empty-state";
 
 // Tipos para los períodos de tiempo
 type TimePeriod = "all" | "week" | "month" | "year";
@@ -274,10 +275,12 @@ export default function ProgressChart({
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-2xl font-semibold tracking-heading">
+        <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
           Seguimiento de Progreso
         </CardTitle>
-        <CardDescription>Gráfico de evolución física</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          Gráfico de evolución física
+        </CardDescription>
         <CardAction>
           <Link
             href="/dashboard/health"
@@ -371,23 +374,17 @@ export default function ProgressChart({
               </button>
             </div>
           ) : chartData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-2">
-              <h3 className="text-xs font-medium">No hay datos disponibles</h3>
-              <p className="text-xs text-muted-foreground text-center max-w-sm">
-                Asegúrate de establecer un objetivo para hacer seguimiento de tu
-                progreso.
-              </p>
-            </div>
+            <EmptyState
+              title="No hay datos disponibles"
+              description="Asegúrate de establecer un objetivo para hacer seguimiento de tu progreso."
+              className="h-full"
+            />
           ) : filteredData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-full gap-2">
-              <h3 className="text-xs font-medium">
-                No hay datos para el período seleccionado
-              </h3>
-              <p className="text-xs text-muted-foreground text-center max-w-sm">
-                Intenta seleccionar un rango de fechas diferente para ver tu
-                progreso.
-              </p>
-            </div>
+            <EmptyState
+              title="No hay datos para el período seleccionado"
+              description="Intenta seleccionar un rango de fechas diferente para ver tu progreso."
+              className="h-full"
+            />
           ) : (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart

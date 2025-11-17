@@ -2,11 +2,16 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { toast } from "sonner";
@@ -15,8 +20,12 @@ import {
   ArrowLeft01Icon,
   Calendar01Icon,
   FireIcon,
-  Target01Icon,
   Note05Icon,
+  Apple01Icon,
+  NoodlesIcon,
+  RiceBowl01Icon,
+  FrenchFries02Icon,
+  SteakIcon,
 } from "@hugeicons/core-free-icons";
 import {
   Table,
@@ -26,9 +35,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface FoodPlan {
   id: string;
+  name?: string | null;
   calorieTarget: number;
   macros: {
     protein?: number;
@@ -283,12 +294,48 @@ export default function FoodPlanViewPage() {
     );
   }
 
-  const mealTypes = [
-    { key: "breakfast", label: "Desayuno", meals: foodPlan.meals.breakfast },
-    { key: "lunch", label: "Almuerzo", meals: foodPlan.meals.lunch },
-    { key: "dinner", label: "Cena", meals: foodPlan.meals.dinner },
-    { key: "snacks", label: "Snacks", meals: foodPlan.meals.snacks },
-  ].filter((meal) => meal.meals && meal.meals.entries?.length > 0);
+  const mealTypesConfig = {
+    breakfast: {
+      label: "Desayuno",
+      icon: (
+        <HugeiconsIcon
+          icon={Apple01Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
+    },
+    lunch: {
+      label: "Almuerzo",
+      icon: (
+        <HugeiconsIcon
+          icon={NoodlesIcon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
+    },
+    dinner: {
+      label: "Cena",
+      icon: (
+        <HugeiconsIcon
+          icon={RiceBowl01Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
+    },
+    snacks: {
+      label: "Snacks",
+      icon: (
+        <HugeiconsIcon
+          icon={FrenchFries02Icon}
+          size={12}
+          className="text-muted-foreground"
+        />
+      ),
+    },
+  };
 
   return (
     <div className="space-y-6">
@@ -311,7 +358,7 @@ export default function FoodPlanViewPage() {
           <div className="flex items-start justify-between">
             <div className="space-y-1">
               <CardTitle className="text-2xl tracking-heading font-semibold">
-                Plan de Alimentación
+                {foodPlan.name || "Plan de Alimentación"}
               </CardTitle>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <HugeiconsIcon icon={Calendar01Icon} className="h-3.5 w-3.5" />
@@ -325,65 +372,109 @@ export default function FoodPlanViewPage() {
           </div>
         </CardHeader>
         <CardContent className="px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            <div className="flex flex-col p-3 rounded-lg bg-muted/50">
-              <span className="text-xs text-muted-foreground mb-1">
-                Calorías objetivo
-              </span>
-              <div className="flex items-center gap-1.5">
-                <HugeiconsIcon
-                  icon={FireIcon}
-                  className="h-3.5 w-3.5 text-muted-foreground"
-                />
-                <span className="text-xs font-semibold">
-                  {foodPlan.calorieTarget} kcal
-                </span>
-              </div>
-            </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {/* Calorías */}
+            <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-900 dark:to-gray-800">
+              <CardContent className="px-4 py-3">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h1 className="text-xs text-muted-foreground">
+                      Calorías objetivo
+                    </h1>
+                    <h2 className="text-md font-medium">
+                      {foodPlan.calorieTarget} kcal
+                    </h2>
+                  </div>
+                  <div className="h-12 w-12 rounded-full bg-orange-100 dark:bg-orange-800 flex items-center justify-center">
+                    <HugeiconsIcon
+                      icon={FireIcon}
+                      className="h-6 w-6 text-orange-600 dark:text-orange-300"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Proteínas */}
             {foodPlan.macros.protein && (
-              <div className="flex flex-col p-3 rounded-lg bg-muted/50">
-                <span className="text-xs text-muted-foreground mb-1">
-                  Proteína
-                </span>
-                <span className="text-xs font-semibold">
-                  {foodPlan.macros.protein}g
-                </span>
-              </div>
+              <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                <CardContent className="px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-xs text-muted-foreground">
+                        Proteínas
+                      </h1>
+                      <h2 className="text-md font-medium">
+                        {foodPlan.macros.protein}
+                      </h2>
+                    </div>
+                    <div className="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center">
+                      <HugeiconsIcon
+                        icon={SteakIcon}
+                        className="h-6 w-6 text-pink-600 dark:text-pink-300"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
+
+            {/* Carbohidratos */}
             {foodPlan.macros.carbs && (
-              <div className="flex flex-col p-3 rounded-lg bg-muted/50">
-                <span className="text-xs text-muted-foreground mb-1">
-                  Carbohidratos
-                </span>
-                <span className="text-xs font-semibold">
-                  {foodPlan.macros.carbs}g
-                </span>
-              </div>
+              <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                <CardContent className="px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-xs text-muted-foreground">
+                        Carbohidratos
+                      </h1>
+                      <h2 className="text-md font-medium">
+                        {foodPlan.macros.carbs}
+                      </h2>
+                    </div>
+                    <div className="h-12 w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center">
+                      <HugeiconsIcon
+                        icon={RiceBowl01Icon}
+                        className="h-6 w-6 text-sky-600 dark:text-sky-300"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
+
+            {/* Grasas */}
             {foodPlan.macros.fat && (
-              <div className="flex flex-col p-3 rounded-lg bg-muted/50">
-                <span className="text-xs text-muted-foreground mb-1">
-                  Grasas
-                </span>
-                <span className="text-xs font-semibold">
-                  {foodPlan.macros.fat}g
-                </span>
-              </div>
+              <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                <CardContent className="px-4 py-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h1 className="text-xs text-muted-foreground">Grasas</h1>
+                      <h2 className="text-md font-medium">
+                        {foodPlan.macros.fat}
+                      </h2>
+                    </div>
+                    <div className="h-12 w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center">
+                      <HugeiconsIcon
+                        icon={FrenchFries02Icon}
+                        className="h-6 w-6 text-amber-600 dark:text-amber-300"
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             )}
           </div>
 
           {foodPlan.notes && (
-            <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+            <div className="pt-3 border-t">
               <div className="flex items-start gap-2">
                 <HugeiconsIcon
                   icon={Note05Icon}
-                  className="h-4 w-4 text-primary mt-0.5 flex-shrink-0"
+                  className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0"
                 />
-                <div>
-                  <span className="text-xs font-semibold text-primary">
-                    Notas del instructor:
-                  </span>
-                  <p className="text-xs text-muted-foreground mt-1">
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
                     {foodPlan.notes}
                   </p>
                 </div>
@@ -393,116 +484,172 @@ export default function FoodPlanViewPage() {
         </CardContent>
       </Card>
 
-      {/* Meals */}
-      {mealTypes.length > 0 && (
-        <div className="space-y-4">
-          {mealTypes.map((mealType) => (
-            <Card key={mealType.key}>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-xl tracking-heading font-semibold">
-                    {mealType.label}
-                  </CardTitle>
-                  {mealType.meals?.totalCalories && (
-                    <Badge variant="secondary" className="text-xs">
-                      {mealType.meals.totalCalories} kcal
-                    </Badge>
-                  )}
-                </div>
-              </CardHeader>
-              <CardContent className="px-4">
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead className="text-xs">Alimento</TableHead>
-                        <TableHead className="text-xs text-center">
-                          Cantidad
-                        </TableHead>
-                        <TableHead className="text-xs text-center">
-                          Calorías
-                        </TableHead>
-                        <TableHead className="text-xs text-center">
-                          Proteína
-                        </TableHead>
-                        <TableHead className="text-xs text-center">
-                          Carbs
-                        </TableHead>
-                        <TableHead className="text-xs text-center">
-                          Grasas
-                        </TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {mealType.meals?.entries?.map((entry, idx) => {
-                        const food = entry.food;
-                        if (!food) return null;
+      {/* Meals con Tabs */}
+      {Object.keys(foodPlan.meals).length > 0 && (
+        <Card>
+          <CardContent className="px-4 pt-6">
+            <Tabs defaultValue="breakfast" className="w-full">
+              <TabsList className="grid grid-cols-4 w-full">
+                {foodPlan.meals.breakfast && (
+                  <TabsTrigger value="breakfast">
+                    {mealTypesConfig.breakfast.icon}{" "}
+                    {mealTypesConfig.breakfast.label}
+                  </TabsTrigger>
+                )}
+                {foodPlan.meals.lunch && (
+                  <TabsTrigger value="lunch">
+                    {mealTypesConfig.lunch.icon} {mealTypesConfig.lunch.label}
+                  </TabsTrigger>
+                )}
+                {foodPlan.meals.dinner && (
+                  <TabsTrigger value="dinner">
+                    {mealTypesConfig.dinner.icon} {mealTypesConfig.dinner.label}
+                  </TabsTrigger>
+                )}
+                {foodPlan.meals.snacks && (
+                  <TabsTrigger value="snacks">
+                    {mealTypesConfig.snacks.icon} {mealTypesConfig.snacks.label}
+                  </TabsTrigger>
+                )}
+              </TabsList>
 
-                        const multiplier = entry.quantity / food.serving;
-                        const calories = Math.round(food.calories * multiplier);
-                        const protein = Math.round(food.protein * multiplier);
-                        const carbs = Math.round(food.carbs * multiplier);
-                        const fat = Math.round(food.fat * multiplier);
+              {Object.entries(foodPlan.meals).map(([key, meal]) => {
+                if (!meal || !meal.entries || meal.entries.length === 0) {
+                  return null;
+                }
 
-                        return (
-                          <TableRow key={entry.foodId || idx}>
-                            <TableCell className="font-medium text-xs">
-                              {food.name}
-                            </TableCell>
-                            <TableCell className="text-center text-xs">
-                              {entry.quantity} {food.servingUnit}
-                            </TableCell>
-                            <TableCell className="text-center text-xs">
-                              {calories} kcal
-                            </TableCell>
-                            <TableCell className="text-center text-xs">
-                              {protein}g
-                            </TableCell>
-                            <TableCell className="text-center text-xs">
-                              {carbs}g
-                            </TableCell>
-                            <TableCell className="text-center text-xs">
-                              {fat}g
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </div>
-                {mealType.meals && (
-                  <div className="mt-3 pt-3 border-t">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-muted-foreground">Total:</span>
-                      <div className="flex gap-4">
-                        {mealType.meals.totalCalories && (
-                          <span className="font-semibold">
-                            {mealType.meals.totalCalories} kcal
-                          </span>
-                        )}
-                        {mealType.meals.totalProtein && (
-                          <span className="text-muted-foreground">
-                            P: {mealType.meals.totalProtein}g
-                          </span>
-                        )}
-                        {mealType.meals.totalCarbs && (
-                          <span className="text-muted-foreground">
-                            C: {mealType.meals.totalCarbs}g
-                          </span>
-                        )}
-                        {mealType.meals.totalFat && (
-                          <span className="text-muted-foreground">
-                            G: {mealType.meals.totalFat}g
-                          </span>
+                const tabValue = key === "snacks" ? "snacks" : key;
+                const mealTypeKey =
+                  key === "snacks"
+                    ? "snacks"
+                    : (key as keyof typeof mealTypesConfig);
+
+                // Formatear valores: mostrar 1 decimal si es < 10, 0 decimales si es >= 10
+                const formatValue = (value: number) => {
+                  if (value < 1) {
+                    return value.toFixed(2);
+                  } else if (value < 10) {
+                    return value.toFixed(1);
+                  } else {
+                    return Math.round(value).toString();
+                  }
+                };
+
+                return (
+                  <TabsContent key={key} value={tabValue}>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg tracking-heading font-semibold">
+                          {mealTypesConfig[mealTypeKey].label}
+                        </CardTitle>
+                        {meal.totalCalories && (
+                          <Badge variant="secondary" className="text-xs">
+                            {Math.round(meal.totalCalories)} kcal
+                          </Badge>
                         )}
                       </div>
+                      <CardDescription className="text-xs">
+                        {meal.totalCalories && (
+                          <>Calorías: {Math.round(meal.totalCalories)} | </>
+                        )}
+                        {meal.totalProtein && (
+                          <>
+                            Proteínas:{" "}
+                            {typeof meal.totalProtein === "number"
+                              ? meal.totalProtein.toFixed(1)
+                              : meal.totalProtein}
+                            g |{" "}
+                          </>
+                        )}
+                        {meal.totalCarbs && (
+                          <>
+                            Carbohidratos:{" "}
+                            {typeof meal.totalCarbs === "number"
+                              ? meal.totalCarbs.toFixed(1)
+                              : meal.totalCarbs}
+                            g |{" "}
+                          </>
+                        )}
+                        {meal.totalFat && (
+                          <>
+                            Grasas:{" "}
+                            {typeof meal.totalFat === "number"
+                              ? meal.totalFat.toFixed(1)
+                              : meal.totalFat}
+                            g
+                          </>
+                        )}
+                      </CardDescription>
+                      <div className="rounded-md border">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">
+                                Alimento
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Cantidad
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Calorías
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Proteína
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Carbs
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Grasas
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {meal.entries.map((entry, idx) => {
+                              const food = entry.food;
+                              if (!food) return null;
+
+                              // quantity está en gramos, calcular multiplier basado en 100g
+                              const multiplier = entry.quantity / 100;
+                              const calories = food.calories * multiplier;
+                              const protein = food.protein * multiplier;
+                              const carbs = food.carbs * multiplier;
+                              const fat = food.fat * multiplier;
+
+                              return (
+                                <TableRow key={entry.foodId || idx}>
+                                  <TableCell className="font-medium text-xs">
+                                    {food.name}
+                                  </TableCell>
+                                  <TableCell className="text-center text-xs">
+                                    {Math.round(entry.quantity)}{" "}
+                                    {food.servingUnit || "g"}
+                                  </TableCell>
+                                  <TableCell className="text-center text-xs">
+                                    {formatValue(calories)} kcal
+                                  </TableCell>
+                                  <TableCell className="text-center text-xs">
+                                    {formatValue(protein)}g
+                                  </TableCell>
+                                  <TableCell className="text-center text-xs">
+                                    {formatValue(carbs)}g
+                                  </TableCell>
+                                  <TableCell className="text-center text-xs">
+                                    {formatValue(fat)}g
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
+          </CardContent>
+        </Card>
       )}
 
       {/* Daily Summary */}
@@ -520,7 +667,7 @@ export default function FoodPlanViewPage() {
                   Calorías
                 </span>
                 <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.calories}
+                  {Math.round(dailyTotals.calories)}
                 </span>
               </div>
               <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
@@ -528,7 +675,7 @@ export default function FoodPlanViewPage() {
                   Proteína
                 </span>
                 <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.protein}g
+                  {dailyTotals.protein.toFixed(1)}g
                 </span>
               </div>
               <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
@@ -536,7 +683,7 @@ export default function FoodPlanViewPage() {
                   Carbohidratos
                 </span>
                 <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.carbs}g
+                  {dailyTotals.carbs.toFixed(1)}g
                 </span>
               </div>
               <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
@@ -544,7 +691,7 @@ export default function FoodPlanViewPage() {
                   Grasas
                 </span>
                 <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.fat}g
+                  {dailyTotals.fat.toFixed(1)}g
                 </span>
               </div>
             </div>

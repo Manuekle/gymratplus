@@ -252,8 +252,9 @@ export function MealPlan({
                     {mealTypes[mealTypeKey].label}
                   </CardTitle>
                   <CardDescription>
-                    Calorías: {meal.calories} | Proteínas: {meal.protein}g |
-                    Carbohidratos: {meal.carbs}g | Grasas: {meal.fat}g
+                    Calorías: {Math.round(meal.calories)} | Proteínas:{" "}
+                    {meal.protein.toFixed(1)}g | Carbohidratos:{" "}
+                    {meal.carbs.toFixed(1)}g | Grasas: {meal.fat.toFixed(1)}g
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-4">

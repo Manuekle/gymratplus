@@ -93,6 +93,25 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
         const response = await fetch(`/api/workout-streak?userId=${userId}`);
         const data = await response.json();
 
+        // Logs de debug
+        console.log("=== DEBUG RACHA ===");
+        console.log("Usuario ID:", userId);
+        console.log("Datos recibidos de la API:", data);
+        console.log("Racha actual (currentStreak):", data.currentStreak);
+        console.log(
+          "Último entrenamiento (lastWorkoutAt):",
+          data.lastWorkoutAt,
+        );
+        console.log(
+          "Último día de descanso (lastRestDayAt):",
+          data.lastRestDayAt,
+        );
+        console.log(
+          "Total de días entrenados:",
+          data.totalWorkoutDays || "N/A",
+        );
+        console.log("===================");
+
         const newStreak = data.currentStreak;
         const oldStreak = previousStreak.current;
 
@@ -171,6 +190,27 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
   if (!stats) {
     return null;
+  }
+
+  // Si la racha es 0, no mostrar nada o mostrar "0 días" en gris
+  if (stats.currentStreak === 0) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Image
+          src="/svg/streak.svg"
+          alt="Racha"
+          width={16}
+          height={16}
+          className="h-4 w-4"
+          style={{
+            filter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+          }}
+        />
+        <Badge variant="secondary" className="text-xs text-muted-foreground">
+          0 días
+        </Badge>
+      </div>
+    );
   }
 
   const streakColor = getStreakColor(stats.currentStreak);

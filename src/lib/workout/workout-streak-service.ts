@@ -187,11 +187,172 @@ export class WorkoutStreakService {
   async getStreakStats(userId: string) {
     try {
       const streak = await this.getOrCreateStreak(userId);
+
+      // Obtener todos los entrenamientos completados del usuario
+      const workoutSessions = await prisma.workoutSession.findMany({
+        where: {
+          userId,
+          completed: true,
+        },
+        orderBy: {
+          date: "desc",
+        },
+        select: {
+          date: true,
+        },
+      });
+
+      // Calcular días únicos entrenados
+      const uniqueWorkoutDays = new Set<string>();
+      workoutSessions.forEach((session) => {
+        const date = new Date(session.date);
+        date.setHours(0, 0, 0, 0);
+        uniqueWorkoutDays.add(date.toISOString().split("T")[0]);
+      });
+
+      const totalWorkoutDays = uniqueWorkoutDays.size;
+      const lastWorkoutDate = workoutSessions[0]?.date || null;
+
+      // Calcular la racha real basada en días consecutivos de entrenamiento
+      // La racha se calcula considerando los días de descanso permitidos
+      let calculatedStreak = 0;
+
+      if (workoutSessions.length > 0) {
+        // Obtener trainingFrequency del usuario
+        const profile = await prisma.profile.findUnique({
+          where: { userId },
+          select: { trainingFrequency: true },
+        });
+        const trainingFrequency = profile?.trainingFrequency || 3;
+        const allowedRestDays = 7 - trainingFrequency;
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // Ordenar días únicos de entrenamiento de más reciente a más antiguo
+        const sortedDays = Array.from(uniqueWorkoutDays)
+          .map((d) => {
+            const date = new Date(d);
+            date.setHours(0, 0, 0, 0);
+            return date;
+          })
+          .sort((a, b) => b.getTime() - a.getTime());
+
+        if (sortedDays.length > 0) {
+          // Calcular racha consecutiva desde el día más reciente hacia atrás
+          // La racha cuenta los días consecutivos en los que el usuario entrenó,
+          // permitiendo días de descanso entre entrenamientos según la frecuencia configurada
+
+          let consecutiveDays = 0;
+          let lastWorkoutDate: Date | null = null;
+
+          // Empezar desde el día más reciente de entrenamiento
+          for (let i = 0; i < sortedDays.length; i++) {
+            const workoutDate = sortedDays[i];
+
+            if (i === 0) {
+              // Primer día (más reciente)
+              // Verificar si este día está dentro de los días permitidos desde hoy
+              const daysSinceWorkout = Math.floor(
+                (today.getTime() - workoutDate.getTime()) /
+                  (1000 * 60 * 60 * 24),
+              );
+
+              // Si el último entrenamiento está dentro de los días de descanso permitidos + 1,
+              // comenzar a contar la racha
+              if (daysSinceWorkout <= allowedRestDays + 1) {
+                consecutiveDays++;
+                lastWorkoutDate = workoutDate;
+              } else {
+                // El último entrenamiento fue hace mucho tiempo, la racha es 0
+                break;
+              }
+            } else {
+              // Días siguientes
+              if (lastWorkoutDate) {
+                const daysBetween = Math.floor(
+                  (lastWorkoutDate.getTime() - workoutDate.getTime()) /
+                    (1000 * 60 * 60 * 24),
+                );
+
+                // Si el tiempo entre entrenamientos está dentro de los días permitidos,
+                // continuar la racha
+                if (daysBetween <= allowedRestDays + 1) {
+                  consecutiveDays++;
+                  lastWorkoutDate = workoutDate;
+                } else {
+                  // Se rompió la racha
+                  break;
+                }
+              }
+            }
+          }
+
+          calculatedStreak = consecutiveDays;
+
+          // Logs detallados para debug
+          console.log("--- Cálculo detallado de racha ---");
+          console.log(
+            "Días de entrenamiento ordenados:",
+            sortedDays.map((d) => d.toISOString().split("T")[0]),
+          );
+          console.log("Training frequency:", trainingFrequency);
+          console.log("Días de descanso permitidos:", allowedRestDays);
+          console.log(
+            "Días desde último entrenamiento hasta hoy:",
+            sortedDays.length > 0
+              ? Math.floor(
+                  (today.getTime() - sortedDays[0].getTime()) /
+                    (1000 * 60 * 60 * 24),
+                )
+              : "N/A",
+          );
+          console.log("Racha calculada:", calculatedStreak);
+          console.log("----------------------------------");
+        }
+      }
+
+      // Si la racha en BD es diferente a la calculada, corregirla
+      if (calculatedStreak !== streak.currentStreak) {
+        console.log(
+          `⚠️ Racha inconsistente detectada. BD: ${streak.currentStreak}, Calculada: ${calculatedStreak}. Corrigiendo...`,
+        );
+
+        await prisma.workoutStreak.update({
+          where: { userId },
+          data: {
+            currentStreak: calculatedStreak,
+            longestStreak: Math.max(calculatedStreak, streak.longestStreak),
+          },
+        });
+
+        streak.currentStreak = calculatedStreak;
+      }
+
+      // Logs de debug
+      console.log("=== DEBUG getStreakStats ===");
+      console.log("Usuario ID:", userId);
+      console.log("Racha actual en BD:", streak.currentStreak);
+      console.log("Racha calculada desde entrenamientos:", calculatedStreak);
+      console.log("Último entrenamiento en BD:", streak.lastWorkoutAt);
+      console.log(
+        "Total de sesiones de entrenamiento:",
+        workoutSessions.length,
+      );
+      console.log("Total de días únicos entrenados:", totalWorkoutDays);
+      console.log("Último entrenamiento real:", lastWorkoutDate);
+      console.log("Racha final:", streak.currentStreak);
+      console.log("=============================");
+
       return {
         currentStreak: streak.currentStreak,
         longestStreak: streak.longestStreak,
         lastWorkoutAt: streak.lastWorkoutAt?.toISOString() || null,
         lastRestDayAt: streak.lastRestDayAt?.toISOString() || null,
+        totalWorkoutDays,
+        totalWorkoutSessions: workoutSessions.length,
+        lastWorkoutDate: lastWorkoutDate?.toISOString() || null,
+        calculatedStreak,
       };
     } catch (error) {
       console.error("Error en getStreakStats:", error);

@@ -687,10 +687,7 @@ export default function InstructorProfilePage() {
                   ) : (
                     <div className="grid gap-3 sm:grid-cols-2">
                       {assignedWorkouts.map((workout: any) => (
-                        <div
-                          key={workout.id}
-                          className="p-3 border rounded-lg hover:shadow-md transition-shadow"
-                        >
+                        <div key={workout.id} className="p-3 border rounded-lg">
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="text-sm font-semibold flex-1">
                               {workout.name}
@@ -755,10 +752,7 @@ export default function InstructorProfilePage() {
                             : plan.macros;
 
                         return (
-                          <div
-                            key={plan.id}
-                            className="p-3 border rounded-lg hover:shadow-md transition-shadow"
-                          >
+                          <div key={plan.id} className="p-3 border rounded-lg">
                             <div className="flex items-start justify-between mb-2">
                               <h3 className="text-sm font-semibold flex-1">
                                 Plan de Alimentación

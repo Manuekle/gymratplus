@@ -2,10 +2,22 @@ import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
+import { createFoodRecommendationNormalized } from "@/lib/nutrition/food-recommendation-helpers";
 
 interface NutritionPlan {
-  macros: object;
-  meals: object;
+  name?: string;
+  macros: {
+    protein?: string;
+    carbs?: string;
+    fat?: string;
+    description?: string;
+  };
+  meals: {
+    breakfast?: { entries: Array<{ foodId: string; quantity: number }> };
+    lunch?: { entries: Array<{ foodId: string; quantity: number }> };
+    dinner?: { entries: Array<{ foodId: string; quantity: number }> };
+    snacks?: { entries: Array<{ foodId: string; quantity: number }> };
+  };
   calorieTarget: number;
 }
 
@@ -38,20 +50,52 @@ export async function POST(req: NextRequest) {
     }
 
     // Extract the necessary data from the nutrition plan
-    const { macros, meals, calorieTarget } = nutritionPlan;
+    const { name, macros, meals, calorieTarget } = nutritionPlan;
 
-    // Create the food recommendation with stringified JSON
-    const foodRecommendation = await prisma.foodRecommendation.create({
-      data: {
-        userId: session.user.id,
-        macros: JSON.stringify(macros),
-        meals: JSON.stringify(meals),
-        calorieTarget: Number(calorieTarget),
+    // Extraer valores numéricos de macros si están en formato "224g (39%)"
+    let proteinTarget: number | undefined;
+    let carbsTarget: number | undefined;
+    let fatTarget: number | undefined;
+
+    if (macros.protein) {
+      const proteinMatch = String(macros.protein).match(/(\d+(?:\.\d+)?)/);
+      if (proteinMatch) {
+        proteinTarget = parseFloat(proteinMatch[1]);
+      }
+    }
+    if (macros.carbs) {
+      const carbsMatch = String(macros.carbs).match(/(\d+(?:\.\d+)?)/);
+      if (carbsMatch) {
+        carbsTarget = parseFloat(carbsMatch[1]);
+      }
+    }
+    if (macros.fat) {
+      const fatMatch = String(macros.fat).match(/(\d+(?:\.\d+)?)/);
+      if (fatMatch) {
+        fatTarget = parseFloat(fatMatch[1]);
+      }
+    }
+
+    // Create the food recommendation using normalized structure
+    const foodRecommendation = await createFoodRecommendationNormalized({
+      userId: session.user.id,
+      name: name?.trim() || undefined,
+      calorieTarget: Number(calorieTarget),
+      proteinTarget,
+      carbsTarget,
+      fatTarget,
+      description: macros.description,
+      meals: {
+        breakfast: meals.breakfast,
+        lunch: meals.lunch,
+        dinner: meals.dinner,
+        snacks: meals.snacks,
       },
     });
 
     return NextResponse.json(foodRecommendation);
-  } catch {
+  } catch (error) {
+    console.error("Error creating food recommendation:", error);
     return NextResponse.json(
       { error: "Failed to save food recommendation" },
       { status: 500 },
@@ -86,9 +130,12 @@ export async function GET() {
         instructorId: true,
         assignedToId: true,
         date: true,
-        macros: true,
-        meals: true,
+        name: true,
         calorieTarget: true,
+        proteinTarget: true,
+        carbsTarget: true,
+        fatTarget: true,
+        description: true,
         notes: true,
         createdAt: true,
         updatedAt: true,

@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
   return (
     <AnimatedLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
         {/* Accesos Rápidos */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -95,7 +95,7 @@ export default function DashboardPage() {
         </motion.div>
 
         {/* Progreso y Objetivos */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
@@ -118,7 +118,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Resúmenes */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

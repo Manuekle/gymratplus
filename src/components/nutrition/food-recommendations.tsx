@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
@@ -35,11 +36,6 @@ import {
   SteakIcon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { cn } from "@/lib/utils/utils";
 import { Icons } from "@/components/icons";
 // cambiar todo
@@ -60,24 +56,27 @@ export default function FoodRecommendations() {
         }
         const data = await response.json();
 
-        // Parse JSON strings if needed
-        const parsedData = data.map((item: any) => ({
-          ...item,
-          macros:
-            typeof item.macros === "string"
-              ? JSON.parse(item.macros)
-              : item.macros,
-          meals:
-            typeof item.meals === "string"
-              ? JSON.parse(item.meals)
-              : item.meals,
-        }));
+        // Los datos vienen como lista de metadatos, necesitamos cargar el completo cuando se selecciona
+        setRecommendations(data);
 
-        setRecommendations(parsedData);
-
-        // Select the most recent recommendation by default
-        if (parsedData.length > 0) {
-          setSelectedRecommendation(parsedData[0]);
+        // Select the most recent recommendation by default y cargar sus datos completos
+        if (data.length > 0) {
+          const mostRecent = data[0];
+          // Cargar los datos completos del plan
+          try {
+            const fullPlanResponse = await fetch(
+              `/api/food-recommendations/${mostRecent.id}`,
+            );
+            if (fullPlanResponse.ok) {
+              const fullPlan = await fullPlanResponse.json();
+              setSelectedRecommendation(fullPlan);
+            } else {
+              setSelectedRecommendation(mostRecent);
+            }
+          } catch (error) {
+            console.error("Error loading full plan:", error);
+            setSelectedRecommendation(mostRecent);
+          }
         }
 
         // Fetch foods to display names
@@ -330,20 +329,23 @@ export default function FoodRecommendations() {
       const recResponse = await fetch("/api/food-recommendations");
       if (recResponse.ok) {
         const recData = await recResponse.json();
-        const parsedData = recData.map((item: any) => ({
-          ...item,
-          macros:
-            typeof item.macros === "string"
-              ? JSON.parse(item.macros)
-              : item.macros,
-          meals:
-            typeof item.meals === "string"
-              ? JSON.parse(item.meals)
-              : item.meals,
-        }));
-        setRecommendations(parsedData);
-        if (parsedData.length > 0) {
-          setSelectedRecommendation(parsedData[0]);
+        setRecommendations(recData);
+        if (recData.length > 0) {
+          // Cargar los datos completos del plan más reciente
+          try {
+            const fullPlanResponse = await fetch(
+              `/api/food-recommendations/${recData[0].id}`,
+            );
+            if (fullPlanResponse.ok) {
+              const fullPlan = await fullPlanResponse.json();
+              setSelectedRecommendation(fullPlan);
+            } else {
+              setSelectedRecommendation(recData[0]);
+            }
+          } catch (error) {
+            console.error("Error loading full plan:", error);
+            setSelectedRecommendation(recData[0]);
+          }
         }
         // Reload foods as well (con paginación)
         let allFoods: any[] = [];
@@ -408,7 +410,7 @@ export default function FoodRecommendations() {
         <Card className="w-full">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold tracking-heading">
-              Tu Plan de Alimentación
+              {selectedRecommendation?.name || "Tu Plan de Alimentación"}
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
               No tienes ningún plan de alimentación guardado.
@@ -447,16 +449,9 @@ export default function FoodRecommendations() {
     );
   }
 
-  // Parse JSON strings if needed
-  const macros =
-    typeof selectedRecommendation.macros === "string"
-      ? JSON.parse(selectedRecommendation.macros)
-      : selectedRecommendation.macros;
-
-  const meals =
-    typeof selectedRecommendation.meals === "string"
-      ? JSON.parse(selectedRecommendation.meals)
-      : selectedRecommendation.meals;
+  // Los datos ya vienen en formato unificado desde el endpoint [id]
+  const macros = selectedRecommendation?.macros || {};
+  const meals = selectedRecommendation?.meals || {};
 
   const mealTypes = {
     breakfast: {
@@ -519,7 +514,7 @@ export default function FoodRecommendations() {
         <CardHeader className="space-y-3">
           <div>
             <CardTitle className="text-2xl font-semibold tracking-heading">
-              Tu Plan de Alimentación
+              {selectedRecommendation?.name || "Tu Plan de Alimentación"}
             </CardTitle>
             <CardDescription className="text-muted-foreground text-xs mt-1">
               Según su perfil, hemos creado planes de nutrición para usted
@@ -538,12 +533,7 @@ export default function FoodRecommendations() {
                       new Date(a.createdAt).getTime(),
                   )
                   .map((rec) => {
-                    const recMacros =
-                      typeof rec.macros === "string"
-                        ? JSON.parse(rec.macros)
-                        : rec.macros;
-                    const calorieTarget =
-                      rec.calorieTarget || recMacros?.calorieTarget;
+                    const calorieTarget = rec.calorieTarget;
 
                     return (
                       <Button
@@ -559,7 +549,23 @@ export default function FoodRecommendations() {
                           selectedRecommendation?.id === rec.id &&
                             "font-semibold",
                         )}
-                        onClick={() => setSelectedRecommendation(rec)}
+                        onClick={async () => {
+                          // Cargar los datos completos del plan seleccionado
+                          try {
+                            const fullPlanResponse = await fetch(
+                              `/api/food-recommendations/${rec.id}`,
+                            );
+                            if (fullPlanResponse.ok) {
+                              const fullPlan = await fullPlanResponse.json();
+                              setSelectedRecommendation(fullPlan);
+                            } else {
+                              setSelectedRecommendation(rec);
+                            }
+                          } catch (error) {
+                            console.error("Error loading full plan:", error);
+                            setSelectedRecommendation(rec);
+                          }
+                        }}
                       >
                         <div className="flex items-center gap-1.5">
                           <HugeiconsIcon
@@ -683,153 +689,176 @@ export default function FoodRecommendations() {
                 ? meal.entries
                 : [];
 
+              // Calcular totales desde los entries
+              const calculateMealTotals = () => {
+                let totalCalories = 0;
+                let totalProtein = 0;
+                let totalCarbs = 0;
+                let totalFat = 0;
+
+                mealEntries.forEach((entry: any) => {
+                  const food = foods[entry.foodId] || entry.food;
+                  if (!food) return;
+
+                  // quantity está en gramos (estandarizado)
+                  const multiplier = (entry.quantity || 0) / 100;
+                  totalCalories += (food.calories || 0) * multiplier;
+                  totalProtein += (food.protein || 0) * multiplier;
+                  totalCarbs += (food.carbs || 0) * multiplier;
+                  totalFat += (food.fat || 0) * multiplier;
+                });
+
+                return {
+                  totalCalories,
+                  totalProtein,
+                  totalCarbs,
+                  totalFat,
+                };
+              };
+
+              const mealTotals = calculateMealTotals();
+
               return (
                 <TabsContent key={key} value={tabValue}>
-                  <Card>
-                    <CardHeader>
+                  <div className="mt-4 space-y-4">
+                    <div className="flex items-center justify-between">
                       <CardTitle className="text-lg tracking-heading font-semibold">
                         {mealTypes[mealTypeKey].label}
                       </CardTitle>
-                      <CardDescription>
-                        Calorías: {meal.calories || 0} | Proteínas:{" "}
-                        {meal.protein || 0}g | Carbohidratos: {meal.carbs || 0}g
-                        | Grasas: {meal.fat || 0}g
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="px-4">
-                      <div className="rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>Alimento</TableHead>
-                              <TableHead className="w-[100px] text-center">
-                                Cantidad
-                              </TableHead>
-                              <TableHead className="w-[100px] text-center">
-                                Calorías
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell text-center">
-                                Proteínas
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell text-center">
-                                Carbos
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell text-center">
-                                Grasas
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {mealEntries.length > 0 ? (
-                              mealEntries.map((entry: any, index: number) => {
-                                const food = foods[entry.foodId];
+                      {mealTotals.totalCalories > 0 && (
+                        <Badge variant="secondary" className="text-xs">
+                          {Math.round(mealTotals.totalCalories)} kcal
+                        </Badge>
+                      )}
+                    </div>
+                    <CardDescription className="text-xs">
+                      {mealTotals.totalCalories > 0 && (
+                        <>Calorías: {Math.round(mealTotals.totalCalories)} | </>
+                      )}
+                      {mealTotals.totalProtein > 0 && (
+                        <>Proteínas: {mealTotals.totalProtein.toFixed(1)}g | </>
+                      )}
+                      {mealTotals.totalCarbs > 0 && (
+                        <>
+                          Carbohidratos: {mealTotals.totalCarbs.toFixed(1)}g
+                          |{" "}
+                        </>
+                      )}
+                      {mealTotals.totalFat > 0 && (
+                        <>Grasas: {mealTotals.totalFat.toFixed(1)}g</>
+                      )}
+                    </CardDescription>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="text-xs">Alimento</TableHead>
+                            <TableHead className="text-xs text-center">
+                              Cantidad
+                            </TableHead>
+                            <TableHead className="text-xs text-center">
+                              Calorías
+                            </TableHead>
+                            <TableHead className="text-xs text-center">
+                              Proteína
+                            </TableHead>
+                            <TableHead className="text-xs text-center">
+                              Carbs
+                            </TableHead>
+                            <TableHead className="text-xs text-center">
+                              Grasas
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {mealEntries.length > 0 ? (
+                            mealEntries.map((entry: any, index: number) => {
+                              const food = foods[entry.foodId];
 
-                                // Si no se encuentra el alimento, intentar cargarlo o mostrar mensaje apropiado
-                                if (!food) {
-                                  // Si el entry tiene información del alimento directamente, usarla
-                                  if (entry.food) {
-                                    const servingSize =
-                                      entry.food.serving || 100;
-                                    const multiplier =
-                                      (entry.quantity || 0) *
-                                      (servingSize / 100);
+                              // Si no se encuentra el alimento, intentar cargarlo o mostrar mensaje apropiado
+                              if (!food) {
+                                // Si el entry tiene información del alimento directamente, usarla
+                                if (entry.food) {
+                                  // quantity está en gramos (estandarizado)
+                                  const multiplier =
+                                    (entry.quantity || 0) / 100;
 
-                                    return (
-                                      <TableRow key={index}>
-                                        <TableCell className="font-medium">
-                                          <div className="flex flex-col">
-                                            <span>
-                                              {entry.food.name ||
-                                                "Alimento no disponible"}
-                                            </span>
-                                            <span className="text-xs text-muted-foreground">
-                                              {entry.food.category || "N/A"}
-                                            </span>
-                                          </div>
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                          {Math.round(
-                                            (entry.quantity || 0) * 100,
-                                          )}
-                                          g
-                                        </TableCell>
-                                        <TableCell className="text-center">
-                                          {Math.round(
-                                            (entry.food.calories || 0) *
-                                              multiplier,
-                                          )}
-                                        </TableCell>
-                                        <TableCell className="hidden md:table-cell text-center">
-                                          {(
-                                            (entry.food.protein || 0) *
-                                            multiplier
-                                          ).toFixed(1)}
-                                          g
-                                        </TableCell>
-                                        <TableCell className="hidden md:table-cell text-center">
-                                          {(
-                                            (entry.food.carbs || 0) * multiplier
-                                          ).toFixed(1)}
-                                          g
-                                        </TableCell>
-                                        <TableCell className="hidden md:table-cell text-center">
-                                          {(
-                                            (entry.food.fat || 0) * multiplier
-                                          ).toFixed(1)}
-                                          g
-                                        </TableCell>
-                                      </TableRow>
-                                    );
-                                  }
-
-                                  // Si no hay información del alimento, mostrar mensaje
                                   return (
                                     <TableRow key={index}>
                                       <TableCell className="font-medium">
-                                        <div className="flex flex-col">
-                                          <span className="text-muted-foreground italic">
-                                            Alimento no encontrado
-                                          </span>
-                                          <span className="text-xs text-muted-foreground">
-                                            ID: {entry.foodId?.substring(0, 8)}
-                                            ...
-                                          </span>
-                                        </div>
+                                        {entry.food.name ||
+                                          "Alimento no disponible"}
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {Math.round(
-                                          (entry.quantity || 0) * 100,
-                                        )}
+                                        {Math.round(entry.quantity || 0)}{" "}
+                                        {entry.food.servingUnit || "g"}
+                                      </TableCell>
+                                      <TableCell className="text-center">
+                                        {(() => {
+                                          const calories =
+                                            (entry.food.calories || 0) *
+                                            multiplier;
+                                          return calories < 1
+                                            ? calories.toFixed(2)
+                                            : calories < 10
+                                              ? calories.toFixed(1)
+                                              : Math.round(calories);
+                                        })()}{" "}
+                                        kcal
+                                      </TableCell>
+                                      <TableCell className="hidden md:table-cell text-center">
+                                        {(() => {
+                                          const protein =
+                                            (entry.food.protein || 0) *
+                                            multiplier;
+                                          return protein < 1
+                                            ? protein.toFixed(2)
+                                            : protein < 10
+                                              ? protein.toFixed(1)
+                                              : Math.round(protein);
+                                        })()}
                                         g
                                       </TableCell>
-                                      <TableCell className="text-center">
-                                        -
+                                      <TableCell className="hidden md:table-cell text-center">
+                                        {(() => {
+                                          const carbs =
+                                            (entry.food.carbs || 0) *
+                                            multiplier;
+                                          return carbs < 1
+                                            ? carbs.toFixed(2)
+                                            : carbs < 10
+                                              ? carbs.toFixed(1)
+                                              : Math.round(carbs);
+                                        })()}
+                                        g
                                       </TableCell>
                                       <TableCell className="hidden md:table-cell text-center">
-                                        -
-                                      </TableCell>
-                                      <TableCell className="hidden md:table-cell text-center">
-                                        -
-                                      </TableCell>
-                                      <TableCell className="hidden md:table-cell text-center">
-                                        -
+                                        {(() => {
+                                          const fat =
+                                            (entry.food.fat || 0) * multiplier;
+                                          return fat < 1
+                                            ? fat.toFixed(2)
+                                            : fat < 10
+                                              ? fat.toFixed(1)
+                                              : Math.round(fat);
+                                        })()}
+                                        g
                                       </TableCell>
                                     </TableRow>
                                   );
                                 }
 
-                                // Calcular con el serving size correcto
-                                const servingSize = food.serving || 100;
-                                const multiplier =
-                                  (entry.quantity || 0) * (servingSize / 100);
-
+                                // Si no hay información del alimento, mostrar mensaje
                                 return (
                                   <TableRow key={index}>
                                     <TableCell className="font-medium">
                                       <div className="flex flex-col">
-                                        <span>{food.name}</span>
+                                        <span className="text-muted-foreground italic">
+                                          Alimento no encontrado
+                                        </span>
                                         <span className="text-xs text-muted-foreground">
-                                          {food.category || "N/A"}
+                                          ID: {entry.foodId?.substring(0, 8)}
+                                          ...
                                         </span>
                                       </div>
                                     </TableCell>
@@ -837,54 +866,105 @@ export default function FoodRecommendations() {
                                       {Math.round((entry.quantity || 0) * 100)}g
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      {Math.round(
-                                        (food.calories || 0) * multiplier,
-                                      )}
+                                      -
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {(
-                                        (food.protein || 0) * multiplier
-                                      ).toFixed(1)}
-                                      g
+                                      -
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {((food.carbs || 0) * multiplier).toFixed(
-                                        1,
-                                      )}
-                                      g
+                                      -
                                     </TableCell>
                                     <TableCell className="hidden md:table-cell text-center">
-                                      {((food.fat || 0) * multiplier).toFixed(
-                                        1,
-                                      )}
-                                      g
+                                      -
                                     </TableCell>
                                   </TableRow>
                                 );
-                              })
-                            ) : (
-                              <TableRow>
-                                <TableCell
-                                  colSpan={6}
-                                  className="h-24 text-center"
-                                >
-                                  <div className="flex flex-col items-center justify-center py-4">
-                                    <h3 className="text-xs font-semibold mb-1">
-                                      No hay alimentos registrados
-                                    </h3>
-                                    <p className="text-xs text-muted-foreground">
-                                      No hay alimentos registrados para esta
-                                      comida.
-                                    </p>
-                                  </div>
-                                </TableCell>
-                              </TableRow>
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
+                              }
+
+                              // quantity está en gramos (estandarizado)
+                              const multiplier = (entry.quantity || 0) / 100;
+
+                              return (
+                                <TableRow key={index}>
+                                  <TableCell className="font-medium">
+                                    {food.name}
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    {Math.round(entry.quantity || 0)}{" "}
+                                    {food.servingUnit || "g"}
+                                  </TableCell>
+                                  <TableCell className="text-center">
+                                    {(() => {
+                                      const calories =
+                                        (food.calories || 0) * multiplier;
+                                      return calories < 1
+                                        ? calories.toFixed(2)
+                                        : calories < 10
+                                          ? calories.toFixed(1)
+                                          : Math.round(calories);
+                                    })()}{" "}
+                                    kcal
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(() => {
+                                      const protein =
+                                        (food.protein || 0) * multiplier;
+                                      return protein < 1
+                                        ? protein.toFixed(2)
+                                        : protein < 10
+                                          ? protein.toFixed(1)
+                                          : Math.round(protein);
+                                    })()}
+                                    g
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(() => {
+                                      const carbs =
+                                        (food.carbs || 0) * multiplier;
+                                      return carbs < 1
+                                        ? carbs.toFixed(2)
+                                        : carbs < 10
+                                          ? carbs.toFixed(1)
+                                          : Math.round(carbs);
+                                    })()}
+                                    g
+                                  </TableCell>
+                                  <TableCell className="hidden md:table-cell text-center">
+                                    {(() => {
+                                      const fat = (food.fat || 0) * multiplier;
+                                      return fat < 1
+                                        ? fat.toFixed(2)
+                                        : fat < 10
+                                          ? fat.toFixed(1)
+                                          : Math.round(fat);
+                                    })()}
+                                    g
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })
+                          ) : (
+                            <TableRow>
+                              <TableCell
+                                colSpan={6}
+                                className="h-24 text-center"
+                              >
+                                <div className="flex flex-col items-center justify-center py-4">
+                                  <h3 className="text-xs font-semibold mb-1">
+                                    No hay alimentos registrados
+                                  </h3>
+                                  <p className="text-xs text-muted-foreground">
+                                    No hay alimentos registrados para esta
+                                    comida.
+                                  </p>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
                 </TabsContent>
               );
             })}

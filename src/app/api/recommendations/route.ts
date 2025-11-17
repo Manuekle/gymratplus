@@ -267,43 +267,73 @@ export async function POST(req: Request): Promise<NextResponse> {
       dailyFatTarget,
     });
 
-    // Save the food recommendation to the database
-    // Save the complete meals structure with entries, calories, and macros
-    await prisma.foodRecommendation.create({
-      data: {
-        userId,
-        macros: JSON.stringify(nutritionPlan.macros),
-        meals: JSON.stringify({
-          breakfast: {
-            entries: nutritionPlan.meals.breakfast.entries,
-            calories: nutritionPlan.meals.breakfast.calories,
-            protein: nutritionPlan.meals.breakfast.protein,
-            carbs: nutritionPlan.meals.breakfast.carbs,
-            fat: nutritionPlan.meals.breakfast.fat,
-          },
-          lunch: {
-            entries: nutritionPlan.meals.lunch.entries,
-            calories: nutritionPlan.meals.lunch.calories,
-            protein: nutritionPlan.meals.lunch.protein,
-            carbs: nutritionPlan.meals.lunch.carbs,
-            fat: nutritionPlan.meals.lunch.fat,
-          },
-          dinner: {
-            entries: nutritionPlan.meals.dinner.entries,
-            calories: nutritionPlan.meals.dinner.calories,
-            protein: nutritionPlan.meals.dinner.protein,
-            carbs: nutritionPlan.meals.dinner.carbs,
-            fat: nutritionPlan.meals.dinner.fat,
-          },
-          snacks: {
-            entries: nutritionPlan.meals.snacks.entries,
-            calories: nutritionPlan.meals.snacks.calories,
-            protein: nutritionPlan.meals.snacks.protein,
-            carbs: nutritionPlan.meals.snacks.carbs,
-            fat: nutritionPlan.meals.snacks.fat,
-          },
-        }),
-        calorieTarget,
+    // Save the food recommendation to the database using normalized structure
+    const { createFoodRecommendationNormalized } = await import(
+      "@/lib/nutrition/food-recommendation-helpers"
+    );
+
+    // Extraer valores numéricos de macros
+    let proteinTarget: number | undefined;
+    let carbsTarget: number | undefined;
+    let fatTarget: number | undefined;
+
+    if (nutritionPlan.macros.protein) {
+      const proteinMatch = String(nutritionPlan.macros.protein).match(
+        /(\d+(?:\.\d+)?)/,
+      );
+      if (proteinMatch) {
+        proteinTarget = parseFloat(proteinMatch[1]);
+      }
+    }
+    if (nutritionPlan.macros.carbs) {
+      const carbsMatch = String(nutritionPlan.macros.carbs).match(
+        /(\d+(?:\.\d+)?)/,
+      );
+      if (carbsMatch) {
+        carbsTarget = parseFloat(carbsMatch[1]);
+      }
+    }
+    if (nutritionPlan.macros.fat) {
+      const fatMatch = String(nutritionPlan.macros.fat).match(
+        /(\d+(?:\.\d+)?)/,
+      );
+      if (fatMatch) {
+        fatTarget = parseFloat(fatMatch[1]);
+      }
+    }
+
+    await createFoodRecommendationNormalized({
+      userId,
+      calorieTarget,
+      proteinTarget,
+      carbsTarget,
+      fatTarget,
+      description: nutritionPlan.macros.description,
+      meals: {
+        breakfast: {
+          entries: nutritionPlan.meals.breakfast.entries.map((entry) => ({
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+          })),
+        },
+        lunch: {
+          entries: nutritionPlan.meals.lunch.entries.map((entry) => ({
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+          })),
+        },
+        dinner: {
+          entries: nutritionPlan.meals.dinner.entries.map((entry) => ({
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+          })),
+        },
+        snacks: {
+          entries: nutritionPlan.meals.snacks.entries.map((entry) => ({
+            foodId: entry.foodId,
+            quantity: entry.quantity,
+          })),
+        },
       },
     });
 
