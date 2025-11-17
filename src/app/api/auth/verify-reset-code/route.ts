@@ -36,7 +36,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const parsedData = JSON.parse(codeData);
+    // Manejar tanto string JSON como objeto ya parseado
+    const parsedData =
+      typeof codeData === "string" ? JSON.parse(codeData) : codeData;
 
     // Verificar si el código ha expirado
     if (parsedData.expiresAt && Date.now() > parsedData.expiresAt) {

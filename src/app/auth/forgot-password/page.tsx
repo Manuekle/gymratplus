@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,11 @@ import {
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Icons } from "@/components/icons";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp";
 
 export default function ForgotPasswordPage() {
   const router = useRouter();
@@ -23,9 +28,10 @@ export default function ForgotPasswordPage() {
   const [emailError, setEmailError] = useState("");
   const [codeError, setCodeError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [verifyingCode, setVerifyingCode] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+  const hasVerifiedRef = useRef(false);
 
   const validateEmail = (emailValue: string) => {
     if (!emailValue) {
@@ -83,18 +89,18 @@ export default function ForgotPasswordPage() {
     }
   };
 
-  const handleVerifyCode = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError("");
-    setCodeError("");
-    setVerifyingCode(true);
-
-    // Validar formato del código
-    if (!/^\d{6}$/.test(code.trim())) {
-      setCodeError("El código debe tener 6 dígitos");
-      setVerifyingCode(false);
+  // Función para verificar el código automáticamente
+  const verifyCode = async (codeValue: string) => {
+    if (codeValue.length !== 6 || !/^\d{6}$/.test(codeValue)) {
       return;
     }
+
+    if (isVerifying || hasVerifiedRef.current) return;
+
+    hasVerifiedRef.current = true;
+    setIsVerifying(true);
+    setError("");
+    setCodeError("");
 
     try {
       const response = await fetch("/api/auth/verify-reset-code", {
@@ -104,7 +110,7 @@ export default function ForgotPasswordPage() {
         },
         body: JSON.stringify({
           email: email.trim(),
-          code: code.trim(),
+          code: codeValue.trim(),
         }),
       });
 
@@ -119,20 +125,42 @@ export default function ForgotPasswordPage() {
         router.push(`/auth/reset-password?token=${data.token}`);
       }
     } catch (error: unknown) {
+      hasVerifiedRef.current = false; // Permitir reintentar en caso de error
       if (error instanceof Error) {
         setCodeError(error.message || "Código inválido");
       } else {
         setCodeError("Código inválido");
       }
     } finally {
-      setVerifyingCode(false);
+      setIsVerifying(false);
     }
   };
+
+  // Efecto para verificar automáticamente cuando el código esté completo
+  useEffect(() => {
+    if (
+      code.length === 6 &&
+      /^\d{6}$/.test(code) &&
+      !isVerifying &&
+      !hasVerifiedRef.current
+    ) {
+      verifyCode(code);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [code]);
+
+  // Resetear el ref cuando el código cambia (nuevo código ingresado)
+  useEffect(() => {
+    if (code.length < 6) {
+      hasVerifiedRef.current = false;
+    }
+  }, [code]);
 
   const handleResendCode = async () => {
     setError("");
     setCode("");
     setCodeError("");
+    hasVerifiedRef.current = false; // Resetear el ref al reenviar
     setLoading(true);
 
     try {
@@ -176,63 +204,73 @@ export default function ForgotPasswordPage() {
           <CardDescription className="text-muted-foreground text-xs text-center">
             {step === "email"
               ? "Ingresa tu email y te enviaremos un código de verificación"
-              : "Ingresa el código de 6 dígitos que enviamos a tu email"}
+              : `Ingresa el código de 6 dígitos que enviamos a ${email}`}
           </CardDescription>
         </CardHeader>
         <CardContent className="px-4 space-y-4">
           {step === "code" ? (
-            <form onSubmit={handleVerifyCode} className="space-y-4">
-              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                <p className="text-xs text-blue-800 dark:text-blue-200 text-center">
-                  Hemos enviado un código de 6 dígitos a{" "}
-                  <strong>{email}</strong>
-                </p>
-              </div>
+            <div className="space-y-4">
               <div className="flex flex-col gap-2">
-                <Label className="text-xs md:text-xs" htmlFor="code">
+                <Label className="text-xs md:text-xs text-center mb-4">
                   Código de verificación
                 </Label>
-                <Input
-                  className="text-xs md:text-xs text-center text-2xl tracking-widest font-mono"
-                  id="code"
-                  name="code"
-                  type="text"
-                  required
-                  maxLength={6}
-                  value={code}
-                  onChange={(e) => {
-                    // Solo permitir números
-                    const value = e.target.value.replace(/\D/g, "");
-                    setCode(value);
-                    if (codeError) setCodeError("");
-                  }}
-                  placeholder="000000"
-                  aria-invalid={!!codeError}
-                  aria-describedby={codeError ? "code-error" : undefined}
-                  autoComplete="one-time-code"
-                  autoFocus
-                />
+                <div className="w-full">
+                  <InputOTP
+                    maxLength={6}
+                    value={code}
+                    onChange={(value) => {
+                      // Solo permitir números
+                      const numericValue = value.replace(/\D/g, "");
+                      setCode(numericValue);
+                      if (codeError) setCodeError("");
+                    }}
+                    disabled={isVerifying}
+                    pattern="[0-9]*"
+                    containerClassName="w-full"
+                  >
+                    <InputOTPGroup className="w-full justify-between">
+                      <InputOTPSlot
+                        index={0}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                      <InputOTPSlot
+                        index={1}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                      <InputOTPSlot
+                        index={2}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                      <InputOTPSlot
+                        index={3}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                      <InputOTPSlot
+                        index={4}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                      <InputOTPSlot
+                        index={5}
+                        className="h-14 flex-1 text-xl tracking-heading font-semibold"
+                      />
+                    </InputOTPGroup>
+                  </InputOTP>
+                </div>
                 {codeError && (
-                  <p id="code-error" className="text-[#E52020] text-xs">
+                  <p
+                    id="code-error"
+                    className="text-[#E52020] text-xs text-center"
+                  >
                     {codeError}
                   </p>
                 )}
-              </div>
-              <Button
-                size="sm"
-                type="submit"
-                className="w-full text-xs"
-                disabled={verifyingCode || code.length !== 6}
-              >
-                {verifyingCode ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                {isVerifying && (
+                  <p className="text-xs text-center text-muted-foreground">
+                    <Icons.spinner className="mr-2 h-3 w-3 animate-spin inline" />
                     Verificando...
-                  </>
-                ) : (
-                  "Verificar código"
+                  </p>
                 )}
-              </Button>
+              </div>
               <div className="text-center">
                 <button
                   type="button"
@@ -255,7 +293,7 @@ export default function ForgotPasswordPage() {
               )}
               <Button
                 type="button"
-                variant="ghost"
+                variant="default"
                 size="sm"
                 className="w-full text-xs"
                 onClick={() => {
@@ -266,7 +304,7 @@ export default function ForgotPasswordPage() {
               >
                 Cambiar email
               </Button>
-            </form>
+            </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="flex flex-col gap-2">

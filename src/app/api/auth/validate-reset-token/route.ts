@@ -24,7 +24,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const parsedData = JSON.parse(tokenData);
+    // Manejar tanto string JSON como objeto ya parseado
+    const parsedData =
+      typeof tokenData === "string" ? JSON.parse(tokenData) : tokenData;
 
     // Verificar si el token ha expirado
     if (parsedData.expiresAt && Date.now() > parsedData.expiresAt) {

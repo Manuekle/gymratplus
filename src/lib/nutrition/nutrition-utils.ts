@@ -497,6 +497,8 @@ async function createMealLogWithTargets(
   // Límites de alimentos por comida
   const MIN_FOODS = 5;
   const MAX_FOODS = mealType === "snack" ? 5 : 10;
+  // Límite máximo razonable: 10 = 1000g (1kg) por alimento
+  const MAX_QUANTITY_RATIO = 10;
 
   // Alimentos recomendados por tipo de comida (basado en objetivos nutricionales)
   const getRecommendedFoods = (meal: string): string[] => {
@@ -861,9 +863,6 @@ async function createMealLogWithTargets(
       }
     }
 
-    // Límite máximo razonable: 10 = 1000g (1kg) por alimento
-    const MAX_QUANTITY_RATIO = 10;
-
     // Distribuir proteína entre alimentos proteicos
     if (proteinFoods.length > 0) {
       const proteinPerFood = proteinNeeded / proteinFoods.length;
@@ -916,7 +915,6 @@ async function createMealLogWithTargets(
 
     // Asegurar que todos los alimentos seleccionados tengan al menos una cantidad mínima
     // y que no excedan el máximo
-    const MAX_QUANTITY_RATIO = 10;
     for (const index of selectedIndicesArray) {
       if (individual[index]! < 0.1) {
         individual[index] = 0.1 + Math.random() * 0.2; // Entre 0.1 y 0.3
@@ -932,7 +930,7 @@ async function createMealLogWithTargets(
 
   // Mutación: Cambiar cantidad de un alimento aleatorio
   // Usar un rango de mutación adaptativo basado en los objetivos
-  const MAX_QUANTITY_RATIO = 10; // Límite máximo: 10 = 1000g
+  // Límite máximo: 10 = 1000g (declarado al inicio de createRandomIndividual)
   const mutate = (
     individual: Individual,
     mutationRate: number = 0.3,

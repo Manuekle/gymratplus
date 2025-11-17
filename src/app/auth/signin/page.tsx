@@ -207,7 +207,10 @@ export default function SignInPage() {
             </div>
             <div className="mt-4 text-center text-xs">
               No tienes una cuenta?{" "}
-              <Link href="/auth/signup" className="text-primary">
+              <Link
+                href="/auth/signup"
+                className="text-primary hover:underline"
+              >
                 Regístrate aquí
               </Link>
             </div>

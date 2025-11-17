@@ -48,31 +48,32 @@ export default function SignUpPage() {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setEmailError("Email inválido");
-    } else {
-      setEmailError("");
-      // Verificar si el email ya existe
-      const checkEmail = async () => {
-        setIsCheckingEmail(true);
-        try {
-          const response = await fetch(
-            `/api/auth/check-email?email=${encodeURIComponent(email)}`,
-          );
-          const data = await response.json();
-          if (data.exists) {
-            setEmailError("Este email ya está registrado");
-          } else {
-            setEmailError("");
-          }
-        } catch {
-          // Ignorar errores de verificación
-        } finally {
-          setIsCheckingEmail(false);
-        }
-      };
-
-      const timeoutId = setTimeout(checkEmail, 500);
-      return () => clearTimeout(timeoutId);
+      return;
     }
+
+    setEmailError("");
+    // Verificar si el email ya existe
+    const checkEmail = async () => {
+      setIsCheckingEmail(true);
+      try {
+        const response = await fetch(
+          `/api/auth/check-email?email=${encodeURIComponent(email)}`,
+        );
+        const data = await response.json();
+        if (data.exists) {
+          setEmailError("Este email ya está registrado");
+        } else {
+          setEmailError("");
+        }
+      } catch {
+        // Ignorar errores de verificación
+      } finally {
+        setIsCheckingEmail(false);
+      }
+    };
+
+    const timeoutId = setTimeout(checkEmail, 500);
+    return () => clearTimeout(timeoutId);
   }, [email]);
 
   // Validación de nombre
@@ -223,7 +224,7 @@ export default function SignUpPage() {
           <form onSubmit={handleSubmit} className="space-y-4 gap-4">
             <div className="flex flex-col gap-2">
               <Label className="text-xs md:text-xs" htmlFor="name">
-                Nombre *
+                Nombre
               </Label>
               <Input
                 className="text-xs md:text-xs"
@@ -244,7 +245,7 @@ export default function SignUpPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-xs md:text-xs" htmlFor="email">
-                Correo electrónico *
+                Correo electrónico
               </Label>
               <div className="relative">
                 <Input
@@ -270,7 +271,7 @@ export default function SignUpPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-xs md:text-xs" htmlFor="password">
-                Contraseña *
+                Contraseña
               </Label>
               <PasswordInput
                 className="text-xs md:text-xs"
@@ -294,7 +295,7 @@ export default function SignUpPage() {
             </div>
             <div className="flex flex-col gap-2">
               <Label className="text-xs md:text-xs" htmlFor="repeatPassword">
-                Repetir Contraseña *
+                Repetir Contraseña
               </Label>
               <PasswordInput
                 className="text-xs md:text-xs"
@@ -330,15 +331,7 @@ export default function SignUpPage() {
                 htmlFor="terms"
                 className="text-xs leading-tight cursor-pointer"
               >
-                Acepto los{" "}
-                <Link href="/terms" className="text-primary hover:underline">
-                  términos y condiciones
-                </Link>{" "}
-                y la{" "}
-                <Link href="/privacy" className="text-primary hover:underline">
-                  política de privacidad
-                </Link>
-                *
+                Acepto los términos y condiciones y la política de privacidad
               </Label>
             </div>
             <Button
@@ -395,7 +388,7 @@ export default function SignUpPage() {
           </div>
           <div className="mt-4 text-center text-xs">
             ¿Ya tienes una cuenta?{" "}
-            <Link href="/auth/signin" className="text-primary">
+            <Link href="/auth/signin" className="text-primary hover:underline">
               Inicia sesión
             </Link>
           </div>

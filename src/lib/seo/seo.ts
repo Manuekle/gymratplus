@@ -251,6 +251,33 @@ export const authSEO = {
       keywords: ["registro", "signup", "crear cuenta", "nuevo usuario"],
       noindex: true,
     }),
+
+  forgotPassword: () =>
+    generateMetadata({
+      title: "Recuperar Contraseña",
+      description:
+        "Recupera tu contraseña de GymRat+ con código de verificación",
+      keywords: [
+        "recuperar contraseña",
+        "olvidé mi contraseña",
+        "reset password",
+        "código de verificación",
+      ],
+      noindex: true,
+    }),
+
+  resetPassword: () =>
+    generateMetadata({
+      title: "Restablecer Contraseña",
+      description: "Restablece tu contraseña de GymRat+",
+      keywords: [
+        "restablecer contraseña",
+        "cambiar contraseña",
+        "nueva contraseña",
+        "reset password",
+      ],
+      noindex: true,
+    }),
 };
 
 /**

@@ -28,118 +28,77 @@ export function PasswordResetCodeEmail({
   return (
     <Html lang="es" dir="ltr">
       <Head />
-      <Preview>
-        Código de verificación - Restablece tu contraseña en GymRat+
-      </Preview>
+      <Preview>Tu código de verificación: {code} - GymRat+</Preview>
       <Tailwind>
         <Body
-          className="bg-gray-100 py-[40px]"
           style={{
             fontFamily:
               '"Geist", "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
           }}
         >
-          <Container className="mx-auto bg-white rounded-[8px] shadow-sm max-w-[600px] px-[32px] py-[40px]">
-            {/* Header */}
-            <Section className="text-center mb-[32px]">
-              <Heading className="text-[28px] font-bold text-gray-900 mb-[8px] m-0">
+          <Container className="mx-auto max-w-[520px] px-[24px] py-[32px]">
+            {/* Header - Minimalista */}
+            <Section className="mb-[24px]">
+              <Heading className="text-[24px] tracking-heading font-semibold text-gray-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>
-              <Text className="text-[16px] text-gray-600 m-0">
-                Código de Verificación
+              <Text className="text-[13px] text-gray-500 m-0">
+                Código de verificación
               </Text>
             </Section>
 
-            {/* Main Content */}
-            <Section className="mb-[32px]">
-              {userName ? (
-                <Text className="text-[16px] text-gray-800 mb-[16px] leading-[24px]">
-                  Hola <strong>{userName}</strong>,
-                </Text>
-              ) : (
-                <Text className="text-[16px] text-gray-800 mb-[16px] leading-[24px]">
-                  Hola,
-                </Text>
-              )}
-              <Text className="text-[16px] text-gray-800 mb-[16px] leading-[24px]">
-                Recibimos una solicitud para restablecer la contraseña de tu
-                cuenta
-                {userEmail && (
-                  <>
-                    {" "}
-                    asociada con <strong>{userEmail}</strong>
-                  </>
-                )}
-                .
+            {/* Greeting - Compacto */}
+            <Section className="mb-[20px]">
+              <Text className="text-[15px] text-gray-900 mb-[12px] leading-[22px] m-0">
+                {userName ? `Hola ${userName},` : "Hola,"}
               </Text>
-              <Text className="text-[16px] text-gray-800 mb-[24px] leading-[24px]">
-                Usa el siguiente código de verificación de 6 dígitos:
+              <Text className="text-[15px] text-gray-700 mb-0 leading-[22px] m-0">
+                Usa este código para restablecer tu contraseña
+                {userEmail && ` de ${userEmail}`}:
               </Text>
             </Section>
 
-            {/* Code Display */}
-            <Section className="text-center mb-[32px]">
+            {/* Code Display - Moderno y destacado */}
+            <Section className="text-center mb-[24px]">
               <div
-                className="bg-black text-white px-[40px] py-[20px] rounded-[8px] inline-block"
                 style={{
+                  backgroundColor: "#000000",
+                  color: "#ffffff",
+                  padding: "16px 32px",
+                  borderRadius: "12px",
+                  display: "inline-block",
                   fontFamily:
                     '"Geist Mono", "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace',
-                  letterSpacing: "8px",
-                  fontSize: "32px",
-                  fontWeight: "bold",
+                  letterSpacing: "6px",
+                  fontSize: "28px",
+                  fontWeight: "600",
+                  lineHeight: "1.2",
                 }}
               >
                 {code}
               </div>
             </Section>
 
-            {/* Instructions */}
-            <Section className="mb-[32px]">
-              <Text className="text-[14px] text-gray-600 mb-[8px] text-center">
-                Ingresa este código en la página de restablecimiento de
-                contraseña.
+            {/* Expiry Notice - Compacto */}
+            <Section className="mb-[20px]">
+              <Text className="text-[13px] text-gray-600 mb-0 leading-[18px] text-center m-0">
+                Válido por {expiresIn}
               </Text>
             </Section>
 
-            {/* Security Notice */}
-            <Section className="bg-yellow-50 border border-yellow-200 rounded-[8px] p-[20px] mb-[32px]">
-              <Text className="text-[14px] text-yellow-800 mb-[8px] font-semibold">
-                ⚠️ Aviso de Seguridad
-              </Text>
-              <Text className="text-[14px] text-yellow-700 m-0 leading-[20px]">
-                Este código expirará en {expiresIn} por seguridad. Si no
-                solicitaste este cambio, ignora este email y tu contraseña
-                permanecerá sin cambios.
+            {/* Security Notice - Minimalista */}
+            <Section className="bg-gray-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-[12px] text-gray-600 mb-0 leading-[18px] m-0">
+                <strong>Seguridad:</strong> Si no solicitaste este cambio,
+                ignora este email. Nunca compartas este código con nadie.
               </Text>
             </Section>
 
-            {/* Security Tip */}
-            <Section className="bg-gray-50 border border-gray-200 rounded-[8px] p-[20px] mb-[32px]">
-              <Text className="text-[14px] text-gray-800 mb-[8px] font-semibold">
-                💡 Consejo de Seguridad
-              </Text>
-              <Text className="text-[14px] text-gray-700 m-0 leading-[20px]">
-                Nunca compartas este código con nadie. GymRatPlus nunca te
-                pedirá tu código por teléfono o email.
-              </Text>
-            </Section>
-
-            {/* Additional Info */}
-            <Section className="mb-[32px]">
-              <Text className="text-[14px] text-gray-600 leading-[20px]">
-                Si tienes problemas o no solicitaste este cambio, contacta
-                nuestro equipo de soporte inmediatamente.
-              </Text>
-            </Section>
-
-            {/* Footer */}
-            <Section className="border-t border-gray-200 pt-[24px] text-center">
-              <Text className="text-[12px] text-gray-500 mb-[8px] m-0">
-                © {new Date().getFullYear()} GymRatPlus. Todos los derechos
+            {/* Footer - Minimalista */}
+            <Section className="border-t border-gray-100 pt-[20px]">
+              <Text className="text-[11px] text-gray-400 mb-[4px] m-0 text-center">
+                © {new Date().getFullYear()} GymRat+. Todos los derechos
                 reservados.
-              </Text>
-              <Text className="text-[12px] text-gray-500 mb-[8px] m-0">
-                Si tienes problemas, contacta a nuestro equipo de soporte.
               </Text>
             </Section>
           </Container>
