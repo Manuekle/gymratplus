@@ -382,7 +382,7 @@ export default function GoalsHistoryPage() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
-        <TabsList className="grid grid-cols-5 mb-4">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 mb-4 gap-2 sm:gap-4">
           <TabsTrigger value="all">Todos</TabsTrigger>
           <TabsTrigger value="weight">Peso</TabsTrigger>
           <TabsTrigger value="strength">Fuerza</TabsTrigger>

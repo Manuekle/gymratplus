@@ -36,12 +36,6 @@ interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
 }
 
-const EXPERIENCE_LEVELS = [
-  { value: "principiante", label: "Principiante" },
-  { value: "intermedio", label: "Intermedio" },
-  { value: "avanzado", label: "Avanzado" },
-];
-
 // **EL COMPONENTE HA SIDO RENOMBRADO A InstructorSearchContent**
 export default function InstructorSearchContent() {
   const router = useRouter();
@@ -54,7 +48,6 @@ export default function InstructorSearchContent() {
   const [country, setCountry] = useState<string>("");
   const [isRemote, setIsRemote] = useState(false); // **Valor inicial por defecto**
   const [maxPrice, setMaxPrice] = useState("");
-  const [experience, setExperience] = useState("");
   const [instructors, setInstructors] = useState<InstructorWithProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [requestingInstructorId, setRequestingInstructorId] = useState<
@@ -74,7 +67,6 @@ export default function InstructorSearchContent() {
       setCountry(searchParams.get("country") || "");
       setIsRemote(searchParams.get("isRemote") === "true");
       setMaxPrice(searchParams.get("maxPrice") || "");
-      setExperience(searchParams.get("experienceLevel") || "");
       setSelectedSpecialties(searchParams.get("tagFilter")?.split(",") || []);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -125,14 +117,7 @@ export default function InstructorSearchContent() {
       fetchInstructors();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    country,
-    isRemote,
-    maxPrice,
-    experience,
-    selectedSpecialties,
-    requestedInstructors,
-  ]);
+  }, [country, isRemote, maxPrice, selectedSpecialties, requestedInstructors]);
 
   const fetchInstructors = useCallback(async () => {
     setIsLoading(true);
@@ -141,7 +126,6 @@ export default function InstructorSearchContent() {
       if (country) params.append("country", country);
       if (isRemote) params.append("isRemote", "true");
       if (maxPrice) params.append("maxPrice", maxPrice);
-      if (experience) params.append("experienceLevel", experience);
       if (selectedSpecialties.length > 0)
         params.set("tagFilter", selectedSpecialties.join(","));
 
@@ -170,14 +154,7 @@ export default function InstructorSearchContent() {
     } finally {
       setIsLoading(false);
     }
-  }, [
-    country,
-    isRemote,
-    maxPrice,
-    experience,
-    selectedSpecialties,
-    requestedInstructors,
-  ]);
+  }, [country, isRemote, maxPrice, selectedSpecialties, requestedInstructors]);
 
   // **MODIFICACIÓN CLAVE 2:** Eliminamos el `useEffect` anterior que llamaba a `fetchInstructors()`
   // y ahora lo llamamos solo en `handleSearch` y en el `useEffect` de inicialización de `searchParams`.
@@ -194,7 +171,6 @@ export default function InstructorSearchContent() {
     if (country) params.set("country", country);
     if (isRemote) params.set("isRemote", "true");
     if (maxPrice) params.set("maxPrice", maxPrice);
-    if (experience) params.set("experienceLevel", experience);
     if (selectedSpecialties.length > 0)
       params.set("tagFilter", selectedSpecialties.join(","));
     router.push(`?${params.toString()}`);
@@ -307,27 +283,6 @@ export default function InstructorSearchContent() {
               className="text-xs"
               onChange={(e) => setMaxPrice(e.target.value)}
             />
-          </div>
-          <div className="space-y-1.5 col-span-3 md:col-span-2 lg:col-span-1">
-            <Label htmlFor="experience" className="text-xs">
-              Nivel de experiencia
-            </Label>
-            <Select value={experience} onValueChange={setExperience}>
-              <SelectTrigger className="w-full h-9 text-xs">
-                <SelectValue placeholder="Todos" />
-              </SelectTrigger>
-              <SelectContent>
-                {EXPERIENCE_LEVELS.map((lvl) => (
-                  <SelectItem
-                    key={lvl.value}
-                    value={lvl.value}
-                    className="text-xs"
-                  >
-                    {lvl.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
           </div>
           <div className="flex flex-row flex-wrap gap-3 items-center md:col-span-3">
             <div className="flex items-center gap-1.5">

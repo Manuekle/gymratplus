@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useLayoutEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -15,10 +16,69 @@ import {
   Tick02Icon,
   UserGroupIcon,
   WorkoutRunIcon,
+  Dumbbell01Icon,
+  Apple01Icon,
+  Message01Icon,
+  FireIcon,
+  WeightScaleIcon,
+  Calendar01Icon,
+  PresentationBarChart02Icon,
+  StarIcon,
 } from "@hugeicons/core-free-icons";
 
 export default function GymRatLanding() {
-  const { theme } = useTheme();
+  const { resolvedTheme, systemTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  // Inicializar el tema detectado usando una función para evitar problemas de hidratación
+  const [detectedTheme, setDetectedTheme] = useState<"light" | "dark">(() => {
+    // Solo ejecutar en el cliente
+    if (typeof window !== "undefined") {
+      return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+    }
+    return "light";
+  });
+
+  // Sincronizar con next-themes cuando esté disponible
+  useEffect(() => {
+    setMounted(true);
+
+    // Escuchar cambios en la preferencia del sistema
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+      const handleChange = (e: MediaQueryListEvent) => {
+        setDetectedTheme(e.matches ? "dark" : "light");
+      };
+
+      // Usar addEventListener si está disponible (navegadores modernos)
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener("change", handleChange);
+      } else {
+        // Fallback para navegadores antiguos
+        mediaQuery.addListener(handleChange);
+      }
+
+      return () => {
+        if (mediaQuery.removeEventListener) {
+          mediaQuery.removeEventListener("change", handleChange);
+        } else {
+          mediaQuery.removeListener(handleChange);
+        }
+      };
+    }
+  }, []);
+
+  // Prioridad: resolvedTheme > systemTheme > detectedTheme
+  const currentTheme =
+    mounted && resolvedTheme
+      ? resolvedTheme
+      : mounted && systemTheme
+        ? systemTheme
+        : detectedTheme;
+
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white relative overflow-hidden transition-colors">
       {/* Background Grid */}
@@ -27,9 +87,10 @@ export default function GymRatLanding() {
       {/* Background Blur Effects */}
       <div className="absolute top-0 left-1/4 w-48 h-48 bg-gradient-to-br from-zinc-500/5 to-transparent rounded-full blur-2xl"></div>
       <div className="absolute top-1/3 right-1/4 w-40 h-40 bg-gradient-to-tl from-zinc-600/5 dark:from-white/5 to-transparent rounded-full blur-2xl"></div>
+      <div className="absolute bottom-1/4 left-1/3 w-56 h-56 bg-gradient-to-tr from-blue-500/5 dark:from-blue-400/5 to-transparent rounded-full blur-3xl"></div>
 
       {/* Navigation */}
-      <nav className="relative z-10 bg-white dark:bg-black shadow-sm py-4">
+      <nav className="relative z-10 bg-white/80 dark:bg-black/80 backdrop-blur-md shadow-sm py-4 border-b border-zinc-200/50 dark:border-zinc-800/50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="flex justify-between items-center">
             <div className="flex items-center space-x-2">
@@ -43,6 +104,12 @@ export default function GymRatLanding() {
                 className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
               >
                 Características
+              </Link>
+              <Link
+                href="#funcionalidades"
+                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
+              >
+                Funcionalidades
               </Link>
               <Link
                 href="#precios"
@@ -78,36 +145,51 @@ export default function GymRatLanding() {
       </nav>
 
       {/* Hero */}
-      <section className="relative z-10 pt-16 pb-20">
+      <section className="relative z-10 pt-20 pb-24">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <Badge
             variant="outline"
-            className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+            className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-6"
           >
             <span className="text-xs text-foreground font-normal">
               Plataforma inteligente de fitness
             </span>
           </Badge>
 
-          <h1 className="text-4xl md:text-5xl font-semibold  mb-4 tracking-heading">
-            GymRat+
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-semibold mb-6 tracking-heading">
+            Transforma tu cuerpo,
+            <br />
+            <span className="bg-gradient-to-r from-zinc-900 to-zinc-600 dark:from-white dark:to-zinc-300 bg-clip-text text-transparent">
+              transforma tu vida
+            </span>
           </h1>
-          <p className="text-xs text-muted-foreground mb-8 leading-relaxed max-w-2xl mx-auto">
+          <p className="text-xs md:text-xs text-muted-foreground mb-10 leading-relaxed max-w-2xl mx-auto">
             La plataforma inteligente que conecta entrenadores y atletas para
-            experiencias de entrenamiento personalizadas
+            experiencias de entrenamiento personalizadas. Planes de nutrición
+            inteligentes, seguimiento avanzado y coaching profesional en un solo
+            lugar.
           </p>
-          <Button
-            className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 px-6 py-2"
-            asChild
-          >
-            <Link href="/auth/signup">Empezar ahora</Link>
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Button
+              className="bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 px-8 py-3 text-xs"
+              asChild
+            >
+              <Link href="/auth/signup">Empezar gratis</Link>
+            </Button>
+            <Button
+              variant="outline"
+              className="px-8 py-3 text-xs border-2"
+              asChild
+            >
+              <Link href="#caracteristicas">Ver características</Link>
+            </Button>
+          </div>
         </div>
       </section>
 
       {/* App Preview */}
       <section className="relative z-10 py-20">
-        <div className="max-w-5xl mx-auto px-4">
+        <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge
               variant="outline"
@@ -117,10 +199,10 @@ export default function GymRatLanding() {
                 Aplicación móvil
               </span>
             </Badge>
-            <h2 className="text-3xl tracking-heading font-semibold  mb-3">
+            <h2 className="text-3xl md:text-4xl tracking-heading font-semibold mb-3">
               Diseñado para atletas
             </h2>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-xs md:text-xs">
               Simple, potente y enfocado en resultados
             </p>
           </div>
@@ -128,25 +210,27 @@ export default function GymRatLanding() {
           <div className="flex justify-center">
             <div className="relative">
               <Image
+                key={currentTheme}
                 src={
-                  theme === "dark"
+                  currentTheme === "dark"
                     ? "/images/phone_dark.png"
                     : "/images/phone_light.png"
                 }
                 alt="GymRat+ App Móvil"
                 width={300}
-                height={500}
-                className="relative"
+                height={600}
+                className="relative drop-shadow-2xl"
+                priority
               />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features - Características principales */}
       <section
         id="caracteristicas"
-        className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50"
+        className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50"
       >
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center justify-center">
@@ -160,65 +244,86 @@ export default function GymRatLanding() {
                     Características
                   </span>
                 </Badge>
-                <h2 className="text-3xl font-semibold tracking-heading mb-3">
+                <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
                   Todo lo que necesitas
                 </h2>
-                <p className="text-muted-foreground text-xs">
-                  Herramientas profesionales para tu entrenamiento
+                <p className="text-muted-foreground text-xs md:text-xs">
+                  Herramientas profesionales para tu entrenamiento y nutrición
                 </p>
               </div>
 
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={Target02Icon}
-                      className="w-4 h-4 text-zinc-700 dark:text-white"
+                      className="w-5 h-5 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
                       Entrenamientos Personalizados
                     </h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">
+                    <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
                       Planes de entrenamiento inteligentes que se adaptan a tus
-                      objetivos y progreso
+                      objetivos y progreso. Crea rutinas personalizadas o asigna
+                      planes a tus estudiantes.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                    <HugeiconsIcon
+                      icon={Apple01Icon}
+                      className="w-5 h-5 text-zinc-700 dark:text-white"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
+                      Nutrición Inteligente
+                    </h3>
+                    <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
+                      Planes nutricionales generados con IA, calculadora de
+                      calorías y macros, y seguimiento detallado de tu
+                      alimentación diaria.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={ChartAverageIcon}
-                      className="w-4 h-4 text-zinc-700 dark:text-white"
+                      className="w-5 h-5 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
                       Seguimiento Avanzado
                     </h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">
-                      Analíticas detalladas para monitorear tu progreso y logros
-                      fitness
+                    <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
+                      Analíticas detalladas para monitorear tu progreso, peso,
+                      medidas corporales y logros fitness con gráficos
+                      interactivos.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-4">
-                  <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <div className="w-10 h-10 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
                     <HugeiconsIcon
                       icon={UserGroupIcon}
-                      className="w-4 h-4 text-zinc-700 dark:text-white"
+                      className="w-5 h-5 text-zinc-700 dark:text-white"
                     />
                   </div>
                   <div>
-                    <h3 className="font-semibold tracking-heading mb-1">
+                    <h3 className="font-semibold tracking-heading mb-1 text-xs">
                       Entrenadores Expertos
                     </h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed">
+                    <p className="text-muted-foreground text-xs md:text-xs leading-relaxed">
                       Conecta con entrenadores certificados para coaching
-                      profesional
+                      profesional, planes personalizados y seguimiento continuo.
                     </p>
                   </div>
                 </div>
@@ -228,15 +333,16 @@ export default function GymRatLanding() {
             <div className="flex justify-center items-end h-full">
               <div className="relative">
                 <Image
+                  key={currentTheme}
                   src={
-                    theme === "dark"
+                    currentTheme === "dark"
                       ? "/images/pic_dark.png"
                       : "/images/pic_light.png"
                   }
                   alt="Dashboard GymRat+"
                   width={1200}
                   height={800}
-                  className="relative rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-xl"
+                  className="relative rounded-xl border border-zinc-200 dark:border-zinc-800/50 shadow-2xl"
                 />
               </div>
             </div>
@@ -244,8 +350,456 @@ export default function GymRatLanding() {
         </div>
       </section>
 
+      {/* Funcionalidades Detalladas */}
+      <section
+        id="funcionalidades"
+        className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/50"
+      >
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge
+              variant="outline"
+              className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+            >
+              <span className="text-xs text-foreground font-normal">
+                Funcionalidades
+              </span>
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+              Potencia tu entrenamiento
+            </h2>
+            <p className="text-muted-foreground text-xs md:text-xs max-w-2xl mx-auto">
+              Descubre todas las herramientas que tenemos para ayudarte a
+              alcanzar tus objetivos
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Racha de Entrenamiento */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={FireIcon}
+                    className="w-6 h-6 text-orange-600 dark:text-orange-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Racha de Entrenamiento
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Mantén tu motivación con un sistema de racha inteligente que
+                  respeta tus días de descanso y te motiva a seguir entrenando.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Seguimiento de Peso */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={WeightScaleIcon}
+                    className="w-6 h-6 text-blue-600 dark:text-blue-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Seguimiento de Peso
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Registra tu peso, grasa corporal y masa muscular con gráficos
+                  detallados para visualizar tu progreso a lo largo del tiempo.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Objetivos y Metas */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={StarIcon}
+                    className="w-6 h-6 text-green-600 dark:text-green-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Objetivos y Metas
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Establece objetivos de peso, fuerza, medidas corporales y
+                  actividad. Visualiza tu progreso hacia cada meta.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Historial de Entrenamientos */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={Calendar01Icon}
+                    className="w-6 h-6 text-purple-600 dark:text-purple-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Historial Completo
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Accede a todo tu historial de entrenamientos, sesiones
+                  completadas y progreso de ejercicios con detalles específicos.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Analíticas Avanzadas */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={PresentationBarChart02Icon}
+                    className="w-6 h-6 text-indigo-600 dark:text-indigo-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Analíticas Avanzadas
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Dashboard completo con estadísticas, gráficos de progreso y
+                  insights para optimizar tu entrenamiento y nutrición.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* Chat con Instructores */}
+            <Card className="border border-zinc-200 dark:border-zinc-800 hover:shadow-lg transition-all duration-200">
+              <CardContent className="p-6">
+                <div className="w-12 h-12 bg-pink-100 dark:bg-pink-900/30 rounded-lg flex items-center justify-center mb-4">
+                  <HugeiconsIcon
+                    icon={Message01Icon}
+                    className="w-6 h-6 text-pink-600 dark:text-pink-400"
+                  />
+                </div>
+                <h3 className="font-semibold tracking-heading mb-2 text-xs">
+                  Comunicación Directa
+                </h3>
+                <p className="text-muted-foreground text-xs leading-relaxed">
+                  Chatea directamente con tu instructor, recibe feedback en
+                  tiempo real y resuelve dudas sobre tu plan de entrenamiento.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de Imágenes - Dashboard Features */}
+      <section className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <Badge
+              variant="outline"
+              className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+            >
+              <span className="text-xs text-foreground font-normal">
+                Dashboard
+              </span>
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+              Todo en un solo lugar
+            </h2>
+            <p className="text-muted-foreground text-xs md:text-xs">
+              Visualiza tu progreso, objetivos y estadísticas de forma clara y
+              organizada
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-6">
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <HugeiconsIcon
+                    icon={Dumbbell01Icon}
+                    className="w-4 h-4 text-zinc-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold tracking-heading mb-1">
+                    Resumen de Entrenamientos
+                  </h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Accede rápidamente a tus últimos entrenamientos, racha
+                    actual y recordatorios inteligentes.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <HugeiconsIcon
+                    icon={Apple01Icon}
+                    className="w-4 h-4 text-zinc-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold tracking-heading mb-1">
+                    Resumen Nutricional
+                  </h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Monitorea tus calorías, macros y consumo de agua del día
+                    actual de un vistazo.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-4">
+                <div className="w-8 h-8 bg-zinc-100 dark:bg-zinc-900 rounded-lg flex items-center justify-center flex-shrink-0 border border-zinc-200 dark:border-zinc-800">
+                  <HugeiconsIcon
+                    icon={Target02Icon}
+                    className="w-4 h-4 text-zinc-700 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-semibold tracking-heading mb-1">
+                    Progreso de Objetivos
+                  </h3>
+                  <p className="text-muted-foreground text-xs leading-relaxed">
+                    Visualiza el progreso de todos tus objetivos activos con
+                    barras de progreso y métricas claras.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 shadow-2xl">
+                {/* Placeholder para imagen del dashboard */}
+                <div className="aspect-video bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center">
+                  <p className="text-xs text-muted-foreground">
+                    📊 Imagen: Dashboard principal con resúmenes
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de Imágenes - Nutrición */}
+      <section className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="relative order-2 md:order-1">
+              <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 shadow-2xl">
+                <div className="aspect-video bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900 dark:to-green-800 flex items-center justify-center">
+                  <p className="text-xs text-muted-foreground">
+                    🍎 Imagen: Plan nutricional con comidas del día
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-6 order-1 md:order-2">
+              <Badge
+                variant="outline"
+                className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+              >
+                <span className="text-xs text-foreground font-normal">
+                  Nutrición
+                </span>
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+                Nutrición inteligente
+              </h2>
+              <p className="text-muted-foreground text-xs md:text-xs mb-6">
+                Planes nutricionales generados con inteligencia artificial que
+                se adaptan a tus objetivos y preferencias dietéticas.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Calculadora de calorías y macros personalizada
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Registro de comidas con base de datos extensa
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Planes de alimentación personalizados por instructores
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Seguimiento de agua y hidratación
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de Imágenes - Entrenamiento */}
+      <section className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-6">
+              <Badge
+                variant="outline"
+                className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+              >
+                <span className="text-xs text-foreground font-normal">
+                  Entrenamiento
+                </span>
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+                Entrenamientos personalizados
+              </h2>
+              <p className="text-muted-foreground text-xs md:text-xs mb-6">
+                Crea y sigue rutinas de entrenamiento completas con ejercicios,
+                series, repeticiones y pesos. Ideal tanto para atletas como para
+                instructores.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Base de datos con cientos de ejercicios
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Seguimiento de sesiones en tiempo real
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Historial completo de entrenamientos
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Asignación de rutinas por instructores
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 shadow-2xl">
+                <div className="aspect-video bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900 dark:to-blue-800 flex items-center justify-center">
+                  <p className="text-xs text-muted-foreground">
+                    💪 Imagen: Pantalla de entrenamiento activo con ejercicios
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Sección de Imágenes - Instructores */}
+      <section className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50 bg-zinc-50/50 dark:bg-zinc-950/50">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="relative order-2 md:order-1">
+              <div className="relative rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800/50 shadow-2xl">
+                <div className="aspect-video bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900 dark:to-purple-800 flex items-center justify-center">
+                  <p className="text-xs text-muted-foreground">
+                    👥 Imagen: Dashboard de instructor con estudiantes
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-6 order-1 md:order-2">
+              <Badge
+                variant="outline"
+                className="shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 rounded-4xl dark:bg-zinc-900 py-1 mb-4"
+              >
+                <span className="text-xs text-foreground font-normal">
+                  Para Instructores
+                </span>
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
+                Gestiona tu negocio fitness
+              </h2>
+              <p className="text-muted-foreground text-xs md:text-xs mb-6">
+                Herramientas profesionales para entrenadores que quieren hacer
+                crecer su negocio y ayudar a más personas.
+              </p>
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Gestión completa de estudiantes y clientes
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Creación de planes de entrenamiento y nutrición
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Dashboard de analíticas y estadísticas
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="w-5 h-5 text-purple-600 dark:text-purple-400 flex-shrink-0"
+                  />
+                  <span className="text-xs md:text-xs">
+                    Comunicación directa con estudiantes
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* What We Offer */}
-      <section className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50">
+      <section className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50">
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12">
             <Badge
@@ -256,46 +810,46 @@ export default function GymRatLanding() {
                 Para todos
               </span>
             </Badge>
-            <h2 className="text-3xl font-semibold tracking-heading mb-3">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
               Para todos los niveles
             </h2>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-xs md:text-xs">
               Desde principiantes hasta profesionales
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
             <div className="text-center">
-              <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
+              <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <HugeiconsIcon
                   icon={WorkoutRunIcon}
-                  className="w-6 h-6 text-foreground"
+                  className="w-8 h-8 text-foreground"
                 />
               </div>
-              <h3 className="text-xl font-semibold tracking-heading mb-3">
+              <h3 className="text-xl md:text-2xl font-semibold tracking-heading mb-3">
                 Para Atletas
               </h3>
-              <p className="text-muted-foreground leading-relaxed text-xs">
+              <p className="text-muted-foreground leading-relaxed text-xs md:text-xs">
                 Accede a planes de entrenamiento personalizados, rastrea tu
-                progreso y conecta con entrenadores profesionales para alcanzar
-                tus metas fitness
+                progreso, conecta con entrenadores profesionales y alcanza tus
+                metas fitness con herramientas inteligentes.
               </p>
             </div>
 
             <div className="text-center">
-              <div className="w-12 h-12 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
+              <div className="w-16 h-16 bg-zinc-100 dark:bg-zinc-900 rounded-xl flex items-center justify-center mx-auto mb-4 border border-zinc-200 dark:border-zinc-800">
                 <HugeiconsIcon
                   icon={BoxingGlove01Icon}
-                  className="w-6 h-6 text-foreground"
+                  className="w-8 h-8 text-foreground"
                 />
               </div>
-              <h3 className="text-xl font-semibold tracking-heading mb-3">
+              <h3 className="text-xl md:text-2xl font-semibold tracking-heading mb-3">
                 Para Entrenadores
               </h3>
-              <p className="text-muted-foreground leading-relaxed text-xs">
-                Gestiona tus clientes, crea planes de entrenamiento
-                personalizados y haz crecer tu negocio fitness con herramientas
-                profesionales
+              <p className="text-muted-foreground leading-relaxed text-xs md:text-xs">
+                Gestiona tus clientes, crea planes de entrenamiento y nutrición
+                personalizados, y haz crecer tu negocio fitness con herramientas
+                profesionales y analíticas avanzadas.
               </p>
             </div>
           </div>
@@ -305,7 +859,7 @@ export default function GymRatLanding() {
       {/* Pricing */}
       <section
         id="precios"
-        className="relative z-10 py-20  border-zinc-200 dark:border-zinc-800/50"
+        className="relative z-10 py-20 border-t border-zinc-200 dark:border-zinc-800/50"
       >
         <div className="max-w-4xl mx-auto px-4">
           <div className="text-center mb-12 pb-12">
@@ -317,10 +871,10 @@ export default function GymRatLanding() {
                 Precios
               </span>
             </Badge>
-            <h2 className="text-3xl font-semibold tracking-heading mb-3">
+            <h2 className="text-3xl md:text-4xl font-semibold tracking-heading mb-3">
               Precios simples
             </h2>
-            <p className="text-muted-foreground text-xs">
+            <p className="text-muted-foreground text-xs md:text-xs">
               Elige el plan que se adapte a ti
             </p>
           </div>
@@ -502,7 +1056,7 @@ export default function GymRatLanding() {
       </section>
 
       {/* Footer */}
-      <footer className="relative backdrop-blur-md bg-white/90 dark:bg-black/90 mt-16">
+      <footer className="relative backdrop-blur-md bg-white/90 dark:bg-black/90 mt-16 border-t border-zinc-200 dark:border-zinc-800/50">
         <div className="max-w-4xl mx-auto px-6 py-12">
           {/* Main content */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">

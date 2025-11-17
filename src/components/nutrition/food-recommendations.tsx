@@ -203,7 +203,7 @@ export default function FoodRecommendations() {
 
         {/* Tabs */}
         <Tabs defaultValue="breakfast">
-          <TabsList className="grid grid-cols-4 mb-4">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-4 h-auto gap-2 sm:gap-4 px-2">
             <TabsTrigger
               value="breakfast"
               className="data-[state=active]:bg-muted"
@@ -663,7 +663,7 @@ export default function FoodRecommendations() {
           </div>
 
           <Tabs defaultValue="breakfast" className="space-y-4 w-full">
-            <TabsList className="mb-4 flex flex-wrap h-auto gap-4 w-full">
+            <TabsList className="mb-4 grid grid-cols-2 sm:grid-cols-4 h-auto gap-2 sm:gap-4 w-full px-2">
               <TabsTrigger value="breakfast">
                 {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
               </TabsTrigger>

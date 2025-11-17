@@ -51,6 +51,8 @@ export function WorkoutReminderAlert({
   const [isMarkingRestDay, setIsMarkingRestDay] = useState(false);
   const [currentStreak, setCurrentStreak] = useState<number>(0);
   const [notificationCreated, setNotificationCreated] = useState(false);
+  const [hasCompletedWorkouts, setHasCompletedWorkouts] =
+    useState<boolean>(false);
 
   useEffect(() => {
     // Obtener trainingFrequency del perfil del usuario
@@ -80,6 +82,30 @@ export function WorkoutReminderAlert({
     };
 
     fetchTrainingFrequency();
+  }, [session]);
+
+  useEffect(() => {
+    // Verificar si el usuario tiene entrenamientos completados
+    const checkCompletedWorkouts = async () => {
+      if (session?.user?.id) {
+        try {
+          const response = await fetch("/api/workout-session/history");
+          if (response.ok) {
+            const sessions = await response.json();
+            const completedSessions = Array.isArray(sessions)
+              ? sessions.filter(
+                  (s: { completed?: boolean }) => s.completed === true,
+                )
+              : [];
+            setHasCompletedWorkouts(completedSessions.length > 0);
+          }
+        } catch (error) {
+          console.error("Error al verificar entrenamientos:", error);
+        }
+      }
+    };
+
+    checkCompletedWorkouts();
   }, [session]);
 
   useEffect(() => {
@@ -238,6 +264,19 @@ export function WorkoutReminderAlert({
   // Calcular días de descanso permitidos
   const allowedRestDays = 7 - trainingFrequency;
 
+  // No mostrar alerta si el usuario no tiene entrenamientos completados
+  if (!hasCompletedWorkouts) {
+    return null;
+  }
+
+  // Verificar si está en el día crítico (día crítico = allowedRestDays + 1)
+  const isCriticalDay = daysSinceLastWorkout === allowedRestDays + 1;
+
+  // No mostrar esta alerta si está en el día crítico (se muestra el StreakRiskAlert en su lugar)
+  if (isCriticalDay) {
+    return null;
+  }
+
   // Solo mostrar alerta si se excedieron los días de descanso permitidos
   if (!isVisible || daysSinceLastWorkout <= allowedRestDays) {
     return null;
@@ -369,7 +408,7 @@ export function WorkoutReminderAlert({
                   <h2 className="text-2xl font-semibold tracking-heading text-zinc-900 dark:text-white">
                     {getTitle()}
                   </h2>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     {getMessage()}
                   </p>
                 </div>

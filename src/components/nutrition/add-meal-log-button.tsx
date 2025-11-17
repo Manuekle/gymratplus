@@ -931,7 +931,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               onValueChange={setActiveTab}
               className="mt-2"
             >
-              <TabsList className="grid w-full grid-cols-2 text-xs md:text-xs">
+              <TabsList className="grid w-full grid-cols-2 h-auto gap-2 px-2 text-xs md:text-xs">
                 <TabsTrigger value="foods" className="flex items-center gap-2">
                   <HugeiconsIcon icon={FishFoodIcon} className="h-4 w-4" />
                   Alimentos

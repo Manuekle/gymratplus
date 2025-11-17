@@ -437,14 +437,16 @@ async function createMealLog(
   const mealEntries: { foodId: string; quantity: number }[] = [];
 
   for (const food of selectedFoods) {
+    if (!food || !food.id) continue; // Saltar alimentos inválidos
+
     let baseQuantity = 1.0;
-    if (isProteinCategory(food.category)) {
+    if (food.category && isProteinCategory(food.category)) {
       baseQuantity = goal === "gain-muscle" ? 1.2 : 1.0;
-    } else if (isCarbCategory(food.category)) {
+    } else if (food.category && isCarbCategory(food.category)) {
       baseQuantity = goal === "lose-weight" ? 0.8 : 1.0;
-    } else if (isVegetableCategory(food.category)) {
+    } else if (food.category && isVegetableCategory(food.category)) {
       baseQuantity = 1.5;
-    } else if (isFatCategory(food.category)) {
+    } else if (food.category && isFatCategory(food.category)) {
       baseQuantity = goal === "lose-weight" ? 0.7 : 1.0;
     }
 
@@ -455,10 +457,10 @@ async function createMealLog(
     // Calcular cantidad en gramos basada en el serving del alimento
     const quantityInGrams = (food.serving || 100) * baseQuantity;
 
-    totalCalories += food.calories * (quantityInGrams / 100);
-    totalProtein += food.protein * (quantityInGrams / 100);
-    totalCarbs += food.carbs * (quantityInGrams / 100);
-    totalFat += food.fat * (quantityInGrams / 100);
+    totalCalories += (food.calories || 0) * (quantityInGrams / 100);
+    totalProtein += (food.protein || 0) * (quantityInGrams / 100);
+    totalCarbs += (food.carbs || 0) * (quantityInGrams / 100);
+    totalFat += (food.fat || 0) * (quantityInGrams / 100);
 
     // Guardar quantity en gramos (no como ratio)
     mealEntries.push({
@@ -652,9 +654,9 @@ async function createMealLogWithTargets(
   if (selectedFoods.length > 0) {
     const sampleFood = selectedFoods[0];
     if (sampleFood) {
-      console.log(`   └─ Ejemplo alimento: ${sampleFood.name}`);
+      console.log(`   └─ Ejemplo alimento: ${sampleFood.name || "Sin nombre"}`);
       console.log(
-        `      └─ Valores nutricionales (por 100g): P=${sampleFood.protein}g, C=${sampleFood.carbs}g, F=${sampleFood.fat}g, Cal=${sampleFood.calories}kcal`,
+        `      └─ Valores nutricionales (por 100g): P=${sampleFood.protein || 0}g, C=${sampleFood.carbs || 0}g, F=${sampleFood.fat || 0}g, Cal=${sampleFood.calories || 0}kcal`,
       );
       console.log(`      └─ Serving size: ${sampleFood.serving || 100}g`);
       console.log(
@@ -859,6 +861,9 @@ async function createMealLogWithTargets(
       }
     }
 
+    // Límite máximo razonable: 10 = 1000g (1kg) por alimento
+    const MAX_QUANTITY_RATIO = 10;
+
     // Distribuir proteína entre alimentos proteicos
     if (proteinFoods.length > 0) {
       const proteinPerFood = proteinNeeded / proteinFoods.length;
@@ -867,7 +872,10 @@ async function createMealLogWithTargets(
         if (!food || !food.protein || food.protein === 0) continue;
         // quantityRatio = cantidad de macro necesaria / macro por 100g
         const ratio = proteinPerFood / food.protein;
-        individual[index] = Math.max(0.1, ratio * (0.8 + Math.random() * 0.4)); // Variación 0.8x-1.2x
+        individual[index] = Math.min(
+          MAX_QUANTITY_RATIO,
+          Math.max(0.1, ratio * (0.8 + Math.random() * 0.4)),
+        ); // Variación 0.8x-1.2x, máximo 10
       }
     }
 
@@ -879,9 +887,12 @@ async function createMealLogWithTargets(
         if (!food || !food.carbs || food.carbs === 0) continue;
         const ratio = carbsPerFood / food.carbs;
         // Si ya tiene cantidad, promediar; si no, asignar
-        individual[index] = Math.max(
-          individual[index] || 0.1,
-          ratio * (0.8 + Math.random() * 0.4),
+        individual[index] = Math.min(
+          MAX_QUANTITY_RATIO,
+          Math.max(
+            individual[index] || 0.1,
+            ratio * (0.8 + Math.random() * 0.4),
+          ),
         );
       }
     }
@@ -893,17 +904,26 @@ async function createMealLogWithTargets(
         const food = selectedFoods[index];
         if (!food || !food.fat || food.fat === 0) continue;
         const ratio = fatPerFood / food.fat;
-        individual[index] = Math.max(
-          individual[index] || 0.1,
-          ratio * (0.8 + Math.random() * 0.4),
+        individual[index] = Math.min(
+          MAX_QUANTITY_RATIO,
+          Math.max(
+            individual[index] || 0.1,
+            ratio * (0.8 + Math.random() * 0.4),
+          ),
         );
       }
     }
 
     // Asegurar que todos los alimentos seleccionados tengan al menos una cantidad mínima
+    // y que no excedan el máximo
+    const MAX_QUANTITY_RATIO = 10;
     for (const index of selectedIndicesArray) {
       if (individual[index]! < 0.1) {
         individual[index] = 0.1 + Math.random() * 0.2; // Entre 0.1 y 0.3
+      }
+      // Limitar el máximo
+      if (individual[index]! > MAX_QUANTITY_RATIO) {
+        individual[index] = MAX_QUANTITY_RATIO;
       }
     }
 
@@ -912,6 +932,7 @@ async function createMealLogWithTargets(
 
   // Mutación: Cambiar cantidad de un alimento aleatorio
   // Usar un rango de mutación adaptativo basado en los objetivos
+  const MAX_QUANTITY_RATIO = 10; // Límite máximo: 10 = 1000g
   const mutate = (
     individual: Individual,
     mutationRate: number = 0.3,
@@ -925,14 +946,18 @@ async function createMealLogWithTargets(
         const currentValue = mutated[i] || 0;
         if (Math.random() < 0.5) {
           // Agregar o modificar cantidad (mutación más grande para objetivos grandes)
-          mutated[i] = Math.max(
-            0,
-            currentValue + (Math.random() - 0.5) * mutationRange,
+          mutated[i] = Math.min(
+            MAX_QUANTITY_RATIO,
+            Math.max(0, currentValue + (Math.random() - 0.5) * mutationRange),
           );
         } else {
           // Eliminar o reducir cantidad
           mutated[i] = Math.max(0, currentValue * (0.5 + Math.random() * 0.5));
         }
+      }
+      // Asegurar que nunca exceda el máximo
+      if (mutated[i]! > MAX_QUANTITY_RATIO) {
+        mutated[i] = MAX_QUANTITY_RATIO;
       }
     }
 
@@ -1221,7 +1246,7 @@ async function createMealLogWithTargets(
 
       console.log(`      ${idx + 1}. ${food.name}:`);
       console.log(
-        `         └─ Cantidad: ${entry.quantity.toFixed(1)}g (serving=${servingSize}g)`,
+        `         └─ Cantidad: ${entry.quantity.toFixed(1)}g (serving=${food.serving || 100}g)`,
       );
       console.log(
         `         └─ Multiplicador: ${multiplier.toFixed(3)} (quantity / 100)`,

@@ -3,14 +3,128 @@ import { prisma } from "@/lib/database/prisma";
 import bcrypt from "bcryptjs";
 import { redis } from "@/lib/database/redis";
 
+// Función para validar fortaleza de contraseña
+function validatePasswordStrength(password: string): {
+  valid: boolean;
+  error?: string;
+} {
+  if (password.length < 8) {
+    return {
+      valid: false,
+      error: "La contraseña debe tener al menos 8 caracteres",
+    };
+  }
+
+  if (!/[A-Z]/.test(password)) {
+    return {
+      valid: false,
+      error: "La contraseña debe contener al menos una mayúscula",
+    };
+  }
+
+  if (!/[a-z]/.test(password)) {
+    return {
+      valid: false,
+      error: "La contraseña debe contener al menos una minúscula",
+    };
+  }
+
+  if (!/[0-9]/.test(password)) {
+    return {
+      valid: false,
+      error: "La contraseña debe contener al menos un número",
+    };
+  }
+
+  if (!/[^A-Za-z0-9]/.test(password)) {
+    return {
+      valid: false,
+      error: "La contraseña debe contener al menos un carácter especial",
+    };
+  }
+
+  return { valid: true };
+}
+
+// Función para sanitizar inputs
+function sanitizeInput(input: string): string {
+  return input.trim().replace(/[<>]/g, "");
+}
+
+// Función para validar email
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}
+
+// Función para validar nombre
+function validateName(name: string): { valid: boolean; error?: string } {
+  const trimmedName = name.trim();
+
+  if (trimmedName.length < 2) {
+    return {
+      valid: false,
+      error: "El nombre debe tener al menos 2 caracteres",
+    };
+  }
+
+  if (trimmedName.length > 50) {
+    return {
+      valid: false,
+      error: "El nombre no puede exceder 50 caracteres",
+    };
+  }
+
+  if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(trimmedName)) {
+    return {
+      valid: false,
+      error: "El nombre solo puede contener letras y espacios",
+    };
+  }
+
+  return { valid: true };
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { email, password, name } = body;
+    let { email, password, name } = body;
 
-    if (!email || !password) {
+    // Validar campos requeridos
+    if (!email || !password || !name) {
       return NextResponse.json(
-        { error: "Email y contraseña son requeridos" },
+        { error: "Email, contraseña y nombre son requeridos" },
+        { status: 400 },
+      );
+    }
+
+    // Sanitizar inputs
+    email = sanitizeInput(email).toLowerCase();
+    name = sanitizeInput(name);
+    password = password.trim(); // No sanitizar contraseña para permitir caracteres especiales
+
+    // Validar email
+    if (!validateEmail(email)) {
+      return NextResponse.json(
+        { error: "Formato de email inválido" },
+        { status: 400 },
+      );
+    }
+
+    // Validar nombre
+    const nameValidation = validateName(name);
+    if (!nameValidation.valid) {
+      return NextResponse.json(
+        { error: nameValidation.error },
+        { status: 400 },
+      );
+    }
+
+    // Validar fortaleza de contraseña
+    const passwordValidation = validatePasswordStrength(password);
+    if (!passwordValidation.valid) {
+      return NextResponse.json(
+        { error: passwordValidation.error },
         { status: 400 },
       );
     }

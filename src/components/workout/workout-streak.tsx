@@ -84,13 +84,21 @@ const getStreakColor = (streak: number) => {
 
 export function WorkoutStreak({ userId }: WorkoutStreakProps) {
   const [stats, setStats] = useState<StreakStats | null>(null);
-  const { showStreakAlert } = useStreakAlert();
+  const [isLoading, setIsLoading] = useState(true);
+  const { showStreakAlert, showStreakRiskAlert } = useStreakAlert();
   const previousStreak = useRef<number>(0);
+  const hasShownRiskAlert = useRef<boolean>(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
+        setIsLoading(true);
         const response = await fetch(`/api/workout-streak?userId=${userId}`);
+
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+
         const data = await response.json();
 
         // Logs de debug
@@ -112,7 +120,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
         );
         console.log("===================");
 
-        const newStreak = data.currentStreak;
+        const newStreak = data.currentStreak || 0;
         const oldStreak = previousStreak.current;
 
         // Mostrar alerta cuando la racha cambia a un múltiplo de 10
@@ -132,10 +140,68 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           showStreakAlert(newStreak);
         }
 
-        setStats(data);
+        setStats({
+          currentStreak: newStreak,
+          longestStreak: data.longestStreak || 0,
+          lastWorkoutAt: data.lastWorkoutAt
+            ? new Date(data.lastWorkoutAt)
+            : null,
+          lastRestDayAt: data.lastRestDayAt
+            ? new Date(data.lastRestDayAt)
+            : null,
+        });
         previousStreak.current = newStreak;
+
+        // Verificar si está en el día crítico después de obtener los datos
+        // Usar los datos de check-reset para obtener información más precisa
+        if (newStreak > 0) {
+          try {
+            const checkResponse = await fetch(
+              "/api/workout-streak/check-reset",
+              {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId }),
+              },
+            );
+
+            const checkResult = await checkResponse.json();
+            console.log("🔍 Check result en fetchStats:", checkResult);
+
+            // Si está en el día crítico, mostrar alert
+            if (checkResult.isCriticalDay && newStreak > 0) {
+              const todayKey = new Date().toDateString();
+              const lastShownKey = sessionStorage.getItem(
+                "streakRiskAlertShown",
+              );
+
+              if (lastShownKey !== todayKey && !hasShownRiskAlert.current) {
+                console.log(
+                  "✅ Mostrando alert de racha en riesgo desde fetchStats",
+                );
+                showStreakRiskAlert(
+                  newStreak,
+                  checkResult.allowedRestDays || 0,
+                );
+                sessionStorage.setItem("streakRiskAlertShown", todayKey);
+                hasShownRiskAlert.current = true;
+              }
+            }
+          } catch (error) {
+            console.error("Error checking critical day in fetchStats:", error);
+          }
+        }
       } catch (error) {
         console.error("Error fetching streak stats:", error);
+        // En caso de error, mostrar 0 días
+        setStats({
+          currentStreak: 0,
+          longestStreak: 0,
+          lastWorkoutAt: null,
+          lastRestDayAt: null,
+        });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -144,17 +210,68 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
     // Verificar y resetear racha si es necesario
     const checkStreak = async () => {
       try {
-        await fetch("/api/workout-streak/check-reset", {
+        // Primero obtener las estadísticas de la racha para verificar el día crítico
+        const statsResponse = await fetch(
+          `/api/workout-streak?userId=${userId}`,
+        );
+        const statsData = await statsResponse.json();
+
+        const response = await fetch("/api/workout-streak/check-reset", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId }),
         });
+
+        const result = await response.json();
+
+        console.log("🔍 Check streak result:", result);
+        console.log("🔍 Stats data:", statsData);
+
+        // Verificar si está en el día crítico basándose en los datos reales
+        // Si tiene racha y está en el día crítico según el cálculo
+        const isCritical =
+          result.isCriticalDay &&
+          (result.currentStreak > 0 || statsData.currentStreak > 0);
+        const currentStreakValue =
+          result.currentStreak || statsData.currentStreak || 0;
+        const allowedRest = result.allowedRestDays || 0;
+
+        console.log("🔍 Is critical day:", isCritical);
+        console.log("🔍 Current streak:", currentStreakValue);
+
+        // Si está en el día crítico, mostrar alert y enviar notificación
+        if (isCritical && currentStreakValue > 0) {
+          // Solo mostrar el alert una vez por día
+          const todayKey = new Date().toDateString();
+          const lastShownKey = sessionStorage.getItem("streakRiskAlertShown");
+
+          console.log("🔍 Today key:", todayKey);
+          console.log("🔍 Last shown key:", lastShownKey);
+          console.log("🔍 Has shown current:", hasShownRiskAlert.current);
+
+          if (lastShownKey !== todayKey && !hasShownRiskAlert.current) {
+            console.log("✅ Mostrando alert de racha en riesgo");
+            showStreakRiskAlert(currentStreakValue, allowedRest);
+            sessionStorage.setItem("streakRiskAlertShown", todayKey);
+            hasShownRiskAlert.current = true;
+          }
+
+          // Enviar notificación si es necesario
+          await fetch("/api/workout-streak/check-reset", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ userId }),
+          });
+        } else {
+          // Resetear el flag si ya no está en día crítico
+          hasShownRiskAlert.current = false;
+        }
       } catch (error) {
         console.error("Error checking streak reset:", error);
       }
     };
 
-    // Verificar reset cada hora
+    // Verificar reset al cargar y cada hora
     checkStreak();
     const checkInterval = setInterval(checkStreak, 60 * 60 * 1000);
 
@@ -188,11 +305,31 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
     };
   }, [userId, showStreakAlert]);
 
-  if (!stats) {
-    return null;
+  // Mostrar estado de carga o racha
+  if (isLoading || !stats) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Image
+          src="/svg/streak.svg"
+          alt="Racha"
+          width={16}
+          height={16}
+          className="h-4 w-4 opacity-50 animate-pulse"
+          style={{
+            filter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+          }}
+        />
+        <Badge
+          variant="secondary"
+          className="text-xs text-muted-foreground opacity-50"
+        >
+          ...
+        </Badge>
+      </div>
+    );
   }
 
-  // Si la racha es 0, no mostrar nada o mostrar "0 días" en gris
+  // Si la racha es 0, mostrar "0 días" en gris
   if (stats.currentStreak === 0) {
     return (
       <div className="flex items-center space-x-2">

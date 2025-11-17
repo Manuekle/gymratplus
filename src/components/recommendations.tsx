@@ -199,6 +199,18 @@ export default function RecommendationsComponent() {
     ): Promise<void> => {
       if (!profileData) return;
 
+      // TODO: QUITAR ESTO DESPUÉS DE PROBAR - Solo para testing
+      // Eliminar recomendaciones existentes antes de generar nuevas
+      try {
+        await fetch("/api/food-recommendations", {
+          method: "DELETE",
+        });
+        console.log("✅ Recomendaciones existentes eliminadas para testing");
+      } catch (error) {
+        console.error("Error eliminando recomendaciones existentes:", error);
+        // Continuar aunque falle la eliminación
+      }
+
       // Determinar nivel de experiencia
       const level = determineExperienceLevel(profileData);
       setExperienceLevel(level);
@@ -240,6 +252,23 @@ export default function RecommendationsComponent() {
         // Intermedio/Avanzado: solo generar plan de alimentación
         setIsLoading(true);
         try {
+          // TODO: QUITAR ESTO DESPUÉS DE PROBAR - Solo para testing
+          // Eliminar recomendaciones existentes antes de generar nuevas
+          try {
+            await fetch("/api/food-recommendations", {
+              method: "DELETE",
+            });
+            console.log(
+              "✅ Recomendaciones existentes eliminadas para testing",
+            );
+          } catch (error) {
+            console.error(
+              "Error eliminando recomendaciones existentes:",
+              error,
+            );
+            // Continuar aunque falle la eliminación
+          }
+
           const response = await fetch("/api/recommendations", {
             method: "POST",
             headers: {
@@ -347,9 +376,13 @@ export default function RecommendationsComponent() {
             {experienceLevel === "beginner" ? (
               // Principiante: mostrar ambos planes generados automáticamente
               <Tabs defaultValue="workout" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
-                  <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
-                  <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 mb-8 h-auto gap-2 px-2">
+                  <TabsTrigger value="workout" className="text-xs">
+                    Entrenamiento
+                  </TabsTrigger>
+                  <TabsTrigger value="nutrition" className="text-xs">
+                    Nutrición
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="workout" className="mt-0">
@@ -408,9 +441,13 @@ export default function RecommendationsComponent() {
             ) : (
               // Intermedio/Avanzado: mostrar plan de alimentación y opción para crear entrenamiento
               <Tabs defaultValue="nutrition" className="w-full">
-                <TabsList className="grid w-full grid-cols-2 mb-8">
-                  <TabsTrigger value="nutrition">Nutrición</TabsTrigger>
-                  <TabsTrigger value="workout">Entrenamiento</TabsTrigger>
+                <TabsList className="grid w-full grid-cols-2 mb-8 h-auto gap-2 px-2">
+                  <TabsTrigger value="nutrition" className="text-xs">
+                    Nutrición
+                  </TabsTrigger>
+                  <TabsTrigger value="workout" className="text-xs">
+                    Entrenamiento
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="nutrition" className="mt-0">

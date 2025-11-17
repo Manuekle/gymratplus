@@ -99,6 +99,10 @@ export const authOptions: NextAuthOptions = {
           response_type: "code",
         },
       },
+      httpOptions: {
+        timeout: 15000, // 15 segundos para dar más tiempo a las solicitudes OAuth
+      },
+      checks: ["pkce", "state"],
     }),
     CredentialsProvider({
       name: "credentials",

@@ -68,7 +68,7 @@ const instructorFormSchema = z.object({
 type InstructorFormValues = z.infer<typeof instructorFormSchema>;
 
 export default function InstructorRegistrationPage() {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [hasSubscription, setHasSubscription] = useState(false);
@@ -125,7 +125,6 @@ export default function InstructorRegistrationPage() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            router.push("/dashboard/profile");
             return 0;
           }
           return prev - 1;
@@ -134,7 +133,15 @@ export default function InstructorRegistrationPage() {
 
       return () => clearInterval(timer);
     }
-  }, [step, router]);
+    return undefined;
+  }, [step]);
+
+  // Navigate when countdown reaches 0
+  useEffect(() => {
+    if (step === 3 && countdown === 0) {
+      router.push("/dashboard/profile");
+    }
+  }, [step, countdown, router]);
 
   // Check if user is already an instructor or has an active subscription
   useEffect(() => {
@@ -154,17 +161,56 @@ export default function InstructorRegistrationPage() {
           return;
         } else if (instructorProfile) {
           // If user has an instructor profile but no active subscription, pre-fill the form
+          const curriculumStr =
+            typeof instructorProfile.curriculum === "string"
+              ? instructorProfile.curriculum
+              : "";
+          const bioStr =
+            typeof instructorProfile.bio === "string"
+              ? instructorProfile.bio
+              : "";
+          const contactEmailStr =
+            typeof instructorProfile.contactEmail === "string"
+              ? instructorProfile.contactEmail
+              : typeof session.user.email === "string"
+                ? session.user.email
+                : "";
+          const contactPhoneStr =
+            typeof instructorProfile.contactPhone === "string"
+              ? instructorProfile.contactPhone
+              : "";
+          const countryStr =
+            typeof instructorProfile.country === "string"
+              ? instructorProfile.country
+              : "";
+          const cityStr =
+            typeof instructorProfile.city === "string"
+              ? instructorProfile.city
+              : "";
+
+          // Convert specialty names back to IDs for TagSelector
+          const specialtyNames = curriculumStr ? curriculumStr.split(", ") : [];
+          const specialtyIds = specialtyNames.map((name) => {
+            const specialty = SPECIALTIES.find((s) => s.name === name.trim());
+            return specialty ? specialty.id : name.trim();
+          });
+
           form.reset({
-            bio: instructorProfile.bio || "",
-            specialties: instructorProfile.curriculum?.split(", ") || [],
-            pricePerMonth: instructorProfile.pricePerMonth || 50,
-            contactEmail:
-              instructorProfile.contactEmail || session.user.email || "",
-            contactPhone: instructorProfile.contactPhone || "",
-            country: instructorProfile.country || "",
-            city: instructorProfile.city || "",
-            isRemote: instructorProfile.isRemote || false,
-            curriculum: instructorProfile.curriculum || "",
+            bio: bioStr,
+            specialties: specialtyIds,
+            pricePerMonth:
+              typeof instructorProfile.pricePerMonth === "number"
+                ? instructorProfile.pricePerMonth
+                : 50,
+            contactEmail: contactEmailStr,
+            contactPhone: contactPhoneStr,
+            country: countryStr,
+            city: cityStr,
+            isRemote:
+              typeof instructorProfile.isRemote === "boolean"
+                ? instructorProfile.isRemote
+                : false,
+            curriculum: curriculumStr,
           });
         }
       } catch (error) {
@@ -211,10 +257,13 @@ export default function InstructorRegistrationPage() {
 
   useEffect(() => {
     if (session?.user) {
-      if (session.user.email) {
+      if (session.user.email && typeof session.user.email === "string") {
         form.setValue("contactEmail", session.user.email);
       }
-      if (session.user.profile?.phone) {
+      if (
+        session.user.profile?.phone &&
+        typeof session.user.profile.phone === "string"
+      ) {
         form.setValue("contactPhone", session.user.profile.phone);
       }
     }
@@ -233,7 +282,13 @@ export default function InstructorRegistrationPage() {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const values = form.getValues();
-      const curriculum = values.specialties?.join(", ") || "";
+      // Convert specialty IDs to their display names
+      const specialtyNames =
+        values.specialties?.map((id) => {
+          const specialty = SPECIALTIES.find((s) => s.id === id);
+          return specialty ? specialty.name : id;
+        }) || [];
+      const curriculum = specialtyNames.join(", ");
       const payload = {
         bio: values.bio,
         curriculum,
@@ -281,40 +336,18 @@ export default function InstructorRegistrationPage() {
 
       // Actualizar la sesión usando el trigger "update" de NextAuth
       // Esto hará que el callback jwt recargue los datos desde la base de datos
-      if (session?.user) {
-        await update({
-          ...session,
-          user: {
-            ...session.user,
-            isInstructor: true,
-          },
-        });
-      }
+      await update();
 
       // Show success step and reset countdown
       setStep(3);
       setCountdown(10);
 
-      // Start countdown for redirect
-      const timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            router.push("/dashboard/profile");
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-
-      // Cleanup interval on component unmount
-      return () => clearInterval(timer);
+      setIsLoading(false);
     } catch (error) {
       console.error("Error:", error);
       toast.error(
         error instanceof Error ? error.message : "Error al procesar el pago",
       );
-    } finally {
       setIsLoading(false);
     }
   };
@@ -544,7 +577,7 @@ export default function InstructorRegistrationPage() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-4">
+                  <div className="space-y-4">
                     <FormField
                       control={form.control}
                       name="contactEmail"
@@ -587,7 +620,7 @@ export default function InstructorRegistrationPage() {
                       )}
                     />
 
-                    <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
+                    <div className="flex flex-col gap-4">
                       <FormField
                         control={form.control}
                         name="country"
@@ -596,11 +629,13 @@ export default function InstructorRegistrationPage() {
                             <FormLabel className="text-xs font-medium">
                               País *
                             </FormLabel>
-                            <CountrySelector
-                              value={field.value}
-                              onValueChange={field.onChange}
-                              placeholder="Selecciona un país"
-                            />
+                            <FormControl>
+                              <CountrySelector
+                                value={field.value}
+                                onValueChange={field.onChange}
+                                placeholder="Selecciona un país"
+                              />
+                            </FormControl>
                             <FormMessage className="text-xs" />
                           </FormItem>
                         )}
@@ -617,6 +652,7 @@ export default function InstructorRegistrationPage() {
                             <FormControl>
                               <Input placeholder="Ej: Madrid" {...field} />
                             </FormControl>
+                            <FormMessage className="text-xs" />
                           </FormItem>
                         )}
                       />

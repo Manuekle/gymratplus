@@ -93,6 +93,16 @@ const ProfileCheck = () => {
   };
 
   useEffect(() => {
+    // No mostrar en páginas de onboarding
+    if (typeof window !== "undefined") {
+      const isOnboardingPage = window.location.pathname.includes("/onboarding");
+      if (isOnboardingPage) {
+        setShowAlert(false);
+        setIsLoading(false);
+        return;
+      }
+    }
+
     // Only proceed when session is loaded (not loading)
     if (status !== "loading") {
       setIsLoading(true);
@@ -124,18 +134,6 @@ const ProfileCheck = () => {
               (field) => !profile[field] || profile[field] === "",
             );
 
-            console.log("Profile check debug:", {
-              hasProfile: !!profile,
-              missingFields,
-              profile: {
-                gender: profile.gender,
-                birthdate: profile.birthdate,
-                height: profile.height,
-                currentWeight: profile.currentWeight,
-                goal: profile.goal,
-              },
-            });
-
             // Show alert if any required fields are missing
             showProfileAlert = missingFields.length > 0;
           }
@@ -150,16 +148,6 @@ const ProfileCheck = () => {
       }
     }
   }, [session, status]);
-
-  // Avoid mounting the component on the onboarding page to prevent loops
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const isOnboardingPage = window.location.pathname.includes("/onboarding");
-      if (isOnboardingPage) {
-        setShowAlert(false);
-      }
-    }
-  }, []);
 
   // If we're on the onboarding page, don't show anything
   if (

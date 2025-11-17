@@ -234,7 +234,7 @@ export function StreakAlert({ streak, show, onClose }: StreakAlertProps) {
                   <h2 className="text-2xl font-semibold tracking-heading text-zinc-900 dark:text-white">
                     ¡Racha de {streak} {streak === 1 ? "día" : "días"}!
                   </h2>
-                  <p className="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
                     {getMotivationalMessage(streak)}
                   </p>
                 </div>

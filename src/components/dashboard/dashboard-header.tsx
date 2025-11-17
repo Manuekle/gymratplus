@@ -37,7 +37,7 @@ export const DashboardHeader = () => {
       >
         {/* Contenedor con scroll solo en móviles */}
         <div className="w-full overflow-x-auto md:overflow-visible">
-          <TabsList className="flex flex-wrap h-auto gap-4 px-2">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
             <TabsTrigger value="dashboard" asChild>
               <Link href="/dashboard">Dashboard</Link>
             </TabsTrigger>

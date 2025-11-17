@@ -278,7 +278,7 @@ export default function ProgressChart({
         <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
           Seguimiento de Progreso
         </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
+        <CardDescription className="text-xs sm:text-xs">
           Gráfico de evolución física
         </CardDescription>
         <CardAction>

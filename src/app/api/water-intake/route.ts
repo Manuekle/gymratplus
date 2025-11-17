@@ -5,7 +5,6 @@ import { prisma } from "@/lib/database/prisma";
 import {
   storeWaterIntake,
   getWaterIntake,
-  publishNotification,
   publishWaterIntake,
 } from "@/lib/database/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/notifications/create-system-notifications";
@@ -141,14 +140,6 @@ export async function POST(req: NextRequest) {
         await prisma.profile.update({
           where: { userId: session.user.id },
           data: { lastWaterGoalNotification: new Date() },
-        });
-
-        // Publish notification to Redis for real-time updates
-        await publishNotification(session.user.id, {
-          type: "water",
-          title: "Meta de agua alcanzada",
-          message:
-            "¡Felicidades! Has alcanzado tu meta diaria de consumo de agua.",
         });
       }
 

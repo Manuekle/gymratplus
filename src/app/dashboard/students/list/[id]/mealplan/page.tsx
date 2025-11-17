@@ -1287,7 +1287,7 @@ export default function CreateMealPlanPage() {
                     value={activeMeal}
                     onValueChange={(v) => setActiveMeal(v as typeof activeMeal)}
                   >
-                    <TabsList className="grid w-full grid-cols-4 h-10">
+                    <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto gap-2 sm:gap-4 px-2">
                       {Object.entries(mealLabels).map(([key, label]) => (
                         <TabsTrigger key={key} value={key} className="text-xs">
                           <HugeiconsIcon

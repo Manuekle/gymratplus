@@ -7,6 +7,7 @@ import { useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import {
   Card,
   CardContent,
@@ -24,28 +25,70 @@ export default function SignInPage() {
   const [loading, setLoading] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState("");
   const router = useRouter();
+
+  // Validación de email en tiempo real
+  const validateEmail = (emailValue: string) => {
+    if (!emailValue) {
+      setEmailError("");
+      return false;
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(emailValue)) {
+      setEmailError("Email inválido");
+      return false;
+    }
+
+    setEmailError("");
+    return true;
+  };
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setErrorMessage("");
+    setEmailError("");
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+    // Validaciones
+    if (!validateEmail(email)) {
+      setErrorMessage("Por favor, ingresa un email válido");
+      setLoading(false);
+      return;
+    }
+
+    if (!password || password.length < 1) {
+      setErrorMessage("Por favor, ingresa tu contraseña");
+      setLoading(false);
+      return;
+    }
 
     const res = await signIn("credentials", {
       redirect: false,
-      email,
+      email: email.trim(),
       password,
     });
 
     if (res?.error) {
-      setErrorMessage("Correo o contraseña incorrectos.");
+      // Mensajes de error más específicos
+      if (res.error.includes("CredentialsSignin")) {
+        setErrorMessage("Correo o contraseña incorrectos");
+      } else if (res.error.includes("Credentials")) {
+        setErrorMessage(
+          "Credenciales inválidas. Verifica tu email y contraseña",
+        );
+      } else {
+        setErrorMessage("Error al iniciar sesión. Intenta de nuevo.");
+      }
       setLoading(false);
+    } else if (res?.ok) {
+      router.push("/onboarding");
     } else {
-      router.push("/onboarding"); // Redirige al perfil después del login
+      setErrorMessage("Error al iniciar sesión. Intenta de nuevo.");
+      setLoading(false);
     }
   };
 
@@ -73,25 +116,49 @@ export default function SignInPage() {
                   name="email"
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) validateEmail(e.target.value);
+                  }}
+                  onBlur={() => validateEmail(email)}
+                  aria-invalid={!!emailError}
+                  aria-describedby={emailError ? "email-error" : undefined}
+                  autoComplete="email"
                 />
+                {emailError && (
+                  <p id="email-error" className="text-[#E52020] text-xs">
+                    {emailError}
+                  </p>
+                )}
               </div>
               <div className="flex flex-col gap-2">
-                <Label className="text-xs md:text-xs" htmlFor="password">
-                  Contraseña
-                </Label>
-                <Input
+                <div className="flex items-center justify-between">
+                  <Label className="text-xs md:text-xs" htmlFor="password">
+                    Contraseña
+                  </Label>
+                  <Link
+                    href="/auth/forgot-password"
+                    className="text-xs text-primary hover:underline"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </Link>
+                </div>
+                <PasswordInput
                   className="text-xs md:text-xs"
                   id="password"
                   name="password"
-                  type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
                 />
               </div>
               <Button
                 size="sm"
                 type="submit"
                 className="text-xs w-full"
-                disabled={loading}
+                disabled={loading || !!emailError}
               >
                 {loading ? (
                   <>

@@ -1141,7 +1141,7 @@ export default function RegisterFoodPage() {
                 }
                 className="w-full"
               >
-                <TabsList className="grid w-full grid-cols-2 h-10">
+                <TabsList className="grid w-full grid-cols-2 h-auto gap-2 px-2">
                   <TabsTrigger value="foods">Todos</TabsTrigger>
                   <TabsTrigger value="favorites" className="gap-1 sm:gap-2">
                     <HugeiconsIcon

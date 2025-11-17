@@ -6,8 +6,8 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Sun02Icon, Moon02Icon } from "@hugeicons/core-free-icons";
 
 export const useTheme = () => {
-  const { theme, setTheme } = useNextTheme();
-  return { theme, setTheme };
+  const { theme, setTheme, resolvedTheme, systemTheme } = useNextTheme();
+  return { theme, setTheme, resolvedTheme, systemTheme };
 };
 
 export function ThemeToggle() {

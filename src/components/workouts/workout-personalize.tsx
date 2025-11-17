@@ -584,12 +584,12 @@ export function WorkoutPersonalize() {
               </Label>
 
               <Tabs defaultValue={days[0]} className="w-full">
-                <TabsList className="flex flex-wrap h-auto gap-4">
+                <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4">
                   {days.map((day) => (
                     <TabsTrigger
                       key={day}
                       value={day}
-                      className="text-xs flex-1"
+                      className="text-xs md:flex-1"
                     >
                       {day}
                     </TabsTrigger>

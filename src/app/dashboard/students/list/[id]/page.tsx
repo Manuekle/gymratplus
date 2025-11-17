@@ -8,9 +8,11 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { format, differenceInDays } from "date-fns";
+import { format, differenceInDays, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 
@@ -25,6 +27,9 @@ import {
   Target01Icon,
   CalendarCheckIn01Icon,
   ArrowLeft01Icon,
+  Calendar02Icon,
+  Clock02Icon,
+  CheckmarkCircle02Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Dialog,
@@ -77,6 +82,43 @@ interface AssignedWorkoutExercise {
   notes?: string;
 }
 
+interface WorkoutSession {
+  id: string;
+  date: string;
+  notes?: string;
+  duration?: number;
+  completed: boolean;
+  exercises: ExerciseSession[];
+  workout?: {
+    id: string;
+    name: string;
+    instructorId?: string;
+  };
+  user?: {
+    id: string;
+    name: string | null;
+    email: string | null;
+    image: string | null;
+  };
+}
+
+interface ExerciseSession {
+  id: string;
+  exercise: {
+    name: string;
+  };
+  completed: boolean;
+  sets: SetSession[];
+}
+
+interface SetSession {
+  id: string;
+  setNumber: number;
+  weight?: number;
+  reps?: number;
+  completed: boolean;
+}
+
 // --- Componente Principal ---
 export default function StudentDetailPage() {
   const params = useParams();
@@ -96,6 +138,11 @@ export default function StudentDetailPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState<boolean>(true);
   const [loadingFoodPlans, setLoadingFoodPlans] = useState<boolean>(true);
+  const [loadingWorkoutHistory, setLoadingWorkoutHistory] =
+    useState<boolean>(false);
+  const [workoutHistory, setWorkoutHistory] = useState<WorkoutSession[]>([]);
+  const [activeHistoryTab, setActiveHistoryTab] = useState<string>("all");
+  const [expandedSession, setExpandedSession] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [selectedWorkout, setSelectedWorkout] =
     useState<AssignedWorkout | null>(null);
@@ -223,7 +270,56 @@ export default function StudentDetailPage() {
       }
     };
     fetchFoodPlans();
+
+    // Cargar historial de entrenamientos cuando el estudiante está disponible
+    if (student?.studentId) {
+      fetchWorkoutHistory(student.studentId);
+    }
   }, [student]); // Se ejecuta cuando 'student' se ha cargado
+
+  // Función para cargar el historial de entrenamientos
+  const fetchWorkoutHistory = async (studentId: string) => {
+    setLoadingWorkoutHistory(true);
+    try {
+      const response = await fetch(
+        `/api/instructors/students/workout-history?studentId=${studentId}`,
+      );
+      if (!response.ok) {
+        throw new Error("Error al cargar el historial de entrenamientos");
+      }
+      const data: WorkoutSession[] = await response.json();
+      setWorkoutHistory(data);
+    } catch (error) {
+      console.error("Error fetching workout history:", error);
+      setWorkoutHistory([]);
+    } finally {
+      setLoadingWorkoutHistory(false);
+    }
+  };
+
+  // Filtrar sesiones según la pestaña activa
+  const filteredHistorySessions = () => {
+    if (activeHistoryTab === "all") return workoutHistory;
+    if (activeHistoryTab === "completed")
+      return workoutHistory.filter((session) => session.completed);
+    if (activeHistoryTab === "inProgress")
+      return workoutHistory.filter((session) => !session.completed);
+    return workoutHistory;
+  };
+
+  // Calcular el progreso de una sesión
+  const calculateSessionProgress = (session: WorkoutSession) => {
+    const totalSets = session.exercises.reduce(
+      (acc: number, ex: ExerciseSession) => acc + ex.sets.length,
+      0,
+    );
+    const completedSets = session.exercises.reduce(
+      (acc: number, ex: ExerciseSession) =>
+        acc + ex.sets.filter((set: SetSession) => set.completed).length,
+      0,
+    );
+    return totalSets > 0 ? Math.round((completedSets / totalSets) * 100) : 0;
+  };
 
   // --- Lógica del Modal (Agrupación de ejercicios por día) ---
   const groupedExercises = useMemo(() => {
@@ -504,7 +600,7 @@ export default function StudentDetailPage() {
                     return (
                       <div
                         key={w.id}
-                        className="group relative p-4 border rounded-xl cursor-pointer hover:shadow-md transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
+                        className="group relative p-4 border rounded-xl cursor-pointer transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
                         onClick={() => {
                           setSelectedWorkout(w);
                           setIsModalOpen(true);
@@ -661,7 +757,7 @@ export default function StudentDetailPage() {
                         onClick={() =>
                           router.push(`/dashboard/nutrition/plan/${plan.id}`)
                         }
-                        className="group relative p-4 border rounded-xl hover:shadow-md transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden cursor-pointer"
+                        className="group relative p-4 border rounded-xl transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden cursor-pointer"
                       >
                         <div className="flex flex-col h-full">
                           <div className="flex items-start justify-between mb-2">
@@ -726,16 +822,6 @@ export default function StudentDetailPage() {
                                 </p>
                               </div>
                             )}
-
-                            <div className="pt-2 border-t mt-2">
-                              <div className="flex items-center gap-1.5 text-primary text-xs font-medium group-hover:underline">
-                                <HugeiconsIcon
-                                  icon={EyeIcon}
-                                  className="h-3.5 w-3.5"
-                                />
-                                Ver detalles del plan
-                              </div>
-                            </div>
                           </div>
                         </div>
                       </div>
@@ -784,6 +870,199 @@ export default function StudentDetailPage() {
                   </div>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Workout History Section */}
+          <Card className="col-span-1 md:col-span-2">
+            <CardHeader>
+              <CardTitle className="text-2xl tracking-heading font-semibold">
+                Historial de Entrenamientos
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4">
+              {loadingWorkoutHistory ? (
+                <div className="space-y-2">
+                  <Skeleton className="h-24 w-full" />
+                  <Skeleton className="h-24 w-full" />
+                </div>
+              ) : workoutHistory.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center border rounded-lg bg-muted/50">
+                  <h3 className="text-xs font-medium mb-2">
+                    No hay entrenamientos completados
+                  </h3>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Este estudiante aún no ha completado ningún entrenamiento
+                    asignado por ti.
+                  </p>
+                </div>
+              ) : (
+                <Tabs
+                  defaultValue="all"
+                  onValueChange={setActiveHistoryTab}
+                  className="space-y-4"
+                >
+                  <TabsList className="grid grid-cols-3 sm:grid-cols-3 md:flex md:flex-wrap mb-4 h-auto gap-2 sm:gap-4 px-2">
+                    <TabsTrigger value="all" className="text-xs">
+                      Todos
+                    </TabsTrigger>
+                    <TabsTrigger value="completed" className="text-xs">
+                      Completados
+                    </TabsTrigger>
+                    <TabsTrigger value="inProgress" className="text-xs">
+                      En progreso
+                    </TabsTrigger>
+                  </TabsList>
+
+                  <TabsContent
+                    value={activeHistoryTab}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+                  >
+                    {filteredHistorySessions().map((session) => {
+                      const sessionDate = parseISO(session.date);
+                      const progress = calculateSessionProgress(session);
+                      const isExpanded = expandedSession === session.id;
+
+                      return (
+                        <Card
+                          key={session.id}
+                          className={`overflow-hidden transition-all duration-300 ${
+                            isExpanded
+                              ? "col-span-1 sm:col-span-2 lg:col-span-3 row-span-2"
+                              : ""
+                          }`}
+                        >
+                          <CardHeader className="pb-2">
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <CardTitle className="text-lg tracking-heading flex items-center gap-2">
+                                  {session.workout?.name || "Entrenamiento"}
+                                </CardTitle>
+                                <p className="text-xs text-muted-foreground flex items-center gap-2 pt-1">
+                                  <HugeiconsIcon
+                                    icon={Calendar02Icon}
+                                    size={12}
+                                  />
+                                  {format(sessionDate, "PPP", { locale: es })}
+                                </p>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-xs font-medium">
+                                  {progress}% completado
+                                </p>
+                                <Progress
+                                  value={progress}
+                                  className="h-2 w-full"
+                                />
+                              </div>
+                            </div>
+                          </CardHeader>
+                          <CardContent className="px-4 pt-4">
+                            <div className="grid grid-cols-3 gap-2 mb-4">
+                              <div className="text-center p-2 rounded-md border">
+                                <p className="text-xs text-muted-foreground">
+                                  Duración
+                                </p>
+                                <p className="font-semibold tracking-heading text-xs">
+                                  {session.duration
+                                    ? `${session.duration} min`
+                                    : "N/A"}
+                                </p>
+                              </div>
+                              <div className="text-center p-2 rounded-md border">
+                                <p className="text-xs text-muted-foreground">
+                                  Ejercicios
+                                </p>
+                                <p className="font-semibold tracking-heading text-xs">
+                                  {session.exercises.length}
+                                </p>
+                              </div>
+                              <div className="text-center p-2 rounded-md border">
+                                <p className="text-xs text-muted-foreground">
+                                  Sets
+                                </p>
+                                <p className="font-semibold tracking-heading text-xs">
+                                  {session.exercises.reduce(
+                                    (acc: number, ex: ExerciseSession) =>
+                                      acc +
+                                      ex.sets.filter(
+                                        (set: SetSession) => set.completed,
+                                      ).length,
+                                    0,
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+
+                            {session.completed ? (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-full text-xs text-muted-foreground"
+                                onClick={() =>
+                                  setExpandedSession(
+                                    expandedSession === session.id
+                                      ? null
+                                      : session.id,
+                                  )
+                                }
+                              >
+                                {isExpanded
+                                  ? "Ocultar detalles"
+                                  : "Ver detalles"}
+                              </Button>
+                            ) : (
+                              <div className="text-center py-2">
+                                <p className="text-xs text-muted-foreground">
+                                  Entrenamiento en progreso
+                                </p>
+                              </div>
+                            )}
+
+                            {isExpanded && session.completed && (
+                              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 pt-4 border-t mt-4">
+                                {session.exercises.map(
+                                  (exercise: ExerciseSession) => (
+                                    <div
+                                      key={exercise.id}
+                                      className="border rounded-md p-2 text-xs"
+                                    >
+                                      <h4 className="font-semibold tracking-heading text-xs truncate border-b pb-1 mb-1">
+                                        {exercise.exercise.name}
+                                      </h4>
+
+                                      <div className="grid grid-cols-3 gap-1 text-xs font-medium text-muted-foreground">
+                                        <div>Set</div>
+                                        <div>Kg</div>
+                                        <div>Rep</div>
+                                      </div>
+
+                                      <div className="max-h-24 overflow-y-auto">
+                                        {exercise.sets.map(
+                                          (set: SetSession) => (
+                                            <div
+                                              key={set.id}
+                                              className="grid grid-cols-3 gap-1 text-xs py-0.5 border-t dark:border-zinc-800"
+                                            >
+                                              <div>{set.setNumber}</div>
+                                              <div>{set.weight || "-"}</div>
+                                              <div>{set.reps || "-"}</div>
+                                            </div>
+                                          ),
+                                        )}
+                                      </div>
+                                    </div>
+                                  ),
+                                )}
+                              </div>
+                            )}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </TabsContent>
+                </Tabs>
+              )}
             </CardContent>
           </Card>
         </div>

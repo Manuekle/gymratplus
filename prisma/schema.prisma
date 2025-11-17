@@ -99,6 +99,7 @@ model Profile {
   metabolicRate             Int? // tasa metabólica basal en kcal
   dailyActivity             String? // actividad diaria (Ej: trabajo de oficina, trabajo físico)
   trainingFrequency         Int? // cantidad de entrenamientos por semana
+  trainingDays              String[] // días de la semana seleccionados (ej: ["mon", "tue", "wed"])
   monthsTraining            Int? // Nuevo campo: meses entrenando
   preferredWorkoutTime      String? // hora preferida para entrenar (Ej: mañana, tarde, noche)
   dietaryPreference         String? // preferencias dietéticas (Ej: vegetariano, keto, etc.)

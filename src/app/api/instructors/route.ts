@@ -20,10 +20,9 @@ export async function GET(request: NextRequest) {
       country: searchParams.get("country"),
       isRemote: searchParams.get("isRemote"),
       maxPrice: searchParams.get("maxPrice"),
-      experienceLevel: searchParams.get("experienceLevel"),
     };
 
-    const { tagFilter, country, isRemote, maxPrice, experienceLevel } = filters;
+    const { tagFilter, country, isRemote, maxPrice } = filters;
 
     // Obtener las etiquetas del usuario actual si no se proporcionan como parámetro
     let userTags: string[] = [];
@@ -41,39 +40,47 @@ export async function GET(request: NextRequest) {
     // Construir filtros básicos
     const whereConditions: {
       isInstructor: boolean;
-      instructorProfile: { isNot: null };
+      instructorProfile?: {
+        isNot?: null;
+        country?: string;
+        isRemote?: boolean;
+        pricePerMonth?: { lte: number };
+      };
       [key: string]: unknown;
     } = {
       isInstructor: true,
-      instructorProfile: {
-        isNot: null,
-      },
     };
 
-    // Agregar filtros adicionales del perfil si se proporcionan
-    const profileFilters: {
-      country?: string;
-      isRemote?: boolean;
-      pricePerMonth?: { lte: number };
-      [key: string]: unknown;
-    } = {};
+    // Construir filtros del perfil de instructor
+    const hasProfileFilters = country || isRemote === "true" || maxPrice;
 
-    if (country) profileFilters.country = country;
-    if (isRemote === "true") profileFilters.isRemote = true;
-    if (maxPrice) {
-      profileFilters.pricePerMonth = { lte: parseFloat(maxPrice) };
-    }
+    if (hasProfileFilters) {
+      // Si hay filtros específicos, no necesitamos isNot: null
+      // porque Prisma asume que el perfil debe existir si hay filtros
+      const instructorProfileFilter: {
+        country?: string;
+        isRemote?: boolean;
+        pricePerMonth?: { lte: number };
+      } = {};
 
-    // Solo agregar filtros del perfil si hay alguno
-    if (Object.keys(profileFilters).length > 0) {
+      if (country) {
+        instructorProfileFilter.country = country;
+      }
+      if (isRemote === "true") {
+        instructorProfileFilter.isRemote = true;
+      }
+      if (maxPrice) {
+        instructorProfileFilter.pricePerMonth = {
+          lte: parseFloat(maxPrice),
+        };
+      }
+
+      whereConditions.instructorProfile = instructorProfileFilter;
+    } else {
+      // Si no hay filtros específicos, solo verificamos que el perfil exista
       whereConditions.instructorProfile = {
-        ...whereConditions.instructorProfile,
-        ...profileFilters,
+        isNot: null,
       };
-    }
-
-    if (experienceLevel) {
-      whereConditions.experienceLevel = experienceLevel;
     }
 
     // Obtener instructores con filtros aplicados
@@ -83,7 +90,6 @@ export async function GET(request: NextRequest) {
         id: true,
         name: true,
         image: true,
-        experienceLevel: true,
         instructorProfile: {
           select: {
             id: true,
@@ -145,9 +151,12 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json(result);
-  } catch {
+  } catch (error) {
+    console.error("Error al cargar instructores:", error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Error al cargar instructores";
     return NextResponse.json<{ error: string }>(
-      { error: "Error al cargar instructores" },
+      { error: errorMessage },
       { status: 500 },
     );
   }

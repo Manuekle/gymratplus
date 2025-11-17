@@ -17,6 +17,16 @@ import { NotificationItem } from "@/components/notifications/notification-item";
 import { NotificationPermissionButton } from "@/components/notifications/notification-permission-button";
 import { useNotificationsContext } from "@/providers/notifications-provider";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 // import { Icons } from "@/components/icons";
 import NotificationSkeleton from "@/components/skeleton/notification-skeleton";
@@ -40,6 +50,8 @@ export default function NotificationsPage() {
   } = useNotificationsContext();
 
   const [selectedTypes, setSelectedTypes] = React.useState<string[]>([]);
+  const [isDeleteAllDialogOpen, setIsDeleteAllDialogOpen] =
+    React.useState(false);
 
   const filteredNotifications = React.useMemo(() => {
     if (selectedTypes.length === 0) return notifications;
@@ -176,20 +188,7 @@ export default function NotificationsPage() {
               <Button
                 variant="destructive"
                 size="sm"
-                onClick={async () => {
-                  if (
-                    confirm(
-                      "¿Estás seguro de que quieres eliminar todas las notificaciones? Esta acción no se puede deshacer.",
-                    )
-                  ) {
-                    const success = await deleteAllNotifications();
-                    if (success) {
-                      toast.success("Todas las notificaciones eliminadas");
-                    } else {
-                      toast.error("Error al eliminar las notificaciones");
-                    }
-                  }
-                }}
+                onClick={() => setIsDeleteAllDialogOpen(true)}
                 className="text-xs"
               >
                 Borrar todas
@@ -199,12 +198,50 @@ export default function NotificationsPage() {
         </div>
       </div>
 
+      <AlertDialog
+        open={isDeleteAllDialogOpen}
+        onOpenChange={setIsDeleteAllDialogOpen}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-2xl font-semibold tracking-heading">
+              ¿Eliminar todas las notificaciones?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-xs">
+              ¿Estás seguro de que quieres eliminar todas las notificaciones?
+              Esta acción no se puede deshacer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel className="text-xs">Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={async () => {
+                const success = await deleteAllNotifications();
+                if (success) {
+                  toast.success("Todas las notificaciones eliminadas");
+                  setIsDeleteAllDialogOpen(false);
+                } else {
+                  toast.error("Error al eliminar las notificaciones");
+                }
+              }}
+              className="text-xs bg-destructive text-white hover:bg-destructive/90"
+            >
+              Eliminar todas
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="w-full max-w-md grid grid-cols-2">
+        <TabsList className="w-full max-w-md grid grid-cols-2 sm:grid-cols-2 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
           <TabsTrigger className="text-xs" value="all">
             Todas
           </TabsTrigger>
-          <TabsTrigger value="unread" disabled={unreadCount === 0}>
+          <TabsTrigger
+            className="text-xs"
+            value="unread"
+            disabled={unreadCount === 0}
+          >
             No leídas {unreadCount > 0 && `(${unreadCount})`}
           </TabsTrigger>
         </TabsList>

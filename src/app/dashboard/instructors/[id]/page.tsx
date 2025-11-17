@@ -704,7 +704,7 @@ export default function InstructorProfilePage() {
                       {assignedWorkouts.map((workout) => (
                         <div key={workout.id} className="p-3 border rounded-lg">
                           <div className="flex items-start justify-between mb-2">
-                            <h3 className="text-sm font-semibold flex-1">
+                            <h3 className="text-xs font-semibold flex-1">
                               {workout.name}
                             </h3>
                             <Badge variant="secondary" className="text-xs">
@@ -769,7 +769,7 @@ export default function InstructorProfilePage() {
                         return (
                           <div key={plan.id} className="p-3 border rounded-lg">
                             <div className="flex items-start justify-between mb-2">
-                              <h3 className="text-sm font-semibold flex-1">
+                              <h3 className="text-xs font-semibold flex-1">
                                 Plan de Alimentación
                               </h3>
                               <Badge variant="secondary" className="text-xs">

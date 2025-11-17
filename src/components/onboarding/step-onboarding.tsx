@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 // import { format } from "date-fns";
@@ -37,6 +37,7 @@ import {
   Activity03Icon,
   BodyPartMuscleIcon,
   BodyWeightIcon,
+  Calendar01Icon,
   Clock01Icon,
   PercentSquareIcon,
   RulerIcon,
@@ -75,6 +76,9 @@ type ProfileFormData = {
   muscleMass: string;
   dailyActivity: string;
   trainingFrequency: number;
+  trainingDays: string[];
+  monthsTraining: number;
+  experienceLevel: string;
   preferredWorkoutTime: string;
   dietaryPreference: string;
 };
@@ -91,6 +95,9 @@ const initialFormData: ProfileFormData = {
   muscleMass: "",
   dailyActivity: "",
   trainingFrequency: 0,
+  trainingDays: [],
+  monthsTraining: 0,
+  experienceLevel: "",
   preferredWorkoutTime: "",
   dietaryPreference: "",
 };
@@ -109,7 +116,11 @@ export default function StepOnboarding() {
         if (parsed.birthdate) {
           parsed.birthdate = new Date(parsed.birthdate);
         }
-        return parsed;
+        // Asegurar que trainingDays sea un array
+        if (!parsed.trainingDays || !Array.isArray(parsed.trainingDays)) {
+          parsed.trainingDays = [];
+        }
+        return { ...initialFormData, ...parsed };
       } catch (e) {
         console.error("Error parsing saved form data:", e);
         return initialFormData;
@@ -120,7 +131,17 @@ export default function StepOnboarding() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
 
-  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  // Inicializar selectedDays desde formData.trainingDays si existe
+  const [selectedDays, setSelectedDays] = useState<string[]>(() => {
+    return formData.trainingDays || [];
+  });
+
+  // Sincronizar selectedDays cuando formData cambia
+  useEffect(() => {
+    if (formData.trainingDays && formData.trainingDays.length > 0) {
+      setSelectedDays(formData.trainingDays);
+    }
+  }, [formData.trainingDays]);
 
   const updateFormData = (updates: Partial<ProfileFormData>) => {
     // Asegurarse de que si updates contiene birthdate, sea un objeto Date válido
@@ -194,6 +215,21 @@ export default function StepOnboarding() {
         }
         break;
       case 3:
+        if (!formData.experienceLevel) {
+          toast.error("Seleccione su nivel de experiencia", {
+            description: "Seleccione su nivel de experiencia en entrenamiento.",
+          });
+          return false;
+        }
+        if (
+          formData.monthsTraining === 0 &&
+          formData.experienceLevel !== "beginner"
+        ) {
+          toast.error("Seleccione los meses entrenando", {
+            description: "Seleccione cuántos meses lleva entrenando.",
+          });
+          return false;
+        }
         if (formData.trainingFrequency === 0) {
           toast.error("Seleccione la frecuencia de formación", {
             description: "Seleccione al menos un día de formación.",
@@ -859,6 +895,95 @@ export default function StepOnboarding() {
                   <div className="space-y-2">
                     <Label
                       className="text-xs md:text-xs"
+                      htmlFor="experienceLevel"
+                    >
+                      Nivel de experiencia
+                    </Label>
+                    <Select
+                      value={formData.experienceLevel}
+                      onValueChange={(value) =>
+                        updateFormData({ experienceLevel: value })
+                      }
+                    >
+                      <SelectTrigger className="text-xs md:text-xs">
+                        <div className="flex flex-row items-center gap-4">
+                          <HugeiconsIcon
+                            icon={WorkoutGymnasticsIcon}
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione su nivel de experiencia" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem
+                          className="text-xs md:text-xs"
+                          value="beginner"
+                        >
+                          Principiante
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-xs"
+                          value="intermediate"
+                        >
+                          Intermedio
+                        </SelectItem>
+                        <SelectItem
+                          className="text-xs md:text-xs"
+                          value="advanced"
+                        >
+                          Avanzado
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      className="text-xs md:text-xs"
+                      htmlFor="monthsTraining"
+                    >
+                      Meses entrenando
+                    </Label>
+                    <Select
+                      value={formData.monthsTraining.toString()}
+                      onValueChange={(value) =>
+                        updateFormData({ monthsTraining: parseInt(value) || 0 })
+                      }
+                    >
+                      <SelectTrigger className="text-xs md:text-xs">
+                        <div className="flex flex-row items-center gap-4">
+                          <HugeiconsIcon
+                            icon={Calendar01Icon}
+                            size={18}
+                            className="text-foreground"
+                          />
+                          <SelectValue placeholder="Seleccione cuántos meses lleva entrenando" />
+                        </div>
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 61 }, (_, i) => i).map(
+                          (month) => (
+                            <SelectItem
+                              key={month}
+                              className="text-xs md:text-xs"
+                              value={month.toString()}
+                            >
+                              {month === 0
+                                ? "Menos de 1 mes"
+                                : month === 1
+                                  ? "1 mes"
+                                  : `${month} meses`}
+                            </SelectItem>
+                          ),
+                        )}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label
+                      className="text-xs md:text-xs"
                       htmlFor="trainingFrequency"
                     >
                       Frecuencia de entrenamiento (dias por semana)
@@ -869,7 +994,10 @@ export default function StepOnboarding() {
                       value={selectedDays}
                       onValueChange={(value) => {
                         setSelectedDays(value);
-                        updateFormData({ trainingFrequency: value.length });
+                        updateFormData({
+                          trainingFrequency: value.length,
+                          trainingDays: value,
+                        });
                       }}
                       className="justify-start"
                     >
@@ -884,6 +1012,19 @@ export default function StepOnboarding() {
                         </ToggleGroupItem>
                       ))}
                     </ToggleGroup>
+                    {selectedDays.length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Días seleccionados: {selectedDays.length} día
+                        {selectedDays.length !== 1 ? "s" : ""} -{" "}
+                        {selectedDays
+                          .map((dayId) => {
+                            const day = daysOfWeek.find((d) => d.id === dayId);
+                            return day?.label;
+                          })
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                    )}
                   </div>
 
                   <div className="space-y-2">

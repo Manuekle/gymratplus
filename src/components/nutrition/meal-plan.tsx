@@ -224,7 +224,7 @@ export function MealPlan({
         </CardContent>
       </Card>
       <Tabs defaultValue="breakfast" className="w-full">
-        <TabsList className="grid grid-cols-4 w-full">
+        <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto gap-2 sm:gap-4 px-2">
           <TabsTrigger value="breakfast">
             {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
           </TabsTrigger>
@@ -288,9 +288,6 @@ export function MealPlan({
                                 <div className="flex flex-col">
                                   <span>
                                     {entry.food?.name || "Alimento desconocido"}
-                                  </span>
-                                  <span className="text-xs text-muted-foreground">
-                                    {entry.food?.category || "N/A"}
                                   </span>
                                 </div>
                               </TableCell>

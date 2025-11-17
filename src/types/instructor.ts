@@ -22,7 +22,6 @@ export interface InstructorFilters {
   country?: string | null;
   isRemote?: string | null;
   maxPrice?: string | null;
-  experienceLevel?: string | null;
 }
 
 export interface PrismaWhereConditions {
@@ -30,6 +29,5 @@ export interface PrismaWhereConditions {
   instructorProfile: {
     isNot: null;
   } & Record<string, unknown>;
-  experienceLevel?: string;
   [key: string]: unknown;
 }

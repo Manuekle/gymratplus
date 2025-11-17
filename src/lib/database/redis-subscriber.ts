@@ -1,5 +1,6 @@
 import { Redis } from "@upstash/redis";
 import { createNotification } from "@/lib/notifications/notification-service";
+import { prisma } from "@/lib/database/prisma";
 
 export const subscriberClient = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL || "",
@@ -23,36 +24,72 @@ export async function initNotificationSubscriber() {
           -1,
         );
 
-        // Process each notification
-        for (const message of notifications) {
+        // Process each notification and track successfully processed ones
+        for (let i = 0; i < notifications.length; i++) {
           try {
             // Verificar si el mensaje ya es un objeto
+            const message = notifications[i];
             const data =
               typeof message === "string" ? JSON.parse(message) : message;
             const { userId, notification } = data;
 
             if (userId && notification) {
-              await createNotification({
-                userId,
-                title: notification.title,
-                message: notification.message,
-                type: notification.type,
+              // Verificar si ya existe una notificación similar hoy para evitar duplicados
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const existing = await prisma.notification.findFirst({
+                where: {
+                  userId,
+                  type: notification.type,
+                  title: notification.title,
+                  message: notification.message,
+                  createdAt: {
+                    gte: today,
+                  },
+                },
               });
 
-              console.log(
-                `Notification created for user ${userId}: ${notification.title}`,
-              );
+              // Solo crear si no existe ya
+              if (!existing) {
+                await createNotification({
+                  userId,
+                  title: notification.title,
+                  message: notification.message,
+                  type: notification.type,
+                });
+
+                console.log(
+                  `Notification created for user ${userId}: ${notification.title}`,
+                );
+              } else {
+                console.log(
+                  `Notification already exists for user ${userId}: ${notification.title}, skipping duplicate`,
+                );
+              }
             }
-          } catch {}
+          } catch (error) {
+            console.error("Error processing notification:", error);
+          }
         }
 
-        // Clear processed notifications
+        // Clear ALL processed notifications from the list
         if (notifications.length > 0) {
-          await subscriberClient.ltrim(
-            NOTIFICATION_CHANNEL,
-            notifications.length,
-            -1,
-          );
+          try {
+            // Eliminar todos los elementos procesados usando ltrim
+            // ltrim mantiene solo los elementos desde start hasta end (inclusive)
+            // Para eliminar los primeros N elementos, mantenemos desde el índice N hasta el final
+            // Si N >= longitud de la lista, la lista queda vacía
+            // Nota: índices empiezan en 0, así que si hay 5 elementos (0-4) y queremos eliminar todos,
+            // usamos ltrim LIST 5 -1, que mantiene desde el índice 5 (no existe) hasta el final = lista vacía
+            await subscriberClient.ltrim(
+              NOTIFICATION_CHANNEL,
+              notifications.length,
+              -1,
+            );
+          } catch (error) {
+            console.error("Error clearing notification channel:", error);
+          }
         }
       } catch {}
     };
@@ -86,11 +123,13 @@ export async function initNotificationSubscriber() {
           -1,
         );
 
-        for (const message of workoutUpdates) {
+        for (let i = 0; i < workoutUpdates.length; i++) {
           try {
             // Verificar si el mensaje ya es un objeto
             const data =
-              typeof message === "string" ? JSON.parse(message) : message;
+              typeof workoutUpdates[i] === "string"
+                ? JSON.parse(workoutUpdates[i])
+                : workoutUpdates[i];
             // Remove workoutSessionId from destructuring since it's not used
             const { userId, action, workoutName, day } = data;
 
@@ -121,16 +160,39 @@ export async function initNotificationSubscriber() {
                   continue; // Skip unknown actions
               }
 
-              await createNotification({
-                userId,
-                title,
-                message: messageText,
-                type: "workout",
+              // Verificar si ya existe una notificación similar hoy para evitar duplicados
+              const today = new Date();
+              today.setHours(0, 0, 0, 0);
+
+              const existing = await prisma.notification.findFirst({
+                where: {
+                  userId,
+                  type: "workout",
+                  title,
+                  message: messageText,
+                  createdAt: {
+                    gte: today,
+                  },
+                },
               });
 
-              console.log(
-                `Workout notification created for user ${userId}: ${title}`,
-              );
+              // Solo crear si no existe ya
+              if (!existing) {
+                await createNotification({
+                  userId,
+                  title,
+                  message: messageText,
+                  type: "workout",
+                });
+
+                console.log(
+                  `Workout notification created for user ${userId}: ${title}`,
+                );
+              } else {
+                console.log(
+                  `Workout notification already exists for user ${userId}: ${title}, skipping duplicate`,
+                );
+              }
             }
           } catch (error) {
             console.error(

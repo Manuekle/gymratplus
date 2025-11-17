@@ -150,3 +150,38 @@ export async function GET() {
     );
   }
 }
+
+// TODO: QUITAR ESTO DESPUÉS DE PROBAR - Solo para testing
+// DELETE todas las recomendaciones de comida del usuario
+export async function DELETE() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!session.user.id) {
+    return NextResponse.json({ error: "User ID not found" }, { status: 401 });
+  }
+
+  try {
+    // Eliminar todas las recomendaciones de comida del usuario
+    // El cascade eliminará automáticamente MealPlanMeal y MealPlanEntry
+    const result = await prisma.foodRecommendation.deleteMany({
+      where: {
+        userId: session.user.id,
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      deletedCount: result.count,
+    });
+  } catch (error) {
+    console.error("Error deleting food recommendations:", error);
+    return NextResponse.json(
+      { error: "Failed to delete food recommendations" },
+      { status: 500 },
+    );
+  }
+}

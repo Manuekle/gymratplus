@@ -257,7 +257,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     );
 
     // Create nutrition plan using nutrition-utils
-    const nutritionPlan = await createNutritionPlan({
+    const nutritionPlanRaw = await createNutritionPlan({
       userId,
       goal: profileData.goal,
       dietaryPreference: profileData.dietaryPreference || "no-preference",
@@ -267,17 +267,44 @@ export async function POST(req: Request): Promise<NextResponse> {
       dailyFatTarget,
     });
 
+    // Transformar la estructura para que coincida con lo esperado
+    // Verificar que todas las comidas existan
+    if (
+      !nutritionPlanRaw.breakfast ||
+      !nutritionPlanRaw.lunch ||
+      !nutritionPlanRaw.dinner ||
+      !nutritionPlanRaw.snack
+    ) {
+      throw new Error("Error al generar el plan nutricional: faltan comidas");
+    }
+
+    const nutritionPlan = {
+      ...nutritionPlanRaw,
+      meals: {
+        breakfast: nutritionPlanRaw.breakfast,
+        lunch: nutritionPlanRaw.lunch,
+        dinner: nutritionPlanRaw.dinner,
+        snacks: nutritionPlanRaw.snack, // snack -> snacks
+      },
+      macros: {
+        protein: `${dailyProteinTarget}g (${Math.round(((dailyProteinTarget * 4) / calorieTarget) * 100)}%)`,
+        carbs: `${dailyCarbTarget}g (${Math.round(((dailyCarbTarget * 4) / calorieTarget) * 100)}%)`,
+        fat: `${dailyFatTarget}g (${Math.round(((dailyFatTarget * 9) / calorieTarget) * 100)}%)`,
+        description: `Plan nutricional personalizado para ${profileData.goal}`,
+      },
+    };
+
     // Save the food recommendation to the database using normalized structure
     const { createFoodRecommendationNormalized } = await import(
       "@/lib/nutrition/food-recommendation-helpers"
     );
 
     // Extraer valores numéricos de macros
-    let proteinTarget: number | undefined;
-    let carbsTarget: number | undefined;
-    let fatTarget: number | undefined;
+    let proteinTarget: number | undefined = dailyProteinTarget;
+    let carbsTarget: number | undefined = dailyCarbTarget;
+    let fatTarget: number | undefined = dailyFatTarget;
 
-    if (nutritionPlan.macros.protein) {
+    if (nutritionPlan.macros?.protein) {
       const proteinMatch = String(nutritionPlan.macros.protein).match(
         /(\d+(?:\.\d+)?)/,
       );
@@ -402,15 +429,17 @@ export async function POST(req: Request): Promise<NextResponse> {
       });
 
       foods.forEach((food) => {
+        if (!food || !food.id) return; // Saltar alimentos inválidos
+
         foodsMap.set(food.id, {
           id: food.id,
-          name: food.name,
-          calories: food.calories,
-          protein: food.protein,
-          carbs: food.carbs,
-          fat: food.fat,
-          serving: food.serving,
-          category: food.category,
+          name: food.name || "Alimento sin nombre",
+          calories: food.calories || 0,
+          protein: food.protein || 0,
+          carbs: food.carbs || 0,
+          fat: food.fat || 0,
+          serving: food.serving || 100,
+          category: food.category || "unknown",
         });
       });
     }
@@ -515,7 +544,7 @@ export async function POST(req: Request): Promise<NextResponse> {
     };
 
     return NextResponse.json(responseData);
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       {
         error: "Error generating recommendations",

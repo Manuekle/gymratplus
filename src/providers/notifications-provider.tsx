@@ -133,20 +133,53 @@ export function NotificationsProvider({
   const cleanupRef = useRef<(() => void) | null>(null);
   const isInitialLoadRef = useRef(true);
   const onNewNotificationsRef = useRef(onNewNotifications);
+  const markingAsReadRef = useRef<Set<string>>(new Set());
 
   // Actualizar la referencia cuando cambia onNewNotifications
   useEffect(() => {
     onNewNotificationsRef.current = onNewNotifications;
   }, [onNewNotifications]);
 
+  // Track deleted notifications to prevent them from reappearing
+  const deletedNotificationIdsRef = useRef<Set<string>>(new Set());
+
   const updateNotifications = useCallback(
     (newNotifications: Notification[]) => {
-      const newNotificationIds = new Set(newNotifications.map((n) => n.id));
+      // Filtrar notificaciones que fueron eliminadas localmente
+      const filteredNotifications = newNotifications.filter(
+        (n) => !deletedNotificationIdsRef.current.has(n.id),
+      );
+
+      // Para notificaciones que están siendo marcadas como leídas localmente,
+      // mantener el estado optimista en lugar de sobrescribirlo con datos del servidor
+      // que pueden estar desactualizados temporalmente
+      const notificationsWithOptimisticState = filteredNotifications.map(
+        (n) => {
+          if (markingAsReadRef.current.has(n.id)) {
+            // Mantener el estado optimista (leído) si está en proceso
+            return { ...n, read: true };
+          }
+          return n;
+        },
+      );
+
+      const newNotificationIds = new Set(
+        notificationsWithOptimisticState.map((n) => n.id),
+      );
       const previousIds = previousNotificationIdsRef.current;
+
+      // Limpiar IDs eliminados que ya no están en la lista del servidor
+      deletedNotificationIdsRef.current.forEach((deletedId) => {
+        if (!newNotificationIds.has(deletedId)) {
+          deletedNotificationIdsRef.current.delete(deletedId);
+        }
+      });
 
       // Detectar nuevas notificaciones
       if (previousIds.size > 0 && onNewNotificationsRef.current) {
-        const newOnes = newNotifications.filter((n) => !previousIds.has(n.id));
+        const newOnes = notificationsWithOptimisticState.filter(
+          (n) => !previousIds.has(n.id),
+        );
         if (newOnes.length > 0) {
           onNewNotificationsRef.current(newOnes);
 
@@ -173,8 +206,10 @@ export function NotificationsProvider({
       // Si es carga inicial o hay cambios, actualizar
       if (isInitialLoadRef.current || currentIds !== previousIdsStr) {
         previousNotificationIdsRef.current = newNotificationIds;
-        setNotifications(newNotifications);
-        setUnreadCount(newNotifications.filter((n) => !n.read).length);
+        setNotifications(notificationsWithOptimisticState);
+        setUnreadCount(
+          notificationsWithOptimisticState.filter((n) => !n.read).length,
+        );
       } else {
         // Si no hay cambios en IDs, verificar si hay cambios en el estado de lectura
         // usando una comparación más simple
@@ -183,14 +218,16 @@ export function NotificationsProvider({
             .map((n) => `${n.id}:${n.read}`)
             .sort()
             .join(",");
-          const newReadStatus = newNotifications
+          const newReadStatus = notificationsWithOptimisticState
             .map((n) => `${n.id}:${n.read}`)
             .sort()
             .join(",");
 
           if (prevReadStatus !== newReadStatus) {
-            setUnreadCount(newNotifications.filter((n) => !n.read).length);
-            return newNotifications;
+            setUnreadCount(
+              notificationsWithOptimisticState.filter((n) => !n.read).length,
+            );
+            return notificationsWithOptimisticState;
           }
           return prev;
         });
@@ -245,6 +282,9 @@ export function NotificationsProvider({
         setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
         setUnreadCount(0);
       } else {
+        // Marcar que esta notificación está siendo procesada
+        markingAsReadRef.current.add(id);
+
         setNotifications((prev) =>
           prev.map((n) => (n.id === id ? { ...n, read: true } : n)),
         );
@@ -261,6 +301,7 @@ export function NotificationsProvider({
           // Si la notificación no existe (404), no es un error crítico
           if (response.status === 404) {
             // Remover de la lista local si no existe
+            markingAsReadRef.current.delete(id);
             setNotifications((prev) => prev.filter((n) => n.id !== id));
             return true;
           }
@@ -268,10 +309,28 @@ export function NotificationsProvider({
             throw new Error("Failed to mark as read");
           }
         }
-        await fetchNotifications(true); // Refrescar para sincronizar
+
+        // Remover del tracking después de un delay para dar tiempo al servidor de actualizar
+        if (id !== "all") {
+          setTimeout(() => {
+            markingAsReadRef.current.delete(id);
+            // Refrescar en silencio después de 500ms para sincronizar
+            fetchNotifications(true, true);
+          }, 500);
+        } else {
+          // Para "all", refrescar después de un delay más corto
+          setTimeout(() => {
+            fetchNotifications(true, true);
+          }, 500);
+        }
+
         return true;
       } catch {
-        await fetchNotifications(true); // Revertir
+        // Si hay error, revertir y remover del tracking
+        if (id !== "all") {
+          markingAsReadRef.current.delete(id);
+        }
+        await fetchNotifications(true);
         return false;
       }
     },
@@ -283,17 +342,33 @@ export function NotificationsProvider({
       const notificationToDelete = notifications.find((n) => n.id === id);
       const wasUnread = notificationToDelete && !notificationToDelete.read;
 
-      // Optimistic update
+      // Marcar como eliminado para prevenir que reaparezca en el polling
+      deletedNotificationIdsRef.current.add(id);
+
+      // Optimistic update - remover inmediatamente de la lista
       setNotifications((prev) => prev.filter((n) => n.id !== id));
       if (wasUnread) {
         setUnreadCount((prev) => Math.max(0, prev - 1));
       }
 
       try {
-        await fetch(`/api/notifications/${id}`, { method: "DELETE" });
-        await fetchNotifications(true);
+        const response = await fetch(`/api/notifications/${id}`, {
+          method: "DELETE",
+        });
+
+        // Solo refrescar si hay error para revertir
+        if (!response.ok) {
+          deletedNotificationIdsRef.current.delete(id);
+          await fetchNotifications(true);
+          return false;
+        }
+
+        // Si fue exitoso, no refrescar - el optimistic update ya aplicó el cambio
+        // El polling eventualmente sincronizará, pero filtrará esta notificación
         return true;
       } catch {
+        // Si hay error, revertir con refresh
+        deletedNotificationIdsRef.current.delete(id);
         await fetchNotifications(true);
         return false;
       }
@@ -302,15 +377,27 @@ export function NotificationsProvider({
   );
 
   const deleteAllNotifications = useCallback(async () => {
+    // Optimistic update
+    setNotifications([]);
+    setUnreadCount(0);
+
     try {
-      await fetch("/api/notifications", { method: "DELETE" });
-      setNotifications([]);
-      setUnreadCount(0);
+      const response = await fetch("/api/notifications", { method: "DELETE" });
+
+      // Solo refrescar si hay error para revertir
+      if (!response.ok) {
+        await fetchNotifications(true);
+        return false;
+      }
+
+      // Si fue exitoso, no refrescar - el optimistic update ya aplicó el cambio
       return true;
     } catch {
+      // Si hay error, revertir con refresh
+      await fetchNotifications(true);
       return false;
     }
-  }, []);
+  }, [fetchNotifications]);
 
   const refetch = useCallback(() => {
     fetchNotifications(false, true); // Forzar refresh al refetch

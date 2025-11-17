@@ -242,28 +242,28 @@ export function InstructorProfileForm({
   return (
     <div className="space-y-6">
       {!isEditing && profileData ? (
-        <div className="space-y-6">
+        <div className="space-y-4">
           {profileData.bio && (
-            <div className="w-full p-4 rounded-lg border bg-muted/30">
-              <h4 className="text-sm font-semibold mb-2 tracking-heading">
+            <div className="space-y-1.5">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Biografía
               </h4>
-              <p className="text-xs text-muted-foreground leading-relaxed">
+              <p className="text-xs text-foreground leading-relaxed">
                 {profileData.bio}
               </p>
             </div>
           )}
 
           {profileData.specialties?.length > 0 && (
-            <div className="p-4 rounded-lg border bg-muted/30">
-              <h4 className="text-sm font-semibold mb-3 tracking-heading">
+            <div className="space-y-1.5">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Especialidades
               </h4>
-              <div className="flex flex-wrap gap-2">
+              <div className="flex flex-wrap gap-1.5">
                 {profileData.specialties.map((specialty) => (
                   <span
                     key={specialty}
-                    className="inline-flex items-center rounded-full bg-primary/10 text-primary px-3 py-1.5 text-xs font-medium border border-primary/20"
+                    className="inline-flex items-center rounded-full border border-border bg-background px-2.5 py-1 text-xs text-foreground"
                   >
                     {specialty}
                   </span>
@@ -274,17 +274,17 @@ export function InstructorProfileForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(profileData.country || profileData.city) && (
-              <div className="p-4 rounded-lg border bg-muted/30">
-                <h4 className="text-sm font-semibold mb-2 tracking-heading">
+              <div className="space-y-1.5">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Ubicación
                 </h4>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-foreground">
                   {[profileData.city, profileData.country]
                     .filter(Boolean)
                     .join(", ")}
                   {profileData.isRemote && (
-                    <span className="block mt-1 text-primary">
-                      ✓ También atiendo de forma remota
+                    <span className="block mt-1 text-muted-foreground">
+                      Remoto disponible
                     </span>
                   )}
                 </p>
@@ -292,11 +292,11 @@ export function InstructorProfileForm({
             )}
 
             {profileData.pricePerMonth && (
-              <div className="p-4 rounded-lg border bg-muted/30">
-                <h4 className="text-sm font-semibold mb-2 tracking-heading">
+              <div className="space-y-1.5">
+                <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                   Precio por mes
                 </h4>
-                <p className="text-lg font-semibold text-foreground">
+                <p className="text-xs text-foreground">
                   ${profileData.pricePerMonth.toLocaleString()}
                 </p>
               </div>
@@ -304,28 +304,22 @@ export function InstructorProfileForm({
           </div>
 
           {(profileData.contactEmail || profileData.contactPhone) && (
-            <div className="p-4 rounded-lg border bg-muted/30">
-              <h4 className="text-sm font-semibold mb-2 tracking-heading">
-                Información de contacto
+            <div className="space-y-1.5">
+              <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                Contacto
               </h4>
-              <div className="space-y-1.5 text-xs text-muted-foreground">
+              <div className="space-y-1 text-xs text-foreground">
                 {profileData.contactEmail && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Email:</span>
-                    <span>{profileData.contactEmail}</span>
-                  </div>
+                  <div>{profileData.contactEmail}</div>
                 )}
                 {profileData.contactPhone && (
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Teléfono:</span>
-                    <span>{profileData.contactPhone}</span>
-                  </div>
+                  <div>{profileData.contactPhone}</div>
                 )}
               </div>
             </div>
           )}
 
-          <div className="flex items-center justify-between pt-4 border-t">
+          <div className="flex items-center justify-between pt-3 border-t">
             <Button
               onClick={toggleEditMode}
               variant="outline"

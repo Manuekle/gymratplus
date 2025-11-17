@@ -3,6 +3,7 @@ import { prisma } from "@/lib/database/prisma";
 import { authOptions } from "@/lib/auth/auth";
 import { getServerSession } from "next-auth/next";
 import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
+import { createNotification } from "@/lib/notifications/notification-service";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
 
 export async function PUT(req: NextRequest) {
@@ -27,7 +28,16 @@ export async function PUT(req: NextRequest) {
       where: { id: workoutSessionId },
       include: {
         workout: {
-          select: { name: true },
+          select: {
+            name: true,
+            type: true,
+            instructorId: true,
+            instructor: {
+              select: {
+                name: true,
+              },
+            },
+          },
         },
       },
     });
@@ -102,18 +112,38 @@ export async function PUT(req: NextRequest) {
       if (userProfile?.notificationsActive !== false) {
         // Default to true if not set
         const workoutName = workoutSession.workout?.name || "Entrenamiento";
+        const workoutType = workoutSession.workout?.type;
+        const instructorName = workoutSession.workout?.instructor?.name;
 
-        // Add to Redis list for polling (the subscriber will create the notification)
-        await publishWorkoutNotification(
-          session.user.id,
-          workoutSessionId,
-          "completed",
-          workoutName,
-        );
+        // Si el entrenamiento fue asignado por un instructor, crear notificación especial
+        if (
+          workoutType === "assigned" &&
+          workoutSession.workout?.instructorId
+        ) {
+          // Crear notificación específica para entrenamientos asignados
+          await createNotification({
+            userId: session.user.id,
+            title: "Entrenamiento completado",
+            message: `¡Felicidades! Has completado el entrenamiento "${workoutName}" de hoy${instructorName ? ` asignado por ${instructorName}` : ""}.`,
+            type: "workout",
+          });
 
-        console.log(
-          `Workout completion notification queued for user ${session.user.id}`,
-        );
+          console.log(
+            `Assigned workout completion notification created for user ${session.user.id}`,
+          );
+        } else {
+          // Para entrenamientos personales, usar el sistema de notificaciones existente
+          await publishWorkoutNotification(
+            session.user.id,
+            workoutSessionId,
+            "completed",
+            workoutName,
+          );
+
+          console.log(
+            `Workout completion notification queued for user ${session.user.id}`,
+          );
+        }
       }
     } catch (notificationError) {
       // Log but don't fail the request if notification creation fails

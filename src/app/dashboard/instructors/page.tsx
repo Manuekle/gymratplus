@@ -123,11 +123,11 @@ export default function InstructorPage() {
       </div>
       {/* Instructors Grid */}
       {instructors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 text-center">
-          <h3 className="text-xs font-medium mb-2">
+        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+          <h3 className="text-xs font-medium mb-2 max-w-md mx-auto">
             No tienes instructores asignados
           </h3>
-          <p className="text-xs text-muted-foreground max-w-sm">
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
             Cuando te asignen instructores o solicites uno, aparecerán aquí para
             que puedas gestionar tu entrenamiento y mantenerte en contacto.
           </p>

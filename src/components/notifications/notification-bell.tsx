@@ -149,13 +149,7 @@ export function NotificationBell() {
         {isLoading ? (
           <NotificationsSkeleton />
         ) : notifications.length > 0 ? (
-          <div
-            className="overflow-y-auto"
-            style={{
-              maxHeight: "320px",
-              height: `${Math.min(notifications.length, 4) * 72}px`,
-            }}
-          >
+          <div className="overflow-y-auto max-h-[320px]">
             <div className="divide-y">
               <AnimatePresence mode="popLayout">
                 {notifications.slice(0, 4).map((notification) => (

@@ -28,6 +28,7 @@ interface UserProfile {
     level: string;
     daily: string;
     trainingFrequency: number;
+    trainingDays: string[];
   };
 }
 
@@ -39,25 +40,26 @@ export default function WorkoutsPage() {
   useEffect(() => {
     if (!session?.user) return;
 
-    const profile = (
-      session.user as {
-        profile?: {
-          id: string;
-          activityLevel: string;
-          dailyActivity: string;
-          trainingFrequency: number;
-        };
-      }
-    )?.profile;
+    const profile = session.user.profile as
+      | {
+          id?: string;
+          activityLevel?: string;
+          dailyActivity?: string;
+          trainingFrequency?: number;
+          trainingDays?: string[];
+        }
+      | null
+      | undefined;
 
-    if (!profile) return;
+    if (!profile || !profile.id) return;
 
     setUser({
       id: profile.id,
       activity: {
-        level: profile.activityLevel,
-        daily: profile.dailyActivity,
-        trainingFrequency: Number(profile.trainingFrequency),
+        level: profile.activityLevel || "",
+        daily: profile.dailyActivity || "",
+        trainingFrequency: Number(profile.trainingFrequency) || 0,
+        trainingDays: (profile.trainingDays as string[]) || [],
       },
     });
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
@@ -152,10 +154,34 @@ export default function WorkoutsPage() {
                   </span>
                 </div>
                 <span className="font-medium text-xs">
-                  {user?.activity.trainingFrequency}
+                  {user?.activity.trainingFrequency} día
+                  {user?.activity.trainingFrequency !== 1 ? "s" : ""}
                 </span>
               </div>
-              <Progress value={5 * 14.28} className="h-2" />
+              {user?.activity.trainingDays &&
+                user.activity.trainingDays.length > 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    Días:{" "}
+                    {user.activity.trainingDays
+                      .map((dayId) => {
+                        const dayMap: Record<string, string> = {
+                          mon: "L",
+                          tue: "M",
+                          wed: "X",
+                          thu: "J",
+                          fri: "V",
+                          sat: "S",
+                          sun: "D",
+                        };
+                        return dayMap[dayId] || dayId;
+                      })
+                      .join(", ")}
+                  </div>
+                )}
+              <Progress
+                value={(user?.activity.trainingFrequency || 0) * 14.28}
+                className="h-2"
+              />
             </div>
           </div>
         </CardContent>

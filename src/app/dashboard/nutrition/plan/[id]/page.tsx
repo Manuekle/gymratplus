@@ -489,7 +489,7 @@ export default function FoodPlanViewPage() {
         <Card>
           <CardContent className="px-4 pt-6">
             <Tabs defaultValue="breakfast" className="w-full">
-              <TabsList className="grid grid-cols-4 w-full">
+              <TabsList className="grid grid-cols-2 sm:grid-cols-4 w-full h-auto gap-2 sm:gap-4 px-2">
                 {foodPlan.meals.breakfast && (
                   <TabsTrigger value="breakfast">
                     {mealTypesConfig.breakfast.icon}{" "}
@@ -648,53 +648,6 @@ export default function FoodPlanViewPage() {
                 );
               })}
             </Tabs>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Daily Summary */}
-      {dailyTotals && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl tracking-heading font-semibold">
-              Resumen Diario
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
-                <span className="text-xs text-muted-foreground mb-2">
-                  Calorías
-                </span>
-                <span className="text-2xl font-semibold tracking-heading">
-                  {Math.round(dailyTotals.calories)}
-                </span>
-              </div>
-              <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
-                <span className="text-xs text-muted-foreground mb-2">
-                  Proteína
-                </span>
-                <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.protein.toFixed(1)}g
-                </span>
-              </div>
-              <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
-                <span className="text-xs text-muted-foreground mb-2">
-                  Carbohidratos
-                </span>
-                <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.carbs.toFixed(1)}g
-                </span>
-              </div>
-              <div className="flex flex-col p-4 rounded-lg bg-muted/30 border">
-                <span className="text-xs text-muted-foreground mb-2">
-                  Grasas
-                </span>
-                <span className="text-2xl font-semibold tracking-heading">
-                  {dailyTotals.fat.toFixed(1)}g
-                </span>
-              </div>
-            </div>
           </CardContent>
         </Card>
       )}

@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { differenceInDays } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -52,8 +53,92 @@ import {
   Target02Icon,
   WorkoutGymnasticsIcon,
   QrCodeIcon,
+  FireIcon,
+  Dumbbell01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
+
+// Función para obtener el color de la racha según el número
+const getStreakColor = (streak: number) => {
+  // 365+: Blanco brillante / Dorado (temperatura máxima)
+  if (streak >= 365) {
+    return {
+      bg: "bg-gradient-to-br from-yellow-200 via-yellow-100 to-white dark:from-yellow-900/40 dark:via-yellow-800/30 dark:to-gray-800",
+      iconBg: "bg-yellow-100 dark:bg-yellow-900/30",
+      iconColor: "text-yellow-600 dark:text-yellow-400",
+      textColor: "text-yellow-900 dark:text-yellow-100",
+      border: "border-yellow-300/50 dark:border-yellow-700/30",
+    };
+  }
+  // 291-364: Rojo anaranjado / Rojo intenso
+  if (streak >= 291) {
+    return {
+      bg: "bg-gradient-to-br from-red-50 to-white dark:from-red-900/20 dark:to-gray-800",
+      iconBg: "bg-red-100 dark:bg-red-900/30",
+      iconColor: "text-red-600 dark:text-red-400",
+      textColor: "text-red-900 dark:text-red-100",
+      border: "border-red-300/50 dark:border-red-700/30",
+    };
+  }
+  // 221-290: Naranja
+  if (streak >= 221) {
+    return {
+      bg: "bg-gradient-to-br from-orange-50 to-white dark:from-orange-900/20 dark:to-gray-800",
+      iconBg: "bg-orange-100 dark:bg-orange-900/30",
+      iconColor: "text-orange-600 dark:text-orange-400",
+      textColor: "text-orange-900 dark:text-orange-100",
+      border: "border-orange-300/50 dark:border-orange-700/30",
+    };
+  }
+  // 151-220: Amarillo pálido / Amarillo brillante
+  if (streak >= 151) {
+    return {
+      bg: "bg-gradient-to-br from-yellow-50 to-white dark:from-yellow-900/20 dark:to-gray-800",
+      iconBg: "bg-yellow-100 dark:bg-yellow-900/30",
+      iconColor: "text-yellow-600 dark:text-yellow-400",
+      textColor: "text-yellow-900 dark:text-yellow-100",
+      border: "border-yellow-300/50 dark:border-yellow-700/30",
+    };
+  }
+  // 101-150: Verde claro / Lima
+  if (streak >= 101) {
+    return {
+      bg: "bg-gradient-to-br from-lime-50 to-white dark:from-lime-900/20 dark:to-gray-800",
+      iconBg: "bg-lime-100 dark:bg-lime-900/30",
+      iconColor: "text-lime-600 dark:text-lime-400",
+      textColor: "text-lime-900 dark:text-lime-100",
+      border: "border-lime-300/50 dark:border-lime-700/30",
+    };
+  }
+  // 51-100: Cian / Turquesa
+  if (streak >= 51) {
+    return {
+      bg: "bg-gradient-to-br from-cyan-50 to-white dark:from-cyan-900/20 dark:to-gray-800",
+      iconBg: "bg-cyan-100 dark:bg-cyan-900/30",
+      iconColor: "text-cyan-600 dark:text-cyan-400",
+      textColor: "text-cyan-900 dark:text-cyan-100",
+      border: "border-cyan-300/50 dark:border-cyan-700/30",
+    };
+  }
+  // 1-50: Azul profundo / Índigo
+  if (streak >= 1) {
+    return {
+      bg: "bg-gradient-to-br from-indigo-50 to-white dark:from-indigo-900/20 dark:to-gray-800",
+      iconBg: "bg-indigo-100 dark:bg-indigo-900/30",
+      iconColor: "text-indigo-600 dark:text-indigo-400",
+      textColor: "text-indigo-900 dark:text-indigo-100",
+      border: "border-indigo-300/50 dark:border-indigo-700/30",
+    };
+  }
+  // 0: Gris sin racha
+  return {
+    bg: "bg-gradient-to-br from-gray-50 to-white dark:from-gray-900/20 dark:to-gray-800",
+    iconBg: "bg-gray-100 dark:bg-gray-900/30",
+    iconColor: "text-gray-600 dark:text-gray-400",
+    textColor: "text-gray-900 dark:text-gray-100",
+    border: "border-gray-300/50 dark:border-gray-700/30",
+  };
+};
 
 export default function ProfilePage() {
   const [showCancelDialog, setShowCancelDialog] = useState(false);
@@ -63,6 +148,14 @@ export default function ProfilePage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [imageKey, setImageKey] = useState(0);
   const [currentImage, setCurrentImage] = useState<string | null>(null);
+  const [streakStats, setStreakStats] = useState<{
+    currentStreak: number;
+    longestStreak: number;
+    totalWorkoutDays: number;
+    totalWorkoutSessions: number;
+    lastWorkoutDate: string | null;
+  } | null>(null);
+  const [loadingStreak, setLoadingStreak] = useState(true);
 
   const { data: session, status, update } = useSession();
   const isInstructor = session?.user?.isInstructor || false;
@@ -81,7 +174,17 @@ export default function ProfilePage() {
             user.profile as { birthdate?: Date | string }
           )?.birthdate?.toString() || "",
         );
-        setExperienceLevel(user.experienceLevel || "");
+        // Convertir de inglés a español para el Select
+        const experienceLevelMap: Record<string, string> = {
+          beginner: "principiante",
+          intermediate: "intermedio",
+          advanced: "avanzado",
+        };
+        setExperienceLevel(
+          user.experienceLevel
+            ? experienceLevelMap[user.experienceLevel] || user.experienceLevel
+            : "",
+        );
         setPreferredWorkoutTime(
           (user.profile as { preferredWorkoutTime?: string })
             ?.preferredWorkoutTime || "",
@@ -109,7 +212,30 @@ export default function ProfilePage() {
         .then((res) => res.json())
         .then((interests: string[]) => {
           setSelectedTags(interests);
-        });
+        })
+        .catch(() => {});
+
+      // Load streak stats
+      if (session.user.id) {
+        setLoadingStreak(true);
+        fetch(`/api/workout-streak?userId=${session.user.id}`)
+          .then((res) => res.json())
+          .then((data) => {
+            setStreakStats({
+              currentStreak: data.currentStreak || 0,
+              longestStreak: data.longestStreak || 0,
+              totalWorkoutDays: data.totalWorkoutDays || 0,
+              totalWorkoutSessions: data.totalWorkoutSessions || 0,
+              lastWorkoutDate: data.lastWorkoutDate || null,
+            });
+          })
+          .catch((error) => {
+            console.error("Error loading streak stats:", error);
+          })
+          .finally(() => {
+            setLoadingStreak(false);
+          });
+      }
     }
   }, [session]);
 
@@ -242,6 +368,15 @@ export default function ProfilePage() {
         return;
       }
 
+      // Convertir experienceLevel de español a inglés para la base de datos
+      const experienceLevelToEnglish: Record<string, string> = {
+        principiante: "beginner",
+        intermedio: "intermediate",
+        avanzado: "advanced",
+      };
+      const experienceLevelEnglish =
+        experienceLevelToEnglish[experienceLevel] || experienceLevel;
+
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: {
@@ -250,7 +385,7 @@ export default function ProfilePage() {
         body: JSON.stringify({
           name,
           phone,
-          experienceLevel,
+          experienceLevel: experienceLevelEnglish,
           birthdate,
           preferredWorkoutTime,
           dailyActivity,
@@ -328,31 +463,72 @@ export default function ProfilePage() {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-7 w-48 mb-2" />
-            <Skeleton className="h-4 w-64" />
-          </CardHeader>
-          <CardContent className="px-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="space-y-2">
-                  <Skeleton className="h-4 w-24" />
-                  <Skeleton className="h-10 w-full" />
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="px-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-10 w-full" />
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-40 mb-2" />
+              <Skeleton className="h-4 w-56" />
+            </CardHeader>
+            <CardContent className="px-4">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <Skeleton className="h-16 w-full" />
+                  <Skeleton className="h-16 w-full" />
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-7 w-40 mb-2" />
-            <Skeleton className="h-4 w-56" />
-          </CardHeader>
-          <CardContent className="px-4">
-            <Skeleton className="h-32 w-full" />
-          </CardContent>
-        </Card>
+                <Skeleton className="h-px w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent className="px-4">
+              <div className="space-y-4">
+                <div className="flex flex-row flex-wrap gap-4">
+                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
+                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
+                </div>
+                <Skeleton className="h-px w-full" />
+                <div className="flex flex-row flex-wrap gap-4">
+                  <Skeleton className="h-12 flex-1 min-w-[140px]" />
+                  <Skeleton className="h-12 flex-1 min-w-[140px]" />
+                </div>
+                <Skeleton className="h-px w-full" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-32 mb-2" />
+              <Skeleton className="h-4 w-48" />
+            </CardHeader>
+            <CardContent className="px-4">
+              <Skeleton className="h-32 w-full" />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -546,10 +722,10 @@ export default function ProfilePage() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
               Información de contacto
             </CardTitle>
-            <CardDescription className="text-muted-foreground text-xs">
+            <CardDescription className="text-xs text-muted-foreground">
               Datos de contacto y comunicación
             </CardDescription>
           </CardHeader>
@@ -570,6 +746,15 @@ export default function ProfilePage() {
                     />
                   </div>
                   <div className="space-y-2">
+                    <BirthDatePicker
+                      value={birthdate}
+                      onValueChange={setBirthdate}
+                    />
+                  </div>
+                </div>
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
+                  <div className="space-y-2">
                     <Label className="text-xs md:text-xs" htmlFor="name">
                       Nombre
                     </Label>
@@ -577,13 +762,11 @@ export default function ProfilePage() {
                       // disabled
                       className="text-xs md:text-xs"
                       id="name"
+                      placeholder="Ingresa tu nombre"
                       onChange={(e) => setName(e.target.value)}
                       defaultValue={session?.user?.name || ""}
                     />
                   </div>
-                </div>
-                <Separator />
-                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs md:text-xs" htmlFor="phone">
                       Teléfono
@@ -591,20 +774,23 @@ export default function ProfilePage() {
                     <Input
                       className="text-xs md:text-xs"
                       id="phone"
+                      placeholder="Ingresa tu teléfono"
                       defaultValue={phone}
                       onChange={(e) => setPhone(e.target.value)}
                     />
                   </div>
+                </div>
+                <Separator />
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
                   <div className="space-y-2">
                     <Label className="text-xs md:text-xs" htmlFor="experience">
                       Experiencia
                     </Label>
                     <Select
-                      defaultValue={session?.user?.experienceLevel || ""}
                       value={experienceLevel}
                       onValueChange={(value) => setExperienceLevel(value)}
                     >
-                      <SelectTrigger className="text-xs md:text-xs">
+                      <SelectTrigger className="text-xs md:text-xs w-full">
                         <SelectValue placeholder="Selecciona tu experiencia" />
                       </SelectTrigger>
                       <SelectContent>
@@ -628,16 +814,6 @@ export default function ProfilePage() {
                         </SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
-                </div>
-                <Separator />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 items-center md:gap-8 gap-4">
-                  <div className="space-y-2">
-                    <BirthDatePicker
-                      value={birthdate}
-                      onValueChange={setBirthdate}
-                    />
                   </div>
                   {isInstructor ? (
                     <div className="space-y-2">
@@ -740,6 +916,7 @@ export default function ProfilePage() {
                         type="text"
                         inputMode="numeric"
                         pattern="[0-9]*"
+                        placeholder="Ej: 12"
                         value={monthsTraining ? monthsTraining : ""}
                         onChange={(e) =>
                           setMonthsTraining(Number(e.target.value))
@@ -853,8 +1030,17 @@ export default function ProfilePage() {
                     />
                     <div>
                       <div className="font-medium text-xs">Experiencia</div>
-                      <div className="text-muted-foreground text-xs capitalize">
-                        {session?.user?.experienceLevel || "No especificado"}
+                      <div className="text-muted-foreground text-xs">
+                        {(() => {
+                          const level = session?.user?.experienceLevel;
+                          if (!level) return "No especificado";
+                          const translations: Record<string, string> = {
+                            beginner: "Principiante",
+                            intermediate: "Intermedio",
+                            advanced: "Avanzado",
+                          };
+                          return translations[level] || level;
+                        })()}
                       </div>
                     </div>
                   </div>
@@ -889,7 +1075,7 @@ export default function ProfilePage() {
 
         <Card>
           <CardHeader className="pb-3">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
               Preferencias de entrenamiento
             </CardTitle>
             <CardDescription className="text-xs text-muted-foreground">
@@ -915,7 +1101,7 @@ export default function ProfilePage() {
                             size={18}
                             className="text-muted-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su hora preferida" />
+                          <SelectValue placeholder="Selecciona tu hora preferida" />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="text-xs">
@@ -951,7 +1137,7 @@ export default function ProfilePage() {
                             size={18}
                             className="text-muted-foreground"
                           />
-                          <SelectValue placeholder="Seleccione su actividad diaria" />
+                          <SelectValue placeholder="Selecciona tu actividad diaria" />
                         </div>
                       </SelectTrigger>
                       <SelectContent className="text-xs">
@@ -986,7 +1172,7 @@ export default function ProfilePage() {
                           size={18}
                           className="text-muted-foreground"
                         />
-                        <SelectValue placeholder="Seleccione su objetivo" />
+                        <SelectValue placeholder="Selecciona tu objetivo" />
                       </div>
                     </SelectTrigger>
                     <SelectContent className="text-xs">
@@ -1014,7 +1200,7 @@ export default function ProfilePage() {
                           size={18}
                           className="text-muted-foreground"
                         />
-                        <SelectValue placeholder="Seleccione su preferencia dietética" />
+                        <SelectValue placeholder="Selecciona tu preferencia dietética" />
                       </div>
                     </SelectTrigger>
                     <SelectContent className="text-xs">
@@ -1159,13 +1345,209 @@ export default function ProfilePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Estadísticas de Racha y Tus intereses */}
       <div className="grid gap-6 md:grid-cols-2">
+        {/* Estadísticas de Racha */}
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+              Estadísticas de Racha
+            </CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
+              Tu progreso y logros en entrenamiento
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-4 space-y-4">
+            {loadingStreak ? (
+              <div className="space-y-4">
+                {/* Skeleton para las dos cards principales */}
+                <div className="flex flex-row flex-wrap gap-4">
+                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
+                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
+                </div>
+                {/* Skeleton para el separador */}
+                <Skeleton className="h-px w-full" />
+                {/* Skeleton para los dos items de estadísticas */}
+                <div className="flex flex-row flex-wrap gap-4">
+                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                    <Skeleton className="h-5 w-5 rounded" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-32" />
+                      <Skeleton className="h-3 w-24" />
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                    <Skeleton className="h-5 w-5 rounded" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-28" />
+                      <Skeleton className="h-3 w-20" />
+                    </div>
+                  </div>
+                </div>
+                {/* Skeleton para el último entrenamiento */}
+                <Skeleton className="h-px w-full" />
+                <div className="flex items-center gap-4">
+                  <Skeleton className="h-5 w-5 rounded" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-36" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+              </div>
+            ) : streakStats ? (
+              <>
+                <div className="flex flex-row flex-wrap gap-4">
+                  {/* Racha Actual */}
+                  {(() => {
+                    const streakColor = getStreakColor(
+                      streakStats.currentStreak,
+                    );
+                    return (
+                      <div
+                        className={`p-4 rounded-lg border ${streakColor.bg} ${streakColor.border} flex-1 min-w-[140px]`}
+                      >
+                        <div className="flex items-center gap-3 mb-2">
+                          <div
+                            className={`h-10 w-10 rounded-full ${streakColor.iconBg} flex items-center justify-center`}
+                          >
+                            <HugeiconsIcon
+                              icon={FireIcon}
+                              className={`h-5 w-5 ${streakColor.iconColor}`}
+                            />
+                          </div>
+                          <div className="flex-1">
+                            <div className="text-xs text-muted-foreground">
+                              Racha Actual
+                            </div>
+                            <div
+                              className={`text-xl font-semibold ${streakColor.textColor}`}
+                            >
+                              {streakStats.currentStreak} día
+                              {streakStats.currentStreak !== 1 ? "s" : ""}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Racha Más Larga */}
+                  <div className="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-white dark:from-yellow-900/20 dark:to-gray-800 flex-1 min-w-[140px]">
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                        <HugeiconsIcon
+                          icon={StarIcon}
+                          className="h-5 w-5 text-yellow-600 dark:text-yellow-400"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs text-muted-foreground">
+                          Racha Más Larga
+                        </div>
+                        <div className="text-xl font-semibold">
+                          {streakStats.longestStreak} día
+                          {streakStats.longestStreak !== 1 ? "s" : ""}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator />
+
+                <div className="flex flex-row flex-wrap gap-4">
+                  {/* Total de Días Entrenados */}
+                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                    <HugeiconsIcon
+                      icon={Calendar01Icon}
+                      className="h-5 w-5 text-muted-foreground flex-shrink-0"
+                    />
+                    <div>
+                      <div className="font-medium text-xs">
+                        Total de días entrenados
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {streakStats.totalWorkoutDays} día
+                        {streakStats.totalWorkoutDays !== 1 ? "s" : ""}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Total de Sesiones */}
+                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                    <HugeiconsIcon
+                      icon={Dumbbell01Icon}
+                      className="h-5 w-5 text-muted-foreground flex-shrink-0"
+                    />
+                    <div>
+                      <div className="font-medium text-xs">
+                        Total de sesiones
+                      </div>
+                      <div className="text-muted-foreground text-xs">
+                        {streakStats.totalWorkoutSessions} sesión
+                        {streakStats.totalWorkoutSessions !== 1 ? "es" : ""}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Último Entrenamiento */}
+                {streakStats.lastWorkoutDate && (
+                  <>
+                    <Separator />
+                    <div className="flex items-center gap-4">
+                      <HugeiconsIcon
+                        icon={Clock01Icon}
+                        className="h-5 w-5 text-muted-foreground"
+                      />
+                      <div>
+                        <div className="font-medium text-xs">
+                          Último entrenamiento
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          {(() => {
+                            const lastDate = new Date(
+                              streakStats.lastWorkoutDate,
+                            );
+                            lastDate.setHours(0, 0, 0, 0);
+                            const today = new Date();
+                            today.setHours(0, 0, 0, 0);
+                            const daysDiff = differenceInDays(today, lastDate);
+
+                            if (daysDiff === 0) {
+                              return "Hoy";
+                            } else if (daysDiff === 1) {
+                              return "Ayer";
+                            } else {
+                              return `Hace ${daysDiff} ${
+                                daysDiff === 1 ? "día" : "días"
+                              }`;
+                            }
+                          })()}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-xs text-muted-foreground">
+                  No hay estadísticas de racha disponibles
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Tus intereses */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
               Tus intereses
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs text-muted-foreground">
               Selecciona los temas que te interesan para encontrar instructores
               y contenido relevante.
             </CardDescription>

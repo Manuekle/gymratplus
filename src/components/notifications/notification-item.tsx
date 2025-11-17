@@ -39,11 +39,11 @@ export function NotificationItem({
     [1, 0.5, 0],
   );
 
-  // Escala del icono de eliminar para feedback visual
+  // Escala del icono de eliminar para feedback visual (más sutil)
   const deleteIconScale = useTransform(
     x,
     [-deleteButtonWidth, -deleteThreshold, -deleteThreshold * 0.5, 0],
-    [1.2, 1.1, 1, 1],
+    [1.05, 1.02, 1, 1],
   );
 
   // Opacidad del contenido mientras se desliza
@@ -103,7 +103,7 @@ export function NotificationItem({
   };
 
   const handleDrag = (
-    event: MouseEvent | TouchEvent | PointerEvent,
+    _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
     if (!isMobile) return;
@@ -127,7 +127,7 @@ export function NotificationItem({
   };
 
   const handleDragEnd = async (
-    event: MouseEvent | TouchEvent | PointerEvent,
+    _event: MouseEvent | TouchEvent | PointerEvent,
     info: PanInfo,
   ) => {
     if (!isMobile) return;
@@ -202,7 +202,7 @@ export function NotificationItem({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors group relative rounded-lg",
+        "flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors group relative",
         notification.read ? "opacity-60" : "",
         isMarking && "opacity-50",
         !showDeleteButton && "w-full",
@@ -222,7 +222,7 @@ export function NotificationItem({
             {notification.title}
           </h4>
         </div>
-        <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5 truncate">
+        <p className="text-xs text-muted-foreground line-clamp-1 truncate">
           {notification.message}
         </p>
       </div>
@@ -257,16 +257,10 @@ export function NotificationItem({
         exit={{
           opacity: 0,
           x: -100,
-          height: 0,
-          marginTop: 0,
-          marginBottom: 0,
-          paddingTop: 0,
-          paddingBottom: 0,
+          scale: 0.95,
           transition: {
-            duration: 0.4,
+            duration: 0.2,
             ease: [0.4, 0, 0.2, 1],
-            height: { duration: 0.3 },
-            opacity: { duration: 0.2 },
           },
         }}
         transition={{
@@ -292,7 +286,7 @@ export function NotificationItem({
           >
             <HugeiconsIcon
               icon={Delete02Icon}
-              className="h-7 w-7 text-white drop-shadow-sm"
+              className="h-5 w-5 text-white drop-shadow-sm"
             />
           </motion.div>
         </motion.div>
@@ -332,16 +326,10 @@ export function NotificationItem({
       exit={{
         opacity: 0,
         x: -100,
-        height: 0,
-        marginTop: 0,
-        marginBottom: 0,
-        paddingTop: 0,
-        paddingBottom: 0,
+        scale: 0.95,
         transition: {
-          duration: 0.4,
+          duration: 0.2,
           ease: [0.4, 0, 0.2, 1],
-          height: { duration: 0.3 },
-          opacity: { duration: 0.2 },
         },
       }}
       transition={{
@@ -349,7 +337,6 @@ export function NotificationItem({
         opacity: { duration: 0.2 },
         y: { duration: 0.2 },
       }}
-      className="mb-2"
     >
       {content}
     </motion.div>

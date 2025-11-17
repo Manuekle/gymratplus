@@ -520,7 +520,7 @@ export default function InstructorDashboardPage() {
                           {student.hasActiveWorkoutPlan && (
                             <Badge
                               variant="outline"
-                              className="text-xs whitespace-nowrap"
+                              className="text-xs whitespace-nowrap bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
                             >
                               Plan de entrenamiento
                             </Badge>
@@ -528,7 +528,7 @@ export default function InstructorDashboardPage() {
                           {student.hasActiveMealPlan && (
                             <Badge
                               variant="outline"
-                              className="text-xs whitespace-nowrap"
+                              className="text-xs whitespace-nowrap bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
                             >
                               Plan de nutrición
                             </Badge>
@@ -537,7 +537,7 @@ export default function InstructorDashboardPage() {
                             !student.hasActiveMealPlan && (
                               <Badge
                                 variant="outline"
-                                className="text-xs whitespace-nowrap"
+                                className="text-xs whitespace-nowrap bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800"
                               >
                                 Sin planes activos
                               </Badge>

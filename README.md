@@ -129,6 +129,19 @@ UPSTASH_REDIS_REST_TOKEN="tu-token-de-upstash"
 BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token_aqui"
 
 # ============================================
+# Resend (Envío de Emails)
+# ============================================
+# Para enviar emails de recuperación de contraseña y notificaciones
+# 1. Crea una cuenta en: https://resend.com
+# 2. Obtén tu API Key desde: https://resend.com/api-keys
+# 3. (Opcional) Verifica tu dominio para mejor deliverability
+RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+# Email desde el cual se enviarán los emails
+# SIN DOMINIO: No configures esta variable, se usará "onboarding@resend.dev" automáticamente
+# CON DOMINIO: "GymRatPlus <noreply@tudominio.com>" (debe estar verificado en Resend)
+# RESEND_FROM_EMAIL="GymRatPlus <noreply@tudominio.com>"
+
+# ============================================
 # Entorno
 # ============================================
 # Automático: 'development' o 'production'
@@ -302,6 +315,60 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - shadcn por los componentes UI
 - Vercel por el hosting
 - La comunidad de Next.js
+
+## 📧 Configuración de Resend (Emails)
+
+### Configuración Básica
+
+1. **Crear cuenta en Resend**
+   - Ve a [https://resend.com](https://resend.com)
+   - Crea una cuenta (gratis, sin tarjeta)
+
+2. **Obtener API Key**
+   - Ve a [https://resend.com/api-keys](https://resend.com/api-keys)
+   - Crea una API Key
+   - Cópiala
+
+3. **Configurar `.env.local`**
+
+   **Opción A: Sin Dominio (Recomendado para empezar)**
+
+   ```env
+   RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+   ```
+
+   El sistema usará automáticamente `onboarding@resend.dev` como remitente.
+
+   **Opción B: Con Dominio Propio**
+
+   ```env
+   RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
+   RESEND_FROM_EMAIL="GymRatPlus <noreply@tudominio.com>"
+   ```
+
+   El dominio debe estar verificado en [Resend Domains](https://resend.com/domains).
+
+### Free Tier de Resend
+
+- ✅ **3,000 emails/mes** gratis
+- ✅ **100 emails/día** gratis
+- ✅ Sin tarjeta de crédito requerida
+
+### Troubleshooting
+
+- **Error: "Resend no está configurado"**: Asegúrate de que `RESEND_API_KEY` esté en tu `.env.local`
+- **Emails no llegan**: Revisa la consola del servidor, verifica la API Key, y revisa la carpeta de spam
+- **Error de dominio**: No configures `RESEND_FROM_EMAIL` si no tienes dominio verificado
+
+## 🔄 Recuperación de Contraseña
+
+El sistema incluye recuperación de contraseña con código de 6 dígitos (2FA):
+
+- Verificación de email antes de enviar
+- Código de 6 dígitos enviado por email
+- Expiración de 10 minutos
+- Máximo 5 intentos fallidos
+- Templates de email con React Email y Tailwind
 
 ## 📞 Soporte
 

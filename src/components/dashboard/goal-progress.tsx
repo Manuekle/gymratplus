@@ -67,7 +67,7 @@ export default function GoalProgress() {
         <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
           Progreso de Objetivos
         </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">
+        <CardDescription className="text-xs sm:text-xs">
           Objetivos activos en progreso
         </CardDescription>
         <CardAction>
@@ -127,7 +127,7 @@ export default function GoalProgress() {
                         <HugeiconsIcon icon={Icon} className="h-3.5 w-3.5" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-xs sm:text-sm font-semibold truncate">
+                        <h3 className="text-xs sm:text-xs font-semibold truncate">
                           {goal.title}
                         </h3>
                       </div>

@@ -13,6 +13,7 @@ declare module "next-auth/jwt" {
       goal?: string;
       dietaryPreference?: string;
       monthsTraining?: number;
+      trainingDays?: string[];
       height?: string;
       currentWeight?: string;
       gender?: string;

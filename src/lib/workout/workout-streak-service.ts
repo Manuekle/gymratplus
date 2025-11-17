@@ -12,19 +12,17 @@ export class WorkoutStreakService {
       throw new Error("User not found");
     }
 
-    let streak = await prisma.workoutStreak.findUnique({
+    // Usar upsert para evitar condiciones de carrera
+    // Si el streak ya existe, lo devuelve; si no, lo crea
+    const streak = await prisma.workoutStreak.upsert({
       where: { userId },
+      update: {}, // No actualizar nada si ya existe
+      create: {
+        userId,
+        currentStreak: 0,
+        longestStreak: 0,
+      },
     });
-
-    if (!streak) {
-      streak = await prisma.workoutStreak.create({
-        data: {
-          userId,
-          currentStreak: 0,
-          longestStreak: 0,
-        },
-      });
-    }
 
     return streak;
   }
@@ -202,12 +200,16 @@ export class WorkoutStreakService {
         },
       });
 
-      // Calcular días únicos entrenados
+      // Calcular días únicos entrenados (usar fecha en UTC para evitar problemas de zona horaria)
       const uniqueWorkoutDays = new Set<string>();
       workoutSessions.forEach((session) => {
         const date = new Date(session.date);
-        date.setHours(0, 0, 0, 0);
-        uniqueWorkoutDays.add(date.toISOString().split("T")[0]);
+        // Usar UTC para evitar problemas de zona horaria
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+        const day = String(date.getUTCDate()).padStart(2, "0");
+        const dateKey = `${year}-${month}-${day}`;
+        uniqueWorkoutDays.add(dateKey);
       });
 
       const totalWorkoutDays = uniqueWorkoutDays.size;
@@ -216,6 +218,21 @@ export class WorkoutStreakService {
       // Calcular la racha real basada en días consecutivos de entrenamiento
       // La racha se calcula considerando los días de descanso permitidos
       let calculatedStreak = 0;
+      let sortedDays: Date[] = [];
+      let allowedRestDays = 0;
+      // Usar UTC para la fecha de hoy para ser consistente con las fechas de entrenamiento
+      const now = new Date();
+      const today = new Date(
+        Date.UTC(
+          now.getUTCFullYear(),
+          now.getUTCMonth(),
+          now.getUTCDate(),
+          0,
+          0,
+          0,
+          0,
+        ),
+      );
 
       if (workoutSessions.length > 0) {
         // Obtener trainingFrequency del usuario
@@ -224,16 +241,21 @@ export class WorkoutStreakService {
           select: { trainingFrequency: true },
         });
         const trainingFrequency = profile?.trainingFrequency || 3;
-        const allowedRestDays = 7 - trainingFrequency;
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
+        allowedRestDays = 7 - trainingFrequency;
 
         // Ordenar días únicos de entrenamiento de más reciente a más antiguo
-        const sortedDays = Array.from(uniqueWorkoutDays)
+        // Usar UTC para evitar problemas de zona horaria
+        sortedDays = Array.from(uniqueWorkoutDays)
           .map((d) => {
-            const date = new Date(d);
-            date.setHours(0, 0, 0, 0);
+            // Parsear la fecha YYYY-MM-DD en UTC
+            const parts = d.split("-").map(Number);
+            if (parts.length !== 3 || parts.some((p) => isNaN(p))) {
+              throw new Error(`Invalid date format: ${d}`);
+            }
+            const year = parts[0]!;
+            const month = parts[1]!;
+            const day = parts[2]!;
+            const date = new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0));
             return date;
           })
           .sort((a, b) => b.getTime() - a.getTime());
@@ -246,69 +268,138 @@ export class WorkoutStreakService {
           let consecutiveDays = 0;
           let lastWorkoutDate: Date | null = null;
 
-          // Empezar desde el día más reciente de entrenamiento
-          for (let i = 0; i < sortedDays.length; i++) {
-            const workoutDate = sortedDays[i];
+          // Verificar primero si el último entrenamiento está dentro del límite
+          const firstWorkoutDate = sortedDays[0];
+          if (!firstWorkoutDate) {
+            calculatedStreak = 0;
+          } else {
+            const daysSinceLastWorkout = Math.floor(
+              (today.getTime() - firstWorkoutDate.getTime()) /
+                (1000 * 60 * 60 * 24),
+            );
 
-            if (i === 0) {
-              // Primer día (más reciente)
-              // Verificar si este día está dentro de los días permitidos desde hoy
-              const daysSinceWorkout = Math.floor(
-                (today.getTime() - workoutDate.getTime()) /
-                  (1000 * 60 * 60 * 24),
+            const criticalDay = allowedRestDays + 1;
+
+            // Logs detallados para debug
+            console.log("--- Análisis de racha ---");
+            console.log("Fecha de hoy:", today.toISOString().split("T")[0]);
+            console.log(
+              "Último entrenamiento:",
+              firstWorkoutDate.toISOString().split("T")[0],
+            );
+            console.log(
+              "Días desde último entrenamiento:",
+              daysSinceLastWorkout,
+            );
+            console.log("Días de descanso permitidos:", allowedRestDays);
+            console.log("Día crítico (allowedRestDays + 1):", criticalDay);
+            console.log(
+              `¿Perdió la racha? ${daysSinceLastWorkout > criticalDay ? "SÍ" : "NO"}`,
+            );
+
+            // Si el último entrenamiento fue hace más del día crítico (allowedRestDays + 1),
+            // la racha se pierde completamente
+            if (daysSinceLastWorkout > criticalDay) {
+              console.log(
+                `⚠️ Racha perdida: Han pasado ${daysSinceLastWorkout} días desde el último entrenamiento, excediendo el límite de ${criticalDay} días`,
               );
-
-              // Si el último entrenamiento está dentro de los días de descanso permitidos + 1,
-              // comenzar a contar la racha
-              if (daysSinceWorkout <= allowedRestDays + 1) {
-                consecutiveDays++;
-                lastWorkoutDate = workoutDate;
-              } else {
-                // El último entrenamiento fue hace mucho tiempo, la racha es 0
-                break;
-              }
+              calculatedStreak = 0;
             } else {
-              // Días siguientes
-              if (lastWorkoutDate) {
-                const daysBetween = Math.floor(
-                  (lastWorkoutDate.getTime() - workoutDate.getTime()) /
-                    (1000 * 60 * 60 * 24),
-                );
+              // El último entrenamiento está dentro del límite, contar días consecutivos
+              // Empezar desde el día más reciente de entrenamiento
+              for (let i = 0; i < sortedDays.length; i++) {
+                const workoutDate = sortedDays[i];
+                if (!workoutDate) continue;
 
-                // Si el tiempo entre entrenamientos está dentro de los días permitidos,
-                // continuar la racha
-                if (daysBetween <= allowedRestDays + 1) {
+                if (i === 0) {
+                  // Primer día (más reciente) - siempre se cuenta si está dentro del límite
                   consecutiveDays++;
                   lastWorkoutDate = workoutDate;
                 } else {
-                  // Se rompió la racha
-                  break;
+                  // Días siguientes - verificar si están dentro del límite del entrenamiento anterior
+                  if (lastWorkoutDate) {
+                    const daysBetween = Math.floor(
+                      (lastWorkoutDate.getTime() - workoutDate.getTime()) /
+                        (1000 * 60 * 60 * 24),
+                    );
+
+                    // Si el tiempo entre entrenamientos está dentro de los días permitidos + 1,
+                    // continuar la racha
+                    // El +1 permite que si entrena día 1, luego descansa día 2-3, y entrena día 4, siga contando
+                    if (daysBetween <= allowedRestDays + 1) {
+                      consecutiveDays++;
+                      lastWorkoutDate = workoutDate;
+                    } else {
+                      // Se rompió la racha (más de allowedRestDays + 1 días entre entrenamientos)
+                      break;
+                    }
+                  }
                 }
               }
+
+              calculatedStreak = consecutiveDays;
             }
+
+            // Logs detallados para debug (dentro del scope donde están las variables)
+            console.log("--- Cálculo detallado de racha ---");
+            console.log(
+              "Días de entrenamiento ordenados:",
+              sortedDays.map((d) => d.toISOString().split("T")[0]),
+            );
+            console.log("Training frequency:", trainingFrequency);
+            console.log("Días de descanso permitidos:", allowedRestDays);
+            console.log("Día crítico:", criticalDay);
+            console.log(
+              "Días desde último entrenamiento hasta hoy:",
+              daysSinceLastWorkout,
+            );
+            console.log("Días consecutivos contados:", consecutiveDays);
+            console.log("Racha final calculada:", calculatedStreak);
           }
 
-          calculatedStreak = consecutiveDays;
-
-          // Logs detallados para debug
-          console.log("--- Cálculo detallado de racha ---");
-          console.log(
-            "Días de entrenamiento ordenados:",
-            sortedDays.map((d) => d.toISOString().split("T")[0]),
-          );
-          console.log("Training frequency:", trainingFrequency);
-          console.log("Días de descanso permitidos:", allowedRestDays);
-          console.log(
-            "Días desde último entrenamiento hasta hoy:",
-            sortedDays.length > 0
-              ? Math.floor(
-                  (today.getTime() - sortedDays[0].getTime()) /
+          // Detalle del cálculo día por día
+          if (calculatedStreak > 0) {
+            console.log("\n📊 Análisis día por día:");
+            let tempLastDate: Date | null = null;
+            sortedDays.slice(0, calculatedStreak).forEach((date, idx) => {
+              if (idx === 0) {
+                console.log(
+                  `  Día ${idx + 1}: ${date.toISOString().split("T")[0]} (último entrenamiento)`,
+                );
+                tempLastDate = date;
+              } else if (tempLastDate) {
+                const daysBetween = Math.floor(
+                  (tempLastDate.getTime() - date.getTime()) /
                     (1000 * 60 * 60 * 24),
-                )
-              : "N/A",
-          );
-          console.log("Racha calculada:", calculatedStreak);
-          console.log("----------------------------------");
+                );
+                console.log(
+                  `  Día ${idx + 1}: ${date.toISOString().split("T")[0]} (${daysBetween} días después del anterior)`,
+                );
+                tempLastDate = date;
+              }
+            });
+          }
+
+          console.log("----------------------------------\n");
+
+          // NO crear notificaciones aquí - se maneja en sendCriticalDayNotifications
+          // Solo loguear si está en día crítico para debug
+          if (sortedDays.length > 0 && sortedDays[0]) {
+            const firstWorkoutDate = sortedDays[0];
+            const daysSinceLastWorkout = Math.floor(
+              (today.getTime() - firstWorkoutDate.getTime()) /
+                (1000 * 60 * 60 * 24),
+            );
+
+            if (
+              daysSinceLastWorkout === allowedRestDays + 1 &&
+              calculatedStreak > 0
+            ) {
+              console.log(
+                `ℹ️ Usuario ${userId} está en día crítico (día ${daysSinceLastWorkout}), racha: ${calculatedStreak}. La notificación se manejará en sendCriticalDayNotifications.`,
+              );
+            }
+          }
         }
       }
 
@@ -361,6 +452,15 @@ export class WorkoutStreakService {
   }
 
   async checkAndSendWorkoutReminder(userId: string) {
+    // Primero verificar si está en día crítico - si es así, no enviar el recordatorio
+    // porque ya se está mostrando el alert de racha en riesgo
+    const checkResult = await this.checkAndResetStreak(userId);
+
+    // Si está en día crítico, no enviar el recordatorio normal
+    if (checkResult.isCriticalDay && checkResult.currentStreak > 0) {
+      return;
+    }
+
     const streak = await this.getOrCreateStreak(userId);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -385,7 +485,22 @@ export class WorkoutStreakService {
         },
       });
 
-      if (!existingReminder) {
+      // También verificar si hay una notificación de racha en riesgo hoy
+      const existingRiskNotification = await prisma.notification.findFirst({
+        where: {
+          userId,
+          type: "workout",
+          title: {
+            contains: "Racha en riesgo",
+          },
+          createdAt: {
+            gte: today,
+          },
+        },
+      });
+
+      // No enviar recordatorio si hay notificación de racha en riesgo
+      if (!existingReminder && !existingRiskNotification) {
         const message =
           streak.currentStreak > 0
             ? `¡No pierdas tu racha de ${streak.currentStreak} días! Aún estás a tiempo de entrenar hoy.`
@@ -406,6 +521,8 @@ export class WorkoutStreakService {
    * Si el usuario excede los días de descanso permitidos, la racha se resetea a las 12 de la noche
    */
   async checkAndResetStreak(userId: string) {
+    // Primero actualizar la racha calculada desde los entrenamientos reales
+    const stats = await this.getStreakStats(userId);
     const streak = await this.getOrCreateStreak(userId);
 
     // Obtener el perfil del usuario para saber los días de entrenamiento por semana
@@ -418,7 +535,7 @@ export class WorkoutStreakService {
     const trainingFrequency = profile?.trainingFrequency || 3;
     const allowedRestDays = 7 - trainingFrequency; // Días de descanso permitidos
 
-    if (!streak.lastWorkoutAt || streak.currentStreak === 0) {
+    if (!streak.lastWorkoutAt || stats.currentStreak === 0) {
       return { shouldReset: false, daysWithoutWorkout: 0 };
     }
 
@@ -468,56 +585,88 @@ export class WorkoutStreakService {
       isCriticalDay,
       criticalDay,
       allowedRestDays,
+      currentStreak: stats.currentStreak,
     };
   }
 
   /**
    * Envía notificaciones cada 2 horas en el día crítico
    * Se debe llamar cada 2 horas durante el día crítico
+   * SOLO se debe llamar desde aquí, NO desde getStreakStats
    */
   async sendCriticalDayNotifications(userId: string) {
     const checkResult = await this.checkAndResetStreak(userId);
 
-    if (!checkResult.isCriticalDay) {
-      return { sent: false, reason: "Not critical day" };
+    if (
+      !checkResult.isCriticalDay ||
+      !checkResult.currentStreak ||
+      checkResult.currentStreak === 0
+    ) {
+      return { sent: false, reason: "Not critical day or no active streak" };
     }
 
-    const streak = await this.getOrCreateStreak(userId);
     const now = new Date();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Usar UTC para ser consistente con otras fechas
+    const todayStart = new Date(
+      Date.UTC(
+        now.getUTCFullYear(),
+        now.getUTCMonth(),
+        now.getUTCDate(),
+        0,
+        0,
+        0,
+        0,
+      ),
+    );
 
-    // Verificar si ya se envió una notificación en las últimas 2 horas
-    const twoHoursAgo = new Date(now.getTime() - 2 * 60 * 60 * 1000);
-
-    const recentNotification = await prisma.notification.findFirst({
+    // Verificar si ya se envió una notificación hoy (no cada 2 horas, solo una vez por día)
+    const existingNotification = await prisma.notification.findFirst({
       where: {
         userId,
         type: "workout",
-        title: {
-          contains: "Racha en riesgo",
-        },
+        title: "Racha en Riesgo - ¡Día Crítico!",
         createdAt: {
-          gte: twoHoursAgo,
+          gte: todayStart,
         },
       },
     });
 
-    if (recentNotification) {
-      return { sent: false, reason: "Notification sent recently" };
+    if (existingNotification) {
+      return { sent: false, reason: "Notification already sent today" };
     }
 
-    // Enviar notificación de advertencia
-    const hoursUntilMidnight = 24 - now.getHours();
-    const message = `⚠️ Tu racha de ${streak.currentStreak} días está en riesgo. Si no entrenas antes de las 12:00 AM, tu racha se reiniciará. ¡Aún estás a tiempo!`;
+    // Verificar si el usuario tiene notificaciones activadas
+    const userProfile = await prisma.profile.findUnique({
+      where: { userId },
+      select: { notificationsActive: true },
+    });
+
+    if (userProfile?.notificationsActive === false) {
+      return { sent: false, reason: "User has notifications disabled" };
+    }
+
+    // Obtener allowedRestDays del perfil
+    const profile = await prisma.profile.findUnique({
+      where: { userId },
+      select: { trainingFrequency: true },
+    });
+    const trainingFrequency = profile?.trainingFrequency || 3;
+    const allowedRestDays = 7 - trainingFrequency;
+
+    // Enviar notificación de advertencia (solo una vez por día)
+    const message = `Has usado tus ${allowedRestDays} días de descanso permitidos. Tu racha de ${checkResult.currentStreak} días está en peligro. Si no entrenas antes de las 12:00 AM, perderás toda tu progreso. ¡Aún estás a tiempo de mantenerla! 💪`;
 
     await createNotification({
       userId,
-      title: "Racha en riesgo",
+      title: "Racha en Riesgo - ¡Día Crítico!",
       message,
       type: "workout",
     });
 
-    return { sent: true, hoursUntilMidnight };
+    console.log(
+      `📢 Notificación de racha en riesgo enviada a usuario ${userId} (día crítico, racha: ${checkResult.currentStreak})`,
+    );
+
+    return { sent: true, streak: checkResult.currentStreak };
   }
 }

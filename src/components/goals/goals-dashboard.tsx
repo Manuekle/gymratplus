@@ -243,7 +243,7 @@ export function GoalsDashboard() {
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
         <div className="flex md:flex-row flex-col gap-4 md:gap-0 justify-between items-center">
-          <TabsList className="flex flex-wrap h-auto gap-4 px-2">
+          <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
             <TabsTrigger value="all">Todos</TabsTrigger>
             <TabsTrigger value="weight">Peso</TabsTrigger>
             <TabsTrigger value="strength">Fuerza</TabsTrigger>
