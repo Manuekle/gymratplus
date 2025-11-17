@@ -258,7 +258,7 @@ export function MealPlan({
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="px-4">
-                  <div className="rounded-md border">
+                  <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
                     <Table>
                       <TableHeader>
                         <TableRow>
@@ -380,7 +380,7 @@ function MealPlanSkeleton() {
             <Skeleton className="h-4 w-full max-w-lg" />
           </CardHeader>
           <CardContent className="px-4">
-            <div className="rounded-md border">
+            <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
               <Table>
                 <TableHeader>
                   <TableRow>

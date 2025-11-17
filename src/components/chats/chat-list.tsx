@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Search01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils/utils";
@@ -82,6 +83,94 @@ export function ChatList({
     return userName.includes(searchLower) || lastMessage.includes(searchLower);
   });
 
+  const renderChatItem = (chat: Chat) => {
+    const previewData = getMessagePreview(chat.lastMessage);
+    const preview =
+      typeof previewData === "string" ? previewData : previewData.preview;
+    const isRead = typeof previewData === "string" ? true : previewData.isRead;
+    return (
+      <Button
+        key={chat.id}
+        onClick={() => onSelectChat(chat.id)}
+        variant="ghost"
+        className={cn(
+          "w-full p-3 rounded-none transition-all text-left justify-start h-auto",
+          "hover:bg-muted/50 focus:bg-muted/50",
+          selectedChatId === chat.id && "bg-muted dark:bg-muted/50",
+        )}
+      >
+        <div className="flex items-center gap-3 w-full">
+          <Avatar className="h-12 w-12 flex-shrink-0">
+            <AvatarImage
+              src={chat.otherUser.image || undefined}
+              alt={chat.otherUser.name || "Usuario"}
+            />
+            <AvatarFallback className="text-xs font-semibold bg-muted">
+              {chat.otherUser.name?.charAt(0).toUpperCase() || "U"}
+            </AvatarFallback>
+          </Avatar>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <p className="text-xs font-medium truncate">
+                {chat.otherUser.name || "Usuario"}
+              </p>
+              {chat.lastMessage && (
+                <span className="text-xs text-muted-foreground flex-shrink-0">
+                  {formatDate(chat.lastMessage.createdAt)}
+                </span>
+              )}
+            </div>
+
+            {selectedChatId === chat.id && isTyping ? (
+              <p className="text-xs text-muted-foreground italic">
+                escribiendo...
+              </p>
+            ) : chat.lastMessage ? (
+              <div className="flex items-center gap-2">
+                <p
+                  className={cn(
+                    "text-xs truncate flex-1",
+                    isRead
+                      ? "text-muted-foreground"
+                      : "text-foreground font-medium",
+                  )}
+                >
+                  {preview}
+                </p>
+                {chat.unreadCount > 0 && (
+                  <Badge
+                    variant="default"
+                    className="h-5 min-w-5 px-1.5 text-[10px] font-semibold flex-shrink-0 rounded-full bg-primary text-primary-foreground"
+                  >
+                    {chat.unreadCount > 99 ? "99+" : chat.unreadCount}
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground italic">
+                Sin mensajes
+              </p>
+            )}
+          </div>
+        </div>
+      </Button>
+    );
+  };
+
+  const renderChatsList = () => {
+    if (filteredChats.length === 0) {
+      return (
+        <div className="flex items-center justify-center p-6">
+          <p className="text-xs text-muted-foreground text-center">
+            No tienes chats activos
+          </p>
+        </div>
+      );
+    }
+    return filteredChats.map(renderChatItem);
+  };
+
   if (chats.length === 0) {
     return (
       <div className="flex flex-col h-full">
@@ -96,7 +185,7 @@ export function ChatList({
               placeholder="Buscar chats y personas"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-9 text-xs h-9"
+              className="pl-9 text-xs"
             />
           </div>
         </div>
@@ -110,7 +199,7 @@ export function ChatList({
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col">
       {/* Barra de búsqueda */}
       <div className="p-3 border-b flex-shrink-0">
         <div className="relative">
@@ -122,93 +211,17 @@ export function ChatList({
             placeholder="Buscar chats y personas"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-9 text-xs h-9"
+            className="pl-9 text-xs"
           />
         </div>
       </div>
 
       {/* Lista de chats */}
-      <ScrollArea className="flex-1">
-        <div className="p-1">
-          {filteredChats.length === 0 ? (
-            <div className="flex items-center justify-center p-6">
-              <p className="text-xs text-muted-foreground text-center">
-                No tienes chats activos
-              </p>
-            </div>
-          ) : (
-            filteredChats.map((chat) => {
-              const { preview, isRead } = getMessagePreview(chat.lastMessage);
-              return (
-                <button
-                  key={chat.id}
-                  onClick={() => onSelectChat(chat.id)}
-                  className={cn(
-                    "w-full p-3 rounded-lg transition-all text-left",
-                    "hover:bg-muted/50 focus:bg-muted/50",
-                    selectedChatId === chat.id && "bg-muted dark:bg-muted/50",
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12 flex-shrink-0">
-                      <AvatarImage
-                        src={chat.otherUser.image || undefined}
-                        alt={chat.otherUser.name || "Usuario"}
-                      />
-                      <AvatarFallback className="text-xs font-semibold bg-muted">
-                        {chat.otherUser.name?.charAt(0).toUpperCase() || "U"}
-                      </AvatarFallback>
-                    </Avatar>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1">
-                        <p className="text-xs font-medium truncate">
-                          {chat.otherUser.name || "Usuario"}
-                        </p>
-                        {chat.lastMessage && (
-                          <span className="text-xs text-muted-foreground flex-shrink-0">
-                            {formatDate(chat.lastMessage.createdAt)}
-                          </span>
-                        )}
-                      </div>
-
-                      {selectedChatId === chat.id && isTyping ? (
-                        <p className="text-xs text-muted-foreground italic">
-                          escribiendo...
-                        </p>
-                      ) : chat.lastMessage ? (
-                        <div className="flex items-center gap-2">
-                          <p
-                            className={cn(
-                              "text-xs truncate flex-1",
-                              isRead
-                                ? "text-muted-foreground"
-                                : "text-foreground font-medium",
-                            )}
-                          >
-                            {preview}
-                          </p>
-                          {chat.unreadCount > 0 && (
-                            <Badge
-                              variant="default"
-                              className="h-5 min-w-5 px-1.5 text-[10px] font-semibold flex-shrink-0 rounded-full bg-primary text-primary-foreground"
-                            >
-                              {chat.unreadCount > 99 ? "99+" : chat.unreadCount}
-                            </Badge>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground italic">
-                          Sin mensajes
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </button>
-              );
-            })
-          )}
-        </div>
+      <div className="md:hidden">
+        <div>{renderChatsList()}</div>
+      </div>
+      <ScrollArea className="hidden md:block md:flex-1">
+        <div>{renderChatsList()}</div>
       </ScrollArea>
     </div>
   );

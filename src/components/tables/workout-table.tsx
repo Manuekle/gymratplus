@@ -34,7 +34,7 @@ export function WorkoutTable({
 
   return (
     <div className="w-full">
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
         <Table>
           <TableHeader>
             <TableRow>
@@ -71,7 +71,7 @@ export function WorkoutTable({
 function WorkoutTableSkeleton() {
   return (
     <div className="w-full">
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
         <Table>
           <TableHeader>
             <TableRow>

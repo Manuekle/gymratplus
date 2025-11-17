@@ -9,7 +9,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { BubbleChatIcon } from "@hugeicons/core-free-icons";
+import { BubbleChatIcon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { cn } from "@/lib/utils/utils";
 
 function ChatsContent() {
   const searchParams = useSearchParams();
@@ -58,9 +59,14 @@ function ChatsContent() {
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-auto lg:h-[calc(100vh-12rem)] lg:min-h-[600px]">
         {/* Chat List */}
-        <div className="lg:col-span-1 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+        <div
+          className={cn(
+            "lg:col-span-1 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm",
+            selectedChatId ? "hidden lg:flex" : "flex",
+          )}
+        >
           {isLoading ? (
             <div className="flex flex-col h-full">
               <div className="p-3 border-b flex-shrink-0">
@@ -83,13 +89,33 @@ function ChatsContent() {
         </div>
 
         {/* Chat Window */}
-        <div className="lg:col-span-2 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+        <div
+          className={cn(
+            "lg:col-span-2 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm",
+            "h-[calc(100vh-16rem)] lg:h-auto",
+            !selectedChatId ? "hidden lg:flex" : "flex",
+          )}
+        >
           {selectedChatId ? (
-            <ChatWindow
-              chatId={selectedChatId}
-              chat={chats.find((c) => c.id === selectedChatId) || null}
-              onTypingChange={setIsTyping}
-            />
+            <>
+              {/* Botón para volver en móvil */}
+              <div className="lg:hidden p-3 border-b flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedChatId(null)}
+                  className="h-8 w-8 p-0"
+                >
+                  <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
+                </Button>
+                <p className="text-xs font-medium">chats</p>
+              </div>
+              <ChatWindow
+                chatId={selectedChatId}
+                chat={chats.find((c) => c.id === selectedChatId) || null}
+                onTypingChange={setIsTyping}
+              />
+            </>
           ) : (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center space-y-3">
@@ -116,8 +142,8 @@ export default function ChatsPage() {
     <Suspense
       fallback={
         <div className="w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-[calc(100vh-12rem)] min-h-[600px]">
-            <div className="lg:col-span-1 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 h-auto lg:h-[calc(100vh-12rem)] lg:min-h-[600px]">
+            <div className="lg:col-span-1 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm">
               <div className="flex flex-col h-full">
                 <div className="p-3 border-b flex-shrink-0">
                   <Skeleton className="h-9 w-full rounded-md" />
@@ -129,7 +155,7 @@ export default function ChatsPage() {
                 </div>
               </div>
             </div>
-            <div className="lg:col-span-2 border rounded-xl bg-card overflow-hidden flex flex-col shadow-sm min-h-0">
+            <div className="hidden lg:flex lg:flex-col lg:col-span-2 border rounded-xl bg-card overflow-hidden shadow-sm">
               <div className="flex-1 flex items-center justify-center p-6">
                 <Skeleton className="h-16 w-16 rounded-full mx-auto" />
               </div>

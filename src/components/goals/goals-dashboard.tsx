@@ -242,16 +242,28 @@ export function GoalsDashboard() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
-        <div className="flex md:flex-row flex-col gap-4 md:gap-0 justify-between items-center">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
-            <TabsTrigger value="all">Todos</TabsTrigger>
-            <TabsTrigger value="weight">Peso</TabsTrigger>
-            <TabsTrigger value="strength">Fuerza</TabsTrigger>
-            <TabsTrigger value="measurement">Medidas</TabsTrigger>
-            <TabsTrigger value="activity">Actividad</TabsTrigger>
-          </TabsList>
+        <div className="flex sm:flex-col md:flex-row flex-col gap-4 md:gap-0 justify-between items-center">
+          <div className="w-full md:w-fit overflow-x-auto md:overflow-visible">
+            <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0">
+              <TabsTrigger value="all" className="flex-shrink-0">
+                Todos
+              </TabsTrigger>
+              <TabsTrigger value="weight" className="flex-shrink-0">
+                Peso
+              </TabsTrigger>
+              <TabsTrigger value="strength" className="flex-shrink-0">
+                Fuerza
+              </TabsTrigger>
+              <TabsTrigger value="measurement" className="flex-shrink-0">
+                Medidas
+              </TabsTrigger>
+              <TabsTrigger value="activity" className="flex-shrink-0">
+                Actividad
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 w-full md:w-fit">
             <Link href="/dashboard/health/goals/history">
               <Button size="sm" className="text-xs" variant="outline">
                 Ver historial

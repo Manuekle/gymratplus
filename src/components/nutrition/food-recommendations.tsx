@@ -236,7 +236,7 @@ export default function FoodRecommendations() {
               </div>
 
               {/* Table */}
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -249,13 +249,13 @@ export default function FoodRecommendations() {
                       <TableHead className="w-[100px] text-center">
                         <Skeleton className="h-4 w-16 mx-auto" />
                       </TableHead>
-                      <TableHead className="hidden md:table-cell text-center">
+                      <TableHead className="text-center">
                         <Skeleton className="h-4 w-16 mx-auto" />
                       </TableHead>
-                      <TableHead className="hidden md:table-cell text-center">
+                      <TableHead className="text-center">
                         <Skeleton className="h-4 w-16 mx-auto" />
                       </TableHead>
-                      <TableHead className="hidden md:table-cell text-center">
+                      <TableHead className="text-center">
                         <Skeleton className="h-4 w-16 mx-auto" />
                       </TableHead>
                     </TableRow>
@@ -275,13 +275,13 @@ export default function FoodRecommendations() {
                         <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-center">
+                        <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-center">
+                        <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
-                        <TableCell className="hidden md:table-cell text-center">
+                        <TableCell className="text-center">
                           <Skeleton className="h-4 w-12 mx-auto" />
                         </TableCell>
                       </TableRow>
@@ -722,7 +722,7 @@ export default function FoodRecommendations() {
                 <TabsContent key={key} value={tabValue}>
                   <div className="mt-4 space-y-4">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg tracking-heading font-semibold">
+                      <CardTitle className="text-xl tracking-heading font-semibold">
                         {mealTypes[mealTypeKey].label}
                       </CardTitle>
                       {mealTotals.totalCalories > 0 && (
@@ -748,7 +748,7 @@ export default function FoodRecommendations() {
                         <>Grasas: {mealTotals.totalFat.toFixed(1)}g</>
                       )}
                     </CardDescription>
-                    <div className="rounded-md border">
+                    <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
                       <Table>
                         <TableHeader>
                           <TableRow>
@@ -806,7 +806,7 @@ export default function FoodRecommendations() {
                                         })()}{" "}
                                         kcal
                                       </TableCell>
-                                      <TableCell className="hidden md:table-cell text-center">
+                                      <TableCell className="text-center">
                                         {(() => {
                                           const protein =
                                             (entry.food.protein || 0) *
@@ -819,7 +819,7 @@ export default function FoodRecommendations() {
                                         })()}
                                         g
                                       </TableCell>
-                                      <TableCell className="hidden md:table-cell text-center">
+                                      <TableCell className="text-center">
                                         {(() => {
                                           const carbs =
                                             (entry.food.carbs || 0) *
@@ -832,7 +832,7 @@ export default function FoodRecommendations() {
                                         })()}
                                         g
                                       </TableCell>
-                                      <TableCell className="hidden md:table-cell text-center">
+                                      <TableCell className="text-center">
                                         {(() => {
                                           const fat =
                                             (entry.food.fat || 0) * multiplier;
@@ -868,13 +868,13 @@ export default function FoodRecommendations() {
                                     <TableCell className="text-center">
                                       -
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell text-center">
+                                    <TableCell className="text-center">
                                       -
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell text-center">
+                                    <TableCell className="text-center">
                                       -
                                     </TableCell>
-                                    <TableCell className="hidden md:table-cell text-center">
+                                    <TableCell className="text-center">
                                       -
                                     </TableCell>
                                   </TableRow>
@@ -905,7 +905,7 @@ export default function FoodRecommendations() {
                                     })()}{" "}
                                     kcal
                                   </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
+                                  <TableCell className="text-center">
                                     {(() => {
                                       const protein =
                                         (food.protein || 0) * multiplier;
@@ -917,7 +917,7 @@ export default function FoodRecommendations() {
                                     })()}
                                     g
                                   </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
+                                  <TableCell className="text-center">
                                     {(() => {
                                       const carbs =
                                         (food.carbs || 0) * multiplier;
@@ -929,7 +929,7 @@ export default function FoodRecommendations() {
                                     })()}
                                     g
                                   </TableCell>
-                                  <TableCell className="hidden md:table-cell text-center">
+                                  <TableCell className="text-center">
                                     {(() => {
                                       const fat = (food.fat || 0) * multiplier;
                                       return fat < 1

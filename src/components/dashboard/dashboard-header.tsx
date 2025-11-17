@@ -37,30 +37,34 @@ export const DashboardHeader = () => {
       >
         {/* Contenedor con scroll solo en móviles */}
         <div className="w-full overflow-x-auto md:overflow-visible">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
-            <TabsTrigger value="dashboard" asChild>
+          <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full md:w-fit">
+            <TabsTrigger value="dashboard" asChild className="flex-shrink-0">
               <Link href="/dashboard">Dashboard</Link>
             </TabsTrigger>
-            <TabsTrigger value="profile" asChild>
+            <TabsTrigger value="profile" asChild className="flex-shrink-0">
               <Link href="/dashboard/profile">Perfil</Link>
             </TabsTrigger>
-            <TabsTrigger value="health" asChild>
+            <TabsTrigger value="health" asChild className="flex-shrink-0">
               <Link href="/dashboard/health">Salud</Link>
             </TabsTrigger>
-            <TabsTrigger value="workout" asChild>
+            <TabsTrigger value="workout" asChild className="flex-shrink-0">
               <Link href="/dashboard/workout">Entrenamiento</Link>
             </TabsTrigger>
-            <TabsTrigger value="nutrition" asChild>
+            <TabsTrigger value="nutrition" asChild className="flex-shrink-0">
               <Link href="/dashboard/nutrition">Nutrición</Link>
             </TabsTrigger>
             {/* Mostrar Instructores solo si NO es instructor, y Alumnos solo si es instructor */}
             {!isInstructor && (
-              <TabsTrigger value="instructors" asChild>
+              <TabsTrigger
+                value="instructors"
+                asChild
+                className="flex-shrink-0"
+              >
                 <Link href="/dashboard/instructors">Instructores</Link>
               </TabsTrigger>
             )}
             {isInstructor && (
-              <TabsTrigger value="students" asChild>
+              <TabsTrigger value="students" asChild className="flex-shrink-0">
                 <Link href="/dashboard/students">Alumnos</Link>
               </TabsTrigger>
             )}

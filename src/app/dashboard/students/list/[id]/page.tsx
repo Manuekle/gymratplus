@@ -757,69 +757,79 @@ export default function StudentDetailPage() {
                         onClick={() =>
                           router.push(`/dashboard/nutrition/plan/${plan.id}`)
                         }
-                        className="group relative p-4 border rounded-xl transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden cursor-pointer"
+                        className="group relative p-4 border rounded-xl cursor-pointer transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
                       >
                         <div className="flex flex-col h-full">
-                          <div className="flex items-start justify-between mb-2">
-                            <h3 className="text-lg tracking-heading font-semibold pr-2">
-                              {plan.name || "Plan de Alimentación"}
-                            </h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {format(new Date(plan.createdAt), "d MMM yyyy", {
-                                locale: es,
-                              })}
-                            </Badge>
-                          </div>
+                          {/* Plan Name */}
+                          <h3 className="text-lg tracking-heading font-semibold mb-2 pr-8 group-hover:text-primary transition-colors">
+                            {(plan.name as string) || "Plan de Alimentación"}
+                          </h3>
 
-                          <div className="space-y-2 text-xs">
+                          {/* Plan Stats */}
+                          <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                            <div className="flex items-center gap-1.5 text-muted-foreground">
+                              <HugeiconsIcon
+                                icon={Calendar01Icon}
+                                className="h-3.5 w-3.5 flex-shrink-0"
+                              />
+                              <span className="truncate">
+                                {plan.createdAt
+                                  ? format(
+                                      new Date(plan.createdAt as string),
+                                      "d MMM yyyy",
+                                      {
+                                        locale: es,
+                                      },
+                                    )
+                                  : "N/A"}
+                              </span>
+                            </div>
+
                             <div className="flex items-center gap-1.5 text-muted-foreground">
                               <HugeiconsIcon
                                 icon={FireIcon}
                                 className="h-3.5 w-3.5 flex-shrink-0"
                               />
-                              <span>{plan.calorieTarget} kcal objetivo</span>
+                              <span className="truncate">
+                                {plan.calorieTarget
+                                  ? `${plan.calorieTarget} kcal`
+                                  : "N/A"}
+                              </span>
                             </div>
 
-                            {macros && (
-                              <div className="space-y-1 pt-2 border-t">
-                                {macros.protein && (
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">
-                                      Proteína:
-                                    </span>
-                                    <span className="font-medium">
-                                      {macros.protein}
-                                    </span>
-                                  </div>
-                                )}
-                                {macros.carbs && (
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">
-                                      Carbohidratos:
-                                    </span>
-                                    <span className="font-medium">
-                                      {macros.carbs}
-                                    </span>
-                                  </div>
-                                )}
-                                {macros.fat && (
-                                  <div className="flex justify-between">
-                                    <span className="text-muted-foreground">
-                                      Grasas:
-                                    </span>
-                                    <span className="font-medium">
-                                      {macros.fat}
-                                    </span>
-                                  </div>
-                                )}
+                            {macros?.protein && (
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <HugeiconsIcon
+                                  icon={Target01Icon}
+                                  className="h-3.5 w-3.5 flex-shrink-0"
+                                />
+                                <span className="truncate">
+                                  Proteína: {macros.protein}
+                                </span>
                               </div>
                             )}
 
-                            {plan.notes && (
-                              <div className="pt-2 border-t">
-                                <p className="text-xs text-muted-foreground line-clamp-2">
-                                  {plan.notes}
-                                </p>
+                            {macros?.carbs && (
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <HugeiconsIcon
+                                  icon={Activity02Icon}
+                                  className="h-3.5 w-3.5 flex-shrink-0"
+                                />
+                                <span className="truncate">
+                                  Carbs: {macros.carbs}
+                                </span>
+                              </div>
+                            )}
+
+                            {macros?.fat && (
+                              <div className="flex items-center gap-1.5 text-muted-foreground">
+                                <HugeiconsIcon
+                                  icon={LayersIcon}
+                                  className="h-3.5 w-3.5 flex-shrink-0"
+                                />
+                                <span className="truncate">
+                                  Grasas: {macros.fat}
+                                </span>
                               </div>
                             )}
                           </div>
@@ -887,7 +897,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-24 w-full" />
                 </div>
               ) : workoutHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center border rounded-lg bg-muted/50">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
                   <h3 className="text-xs font-medium mb-2">
                     No hay entrenamientos completados
                   </h3>
@@ -1083,7 +1093,7 @@ export default function StudentDetailPage() {
         </>
       )}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <DialogContent className="sm:max-w-2xl md:max-h-[85vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <DialogHeader>
             <DialogTitle className="text-2xl tracking-heading font-semibold">
               {selectedWorkout?.name || "Detalle de Rutina"}
@@ -1169,7 +1179,7 @@ export default function StudentDetailPage() {
                       ))}
                     </div>
                   </div>
-                  <div className="max-h-[400px] w-full overflow-y-auto scroll-hidden">
+                  <div className="max-h-[200px] md:max-h-[400px] w-full overflow-y-auto scroll-hidden">
                     <div className="space-y-1 pr-2">
                       {(groupedExercises[selectedDay] ?? []).map(
                         (ex: AssignedWorkoutExercise, idx: number) => (

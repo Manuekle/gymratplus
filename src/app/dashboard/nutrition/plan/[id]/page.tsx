@@ -344,11 +344,11 @@ export default function FoodPlanViewPage() {
         <Button
           variant="outline"
           size="sm"
-          className="text-xs"
+          className="text-xs w-full md:w-auto"
           onClick={() => router.back()}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
-          Volver
+          Volver a la lista
         </Button>
       </div>
 
@@ -539,7 +539,7 @@ export default function FoodPlanViewPage() {
                   <TabsContent key={key} value={tabValue}>
                     <div className="mt-4 space-y-4">
                       <div className="flex items-center justify-between">
-                        <CardTitle className="text-lg tracking-heading font-semibold">
+                        <CardTitle className="text-xl tracking-heading font-semibold">
                           {mealTypesConfig[mealTypeKey].label}
                         </CardTitle>
                         {meal.totalCalories && (
@@ -580,7 +580,7 @@ export default function FoodPlanViewPage() {
                           </>
                         )}
                       </CardDescription>
-                      <div className="rounded-md border">
+                      <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
                         <Table>
                           <TableHeader>
                             <TableRow>
