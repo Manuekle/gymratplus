@@ -1212,7 +1212,6 @@ async function createMealLogWithTargets(
       (f) => f && f.id && f.id.toString() === entry.foodId,
     );
     if (food && food.name) {
-      const servingSize = food.serving || 100;
       // quantity está en gramos (estandarizado)
       const multiplier = entry.quantity / 100;
       const proteinFromFood = (food.protein || 0) * multiplier;
@@ -1249,7 +1248,6 @@ async function createMealLogWithTargets(
       (f) => f && f.id && f.id.toString() === entry.foodId,
     );
     if (food) {
-      const servingSize = food.serving || 100;
       // quantity está en gramos (estandarizado)
       const multiplier = entry.quantity / 100;
       sumProtein += (food.protein || 0) * multiplier;
@@ -1355,7 +1353,6 @@ async function createMealLogWithTargets(
       (f) => f && f.id && f.id.toString() === entry.foodId,
     );
     if (food) {
-      const servingSize = food.serving || 100;
       // quantity está en gramos (estandarizado)
       const multiplier = entry.quantity / 100;
       verificationProtein += (food.protein || 0) * multiplier;

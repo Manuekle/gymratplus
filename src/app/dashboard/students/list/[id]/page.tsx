@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
-import { format, isToday, differenceInDays } from "date-fns";
+import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
 import { WorkoutAssignmentDialog } from "@/components/instructor/workout-assignment-dialog";
 
@@ -86,7 +86,13 @@ export default function StudentDetailPage() {
 
   const [student, setStudent] = useState<StudentDetail | null>(null);
   const [workouts, setWorkouts] = useState<AssignedWorkout[]>([]);
-  const [foodPlans, setFoodPlans] = useState<any[]>([]);
+  const [foodPlans, setFoodPlans] = useState<
+    Array<{
+      id: string;
+      macros?: string | Record<string, unknown>;
+      [key: string]: unknown;
+    }>
+  >([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [loadingWorkouts, setLoadingWorkouts] = useState<boolean>(true);
   const [loadingFoodPlans, setLoadingFoodPlans] = useState<boolean>(true);
@@ -188,17 +194,22 @@ export default function StudentDetailPage() {
         const data = await res.json();
 
         // Parsear los JSON strings si es necesario
-        const parsedData = data.map((item: any) => ({
-          ...item,
-          macros:
-            typeof item.macros === "string"
-              ? JSON.parse(item.macros)
-              : item.macros,
-          meals:
-            typeof item.meals === "string"
-              ? JSON.parse(item.meals)
-              : item.meals,
-        }));
+        const parsedData = data.map(
+          (item: {
+            macros?: string | Record<string, unknown>;
+            [key: string]: unknown;
+          }) => ({
+            ...item,
+            macros:
+              typeof item.macros === "string"
+                ? JSON.parse(item.macros)
+                : item.macros,
+            meals:
+              typeof item.meals === "string"
+                ? JSON.parse(item.meals)
+                : item.meals,
+          }),
+        );
 
         setFoodPlans(parsedData);
       } catch (error) {
@@ -638,7 +649,7 @@ export default function StudentDetailPage() {
                 </div>
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {foodPlans.map((plan: any) => {
+                  {foodPlans.map((plan) => {
                     const macros =
                       typeof plan.macros === "string"
                         ? JSON.parse(plan.macros)

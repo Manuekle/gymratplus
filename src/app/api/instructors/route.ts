@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { InstructorFilters, PrismaWhereConditions } from "@/types/instructor";
+import { InstructorFilters } from "@/types/instructor";
 
 // Función para extraer etiquetas de un texto
 const extractTags = (text?: string | null): string[] => {
@@ -39,7 +39,11 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir filtros básicos
-    const whereConditions: any = {
+    const whereConditions: {
+      isInstructor: boolean;
+      instructorProfile: { isNot: null };
+      [key: string]: unknown;
+    } = {
       isInstructor: true,
       instructorProfile: {
         isNot: null,
@@ -47,7 +51,12 @@ export async function GET(request: NextRequest) {
     };
 
     // Agregar filtros adicionales del perfil si se proporcionan
-    const profileFilters: any = {};
+    const profileFilters: {
+      country?: string;
+      isRemote?: boolean;
+      pricePerMonth?: { lte: number };
+      [key: string]: unknown;
+    } = {};
 
     if (country) profileFilters.country = country;
     if (isRemote === "true") profileFilters.isRemote = true;

@@ -2,14 +2,8 @@
 
 import { useState, useEffect } from "react";
 
-import { es } from "date-fns/locale";
 import { Skeleton } from "../ui/skeleton";
-import {
-  formatDistanceToNow,
-  differenceInDays,
-  isToday,
-  isYesterday,
-} from "date-fns";
+import { differenceInDays } from "date-fns";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowRight01Icon, Clock01Icon } from "@hugeicons/core-free-icons";

@@ -61,11 +61,22 @@ export default function InstructorProfilePage() {
   const [hiredInstructors, setHiredInstructors] = useState<Set<string>>(
     new Set(),
   );
-  const [studentInstructorId, setStudentInstructorId] = useState<string | null>(
-    null,
-  );
-  const [assignedWorkouts, setAssignedWorkouts] = useState<any[]>([]);
-  const [assignedFoodPlans, setAssignedFoodPlans] = useState<any[]>([]);
+  const [assignedWorkouts, setAssignedWorkouts] = useState<
+    Array<{
+      id: string;
+      name: string;
+      instructor?: { id: string };
+      [key: string]: unknown;
+    }>
+  >([]);
+  const [assignedFoodPlans, setAssignedFoodPlans] = useState<
+    Array<{
+      id: string;
+      instructorId: string;
+      macros?: string | Record<string, unknown>;
+      [key: string]: unknown;
+    }>
+  >([]);
   const [loadingWorkouts, setLoadingWorkouts] = useState(false);
   const [loadingFoodPlans, setLoadingFoodPlans] = useState(false);
 
@@ -94,16 +105,12 @@ export default function InstructorProfilePage() {
         );
         setHiredInstructors(new Set(hiredIds));
 
-        // Find the studentInstructorId for the current instructor
         // El id en la URL es el userId, pero necesitamos buscar por userId
         const instructorUserId = Array.isArray(id) ? id[0] : id;
-        const currentInstructor = hiredInstructors.find(
-          (inst: { userId: string; studentInstructorId?: string }) =>
-            inst.userId === instructorUserId,
+        // Verificar si el instructor está contratado
+        hiredInstructors.find(
+          (inst: { userId: string }) => inst.userId === instructorUserId,
         );
-        if (currentInstructor?.studentInstructorId) {
-          setStudentInstructorId(currentInstructor.studentInstructorId);
-        }
       }
     } catch (error) {
       console.error("Error loading instructor data:", error);
@@ -135,7 +142,8 @@ export default function InstructorProfilePage() {
           // Filtrar solo las rutinas asignadas por este instructor
           // El instructorId en los workouts es el userId del instructor
           const instructorWorkouts = workouts.filter(
-            (w: any) => w.instructor?.id === instructorUserId,
+            (w: { instructor?: { id: string } }) =>
+              w.instructor?.id === instructorUserId,
           );
           setAssignedWorkouts(instructorWorkouts);
         }
@@ -154,20 +162,27 @@ export default function InstructorProfilePage() {
           // Filtrar solo los planes creados por este instructor
           // El instructorId en los planes es el userId del instructor
           const instructorFoodPlans = foodPlans.filter(
-            (plan: any) => plan.instructorId === instructorUserId,
+            (plan: { instructorId: string }) =>
+              plan.instructorId === instructorUserId,
           );
           // Parsear JSON strings si es necesario
-          const parsedPlans = instructorFoodPlans.map((plan: any) => ({
-            ...plan,
-            macros:
-              typeof plan.macros === "string"
-                ? JSON.parse(plan.macros)
-                : plan.macros,
-            meals:
-              typeof plan.meals === "string"
-                ? JSON.parse(plan.meals)
-                : plan.meals,
-          }));
+          const parsedPlans = instructorFoodPlans.map(
+            (plan: {
+              instructorId: string;
+              macros?: string | Record<string, unknown>;
+              [key: string]: unknown;
+            }) => ({
+              ...plan,
+              macros:
+                typeof plan.macros === "string"
+                  ? JSON.parse(plan.macros)
+                  : plan.macros,
+              meals:
+                typeof plan.meals === "string"
+                  ? JSON.parse(plan.meals)
+                  : plan.meals,
+            }),
+          );
           setAssignedFoodPlans(parsedPlans);
         }
       } catch (error) {
@@ -686,7 +701,7 @@ export default function InstructorProfilePage() {
                     </p>
                   ) : (
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {assignedWorkouts.map((workout: any) => (
+                      {assignedWorkouts.map((workout) => (
                         <div key={workout.id} className="p-3 border rounded-lg">
                           <div className="flex items-start justify-between mb-2">
                             <h3 className="text-sm font-semibold flex-1">
@@ -745,7 +760,7 @@ export default function InstructorProfilePage() {
                     </p>
                   ) : (
                     <div className="grid gap-3 sm:grid-cols-2">
-                      {assignedFoodPlans.map((plan: any) => {
+                      {assignedFoodPlans.map((plan) => {
                         const macros =
                           typeof plan.macros === "string"
                             ? JSON.parse(plan.macros)

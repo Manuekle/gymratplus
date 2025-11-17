@@ -6,7 +6,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Separator } from "@/components/ui/separator";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { toast } from "sonner";
@@ -457,7 +456,7 @@ export default function AssignedWorkoutViewPage() {
       {/* Exercises by Day */}
       {workoutDays.length > 0 && (
         <div className="space-y-4">
-          {workoutDays.map((day, dayIndex) => (
+          {workoutDays.map((day) => (
             <Card key={day}>
               <CardHeader>
                 <CardTitle className="text-xl tracking-heading font-semibold">
@@ -488,7 +487,7 @@ export default function AssignedWorkoutViewPage() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {groupedExercises[day].map((exercise, exIndex) => (
+                      {groupedExercises[day].map((exercise) => (
                         <TableRow key={exercise.id}>
                           <TableCell className="font-medium text-xs">
                             {exercise.exercise.name}

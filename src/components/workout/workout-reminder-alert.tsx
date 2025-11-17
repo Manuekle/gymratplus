@@ -7,11 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Dumbbell01Icon,
-  Cancel01Icon,
-  BedIcon,
-} from "@hugeicons/core-free-icons";
+import { Cancel01Icon, BedIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { toast } from "sonner";
 

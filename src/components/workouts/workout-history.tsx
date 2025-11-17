@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { CardTitle, CardDescription } from "@/components/ui/card";
-import { differenceInDays, isToday, isYesterday } from "date-fns";
-import { es } from "date-fns/locale";
+import { differenceInDays } from "date-fns";
 
 import Link from "next/link";
 import { Skeleton } from "../ui/skeleton";
