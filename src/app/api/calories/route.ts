@@ -132,10 +132,12 @@ export async function POST(req: NextRequest) {
 
     // Devolver los resultados calculados
     return NextResponse.json(result);
-  } catch {
-    return NextResponse.json(
-      { error: "Error al calcular objetivos calóricos" },
-      { status: 500 },
-    );
+  } catch (error) {
+    console.error("Error calculating calories:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Error al calcular objetivos calóricos";
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

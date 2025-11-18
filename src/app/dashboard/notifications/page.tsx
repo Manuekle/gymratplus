@@ -233,18 +233,20 @@ export default function NotificationsPage() {
       </AlertDialog>
 
       <Tabs defaultValue="all" className="w-full">
-        <TabsList className="w-full max-w-md grid grid-cols-2 sm:grid-cols-2 md:flex md:flex-wrap h-auto gap-2 sm:gap-4 px-2">
-          <TabsTrigger className="text-xs" value="all">
-            Todas
-          </TabsTrigger>
-          <TabsTrigger
-            className="text-xs"
-            value="unread"
-            disabled={unreadCount === 0}
-          >
-            No leídas {unreadCount > 0 && `(${unreadCount})`}
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full max-w-md overflow-x-auto md:overflow-visible">
+          <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0">
+            <TabsTrigger className="text-xs flex-shrink-0" value="all">
+              Todas
+            </TabsTrigger>
+            <TabsTrigger
+              className="text-xs flex-shrink-0"
+              value="unread"
+              disabled={unreadCount === 0}
+            >
+              No leídas {unreadCount > 0 && `(${unreadCount})`}
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="all">
           {isLoading ? (

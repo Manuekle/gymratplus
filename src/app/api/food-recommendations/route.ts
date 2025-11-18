@@ -115,11 +115,23 @@ export async function GET() {
   }
 
   try {
-    // Buscar planes donde el usuario es el dueño (userId) o donde está asignado (assignedToId)
+    // Verificar si el usuario es instructor
+    const instructorProfile = await prisma.instructorProfile.findFirst({
+      where: { userId: session.user.id },
+      select: { id: true },
+    });
+
+    // Buscar planes donde el usuario es el dueño (userId), donde está asignado (assignedToId),
+    // o donde es el instructor que lo creó (instructorId)
     // Esto asegura que los estudiantes vean los planes creados por sus instructores
+    // y que los instructores vean los planes que crearon para sus estudiantes
     const foodRecommendations = await prisma.foodRecommendation.findMany({
       where: {
-        OR: [{ userId: session.user.id }, { assignedToId: session.user.id }],
+        OR: [
+          { userId: session.user.id },
+          { assignedToId: session.user.id },
+          ...(instructorProfile ? [{ instructorId: session.user.id }] : []),
+        ],
       },
       orderBy: {
         createdAt: "desc",

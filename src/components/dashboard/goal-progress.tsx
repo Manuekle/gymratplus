@@ -64,24 +64,28 @@ export default function GoalProgress() {
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
-          Progreso de Objetivos
-        </CardTitle>
-        <CardDescription className="text-xs sm:text-xs">
-          Objetivos activos en progreso
-        </CardDescription>
-        <CardAction>
-          <Link
-            href="/dashboard/health"
-            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Ver más
-            <HugeiconsIcon
-              icon={ArrowRight01Icon}
-              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-            />
-          </Link>
-        </CardAction>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
+          <div>
+            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+              Progreso de Objetivos
+            </CardTitle>
+            <CardDescription className="text-xs sm:text-xs">
+              Objetivos activos en progreso
+            </CardDescription>
+          </div>
+          <CardAction>
+            <Link
+              href="/dashboard/health"
+              className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Ver más
+              <HugeiconsIcon
+                icon={ArrowRight01Icon}
+                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+              />
+            </Link>
+          </CardAction>
+        </div>
       </CardHeader>
 
       <CardContent className="px-4 flex-1 flex flex-col">

@@ -18,7 +18,6 @@ import { HugeiconsIcon } from "@hugeicons/react";
 
 import {
   Activity02Icon,
-  EyeIcon,
   FireIcon,
   Note05Icon,
   Calendar01Icon,
@@ -28,8 +27,6 @@ import {
   CalendarCheckIn01Icon,
   ArrowLeft01Icon,
   Calendar02Icon,
-  Clock02Icon,
-  CheckmarkCircle02Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Dialog,
@@ -345,7 +342,7 @@ export default function StudentDetailPage() {
 
   useEffect(() => {
     if (workoutDays.length > 0) {
-      setSelectedDay(workoutDays[0]);
+      setSelectedDay(workoutDays[0] || "Día único / Principal");
     }
   }, [workoutDays]);
 
@@ -575,7 +572,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : workouts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center border rounded-lg bg-muted/50">
+                <div className="flex flex-col items-center justify-center py-12 text-center">
                   <h3 className="text-xs font-medium mb-2">
                     No hay rutinas asignadas
                   </h3>
@@ -586,12 +583,6 @@ export default function StudentDetailPage() {
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {workouts.map((w: AssignedWorkout) => {
-                    const statusColor =
-                      w.status === "completed"
-                        ? "bg-green-100 text-green-800"
-                        : w.status === "in_progress"
-                          ? "bg-blue-100 text-blue-800"
-                          : "bg-gray-100 text-gray-800";
                     const totalSets = w.exercises.reduce(
                       (sum, ex) => sum + (ex.sets || 0),
                       0,
@@ -607,19 +598,6 @@ export default function StudentDetailPage() {
                         }}
                       >
                         {/* Status Badge */}
-                        {w.status !== "pending" && (
-                          <div className="absolute top-3 right-3">
-                            <span
-                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusColor}`}
-                            >
-                              {w.status === "completed"
-                                ? "Completado"
-                                : w.status === "in_progress"
-                                  ? "En progreso"
-                                  : ""}
-                            </span>
-                          </div>
-                        )}
 
                         <div className="flex flex-col h-full">
                           {/* Workout Name */}
@@ -912,17 +890,28 @@ export default function StudentDetailPage() {
                   onValueChange={setActiveHistoryTab}
                   className="space-y-4"
                 >
-                  <TabsList className="grid grid-cols-3 sm:grid-cols-3 md:flex md:flex-wrap mb-4 h-auto gap-2 sm:gap-4 px-2">
-                    <TabsTrigger value="all" className="text-xs">
-                      Todos
-                    </TabsTrigger>
-                    <TabsTrigger value="completed" className="text-xs">
-                      Completados
-                    </TabsTrigger>
-                    <TabsTrigger value="inProgress" className="text-xs">
-                      En progreso
-                    </TabsTrigger>
-                  </TabsList>
+                  <div className="w-full md:w-fit overflow-x-auto md:overflow-visible">
+                    <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
+                      <TabsTrigger
+                        value="all"
+                        className="text-xs flex-shrink-0"
+                      >
+                        Todos
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="completed"
+                        className="text-xs flex-shrink-0"
+                      >
+                        Completados
+                      </TabsTrigger>
+                      <TabsTrigger
+                        value="inProgress"
+                        className="text-xs flex-shrink-0"
+                      >
+                        En progreso
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
 
                   <TabsContent
                     value={activeHistoryTab}
@@ -1084,11 +1073,6 @@ export default function StudentDetailPage() {
             onOpenChange={setIsAssignDialogOpen}
             studentId={student.studentId}
             studentName={student.name || "el alumno"}
-            onSuccess={() => {
-              // Refresh the workouts list after successful assignment
-              // You might want to add a refetch function for workouts
-              setIsAssignDialogOpen(false);
-            }}
           />
         </>
       )}

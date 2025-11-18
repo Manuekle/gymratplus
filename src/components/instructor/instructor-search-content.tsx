@@ -251,7 +251,7 @@ export default function InstructorSearchContent() {
       <Card className="mb-6">
         {/* ... CardHeader, CardContent, y todo el contenido de búsqueda */}
         <CardHeader className="pb-3">
-          <CardTitle className="text-xl tracking-heading font-semibold">
+          <CardTitle className="text-2xl tracking-heading font-semibold">
             Opciones de Búsqueda
           </CardTitle>
           <CardDescription className="text-xs">
@@ -299,52 +299,47 @@ export default function InstructorSearchContent() {
           <div className="space-y-1.5 col-span-3">
             <Label className="text-xs">Especialidad / Metodología</Label>
             <div className="relative w-full">
-              <div className="md:hidden relative w-full">
-                <div className="flex space-x-1.5 pb-2 overflow-x-auto hide-scrollbar max-w-full">
-                  <div className="flex space-x-1.5 min-w-max w-full">
-                    {SPECIALTIES.map((spec) => (
+              <div className="border rounded-md p-2 max-h-32 overflow-y-auto bg-muted/30 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                <div className="flex flex-wrap gap-1.5">
+                  {SPECIALTIES.map((spec) => (
+                    <Badge
+                      key={spec.id}
+                      variant={
+                        selectedSpecialties.includes(spec.id)
+                          ? "default"
+                          : "secondary"
+                      }
+                      className={`px-2.5 py-1 text-[10px] transition-all cursor-pointer flex-shrink-0 rounded-full ${
+                        selectedSpecialties.includes(spec.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-background border border-input hover:bg-accent"
+                      }`}
+                      onClick={() => handleSpecialtyToggle(spec.id)}
+                    >
+                      {spec.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              {selectedSpecialties.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-1.5 items-center">
+                  <span className="text-[10px] text-muted-foreground">
+                    Seleccionadas ({selectedSpecialties.length}):
+                  </span>
+                  {selectedSpecialties.map((specId) => {
+                    const spec = SPECIALTIES.find((s) => s.id === specId);
+                    return spec ? (
                       <Badge
-                        key={spec.id}
-                        variant={
-                          selectedSpecialties.includes(spec.id)
-                            ? "default"
-                            : "secondary"
-                        }
-                        className={`whitespace-nowrap px-2 py-0.5 text-[10px] transition-all flex-shrink-0 cursor-pointer ${
-                          selectedSpecialties.includes(spec.id)
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-transparent border border-input hover:bg-accent"
-                        }`}
-                        onClick={() => handleSpecialtyToggle(spec.id)}
+                        key={specId}
+                        variant="default"
+                        className="px-2.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded-full"
                       >
                         {spec.name}
                       </Badge>
-                    ))}
-                  </div>
+                    ) : null;
+                  })}
                 </div>
-                <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
-              </div>
-
-              <div className="hidden md:flex md:flex-wrap gap-1.5">
-                {SPECIALTIES.map((spec) => (
-                  <Badge
-                    key={spec.id}
-                    variant={
-                      selectedSpecialties.includes(spec.id)
-                        ? "default"
-                        : "secondary"
-                    }
-                    className={`px-2 py-0.5 text-[10px] transition-all cursor-pointer ${
-                      selectedSpecialties.includes(spec.id)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-transparent border border-input hover:bg-accent"
-                    }`}
-                    onClick={() => handleSpecialtyToggle(spec.id)}
-                  >
-                    {spec.name}
-                  </Badge>
-                ))}
-              </div>
+              )}
             </div>
           </div>
           <div className="md:col-span-3">
@@ -355,23 +350,35 @@ export default function InstructorSearchContent() {
         </CardContent>
       </Card>
 
-      <h2 className="text-xl tracking-heading font-semibold mb-3">
+      <h2 className="text-2xl tracking-heading font-semibold mb-3">
         Resultados ({instructors.length})
       </h2>
 
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i}>
-              <CardHeader className="pb-2">
-                <Skeleton className="h-5 w-3/4 mb-1.5" />
-                <Skeleton className="h-3 w-1/2" />
+            <Card key={i} className="overflow-hidden flex flex-col h-full">
+              <CardHeader className="flex flex-row items-start space-x-3 pb-2">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <div className="space-y-2 flex-1">
+                  <Skeleton className="h-4 w-3/4" />
+                  <Skeleton className="h-3 w-1/2" />
+                  <Skeleton className="h-3 w-1/3" />
+                </div>
               </CardHeader>
-              <CardContent className="px-4 space-y-1.5">
+              <CardContent className="flex-1 px-4 py-2 space-y-2">
                 <Skeleton className="h-3 w-full" />
-                <Skeleton className="h-3 w-2/3" />
-                <Skeleton className="h-3 w-1/4" />
+                <Skeleton className="h-3 w-5/6" />
+                <div className="flex gap-1.5 pt-1">
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="h-5 w-20 rounded-full" />
+                  <Skeleton className="h-5 w-14 rounded-full" />
+                </div>
               </CardContent>
+              <CardFooter className="pt-0 pb-3 flex flex-col gap-1">
+                <Skeleton className="h-8 w-full rounded-md" />
+                <Skeleton className="h-8 w-full rounded-md" />
+              </CardFooter>
             </Card>
           ))}
         </div>

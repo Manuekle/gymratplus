@@ -5,13 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 // import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -43,6 +36,7 @@ import {
   RulerIcon,
   SteakIcon,
   Target02Icon,
+  UserGroupIcon,
   WeightScaleIcon,
   WorkoutGymnasticsIcon,
 } from "@hugeicons/core-free-icons";
@@ -321,879 +315,552 @@ export default function StepOnboarding() {
   };
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader>
-        <CardTitle className="text-2xl font-semibold  tracking-heading">
-          Información de Perfil
-        </CardTitle>
-        <CardDescription className="text-xs">
-          Háganos saber sobre usted para que podamos personalizar su experiencia
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="px-4">
-        <div className="space-y-6">
-          {/* Step indicator */}
-          <div className="flex justify-between mb-6">
-            {[0, 1, 2, 3].map((step) => (
-              <div key={step} className="flex flex-col items-center">
-                <div
-                  className={`w-8 h-8 rounded-full flex items-center text-xs md:text-xs justify-center ${
-                    step <= currentStep
-                      ? "bg-zinc-900 text-white dark:bg-white dark:text-black border"
-                      : "bg-background dark:bg-background border text-muted-foreground dark:text-gray-300"
-                  }`}
-                >
-                  {step + 1}
-                </div>
-              </div>
-            ))}
-          </div>
+    <div className="w-full max-w-2xl mx-auto p-8">
+      <div className="mb-8">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+          Crea tu perfil
+        </h1>
+        <p className="text-xs text-muted-foreground">
+          Paso {currentStep + 1} de 4
+        </p>
+      </div>
 
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentStep}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.2 }}
-              className="space-y-4"
-            >
-              {currentStep === 0 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs md:text-xs" htmlFor="gender">
-                      Genero
-                    </Label>
-                    <Select
-                      value={formData.gender}
-                      onValueChange={(value) =>
-                        updateFormData({ gender: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4 text-black dark:text-white">
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            viewBox="0 0 24 24"
-                            width={18}
-                            height={18}
-                            className="text-current"
-                            fill="none"
-                          >
-                            <path
-                              d="M19.4995 20V16.5C20.5856 16.5 21.1991 16.5 21.4186 16.0257C21.6381 15.5515 21.3953 14.9028 20.9095 13.6056L19.6676 10.2889C19.2571 9.19253 18.4179 8.5 17.5 8.5C16.5821 8.5 15.7429 9.19253 15.3324 10.2889L14.0905 13.6056C13.6047 14.9028 13.3619 15.5515 13.5814 16.0257C13.8009 16.5 14.4133 16.5 15.4995 16.5V20C15.4995 20.9428 15.4995 21.4142 15.7924 21.7071C16.0853 22 16.5567 22 17.4995 22C18.4423 22 18.9137 22 19.2066 21.7071C19.4995 21.4142 19.4995 20.9428 19.4995 20Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M8.5 4C8.5 5.10457 7.60457 6 6.5 6C5.39543 6 4.5 5.10457 4.5 4C4.5 2.89543 5.39543 2 6.5 2C7.60457 2 8.5 2.89543 8.5 4Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M19.5 4C19.5 5.10457 18.6046 6 17.5 6C16.3954 6 15.5 5.10457 15.5 4C15.5 2.89543 16.3954 2 17.5 2C18.6046 2 19.5 2.89543 19.5 4Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                            />
-                            <path
-                              d="M10.5 12.5C10.5 10.6144 10.5 9.67157 9.91421 9.08579C9.32843 8.5 8.38562 8.5 6.5 8.5C4.61438 8.5 3.67157 8.5 3.08579 9.08579C2.5 9.67157 2.5 10.6144 2.5 12.5V14.5C2.5 15.4428 2.5 15.9142 2.79289 16.2071C3.08579 16.5 3.55719 16.5 4.5 16.5V20C4.5 20.9428 4.5 21.4142 4.79289 21.7071C5.08579 22 5.55719 22 6.5 22C7.44281 22 7.91421 22 8.20711 21.7071C8.5 21.4142 8.5 20.9428 8.5 20V16.5C9.44281 16.5 9.91421 16.5 10.2071 16.2071C10.5 15.9142 10.5 15.4428 10.5 14.5V12.5Z"
-                              stroke="currentColor"
-                              strokeWidth="1.5"
-                              strokeLinejoin="round"
-                            />
-                          </svg>
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su género"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem className="text-xs md:text-xs" value="male">
-                          Masculino
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="female"
-                        >
-                          Femenino
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="other"
-                        >
-                          Otro
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <BirthDatePicker
-                      value={formData.birthdate}
-                      onValueChange={(value) =>
-                        updateFormData({ birthdate: value })
-                      }
-                    />
-                  </div>
-                </div>
-              )}
-
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label className="text-xs md:text-xs" htmlFor="height">
-                      Altura (cm)
-                    </Label>
-                    <Select
-                      value={formData.height}
-                      onValueChange={(value) =>
-                        updateFormData({ height: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={RulerIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su altura" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {heightOptions.map((height) => (
-                          <SelectItem
-                            className="text-xs md:text-xs"
-                            key={height}
-                            value={height}
-                          >
-                            {height} cm
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="currentWeight"
-                    >
-                      Peso Actual (kg)
-                    </Label>
-                    <Select
-                      value={formData.currentWeight}
-                      onValueChange={(value) =>
-                        updateFormData({ currentWeight: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={WeightScaleIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su peso actual" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {weightOptions.map((weight) => (
-                          <SelectItem key={weight} value={weight}>
-                            {weight} kg
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="targetWeight"
-                    >
-                      Peso Objetivo (kg)
-                    </Label>
-                    <Select
-                      value={formData.targetWeight}
-                      onValueChange={(value) =>
-                        updateFormData({ targetWeight: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={BodyWeightIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su peso objetivo"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {weightOptions.map((weight) => (
-                          <SelectItem
-                            className="text-xs md:text-xs"
-                            key={weight}
-                            value={weight}
-                          >
-                            {weight} kg
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
-
-              {currentStep === 2 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="activityLevel"
-                    >
-                      Nivel de actividad
-                    </Label>
-                    <Select
-                      value={formData.activityLevel}
-                      onValueChange={(value) =>
-                        updateFormData({ activityLevel: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={Activity03Icon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su nivel de actividad"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="sedentary"
-                        >
-                          Sedentario (poco o ningún ejercicio)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="light"
-                        >
-                          Ligeramente activo (ejercicio ligero 1-3 días/semana)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="moderate"
-                        >
-                          Moderadamente activo (ejercicio moderado 3-5
-                          días/semana)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="active"
-                        >
-                          Activo (ejercicio intenso 6-7 días/semana)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="very-active"
-                        >
-                          Muy activo (ejercicio muy intenso y trabajo físico)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="bodyFatPercentage"
-                    >
-                      Procentaje de grasa corporal
-                    </Label>
-                    <Select
-                      value={formData.bodyFatPercentage}
-                      onValueChange={(value) =>
-                        updateFormData({ bodyFatPercentage: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={PercentSquareIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su porcentaje de grasa corporal"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {formData.gender === "male" ? (
-                          <>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="essential"
-                            >
-                              Grasa esencial (5%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="athletes"
-                            >
-                              Atletas (6-13%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="fitness"
-                            >
-                              Forma física (14-17%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="average"
-                            >
-                              Promedio (18-24%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="above-average"
-                            >
-                              Por encima del promedio (25%+)
-                            </SelectItem>
-                          </>
-                        ) : (
-                          <>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="essential"
-                            >
-                              Grasa esencial (8%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="athletes"
-                            >
-                              Atletas (14-20%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="fitness"
-                            >
-                              Forma física (21-24%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="average"
-                            >
-                              Promedio (25-31%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="above-average"
-                            >
-                              Por encima del promedio (32%+)
-                            </SelectItem>
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-xs md:text-xs" htmlFor="muscleMass">
-                      Masa muscular
-                    </Label>
-                    <Select
-                      value={formData.muscleMass}
-                      onValueChange={(value) =>
-                        updateFormData({ muscleMass: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={BodyPartMuscleIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su masa muscular"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {formData.gender === "male" ? (
-                          <>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="low"
-                            >
-                              Bajo (menos del 40%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="healthy"
-                            >
-                              Saludable (40-45%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="athletic"
-                            >
-                              Atlético (45-50%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="high"
-                            >
-                              Alto (más del 50%)
-                            </SelectItem>
-                          </>
-                        ) : (
-                          <>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="low"
-                            >
-                              Bajo (menos del 30%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="healthy"
-                            >
-                              Saludable (30-35%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="athletic"
-                            >
-                              Atlético (35-40%)
-                            </SelectItem>
-                            <SelectItem
-                              className="text-xs md:text-xs"
-                              value="high"
-                            >
-                              Alto (más del 40%)
-                            </SelectItem>
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-xs md:text-xs" htmlFor="goal">
-                      Objetivo
-                    </Label>
-                    <Select
-                      value={formData.goal}
-                      onValueChange={(value) => updateFormData({ goal: value })}
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={Target02Icon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue
-                            className="text-xs md:text-xs"
-                            placeholder="Seleccione su objetivo"
-                          />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="lose-weight"
-                        >
-                          Perder peso
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="maintain"
-                        >
-                          Mantener peso
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="gain-muscle"
-                        >
-                          Ganar músculo
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
-
-              {currentStep === 3 && (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="dailyActivity"
-                    >
-                      Actividad diaria
-                    </Label>
-                    <Select
-                      value={formData.dailyActivity}
-                      onValueChange={(value) =>
-                        updateFormData({ dailyActivity: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        {/* <SelectValue placeholder="Select your daily activity" /> */}
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={WorkoutGymnasticsIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su actividad diaria" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="office-work">
-                          Trabajo de oficina (sedentario)
-                        </SelectItem>
-                        <SelectItem value="light-physical">
-                          Trabajo físico ligero
-                        </SelectItem>
-                        <SelectItem value="moderate-physical">
-                          Trabajo físico moderado
-                        </SelectItem>
-                        <SelectItem value="heavy-physical">
-                          Trabajo físico pesado
-                        </SelectItem>
-                        <SelectItem value="very-heavy-physical">
-                          Trabajo físico muy pesado
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="experienceLevel"
-                    >
-                      Nivel de experiencia
-                    </Label>
-                    <Select
-                      value={formData.experienceLevel}
-                      onValueChange={(value) =>
-                        updateFormData({ experienceLevel: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={WorkoutGymnasticsIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su nivel de experiencia" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="beginner"
-                        >
-                          Principiante
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="intermediate"
-                        >
-                          Intermedio
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="advanced"
-                        >
-                          Avanzado
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="monthsTraining"
-                    >
-                      Meses entrenando
-                    </Label>
-                    <Select
-                      value={formData.monthsTraining.toString()}
-                      onValueChange={(value) =>
-                        updateFormData({ monthsTraining: parseInt(value) || 0 })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={Calendar01Icon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione cuántos meses lleva entrenando" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 61 }, (_, i) => i).map(
-                          (month) => (
-                            <SelectItem
-                              key={month}
-                              className="text-xs md:text-xs"
-                              value={month.toString()}
-                            >
-                              {month === 0
-                                ? "Menos de 1 mes"
-                                : month === 1
-                                  ? "1 mes"
-                                  : `${month} meses`}
-                            </SelectItem>
-                          ),
-                        )}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="trainingFrequency"
-                    >
-                      Frecuencia de entrenamiento (dias por semana)
-                    </Label>
-                    <ToggleGroup
-                      type="multiple"
-                      variant="outline"
-                      value={selectedDays}
-                      onValueChange={(value) => {
-                        setSelectedDays(value);
-                        updateFormData({
-                          trainingFrequency: value.length,
-                          trainingDays: value,
-                        });
-                      }}
-                      className="justify-start"
-                    >
-                      {daysOfWeek.map((day) => (
-                        <ToggleGroupItem
-                          key={day.id}
-                          value={day.id}
-                          aria-label={day.label}
-                          className="w-10 h-10 text-xs md:text-xs"
-                        >
-                          {day.label}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                    {selectedDays.length > 0 && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        Días seleccionados: {selectedDays.length} día
-                        {selectedDays.length !== 1 ? "s" : ""} -{" "}
-                        {selectedDays
-                          .map((dayId) => {
-                            const day = daysOfWeek.find((d) => d.id === dayId);
-                            return day?.label;
-                          })
-                          .filter(Boolean)
-                          .join(", ")}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="preferredWorkoutTime"
-                    >
-                      Tiempo de entrenamiento
-                    </Label>
-                    <Select
-                      value={formData.preferredWorkoutTime}
-                      onValueChange={(value) =>
-                        updateFormData({ preferredWorkoutTime: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={Clock01Icon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su hora preferida" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="early-morning"
-                        >
-                          Temprano en la mañana (5-8 AM)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="morning"
-                        >
-                          Mañana (8-11 AM)
-                        </SelectItem>
-                        <SelectItem className="text-xs md:text-xs" value="noon">
-                          Mediodía (11 AM-2 PM)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="afternoon"
-                        >
-                          Tarde (2-5 PM)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="evening"
-                        >
-                          Atardecer (5-8 PM)
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="night"
-                        >
-                          Noche (8-11 PM)
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label
-                      className="text-xs md:text-xs"
-                      htmlFor="dietaryPreference"
-                    >
-                      Preferencia dietetica
-                    </Label>
-                    <Select
-                      value={formData.dietaryPreference}
-                      onValueChange={(value) =>
-                        updateFormData({ dietaryPreference: value })
-                      }
-                    >
-                      <SelectTrigger className="text-xs md:text-xs">
-                        <div className="flex flex-row items-center gap-4">
-                          <HugeiconsIcon
-                            icon={SteakIcon}
-                            size={18}
-                            className="text-foreground"
-                          />
-                          <SelectValue placeholder="Seleccione su preferencia dietética" />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="no-preference"
-                        >
-                          Sin preferencia específica
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="vegetarian"
-                        >
-                          Vegetariano
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="vegan"
-                        >
-                          Vegano
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="pescatarian"
-                        >
-                          Pescetariano
-                        </SelectItem>
-                        <SelectItem className="text-xs md:text-xs" value="keto">
-                          Keto
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="paleo"
-                        >
-                          Paleo
-                        </SelectItem>
-                        <SelectItem
-                          className="text-xs md:text-xs"
-                          value="mediterranean"
-                        >
-                          Mediterránea
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="flex justify-between pt-4">
-            <Button
-              size="sm"
-              className="text-xs px-4"
-              variant="outline"
-              onClick={handlePrevious}
-              disabled={currentStep === 0}
-            >
-              Anterior
-            </Button>
-
-            {currentStep < 3 ? (
-              <Button className="text-xs px-4" size="sm" onClick={handleNext}>
-                Siguiente
-              </Button>
-            ) : (
-              <Button
-                onClick={handleSubmit}
-                size="sm"
-                disabled={isSubmitting}
-                className="bg-foreground text-white dark:bg-white dark:text-black border text-xs px-4"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-                    Guardando
-                  </>
-                ) : (
-                  "Guardar"
-                )}
-              </Button>
-            )}
-          </div>
+      {/* Progress bar simple */}
+      <div className="mb-8">
+        <div className="h-1 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
+          <div
+            className="h-full bg-black dark:bg-white transition-all duration-300"
+            style={{ width: `${((currentStep + 1) / 4) * 100}%` }}
+          />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentStep}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.2 }}
+          className="space-y-4"
+        >
+          {currentStep === 0 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="gender"
+                >
+                  <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4" />
+                  Género
+                </Label>
+                <Select
+                  value={formData.gender}
+                  onValueChange={(value) => updateFormData({ gender: value })}
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu género" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Masculino</SelectItem>
+                    <SelectItem value="female">Femenino</SelectItem>
+                    <SelectItem value="other">Otro</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <BirthDatePicker
+                  value={formData.birthdate}
+                  onValueChange={(value) =>
+                    updateFormData({ birthdate: value })
+                  }
+                />
+              </div>
+            </div>
+          )}
+
+          {currentStep === 1 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="height"
+                >
+                  <HugeiconsIcon icon={RulerIcon} className="w-4 h-4" />
+                  Altura (cm)
+                </Label>
+                <Select
+                  value={formData.height}
+                  onValueChange={(value) => updateFormData({ height: value })}
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu altura" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {heightOptions.map((height) => (
+                      <SelectItem key={height} value={height}>
+                        {height} cm
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="currentWeight"
+                >
+                  <HugeiconsIcon icon={WeightScaleIcon} className="w-4 h-4" />
+                  Peso actual (kg)
+                </Label>
+                <Select
+                  value={formData.currentWeight}
+                  onValueChange={(value) =>
+                    updateFormData({ currentWeight: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu peso actual" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {weightOptions.map((weight) => (
+                      <SelectItem key={weight} value={weight}>
+                        {weight} kg
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="targetWeight"
+                >
+                  <HugeiconsIcon icon={BodyWeightIcon} className="w-4 h-4" />
+                  Peso objetivo (kg)
+                </Label>
+                <Select
+                  value={formData.targetWeight}
+                  onValueChange={(value) =>
+                    updateFormData({ targetWeight: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu peso objetivo" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {weightOptions.map((weight) => (
+                      <SelectItem key={weight} value={weight}>
+                        {weight} kg
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 2 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="activityLevel"
+                >
+                  <HugeiconsIcon icon={Activity03Icon} className="w-4 h-4" />
+                  Nivel de actividad
+                </Label>
+                <Select
+                  value={formData.activityLevel}
+                  onValueChange={(value) =>
+                    updateFormData({ activityLevel: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu nivel de actividad" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="sedentary">Sedentario</SelectItem>
+                    <SelectItem value="light">Ligeramente activo</SelectItem>
+                    <SelectItem value="moderate">
+                      Moderadamente activo
+                    </SelectItem>
+                    <SelectItem value="active">Activo</SelectItem>
+                    <SelectItem value="very-active">Muy activo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="bodyFatPercentage"
+                >
+                  <HugeiconsIcon icon={PercentSquareIcon} className="w-4 h-4" />
+                  Porcentaje de grasa corporal
+                </Label>
+                <Select
+                  value={formData.bodyFatPercentage}
+                  onValueChange={(value) =>
+                    updateFormData({ bodyFatPercentage: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu porcentaje de grasa corporal" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.gender === "male" ? (
+                      <>
+                        <SelectItem value="essential">
+                          Grasa esencial (5%)
+                        </SelectItem>
+                        <SelectItem value="athletes">
+                          Atletas (6-13%)
+                        </SelectItem>
+                        <SelectItem value="fitness">
+                          Forma física (14-17%)
+                        </SelectItem>
+                        <SelectItem value="average">
+                          Promedio (18-24%)
+                        </SelectItem>
+                        <SelectItem value="above-average">
+                          Por encima del promedio (25%+)
+                        </SelectItem>
+                      </>
+                    ) : (
+                      <>
+                        <SelectItem value="essential">
+                          Grasa esencial (8%)
+                        </SelectItem>
+                        <SelectItem value="athletes">
+                          Atletas (14-20%)
+                        </SelectItem>
+                        <SelectItem value="fitness">
+                          Forma física (21-24%)
+                        </SelectItem>
+                        <SelectItem value="average">
+                          Promedio (25-31%)
+                        </SelectItem>
+                        <SelectItem value="above-average">
+                          Por encima del promedio (32%+)
+                        </SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="muscleMass"
+                >
+                  <HugeiconsIcon
+                    icon={BodyPartMuscleIcon}
+                    className="w-4 h-4"
+                  />
+                  Masa muscular
+                </Label>
+                <Select
+                  value={formData.muscleMass}
+                  onValueChange={(value) =>
+                    updateFormData({ muscleMass: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu masa muscular" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {formData.gender === "male" ? (
+                      <>
+                        <SelectItem value="low">
+                          Bajo (menos del 40%)
+                        </SelectItem>
+                        <SelectItem value="healthy">
+                          Saludable (40-45%)
+                        </SelectItem>
+                        <SelectItem value="athletic">
+                          Atlético (45-50%)
+                        </SelectItem>
+                        <SelectItem value="high">Alto (más del 50%)</SelectItem>
+                      </>
+                    ) : (
+                      <>
+                        <SelectItem value="low">
+                          Bajo (menos del 30%)
+                        </SelectItem>
+                        <SelectItem value="healthy">
+                          Saludable (30-35%)
+                        </SelectItem>
+                        <SelectItem value="athletic">
+                          Atlético (35-40%)
+                        </SelectItem>
+                        <SelectItem value="high">Alto (más del 40%)</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="goal"
+                >
+                  <HugeiconsIcon icon={Target02Icon} className="w-4 h-4" />
+                  Objetivo
+                </Label>
+                <Select
+                  value={formData.goal}
+                  onValueChange={(value) => updateFormData({ goal: value })}
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu objetivo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="lose-weight">Perder peso</SelectItem>
+                    <SelectItem value="maintain">Mantener peso</SelectItem>
+                    <SelectItem value="gain-muscle">Ganar músculo</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 3 && (
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="dailyActivity"
+                >
+                  <HugeiconsIcon
+                    icon={WorkoutGymnasticsIcon}
+                    className="w-4 h-4"
+                  />
+                  Actividad diaria
+                </Label>
+                <Select
+                  value={formData.dailyActivity}
+                  onValueChange={(value) =>
+                    updateFormData({ dailyActivity: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu actividad diaria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="office-work">
+                      Trabajo de oficina
+                    </SelectItem>
+                    <SelectItem value="light-physical">
+                      Trabajo físico ligero
+                    </SelectItem>
+                    <SelectItem value="moderate-physical">
+                      Trabajo físico moderado
+                    </SelectItem>
+                    <SelectItem value="heavy-physical">
+                      Trabajo físico pesado
+                    </SelectItem>
+                    <SelectItem value="very-heavy-physical">
+                      Trabajo físico muy pesado
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="experienceLevel"
+                >
+                  <HugeiconsIcon
+                    icon={WorkoutGymnasticsIcon}
+                    className="w-4 h-4"
+                  />
+                  Nivel de experiencia
+                </Label>
+                <Select
+                  value={formData.experienceLevel}
+                  onValueChange={(value) =>
+                    updateFormData({ experienceLevel: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu nivel de experiencia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="beginner">Principiante</SelectItem>
+                    <SelectItem value="intermediate">Intermedio</SelectItem>
+                    <SelectItem value="advanced">Avanzado</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="monthsTraining"
+                >
+                  <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4" />
+                  Meses entrenando
+                </Label>
+                <Select
+                  value={formData.monthsTraining.toString()}
+                  onValueChange={(value) =>
+                    updateFormData({ monthsTraining: parseInt(value) || 0 })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona cuántos meses llevas entrenando" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[300px]">
+                    {Array.from({ length: 61 }, (_, i) => i).map((month) => (
+                      <SelectItem key={month} value={month.toString()}>
+                        {month === 0
+                          ? "Menos de 1 mes"
+                          : month === 1
+                            ? "1 mes"
+                            : `${month} meses`}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="trainingFrequency"
+                >
+                  <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4" />
+                  Días de entrenamiento por semana
+                </Label>
+                <ToggleGroup
+                  type="multiple"
+                  variant="outline"
+                  value={selectedDays}
+                  onValueChange={(value) => {
+                    setSelectedDays(value);
+                    updateFormData({
+                      trainingFrequency: value.length,
+                      trainingDays: value,
+                    });
+                  }}
+                  className="justify-start"
+                >
+                  {daysOfWeek.map((day) => (
+                    <ToggleGroupItem
+                      key={day.id}
+                      value={day.id}
+                      aria-label={day.label}
+                      className="w-10 h-10"
+                    >
+                      {day.label}
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="preferredWorkoutTime"
+                >
+                  <HugeiconsIcon icon={Clock01Icon} className="w-4 h-4" />
+                  Horario preferido
+                </Label>
+                <Select
+                  value={formData.preferredWorkoutTime}
+                  onValueChange={(value) =>
+                    updateFormData({ preferredWorkoutTime: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu horario preferido" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="early-morning">
+                      Temprano en la mañana (5-8 AM)
+                    </SelectItem>
+                    <SelectItem value="morning">Mañana (8-11 AM)</SelectItem>
+                    <SelectItem value="noon">Mediodía (11 AM-2 PM)</SelectItem>
+                    <SelectItem value="afternoon">Tarde (2-5 PM)</SelectItem>
+                    <SelectItem value="evening">Atardecer (5-8 PM)</SelectItem>
+                    <SelectItem value="night">Noche (8-11 PM)</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label
+                  className="text-xs font-medium flex items-center gap-2"
+                  htmlFor="dietaryPreference"
+                >
+                  <HugeiconsIcon icon={SteakIcon} className="w-4 h-4" />
+                  Preferencia dietética
+                </Label>
+                <Select
+                  value={formData.dietaryPreference}
+                  onValueChange={(value) =>
+                    updateFormData({ dietaryPreference: value })
+                  }
+                >
+                  <SelectTrigger className="w-full h-11">
+                    <SelectValue placeholder="Selecciona tu preferencia dietética" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="no-preference">
+                      Sin preferencia específica
+                    </SelectItem>
+                    <SelectItem value="vegetarian">Vegetariano</SelectItem>
+                    <SelectItem value="vegan">Vegano</SelectItem>
+                    <SelectItem value="pescatarian">Pescetariano</SelectItem>
+                    <SelectItem value="keto">Keto</SelectItem>
+                    <SelectItem value="paleo">Paleo</SelectItem>
+                    <SelectItem value="mediterranean">Mediterránea</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="flex justify-between pt-8 mt-8 border-t">
+        <Button
+          variant="ghost"
+          onClick={handlePrevious}
+          disabled={currentStep === 0}
+          className="px-4"
+        >
+          Anterior
+        </Button>
+
+        {currentStep < 3 ? (
+          <Button className="px-6" onClick={handleNext}>
+            Siguiente
+          </Button>
+        ) : (
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="px-6"
+          >
+            {isSubmitting ? (
+              <>
+                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                Guardando...
+              </>
+            ) : (
+              "Finalizar"
+            )}
+          </Button>
+        )}
+      </div>
+    </div>
   );
 }

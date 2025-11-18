@@ -88,7 +88,7 @@ export function WorkoutPlan({
       <Accordion
         type="multiple"
         value={openItems}
-        className="w-full border rounded-lg overflow-hidden"
+        className="w-full border rounded-lg overflow-hidden bg-white/10 dark:bg-white/5 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg"
       >
         {workoutPlan.days.map((day, index) => (
           <AccordionItem

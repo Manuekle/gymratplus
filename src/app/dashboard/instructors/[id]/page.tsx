@@ -17,10 +17,14 @@ import {
   Dumbbell01Icon,
   FireIcon,
   ArrowLeft01Icon,
+  Calendar01Icon,
+  Target01Icon,
+  Activity02Icon,
+  LayersIcon,
+  CalendarCheckIn01Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-// Calendar01Icon removed - unused
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
 // import type { InstructorProfile, User } from "@prisma/client";
@@ -700,42 +704,102 @@ export default function InstructorProfilePage() {
                       No tienes planes de entrenamiento asignados aún.
                     </p>
                   ) : (
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {assignedWorkouts.map((workout) => (
-                        <div key={workout.id} className="p-3 border rounded-lg">
-                          <div className="flex items-start justify-between mb-2">
-                            <h3 className="text-xs font-semibold flex-1">
-                              {workout.name}
-                            </h3>
-                            <Badge variant="secondary" className="text-xs">
-                              {format(
-                                new Date(workout.assignedDate),
-                                "d MMM yyyy",
-                                { locale: es },
-                              )}
-                            </Badge>
-                          </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <HugeiconsIcon
-                              icon={Dumbbell01Icon}
-                              className="h-3.5 w-3.5"
-                            />
-                            <span>
-                              {workout.exercises?.length || 0} ejercicios
-                            </span>
-                          </div>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            className="mt-2 w-full text-xs h-7"
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                      {assignedWorkouts.map((workout) => {
+                        const totalSets =
+                          (workout.exercises as { sets?: number }[])?.reduce(
+                            (sum: number, ex: { sets?: number }) =>
+                              sum + (ex.sets || 0),
+                            0,
+                          ) || 0;
+
+                        return (
+                          <div
+                            key={workout.id}
+                            className="group relative p-4 border rounded-xl cursor-pointer transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
                             onClick={() =>
                               router.push(`/dashboard/workout/${workout.id}`)
                             }
                           >
-                            Ver Plan
-                          </Button>
-                        </div>
-                      ))}
+                            <div className="flex flex-col h-full">
+                              {/* Workout Name */}
+                              <h3 className="text-lg tracking-heading font-semibold mb-2 pr-8 group-hover:text-primary transition-colors">
+                                {workout.name}
+                              </h3>
+
+                              {/* Workout Stats */}
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <HugeiconsIcon
+                                    icon={Calendar01Icon}
+                                    className="h-3.5 w-3.5 flex-shrink-0"
+                                  />
+                                  <span className="truncate">
+                                    {(workout.assignedDate as string)
+                                      ? format(
+                                          new Date(
+                                            workout.assignedDate as string,
+                                          ),
+                                          "d MMM yyyy",
+                                          { locale: es },
+                                        )
+                                      : "N/A"}
+                                  </span>
+                                </div>
+
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <HugeiconsIcon
+                                    icon={Dumbbell01Icon}
+                                    className="h-3.5 w-3.5 flex-shrink-0"
+                                  />
+                                  <span>
+                                    {((
+                                      workout.exercises as { length?: number }[]
+                                    )?.length as number) || 0}{" "}
+                                    {(((
+                                      workout.exercises as { length?: number }[]
+                                    )?.length as number) || 0) === 1
+                                      ? "ejercicio"
+                                      : "ejercicios"}
+                                  </span>
+                                </div>
+
+                                {totalSets > 0 && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <HugeiconsIcon
+                                      icon={LayersIcon}
+                                      className="h-3.5 w-3.5 flex-shrink-0"
+                                    />
+                                    <span>
+                                      {totalSets}{" "}
+                                      {totalSets === 1 ? "serie" : "series"}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {(workout.dueDate as string) && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <HugeiconsIcon
+                                      icon={CalendarCheckIn01Icon}
+                                      className="h-3.5 w-3.5 flex-shrink-0"
+                                    />
+                                    <span>
+                                      Vence{" "}
+                                      {format(
+                                        new Date(workout.dueDate as string),
+                                        "d MMM",
+                                        {
+                                          locale: es,
+                                        },
+                                      )}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </CardContent>
@@ -759,7 +823,7 @@ export default function InstructorProfilePage() {
                       No tienes planes de alimentación asignados aún.
                     </p>
                   ) : (
-                    <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {assignedFoodPlans.map((plan) => {
                         const macros =
                           typeof plan.macros === "string"
@@ -767,79 +831,91 @@ export default function InstructorProfilePage() {
                             : plan.macros;
 
                         return (
-                          <div key={plan.id} className="p-3 border rounded-lg">
-                            <div className="flex items-start justify-between mb-2">
-                              <h3 className="text-xs font-semibold flex-1">
-                                Plan de Alimentación
+                          <div
+                            key={plan.id}
+                            onClick={() =>
+                              router.push(
+                                `/dashboard/nutrition/plan/${plan.id}`,
+                              )
+                            }
+                            className="group relative p-4 border rounded-xl cursor-pointer transition-all duration-200 bg-background hover:border-zinc-200 dark:hover:border-zinc-800/50 overflow-hidden"
+                          >
+                            <div className="flex flex-col h-full">
+                              {/* Plan Name */}
+                              <h3 className="text-lg tracking-heading font-semibold mb-2 pr-8 group-hover:text-primary transition-colors">
+                                {(plan.name as string) ||
+                                  "Plan de Alimentación"}
                               </h3>
-                              <Badge variant="secondary" className="text-xs">
-                                {format(
-                                  new Date(plan.createdAt),
-                                  "d MMM yyyy",
-                                  { locale: es },
-                                )}
-                              </Badge>
-                            </div>
-                            <div className="space-y-1.5 text-xs">
-                              <div className="flex items-center gap-1.5 text-muted-foreground">
-                                <HugeiconsIcon
-                                  icon={FireIcon}
-                                  className="h-3.5 w-3.5"
-                                />
-                                <span>{plan.calorieTarget} kcal objetivo</span>
-                              </div>
-                              {macros && (
-                                <div className="pt-1 border-t space-y-0.5">
-                                  {macros.protein && (
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">
-                                        Proteína:
-                                      </span>
-                                      <span className="font-medium">
-                                        {macros.protein}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {macros.carbs && (
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">
-                                        Carbohidratos:
-                                      </span>
-                                      <span className="font-medium">
-                                        {macros.carbs}
-                                      </span>
-                                    </div>
-                                  )}
-                                  {macros.fat && (
-                                    <div className="flex justify-between">
-                                      <span className="text-muted-foreground">
-                                        Grasas:
-                                      </span>
-                                      <span className="font-medium">
-                                        {macros.fat}
-                                      </span>
-                                    </div>
-                                  )}
+
+                              {/* Plan Stats */}
+                              <div className="mt-2 grid grid-cols-2 gap-2 text-xs">
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <HugeiconsIcon
+                                    icon={Calendar01Icon}
+                                    className="h-3.5 w-3.5 flex-shrink-0"
+                                  />
+                                  <span className="truncate">
+                                    {plan.createdAt
+                                      ? format(
+                                          new Date(plan.createdAt as string),
+                                          "d MMM yyyy",
+                                          {
+                                            locale: es,
+                                          },
+                                        )
+                                      : "N/A"}
+                                  </span>
                                 </div>
-                              )}
-                              {plan.notes && (
-                                <p className="text-xs text-muted-foreground line-clamp-2 pt-1 border-t">
-                                  {plan.notes}
-                                </p>
-                              )}
+
+                                <div className="flex items-center gap-1.5 text-muted-foreground">
+                                  <HugeiconsIcon
+                                    icon={FireIcon}
+                                    className="h-3.5 w-3.5 flex-shrink-0"
+                                  />
+                                  <span className="truncate">
+                                    {plan.calorieTarget
+                                      ? `${plan.calorieTarget} kcal`
+                                      : "N/A"}
+                                  </span>
+                                </div>
+
+                                {macros?.protein && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <HugeiconsIcon
+                                      icon={Target01Icon}
+                                      className="h-3.5 w-3.5 flex-shrink-0"
+                                    />
+                                    <span className="truncate">
+                                      Proteína: {macros.protein}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {macros?.carbs && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <HugeiconsIcon
+                                      icon={Activity02Icon}
+                                      className="h-3.5 w-3.5 flex-shrink-0"
+                                    />
+                                    <span className="truncate">
+                                      Carbs: {macros.carbs}
+                                    </span>
+                                  </div>
+                                )}
+
+                                {macros?.fat && (
+                                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                                    <HugeiconsIcon
+                                      icon={LayersIcon}
+                                      className="h-3.5 w-3.5 flex-shrink-0"
+                                    />
+                                    <span className="truncate">
+                                      Grasas: {macros.fat}
+                                    </span>
+                                  </div>
+                                )}
+                              </div>
                             </div>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="mt-2 w-full text-xs h-7"
-                              onClick={() =>
-                                router.push(
-                                  `/dashboard/nutrition/plan/${plan.id}`,
-                                )
-                              }
-                            >
-                              Ver Plan
-                            </Button>
                           </div>
                         );
                       })}

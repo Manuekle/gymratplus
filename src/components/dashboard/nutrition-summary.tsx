@@ -1,5 +1,12 @@
 "use client";
 import { Progress } from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -153,71 +160,56 @@ export default function NutritionSummary() {
   };
 
   return (
-    <div className="p-4 md:p-6 rounded-lg border bg-card">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4 sm:mb-6">
-        <div>
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-heading">
-            Resumen Nutricional
-          </h2>
-          <p className="text-xs text-muted-foreground mt-1">Consumo de hoy</p>
+    <Card className="rounded-lg border bg-card h-full flex flex-col">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
+          <div>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Resumen Nutricional
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-xs mt-1">
+              Consumo de hoy
+            </CardDescription>
+          </div>
+          <Link
+            href="/dashboard/nutrition"
+            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Ver más
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
         </div>
-        <Link
-          href="/dashboard/nutrition"
-          className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors self-start sm:self-auto"
-        >
-          Ver más
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-          />
-        </Link>
-      </div>
+      </CardHeader>
 
-      <div className="space-y-4">
-        {macros.map((macro, index) => {
-          const percentage = calculatePercentage(macro.consumed, macro.goal);
-          return (
-            <div key={index}>
-              <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-medium">{macro.name}</span>
-                <div className="text-xs">
-                  <span className="font-medium">
-                    {Math.round(macro.consumed ?? 0)}
-                    {macro.unit}
-                  </span>
-                  <span className="text-muted-foreground">
-                    {" "}
-                    / {macro.goal}
-                    {macro.unit}
-                  </span>
+      <CardContent className="px-4">
+        <div className="space-y-4">
+          {macros.map((macro, index) => {
+            const percentage = calculatePercentage(macro.consumed, macro.goal);
+            return (
+              <div key={index}>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-xs font-medium">{macro.name}</span>
+                  <div className="text-xs">
+                    <span className="font-medium">
+                      {Math.round(macro.consumed ?? 0)}
+                      {macro.unit}
+                    </span>
+                    <span className="text-muted-foreground">
+                      {" "}
+                      / {macro.goal}
+                      {macro.unit}
+                    </span>
+                  </div>
                 </div>
+                <Progress value={percentage} className="h-1.5" />
               </div>
-              <Progress value={percentage} className="h-1.5" />
-            </div>
-          );
-        })}
-      </div>
-
-      {/* <div className="mt-4 pt-4 border-t">
-        <h3 className="text-xs font-medium mb-2">Comidas de hoy</h3>
-        <div className="space-y-2">
-          {["Desayuno", "Almuerzo", "Merienda", "Cena"].map((meal, index) => (
-            <div
-              key={index}
-              className="flex justify-between items-center py-4 px-3 border rounded-lg"
-            >
-              <span className="text-xs">{meal}</span>
-              {index <= 1 ? (
-                <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                  Completado
-                </span>
-              ) : (
-                <span className="text-xs text-muted-foreground">Pendiente</span>
-              )}
-            </div>
-          ))}
+            );
+          })}
         </div>
-      </div> */}
-    </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -236,7 +236,7 @@ export default function FoodPlanViewPage() {
               </div>
             </CardHeader>
             <CardContent className="px-4">
-              <div className="rounded-md border">
+              <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
                 <div className="p-4 space-y-3">
                   {Array.from({ length: 3 }).map((_, j) => (
                     <div key={j} className="flex items-center justify-between">

@@ -1362,24 +1362,24 @@ export default function ProfilePage() {
             {loadingStreak ? (
               <div className="space-y-4">
                 {/* Skeleton para las dos cards principales */}
-                <div className="flex flex-row flex-wrap gap-4">
-                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
-                  <Skeleton className="h-20 flex-1 min-w-[140px] rounded-lg" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Skeleton className="h-20 w-full rounded-lg" />
+                  <Skeleton className="h-20 w-full rounded-lg" />
                 </div>
                 {/* Skeleton para el separador */}
                 <Skeleton className="h-px w-full" />
                 {/* Skeleton para los dos items de estadísticas */}
-                <div className="flex flex-row flex-wrap gap-4">
-                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
-                    <Skeleton className="h-5 w-5 rounded" />
-                    <div className="flex-1 space-y-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full">
+                    <Skeleton className="h-5 w-5 rounded flex-shrink-0" />
+                    <div className="flex-1 space-y-2 min-w-0">
                       <Skeleton className="h-4 w-32" />
                       <Skeleton className="h-3 w-24" />
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
-                    <Skeleton className="h-5 w-5 rounded" />
-                    <div className="flex-1 space-y-2">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full">
+                    <Skeleton className="h-5 w-5 rounded flex-shrink-0" />
+                    <div className="flex-1 space-y-2 min-w-0">
                       <Skeleton className="h-4 w-28" />
                       <Skeleton className="h-3 w-20" />
                     </div>
@@ -1397,7 +1397,7 @@ export default function ProfilePage() {
               </div>
             ) : streakStats ? (
               <>
-                <div className="flex flex-row flex-wrap gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Racha Actual */}
                   {(() => {
                     const streakColor = getStreakColor(
@@ -1405,23 +1405,23 @@ export default function ProfilePage() {
                     );
                     return (
                       <div
-                        className={`p-4 rounded-lg border ${streakColor.bg} ${streakColor.border} flex-1 min-w-[140px]`}
+                        className={`p-4 rounded-lg border ${streakColor.bg} ${streakColor.border} w-full`}
                       >
-                        <div className="flex items-center gap-3 mb-2">
+                        <div className="flex items-center gap-3">
                           <div
-                            className={`h-10 w-10 rounded-full ${streakColor.iconBg} flex items-center justify-center`}
+                            className={`h-10 w-10 sm:h-12 sm:w-12 rounded-full ${streakColor.iconBg} flex items-center justify-center flex-shrink-0`}
                           >
                             <HugeiconsIcon
                               icon={FireIcon}
-                              className={`h-5 w-5 ${streakColor.iconColor}`}
+                              className={`h-5 w-5 sm:h-6 sm:w-6 ${streakColor.iconColor}`}
                             />
                           </div>
-                          <div className="flex-1">
-                            <div className="text-xs text-muted-foreground">
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs text-muted-foreground mb-1">
                               Racha Actual
                             </div>
                             <div
-                              className={`text-xl font-semibold ${streakColor.textColor}`}
+                              className={`text-lg sm:text-xl font-semibold ${streakColor.textColor}`}
                             >
                               {streakStats.currentStreak} día
                               {streakStats.currentStreak !== 1 ? "s" : ""}
@@ -1433,19 +1433,19 @@ export default function ProfilePage() {
                   })()}
 
                   {/* Racha Más Larga */}
-                  <div className="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-white dark:from-yellow-900/20 dark:to-gray-800 flex-1 min-w-[140px]">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="h-10 w-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
+                  <div className="p-4 rounded-lg border bg-gradient-to-br from-yellow-50 to-white dark:from-yellow-900/20 dark:to-gray-800 w-full">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center flex-shrink-0">
                         <HugeiconsIcon
                           icon={StarIcon}
-                          className="h-5 w-5 text-yellow-600 dark:text-yellow-400"
+                          className="h-5 w-5 sm:h-6 sm:w-6 text-yellow-600 dark:text-yellow-400"
                         />
                       </div>
-                      <div className="flex-1">
-                        <div className="text-xs text-muted-foreground">
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs text-muted-foreground mb-1">
                           Racha Más Larga
                         </div>
-                        <div className="text-xl font-semibold">
+                        <div className="text-lg sm:text-xl font-semibold">
                           {streakStats.longestStreak} día
                           {streakStats.longestStreak !== 1 ? "s" : ""}
                         </div>
@@ -1456,15 +1456,15 @@ export default function ProfilePage() {
 
                 <Separator />
 
-                <div className="flex flex-row flex-wrap gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Total de Días Entrenados */}
-                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full">
                     <HugeiconsIcon
                       icon={Calendar01Icon}
                       className="h-5 w-5 text-muted-foreground flex-shrink-0"
                     />
-                    <div>
-                      <div className="font-medium text-xs">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-xs mb-0.5">
                         Total de días entrenados
                       </div>
                       <div className="text-muted-foreground text-xs">
@@ -1475,13 +1475,13 @@ export default function ProfilePage() {
                   </div>
 
                   {/* Total de Sesiones */}
-                  <div className="flex items-center gap-4 flex-1 min-w-[140px]">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full">
                     <HugeiconsIcon
                       icon={Dumbbell01Icon}
                       className="h-5 w-5 text-muted-foreground flex-shrink-0"
                     />
-                    <div>
-                      <div className="font-medium text-xs">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-xs mb-0.5">
                         Total de sesiones
                       </div>
                       <div className="text-muted-foreground text-xs">

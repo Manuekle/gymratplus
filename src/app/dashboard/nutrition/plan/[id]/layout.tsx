@@ -3,20 +3,21 @@ import AnimatedLayout from "@/components/layout/animated-layout";
 import { customSEO } from "@/lib/seo/seo";
 
 export const metadata: Metadata = customSEO({
-  title: "Plan de Alimentación para Estudiante",
+  title: "Plan de Alimentación",
   description:
-    "Crea y gestiona planes de alimentación personalizados para estudiantes",
+    "Visualiza y gestiona tu plan de alimentación personalizado con detalles de comidas y macronutrientes",
   keywords: [
     "plan de alimentación",
     "nutrición",
-    "estudiante",
-    "instructor",
-    "dieta personalizada",
+    "dieta",
+    "macronutrientes",
+    "calorías",
+    "comidas",
   ],
-  noindex: true, // No indexar planes específicos de estudiantes
+  noindex: true, // No indexar planes específicos
 });
 
-export default function MealPlanLayout({
+export default function NutritionPlanLayout({
   children,
 }: {
   children: React.ReactNode;

@@ -3,6 +3,13 @@
 import { useState, useEffect } from "react";
 
 import { Skeleton } from "../ui/skeleton";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 import { differenceInDays } from "date-fns";
 import Link from "next/link";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -56,111 +63,118 @@ export default function WorkoutSummary() {
   }, []);
 
   return (
-    <div className="h-full flex flex-col p-4 md:p-6 rounded-lg shadow-sm border">
-      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 sm:gap-0 mb-4">
-        <div className="flex items-center gap-2">
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-heading">
-            Resumen de Entrenamientos
-          </h2>
+    <Card className="rounded-lg border bg-card h-full flex flex-col">
+      <CardHeader className="pb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
+          <div>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Resumen de Entrenamientos
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-xs mt-1">
+              Historial de tus últimos entrenamientos
+            </CardDescription>
+          </div>
+          <Link
+            href="/dashboard/workout/history"
+            className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Ver más
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+            />
+          </Link>
         </div>
-        <Link
-          href="/dashboard/workout/history"
-          className="group inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors self-start sm:self-auto"
-        >
-          Ver todos
-          <HugeiconsIcon
-            icon={ArrowRight01Icon}
-            className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+      </CardHeader>
+
+      <CardContent className="px-4 flex-1 flex flex-col">
+        {/* Alerta de recordatorio si no ha entrenado en varios días */}
+        {!loading && (
+          <WorkoutReminderAlert
+            lastWorkoutAt={lastWorkoutDate}
+            onRestDayMarked={() => {
+              // Refrescar los datos después de marcar un día de descanso
+              fetchWorkoutHistory();
+            }}
           />
-        </Link>
-      </div>
+        )}
 
-      {/* Alerta de recordatorio si no ha entrenado en varios días */}
-      {!loading && (
-        <WorkoutReminderAlert
-          lastWorkoutAt={lastWorkoutDate}
-          onRestDayMarked={() => {
-            // Refrescar los datos después de marcar un día de descanso
-            fetchWorkoutHistory();
-          }}
-        />
-      )}
+        <div
+          className={`space-y-4 ${workoutSessions.length === 0 && !loading ? "flex-1 flex flex-col" : ""}`}
+        >
+          {loading ? (
+            <div className="flex flex-col gap-2">
+              {Array.from({ length: 2 }).map((_, index) => (
+                <div key={index} className="p-3 border rounded-lg">
+                  <div className="flex justify-between">
+                    <Skeleton className="h-4 w-56" />
+                    <Skeleton className="h-4 w-10" />
+                  </div>
+                  <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
+                    <div className="flex items-center">
+                      <Skeleton className="h-4 w-10" />
+                    </div>
+                    <div>
+                      <Skeleton className="h-4 w-10" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : workoutSessions.length === 0 ? (
+            <EmptyState
+              title="No hay entrenamientos recientes"
+              description="Inicia un nuevo entrenamiento para ver tu historial aquí."
+              action={{
+                label: "Iniciar entrenamiento",
+                href: "/dashboard/workout/active",
+              }}
+              className="flex-1 h-full"
+            />
+          ) : (
+            workoutSessions.slice(0, 2).map((session) => (
+              <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                  <h4 className="font-semibold tracking-heading text-xs sm:text-lg">
+                    {session.notes?.replace("Día: ", "") || "Entrenamiento"}
+                  </h4>
+                  <span className="text-xs text-muted-foreground sm:text-right">
+                    {(() => {
+                      const sessionDate = new Date(session.date);
+                      sessionDate.setHours(0, 0, 0, 0);
+                      const today = new Date();
+                      today.setHours(0, 0, 0, 0);
+                      const daysDiff = differenceInDays(today, sessionDate);
 
-      <div
-        className={`space-y-4 ${workoutSessions.length === 0 && !loading ? "flex-1 flex flex-col" : ""}`}
-      >
-        {loading ? (
-          <div className="flex flex-col gap-2">
-            {Array.from({ length: 2 }).map((_, index) => (
-              <div key={index} className="p-3 border rounded-lg">
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-56" />
-                  <Skeleton className="h-4 w-10" />
+                      if (daysDiff === 0) {
+                        return "Hoy";
+                      } else if (daysDiff === 1) {
+                        return "Ayer";
+                      } else {
+                        return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                      }
+                    })()}
+                  </span>
                 </div>
                 <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
                   <div className="flex items-center">
-                    <Skeleton className="h-4 w-10" />
+                    <HugeiconsIcon
+                      icon={Clock01Icon}
+                      className="h-3 w-3 mr-1 text-foreground"
+                    />
+                    <span>
+                      {session.duration ? `${session.duration} min` : "N/A"}
+                    </span>
                   </div>
                   <div>
-                    <Skeleton className="h-4 w-10" />
+                    <span>{session.exercises.length} ejercicios</span>
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
-        ) : workoutSessions.length === 0 ? (
-          <EmptyState
-            title="No hay entrenamientos recientes"
-            description="Inicia un nuevo entrenamiento para ver tu historial aquí."
-            action={{
-              label: "Iniciar entrenamiento",
-              href: "/dashboard/workout/active",
-            }}
-            className="flex-1 h-full"
-          />
-        ) : (
-          workoutSessions.slice(0, 2).map((session) => (
-            <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
-              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                <h4 className="font-semibold tracking-heading text-xs sm:text-lg">
-                  {session.notes?.replace("Día: ", "") || "Entrenamiento"}
-                </h4>
-                <span className="text-xs text-muted-foreground sm:text-right">
-                  {(() => {
-                    const sessionDate = new Date(session.date);
-                    sessionDate.setHours(0, 0, 0, 0);
-                    const today = new Date();
-                    today.setHours(0, 0, 0, 0);
-                    const daysDiff = differenceInDays(today, sessionDate);
-
-                    if (daysDiff === 0) {
-                      return "Hoy";
-                    } else if (daysDiff === 1) {
-                      return "Ayer";
-                    } else {
-                      return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
-                    }
-                  })()}
-                </span>
-              </div>
-              <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
-                <div className="flex items-center">
-                  <HugeiconsIcon
-                    icon={Clock01Icon}
-                    className="h-3 w-3 mr-1 text-foreground"
-                  />
-                  <span>
-                    {session.duration ? `${session.duration} min` : "N/A"}
-                  </span>
-                </div>
-                <div>
-                  <span>{session.exercises.length} ejercicios</span>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
-      </div>
-    </div>
+            ))
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

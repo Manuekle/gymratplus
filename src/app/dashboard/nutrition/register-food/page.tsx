@@ -247,7 +247,8 @@ export default function RegisterFoodPage() {
         fat: f.fat,
         serving: f.serving,
         category: f.category,
-        mealType: f.mealType,
+        mealType: (f as unknown as { mealType?: string[] })
+          .mealType as string[],
         synonyms: (f as { synonyms?: string[] }).synonyms,
         servingUnit: (f as { servingUnit?: string | null }).servingUnit,
       })),
@@ -353,7 +354,7 @@ export default function RegisterFoodPage() {
         {
           id: item.id,
           type,
-          data: item,
+          data: item as unknown as Food,
           quantity: defaultQuantity,
           unit: defaultUnit,
         },
@@ -586,7 +587,9 @@ export default function RegisterFoodPage() {
             return (
               <div
                 key={item.id}
-                onClick={() => toggleItemSelection(item, "food")}
+                onClick={() =>
+                  toggleItemSelection(item as unknown as Food, "food")
+                }
                 className={`w-full text-left p-3 sm:p-4 rounded-lg border transition-all hover:shadow-sm cursor-pointer ${
                   isSelected
                     ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
@@ -597,35 +600,33 @@ export default function RegisterFoodPage() {
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xs font-medium">{item.name}</h3>
                     <p className="text-xs text-muted-foreground mb-1 sm:mb-2">
-                      {activeTab === "foods" || activeTab === "favorites"
-                        ? (() => {
-                            const foodItem = item as Food;
-                            const servingUnit =
-                              foodItem.servingUnit ||
-                              (foodItem.category === "beverages"
+                      {(() => {
+                        const foodItem = item as Food;
+                        const servingUnit =
+                          foodItem.servingUnit ||
+                          ((foodItem.category as string) === "beverages"
+                            ? "ml"
+                            : (foodItem.category as string) === "eggs"
+                              ? "unidad"
+                              : // Lácteos líquidos (leche, etc.)
+                                (foodItem.category as string) === "dairy" &&
+                                  (foodItem.name
+                                    .toLowerCase()
+                                    .includes("leche") ||
+                                    foodItem.name
+                                      .toLowerCase()
+                                      .includes("milk"))
                                 ? "ml"
-                                : foodItem.category === "eggs"
-                                  ? "unidad"
-                                  : // Lácteos líquidos (leche, etc.)
-                                    foodItem.category === "dairy" &&
-                                      (foodItem.name
-                                        .toLowerCase()
-                                        .includes("leche") ||
-                                        foodItem.name
-                                          .toLowerCase()
-                                          .includes("milk"))
-                                    ? "ml"
-                                    : "g");
-                            const serving = foodItem.serving || 100;
-                            const unitLabel =
-                              servingUnit === "unidad"
-                                ? serving === 1
-                                  ? "unidad"
-                                  : "unidades"
-                                : servingUnit;
-                            return `Porción base: ${serving} ${unitLabel}`;
-                          })()
-                        : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
+                                : "g");
+                        const serving = foodItem.serving || 100;
+                        const unitLabel =
+                          servingUnit === "unidad"
+                            ? serving === 1
+                              ? "unidad"
+                              : "unidades"
+                            : servingUnit;
+                        return `Porción base: ${serving} ${unitLabel}`;
+                      })()}
                     </p>
                     <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                       <span className="flex items-center">
@@ -765,7 +766,7 @@ export default function RegisterFoodPage() {
                   key={item.id}
                   onClick={() =>
                     toggleItemSelection(
-                      item,
+                      item as unknown as Food,
                       activeTab === "foods" ? "food" : "recipe",
                     )
                   }
@@ -784,12 +785,13 @@ export default function RegisterFoodPage() {
                               const foodItem = item as Food;
                               const servingUnit =
                                 foodItem.servingUnit ||
-                                (foodItem.category === "beverages"
+                                ((foodItem.category as string) === "beverages"
                                   ? "ml"
-                                  : foodItem.category === "eggs"
+                                  : (foodItem.category as string) === "eggs"
                                     ? "unidad"
                                     : // Lácteos líquidos (leche, etc.)
-                                      foodItem.category === "dairy" &&
+                                      (foodItem.category as string) ===
+                                          "dairy" &&
                                         (foodItem.name
                                           .toLowerCase()
                                           .includes("leche") ||
@@ -807,7 +809,7 @@ export default function RegisterFoodPage() {
                                   : servingUnit;
                               return `Porción base: ${serving} ${unitLabel}`;
                             })()
-                          : `${(item as Recipe).servings || 0} ${(item as Recipe).servings === 1 ? "porción" : "porciones"}`}
+                          : `${(item as unknown as Recipe).servings || 0} ${(item as unknown as Recipe).servings === 1 ? "porción" : "porciones"}`}
                       </p>
                       <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
                         <span className="flex items-center">
@@ -1314,15 +1316,15 @@ export default function RegisterFoodPage() {
                                                     foodData.serving || 100;
                                                   const servingUnit =
                                                     foodData.servingUnit ||
-                                                    (foodData.category ===
+                                                    ((foodData.category as string) ===
                                                     "beverages"
                                                       ? "ml"
-                                                      : foodData.category ===
+                                                      : (foodData.category as string) ===
                                                           "eggs"
                                                         ? "unidad"
                                                         : // Lácteos líquidos (leche, etc.)
-                                                          foodData.category ===
-                                                              "dairy" &&
+                                                          (foodData.category as string) ===
+                                                              ("dairy" as string) &&
                                                             (foodData.name
                                                               .toLowerCase()
                                                               .includes(
@@ -1351,27 +1353,27 @@ export default function RegisterFoodPage() {
                                                     foodData.serving || 100;
                                                   const unit =
                                                     foodData.servingUnit ||
-                                                    (foodData.category ===
-                                                    "beverages"
+                                                    ((foodData.category as string) ===
+                                                    ("beverages" as string)
                                                       ? "ml"
-                                                      : foodData.category ===
-                                                          "eggs"
+                                                      : (foodData.category as string) ===
+                                                          ("eggs" as string)
                                                         ? "unidad"
                                                         : // Lácteos líquidos (leche, etc.)
-                                                          foodData.category ===
-                                                              "dairy" &&
+                                                          (foodData.category as string) ===
+                                                              ("dairy" as string) &&
                                                             (foodData.name
                                                               .toLowerCase()
                                                               .includes(
-                                                                "leche",
+                                                                "leche" as string,
                                                               ) ||
-                                                              foodData.name
+                                                              (foodData.name
                                                                 .toLowerCase()
                                                                 .includes(
-                                                                  "milk",
-                                                                ))
+                                                                  "milk" as string,
+                                                                ) as boolean))
                                                           ? "ml"
-                                                          : "g");
+                                                          : ("g" as string));
                                                   const unitLabel =
                                                     unit === "unidad"
                                                       ? serving === 1
@@ -1606,7 +1608,7 @@ export default function RegisterFoodPage() {
                                                     ...newItems[index],
                                                     _inputValue: "",
                                                     quantity: 0,
-                                                  };
+                                                  } as unknown as SelectedItem;
                                                   return newItems;
                                                 });
                                                 return;
@@ -1637,9 +1639,23 @@ export default function RegisterFoodPage() {
                                                 setSelectedItems((prev) => {
                                                   const newItems = [...prev];
                                                   newItems[index] = {
-                                                    ...newItems[index],
+                                                    ...(newItems[
+                                                      index
+                                                    ] as SelectedItem),
+                                                    id: newItems[index]
+                                                      ?.id as string,
+                                                    type: newItems[index]
+                                                      ?.type as
+                                                      | "food"
+                                                      | "recipe",
+                                                    data: newItems[index]
+                                                      ?.data as Food,
+                                                    quantity: newItems[index]
+                                                      ?.quantity as number,
+                                                    unit: newItems[index]
+                                                      ?.unit as string,
                                                     _inputValue: value,
-                                                  };
+                                                  } as unknown as SelectedItem;
                                                   return newItems;
                                                 });
                                                 return;
@@ -1656,9 +1672,19 @@ export default function RegisterFoodPage() {
                                                 const newItems = [...prev];
                                                 newItems[index] = {
                                                   ...newItems[index],
+                                                  id: newItems[index]
+                                                    ?.id as string,
+                                                  type: newItems[index]
+                                                    ?.type as "food" | "recipe",
+                                                  data: newItems[index]
+                                                    ?.data as Food,
+                                                  quantity: newItems[index]
+                                                    ?.quantity as number,
+                                                  unit: newItems[index]
+                                                    ?.unit as string,
                                                   _inputValue: value,
-                                                };
-                                                return newItems;
+                                                } as unknown as SelectedItem;
+                                                return newItems as unknown as SelectedItem[];
                                               });
 
                                               let quantity = 0;
@@ -1705,9 +1731,10 @@ export default function RegisterFoodPage() {
 
                                               setSelectedItems((prev) => {
                                                 const newItems = [...prev];
-                                                delete newItems[index]
-                                                  ._inputValue;
-                                                return newItems;
+                                                delete newItems[
+                                                  index
+                                                ] as unknown as SelectedItem["_inputValue"];
+                                                return newItems as unknown as SelectedItem[];
                                               });
 
                                               if (

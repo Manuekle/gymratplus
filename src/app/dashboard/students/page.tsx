@@ -29,6 +29,7 @@ import {
   Target01Icon,
   Tick02Icon,
   UserGroupIcon,
+  Cancel01Icon,
 } from "@hugeicons/core-free-icons";
 
 interface StudentData {
@@ -169,6 +170,34 @@ export default function InstructorDashboardPage() {
     }
   };
 
+  const handleRejectRequest = async (requestId: string) => {
+    try {
+      const response = await fetch(
+        `/api/student-instructor-requests/${requestId}/reject`,
+        {
+          method: "PUT",
+        },
+      );
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al rechazar la solicitud.");
+      }
+      toast.success("Solicitud rechazada", {
+        description: "La solicitud ha sido rechazada.",
+      });
+      fetchStudents();
+    } catch (error: unknown) {
+      let errorMessage = "Hubo un error al rechazar la solicitud.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+      toast.error(errorMessage);
+      console.error("Error rejecting request:", error);
+    }
+  };
+
   if (isLoadingProfile || status === "loading") {
     return (
       <div className="space-y-8">
@@ -290,7 +319,7 @@ export default function InstructorDashboardPage() {
   return (
     <div className="space-y-8">
       {/* Stats Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-medium">Total Alumnos</CardTitle>
@@ -370,11 +399,11 @@ export default function InstructorDashboardPage() {
           <CardHeader>
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
               <div className="space-y-1">
-                <CardTitle className="flex tracking-heading text-lg items-center gap-2">
+                <CardTitle className="flex tracking-heading text-2xl items-center gap-2">
                   Solicitudes Pendientes
                   <Badge variant="secondary">{pendingRequests.length}</Badge>
                 </CardTitle>
-                <CardDescription>
+                <CardDescription className="text-xs">
                   Revisa y gestiona las solicitudes de nuevos alumnos
                 </CardDescription>
               </div>
@@ -383,10 +412,10 @@ export default function InstructorDashboardPage() {
           <CardContent className="px-4">
             <div className="space-y-4">
               {pendingRequests.map((request, index) => (
-                <div key={request.id} className="flex flex-col gap-2 md:gap-0">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                <div key={request.id} className="flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <Avatar className="h-10 w-10">
+                      <Avatar className="h-12 w-12 flex-shrink-0">
                         <AvatarImage
                           src={request.image || "/placeholder-avatar.jpg"}
                           alt={request.name || "Alumno"}
@@ -395,37 +424,55 @@ export default function InstructorDashboardPage() {
                           {request.name?.charAt(0).toUpperCase() || "A"}
                         </AvatarFallback>
                       </Avatar>
-                      <div className="space-y-1 min-w-0">
-                        <p className="text-xs font-medium leading-none truncate">
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <p className="text-xs font-semibold leading-none truncate">
                           {request.name || "Sin nombre"}
                         </p>
                         <p className="text-xs text-muted-foreground truncate">
                           {request.email}
                         </p>
                         {request.agreedPrice && (
-                          <p className="text-xs text-muted-foreground">
-                            Precio sugerido: ${request.agreedPrice}/mes
-                          </p>
+                          <div className="flex items-center gap-1 mt-1">
+                            <HugeiconsIcon
+                              icon={Dollar02Icon}
+                              className="h-3 w-3 text-muted-foreground"
+                            />
+                            <p className="text-xs text-muted-foreground">
+                              Precio sugerido: ${request.agreedPrice}/mes
+                            </p>
+                          </div>
                         )}
                       </div>
                     </div>
-                    <div className="flex flex-row md:flex-col items-center gap-2 md:gap-1 mt-2 md:mt-0">
+                    <div className="flex flex-row sm:flex-col items-stretch sm:items-end gap-2">
                       <Button
                         size="sm"
-                        variant="outline"
+                        variant="default"
                         onClick={() => handleAcceptRequest(request.id)}
-                        className="text-xs w-full md:w-auto"
+                        className="text-xs flex-1 sm:flex-none sm:w-auto"
                       >
                         <HugeiconsIcon
                           icon={Tick02Icon}
-                          className="h-4 w-4 mr-0 md:mr-1"
+                          className="h-4 w-4 mr-1.5"
                         />
-                        <span className="hidden md:inline">Aceptar</span>
+                        Aceptar
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => handleRejectRequest(request.id)}
+                        className="text-xs flex-1 sm:flex-none sm:w-auto border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+                      >
+                        <HugeiconsIcon
+                          icon={Cancel01Icon}
+                          className="h-4 w-4 mr-1.5"
+                        />
+                        Rechazar
                       </Button>
                     </div>
                   </div>
                   {index < pendingRequests.length - 1 && (
-                    <Separator className="mt-4" />
+                    <Separator className="mt-1" />
                   )}
                 </div>
               ))}

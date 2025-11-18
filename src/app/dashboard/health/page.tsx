@@ -339,16 +339,6 @@ export default function HealthPage() {
                 Gestiona y actualiza el progreso de tus objetivos
               </CardDescription>
             </div>
-            <Link
-              href="/dashboard/health/goal"
-              className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
-            >
-              Nuevo objetivo
-              <HugeiconsIcon
-                icon={ArrowRight01Icon}
-                className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
-              />
-            </Link>
           </div>
         </CardHeader>
         <CardContent className="px-4">

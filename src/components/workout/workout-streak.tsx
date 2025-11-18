@@ -101,27 +101,11 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
         const data = await response.json();
 
-        // Logs de debug
-        console.log("=== DEBUG RACHA ===");
-        console.log("Usuario ID:", userId);
-        console.log("Datos recibidos de la API:", data);
-        console.log("Racha actual (currentStreak):", data.currentStreak);
-        console.log(
-          "Último entrenamiento (lastWorkoutAt):",
-          data.lastWorkoutAt,
-        );
-        console.log(
-          "Último día de descanso (lastRestDayAt):",
-          data.lastRestDayAt,
-        );
-        console.log(
-          "Total de días entrenados:",
-          data.totalWorkoutDays || "N/A",
-        );
-        console.log("===================");
-
         const newStreak = data.currentStreak || 0;
         const oldStreak = previousStreak.current;
+
+        // Solo actualizar si la racha realmente cambió para evitar re-renders innecesarios
+        const streakChanged = newStreak !== oldStreak;
 
         // Mostrar alerta cuando la racha cambia a un múltiplo de 10
         // Casos válidos:
@@ -140,17 +124,21 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           showStreakAlert(newStreak);
         }
 
-        setStats({
-          currentStreak: newStreak,
-          longestStreak: data.longestStreak || 0,
-          lastWorkoutAt: data.lastWorkoutAt
-            ? new Date(data.lastWorkoutAt)
-            : null,
-          lastRestDayAt: data.lastRestDayAt
-            ? new Date(data.lastRestDayAt)
-            : null,
-        });
-        previousStreak.current = newStreak;
+        // Solo actualizar el estado si la racha cambió o es la primera carga
+        const isFirstLoad = previousStreak.current === 0 && newStreak >= 0;
+        if (streakChanged || isFirstLoad) {
+          setStats({
+            currentStreak: newStreak,
+            longestStreak: data.longestStreak || 0,
+            lastWorkoutAt: data.lastWorkoutAt
+              ? new Date(data.lastWorkoutAt)
+              : null,
+            lastRestDayAt: data.lastRestDayAt
+              ? new Date(data.lastRestDayAt)
+              : null,
+          });
+          previousStreak.current = newStreak;
+        }
 
         // Verificar si está en el día crítico después de obtener los datos
         // Usar los datos de check-reset para obtener información más precisa
@@ -166,7 +154,6 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
             );
 
             const checkResult = await checkResponse.json();
-            console.log("🔍 Check result en fetchStats:", checkResult);
 
             // Si está en el día crítico, mostrar alert
             if (checkResult.isCriticalDay && newStreak > 0) {
@@ -176,9 +163,6 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
               );
 
               if (lastShownKey !== todayKey && !hasShownRiskAlert.current) {
-                console.log(
-                  "✅ Mostrando alert de racha en riesgo desde fetchStats",
-                );
                 showStreakRiskAlert(
                   newStreak,
                   checkResult.allowedRestDays || 0,
@@ -224,9 +208,6 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
         const result = await response.json();
 
-        console.log("🔍 Check streak result:", result);
-        console.log("🔍 Stats data:", statsData);
-
         // Verificar si está en el día crítico basándose en los datos reales
         // Si tiene racha y está en el día crítico según el cálculo
         const isCritical =
@@ -236,21 +217,13 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           result.currentStreak || statsData.currentStreak || 0;
         const allowedRest = result.allowedRestDays || 0;
 
-        console.log("🔍 Is critical day:", isCritical);
-        console.log("🔍 Current streak:", currentStreakValue);
-
         // Si está en el día crítico, mostrar alert y enviar notificación
         if (isCritical && currentStreakValue > 0) {
           // Solo mostrar el alert una vez por día
           const todayKey = new Date().toDateString();
           const lastShownKey = sessionStorage.getItem("streakRiskAlertShown");
 
-          console.log("🔍 Today key:", todayKey);
-          console.log("🔍 Last shown key:", lastShownKey);
-          console.log("🔍 Has shown current:", hasShownRiskAlert.current);
-
           if (lastShownKey !== todayKey && !hasShownRiskAlert.current) {
-            console.log("✅ Mostrando alert de racha en riesgo");
             showStreakRiskAlert(currentStreakValue, allowedRest);
             sessionStorage.setItem("streakRiskAlertShown", todayKey);
             hasShownRiskAlert.current = true;
@@ -295,15 +268,15 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
       2 * 60 * 60 * 1000,
     );
 
-    // Actualizar las estadísticas cada minuto
-    const statsInterval = setInterval(fetchStats, 60000);
+    // Actualizar las estadísticas cada 5 minutos (reducido de 1 minuto para evitar actualizaciones constantes)
+    const statsInterval = setInterval(fetchStats, 5 * 60 * 1000);
 
     return () => {
       clearInterval(checkInterval);
       clearInterval(notificationInterval);
       clearInterval(statsInterval);
     };
-  }, [userId, showStreakAlert]);
+  }, [userId, showStreakAlert, showStreakRiskAlert]);
 
   // Mostrar estado de carga o racha
   if (isLoading || !stats) {

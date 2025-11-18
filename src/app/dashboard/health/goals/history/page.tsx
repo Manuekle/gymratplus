@@ -27,12 +27,18 @@ export default function GoalsHistoryPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = React.useState<GoalType | "all">("all");
   const { isLoading, goals, fetchGoals } = useGoals();
+  const [hasLoaded, setHasLoaded] = React.useState(false);
 
   const loadGoals = React.useCallback(async () => {
-    if (activeTab === "all") {
-      await fetchGoals(undefined, "completed", true);
-    } else {
-      await fetchGoals(activeTab, "completed", true);
+    setHasLoaded(false);
+    try {
+      if (activeTab === "all") {
+        await fetchGoals(undefined, "completed", true);
+      } else {
+        await fetchGoals(activeTab, "completed", true);
+      }
+    } finally {
+      setHasLoaded(true);
     }
   }, [activeTab, fetchGoals]);
 
@@ -196,17 +202,24 @@ export default function GoalsHistoryPage() {
     );
   };
 
-  if (isLoading) {
+  if (isLoading || !hasLoaded) {
     return (
-      <>
-        <div className="mb-4 flex justify-between w-full items-center pb-2">
-          <Button variant="outline" className="w-32">
-            <Skeleton className="h-4 w-full" />
-          </Button>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="w-full md:w-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mb-2 text-xs w-full md:w-auto"
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />
+              <Skeleton className="h-4 w-24 inline-block" />
+            </Button>
+            <Skeleton className="h-8 w-48 mt-4" />
+          </div>
         </div>
         {/* Skeleton de estadísticas */}
-        <Skeleton className="h-4 w-56 mb-2" />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 pb-6 pt-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {Array(4)
             .fill(0)
             .map((_, i) => (
@@ -247,25 +260,43 @@ export default function GoalsHistoryPage() {
               </Card>
             ))}
         </div>
-      </>
+      </div>
     );
   }
 
-  if (goals.length === 0) {
+  if (hasLoaded && goals.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
-        <h2 className="text-xs font-medium">No hay objetivos completados</h2>
-        <p className="text-xs text-muted-foreground max-w-sm">
-          Aún no has completado ningún objetivo. Crea uno para comenzar a
-          registrar tu progreso.
-        </p>
-        <Button
-          size="sm"
-          className="text-xs"
-          onClick={() => router.push("/dashboard/health/goal")}
-        >
-          Crear objetivo
-        </Button>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <div className="w-full md:w-auto">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/dashboard/health/goals")}
+              className="mb-2 text-xs w-full md:w-auto"
+            >
+              <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />
+              Volver a objetivos
+            </Button>
+            <CardTitle className="text-2xl font-semibold tracking-heading pt-4">
+              Historial de Objetivos
+            </CardTitle>
+          </div>
+        </div>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
+          <h2 className="text-xs font-medium">No hay objetivos completados</h2>
+          <p className="text-xs text-muted-foreground max-w-sm">
+            Aún no has completado ningún objetivo. Crea uno para comenzar a
+            registrar tu progreso.
+          </p>
+          <Button
+            size="sm"
+            className="text-xs"
+            onClick={() => router.push("/dashboard/health/goal")}
+          >
+            Crear objetivo
+          </Button>
+        </div>
       </div>
     );
   }

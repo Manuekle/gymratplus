@@ -16,10 +16,22 @@ import { toast } from "sonner";
 
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { GlobeIcon, MapPinIcon } from "@hugeicons/core-free-icons";
+import {
+  GlobeIcon,
+  MapPinIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { StartChatButton } from "@/components/chats/start-chat-button";
 import { useCountries } from "@/hooks/use-countries";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 interface InstructorData {
   id: string;
@@ -42,6 +54,10 @@ interface InstructorData {
 export default function InstructorPage() {
   const [instructors, setInstructors] = useState<InstructorData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [instructorToCancel, setInstructorToCancel] =
+    useState<InstructorData | null>(null);
+  const [isCancelling, setIsCancelling] = useState(false);
   const { countries } = useCountries();
 
   const fetchInstructors = useCallback(async () => {
@@ -69,6 +85,44 @@ export default function InstructorPage() {
   useEffect(() => {
     fetchInstructors();
   }, [fetchInstructors]);
+
+  const handleCancelInstructor = async () => {
+    if (!instructorToCancel?.studentInstructorId) return;
+
+    setIsCancelling(true);
+    try {
+      const response = await fetch(
+        `/api/students/cancel-instructor/${instructorToCancel.studentInstructorId}`,
+        {
+          method: "PUT",
+        },
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Error al cancelar la relación");
+      }
+
+      toast.success("Relación cancelada", {
+        description:
+          "La relación con el instructor ha sido cancelada. Los planes asignados por el instructor han sido eliminados.",
+      });
+
+      setCancelDialogOpen(false);
+      setInstructorToCancel(null);
+      fetchInstructors(); // Recargar la lista
+    } catch (error: unknown) {
+      let errorMessage = "Hubo un error al cancelar la relación.";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      }
+      toast.error(errorMessage);
+    } finally {
+      setIsCancelling(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -123,8 +177,8 @@ export default function InstructorPage() {
       </div>
       {/* Instructors Grid */}
       {instructors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-          <h3 className="text-xs font-medium mb-2 max-w-md mx-auto">
+        <div className="flex flex-col items-center justify-center min-h-[400px] py-12 px-4 text-center">
+          <h3 className="text-xs font-medium mb-3 max-w-md mx-auto">
             No tienes instructores asignados
           </h3>
           <p className="text-xs text-muted-foreground max-w-md mx-auto">
@@ -274,32 +328,89 @@ export default function InstructorPage() {
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 pt-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    className="flex-1"
-                    asChild
-                  >
-                    <Link href={`/dashboard/instructors/${instructor.userId}`}>
-                      Ver Perfil
-                    </Link>
-                  </Button>
-                  {instructor.studentInstructorId && (
-                    <div className="flex justify-start mb-2">
+                <div className="flex flex-col gap-2 pt-2">
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="flex-1"
+                      asChild
+                    >
+                      <Link
+                        href={`/dashboard/instructors/${instructor.userId}`}
+                      >
+                        Ver Perfil
+                      </Link>
+                    </Button>
+                    {instructor.studentInstructorId && (
                       <StartChatButton
                         studentInstructorId={instructor.studentInstructorId}
                         size="sm"
                         variant="outline"
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="w-full text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive"
+                    onClick={() => {
+                      setInstructorToCancel(instructor);
+                      setCancelDialogOpen(true);
+                    }}
+                  >
+                    <HugeiconsIcon
+                      icon={Cancel01Icon}
+                      className="h-4 w-4 mr-1.5"
+                    />
+                    Cancelar Relación
+                  </Button>
                 </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
+
+      {/* Dialog de confirmación para cancelar relación */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-semibold tracking-heading">
+              ¿Cancelar relación con instructor?
+            </DialogTitle>
+            <DialogDescription className="text-xs">
+              Esta acción cancelará tu relación con{" "}
+              <span className="font-semibold">
+                {instructorToCancel?.name || "este instructor"}
+              </span>
+              . Los planes de alimentación y rutinas asignados por el instructor
+              serán eliminados, pero tus planes propios se mantendrán.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setCancelDialogOpen(false);
+                setInstructorToCancel(null);
+              }}
+              disabled={isCancelling}
+            >
+              Cancelar
+            </Button>
+            <Button
+              size="sm"
+              variant="destructive"
+              onClick={handleCancelInstructor}
+              disabled={isCancelling}
+            >
+              {isCancelling ? "Procesando..." : "Sí, cancelar relación"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 
 // Define the profile type based on your session structure with index signature
@@ -83,6 +83,7 @@ const ProfileCheck = () => {
   const [showAlert, setShowAlert] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, status } = useSession() as {
     data: CustomSession | null;
     status: "loading" | "authenticated" | "unauthenticated";
@@ -94,13 +95,10 @@ const ProfileCheck = () => {
 
   useEffect(() => {
     // No mostrar en páginas de onboarding
-    if (typeof window !== "undefined") {
-      const isOnboardingPage = window.location.pathname.includes("/onboarding");
-      if (isOnboardingPage) {
-        setShowAlert(false);
-        setIsLoading(false);
-        return;
-      }
+    if (pathname?.includes("/onboarding")) {
+      setShowAlert(false);
+      setIsLoading(false);
+      return;
     }
 
     // Only proceed when session is loaded (not loading)
@@ -147,13 +145,10 @@ const ProfileCheck = () => {
         setIsLoading(false);
       }
     }
-  }, [session, status]);
+  }, [session, status, pathname]);
 
   // If we're on the onboarding page, don't show anything
-  if (
-    typeof window !== "undefined" &&
-    window.location.pathname.includes("/onboarding")
-  ) {
+  if (pathname?.includes("/onboarding")) {
     return null;
   }
 

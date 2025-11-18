@@ -34,6 +34,7 @@ import {
   NoodlesIcon,
   RiceBowl01Icon,
   SteakIcon,
+  PresentationBarChart02Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils/utils";
@@ -203,29 +204,34 @@ export default function FoodRecommendations() {
 
         {/* Tabs */}
         <Tabs defaultValue="breakfast">
-          <TabsList className="grid grid-cols-2 sm:grid-cols-4 mb-4 h-auto gap-2 sm:gap-4 px-2">
-            <TabsTrigger
-              value="breakfast"
-              className="data-[state=active]:bg-muted"
-            >
-              <Skeleton className="h-4 w-20" />
-            </TabsTrigger>
-            <TabsTrigger value="lunch" className="data-[state=active]:bg-muted">
-              <Skeleton className="h-4 w-20" />
-            </TabsTrigger>
-            <TabsTrigger
-              value="dinner"
-              className="data-[state=active]:bg-muted"
-            >
-              <Skeleton className="h-4 w-20" />
-            </TabsTrigger>
-            <TabsTrigger
-              value="snacks"
-              className="data-[state=active]:bg-muted"
-            >
-              <Skeleton className="h-4 w-20" />
-            </TabsTrigger>
-          </TabsList>
+          <div className="w-full overflow-x-auto md:overflow-visible">
+            <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
+              <TabsTrigger
+                value="breakfast"
+                className="data-[state=active]:bg-muted flex-shrink-0"
+              >
+                <Skeleton className="h-4 w-20" />
+              </TabsTrigger>
+              <TabsTrigger
+                value="lunch"
+                className="data-[state=active]:bg-muted flex-shrink-0"
+              >
+                <Skeleton className="h-4 w-20" />
+              </TabsTrigger>
+              <TabsTrigger
+                value="dinner"
+                className="data-[state=active]:bg-muted flex-shrink-0"
+              >
+                <Skeleton className="h-4 w-20" />
+              </TabsTrigger>
+              <TabsTrigger
+                value="snacks"
+                className="data-[state=active]:bg-muted flex-shrink-0"
+              >
+                <Skeleton className="h-4 w-20" />
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="breakfast" className="mt-0">
             <div className="p-4 rounded-lg bg-card border border-border">
@@ -512,80 +518,96 @@ export default function FoodRecommendations() {
 
       <Card className="w-full">
         <CardHeader className="space-y-3">
-          <div>
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              {selectedRecommendation?.name || "Tu Plan de Alimentación"}
-            </CardTitle>
-            <CardDescription className="text-muted-foreground text-xs mt-1">
-              Según su perfil, hemos creado planes de nutrición para usted
-            </CardDescription>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle className="text-2xl font-semibold tracking-heading">
+                {selectedRecommendation?.name || "Tu Plan de Alimentación"}
+              </CardTitle>
+              <CardDescription className="text-muted-foreground text-xs mt-1">
+                Según su perfil, hemos creado planes de nutrición para usted
+              </CardDescription>
+            </div>
+            {selectedRecommendation && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-xs"
+                onClick={() =>
+                  router.push(
+                    `/dashboard/nutrition/food-plans/resume?id=${selectedRecommendation.id}`,
+                  )
+                }
+              >
+                <HugeiconsIcon
+                  icon={PresentationBarChart02Icon}
+                  className="mr-2 h-4 w-4"
+                />
+                Ver Gráficas
+              </Button>
+            )}
           </div>
           {recommendations.length > 1 && (
             <div className="space-y-2 pt-2 border-t">
-              <span className="text-xs font-semibold text-foreground">
-                Historial de Planes:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                {recommendations
-                  .sort(
-                    (a, b) =>
-                      new Date(b.createdAt).getTime() -
-                      new Date(a.createdAt).getTime(),
-                  )
-                  .map((rec) => {
-                    const calorieTarget = rec.calorieTarget;
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-foreground">
+                  Historial de Planes ({recommendations.length})
+                </span>
+              </div>
+              <div className="relative">
+                <div className="flex gap-1.5 overflow-x-auto pb-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  {recommendations
+                    .sort(
+                      (a, b) =>
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime(),
+                    )
+                    .map((rec) => {
+                      const calorieTarget = rec.calorieTarget;
+                      const isSelected = selectedRecommendation?.id === rec.id;
 
-                    return (
-                      <Button
-                        key={rec.id}
-                        variant={
-                          selectedRecommendation?.id === rec.id
-                            ? "default"
-                            : "outline"
-                        }
-                        size="sm"
-                        className={cn(
-                          "text-xs h-auto py-2 px-3",
-                          selectedRecommendation?.id === rec.id &&
-                            "font-semibold",
-                        )}
-                        onClick={async () => {
-                          // Cargar los datos completos del plan seleccionado
-                          try {
-                            const fullPlanResponse = await fetch(
-                              `/api/food-recommendations/${rec.id}`,
-                            );
-                            if (fullPlanResponse.ok) {
-                              const fullPlan = await fullPlanResponse.json();
-                              setSelectedRecommendation(fullPlan);
-                            } else {
+                      return (
+                        <button
+                          key={rec.id}
+                          onClick={async () => {
+                            // Cargar los datos completos del plan seleccionado
+                            try {
+                              const fullPlanResponse = await fetch(
+                                `/api/food-recommendations/${rec.id}`,
+                              );
+                              if (fullPlanResponse.ok) {
+                                const fullPlan = await fullPlanResponse.json();
+                                setSelectedRecommendation(fullPlan);
+                              } else {
+                                setSelectedRecommendation(rec);
+                              }
+                            } catch (error) {
+                              console.error("Error loading full plan:", error);
                               setSelectedRecommendation(rec);
                             }
-                          } catch (error) {
-                            console.error("Error loading full plan:", error);
-                            setSelectedRecommendation(rec);
-                          }
-                        }}
-                      >
-                        <div className="flex items-center gap-1.5">
+                          }}
+                          className={cn(
+                            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap flex-shrink-0",
+                            isSelected
+                              ? "bg-primary text-primary-foreground font-medium"
+                              : "bg-muted hover:bg-muted/80 text-muted-foreground",
+                          )}
+                        >
                           <HugeiconsIcon
                             icon={Calendar01Icon}
-                            className="h-3.5 w-3.5 flex-shrink-0"
+                            className="h-3 w-3 flex-shrink-0"
                           />
-                          <div className="flex flex-col items-start">
-                            <span className="leading-tight">
-                              {format(new Date(rec.createdAt), "d MMM yyyy")}
+                          <span>
+                            {format(new Date(rec.createdAt), "d MMM yyyy")}
+                          </span>
+                          {calorieTarget && (
+                            <span className="opacity-75">
+                              · {calorieTarget} kcal
                             </span>
-                            {calorieTarget && (
-                              <span className="text-[10px] opacity-75 leading-tight">
-                                {calorieTarget} kcal
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </Button>
-                    );
-                  })}
+                          )}
+                        </button>
+                      );
+                    })}
+                </div>
               </div>
             </div>
           )}
@@ -663,20 +685,22 @@ export default function FoodRecommendations() {
           </div>
 
           <Tabs defaultValue="breakfast" className="space-y-4 w-full">
-            <TabsList className="mb-4 grid grid-cols-2 sm:grid-cols-4 h-auto gap-2 sm:gap-4 w-full px-2">
-              <TabsTrigger value="breakfast">
-                {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
-              </TabsTrigger>
-              <TabsTrigger value="lunch">
-                {mealTypes.lunch.icon} {mealTypes.lunch.label}
-              </TabsTrigger>
-              <TabsTrigger value="dinner">
-                {mealTypes.dinner.icon} {mealTypes.dinner.label}
-              </TabsTrigger>
-              <TabsTrigger value="snack">
-                {mealTypes.snack.icon} {mealTypes.snack.label}
-              </TabsTrigger>
-            </TabsList>
+            <div className="w-full overflow-x-auto md:overflow-visible">
+              <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
+                <TabsTrigger value="breakfast" className="flex-shrink-0">
+                  {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
+                </TabsTrigger>
+                <TabsTrigger value="lunch" className="flex-shrink-0">
+                  {mealTypes.lunch.icon} {mealTypes.lunch.label}
+                </TabsTrigger>
+                <TabsTrigger value="dinner" className="flex-shrink-0">
+                  {mealTypes.dinner.icon} {mealTypes.dinner.label}
+                </TabsTrigger>
+                <TabsTrigger value="snack" className="flex-shrink-0">
+                  {mealTypes.snack.icon} {mealTypes.snack.label}
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {Object.entries(meals).map(([key, meal]: [string, any]) => {
               // Map "snacks" to "snack" for tab value

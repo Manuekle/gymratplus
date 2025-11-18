@@ -90,7 +90,7 @@ export function MealPlan({
   if (!foodRecommendation || !foodRecommendation.macros) {
     return (
       <div className="space-y-4">
-        <Card>
+        <Card className="bg-white/10 dark:bg-white/5 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
           <CardContent className="px-4 py-12">
             <div className="flex flex-col items-center justify-center text-center space-y-2">
               <h3 className="text-xs font-semibold">
@@ -153,7 +153,7 @@ export function MealPlan({
 
   return (
     <div className="space-y-4">
-      <Card className="shadow-none">
+      <Card className="bg-transparent border-none shadow-none">
         <CardHeader>
           <CardTitle className="font-semibold text-lg tracking-heading">
             Plan Nutricional
@@ -162,9 +162,9 @@ export function MealPlan({
             {translatedText}
           </CardDescription>
         </CardHeader>
-        <CardContent className="px-4">
+        <CardContent className="px-0">
           <div className="grid grid-cols-3 gap-4">
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50/80 to-white/80 dark:from-pink-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -182,7 +182,7 @@ export function MealPlan({
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50/80 to-white/80 dark:from-sky-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -202,7 +202,7 @@ export function MealPlan({
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100/80 to-white/80 dark:from-amber-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -246,7 +246,7 @@ export function MealPlan({
 
           return (
             <TabsContent key={key} value={tabValue}>
-              <Card>
+              <Card className="bg-white/10 dark:bg-white/5 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-lg tracking-heading font-semibold">
                     {mealTypes[mealTypeKey].label}

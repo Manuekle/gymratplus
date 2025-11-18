@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardContent } from "@/components/ui/card";
 
 import { useSession } from "next-auth/react";
 
@@ -27,9 +28,12 @@ import {
   BroccoliIcon,
   CheeseIcon,
   Dish01Icon,
+  FrenchFries02Icon,
   PresentationBarChart02Icon,
   Pulse01Icon,
+  RiceBowl01Icon,
   SmileIcon,
+  SteakIcon,
   Target02Icon,
   Tick02Icon,
   WorkoutRunIcon,
@@ -76,10 +80,11 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
     defaultValues: {
       gender: (profile?.gender as "male" | "female") || "male",
       age: profile?.birthdate
-        ? new Date().getFullYear() - new Date(profile.birthdate).getFullYear()
+        ? new Date().getFullYear() -
+          new Date(profile.birthdate as string).getFullYear()
         : 25,
-      weight: profile?.currentWeight || 70,
-      height: profile?.height || 170,
+      weight: (profile?.currentWeight as number) || 70,
+      height: (profile?.height as number) || 170,
       activityLevel:
         (profile?.activityLevel as
           | "sedentary"
@@ -118,6 +123,21 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
     setIsSubmitting(true);
 
     try {
+      // Validar que todos los campos requeridos estén presentes
+      if (
+        !data.gender ||
+        !data.age ||
+        !data.weight ||
+        !data.height ||
+        !data.activityLevel ||
+        !data.goal ||
+        !data.dietaryPreference
+      ) {
+        toast.error("Por favor completa todos los campos requeridos");
+        setIsSubmitting(false);
+        return;
+      }
+
       const response = await fetch("/api/calories", {
         method: "POST",
         headers: {
@@ -127,7 +147,22 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
       });
 
       if (!response.ok) {
-        throw new Error("Error al calcular objetivos calóricos");
+        let errorMessage = "Error al calcular objetivos calóricos";
+        try {
+          const errorData = await response.json();
+          if (errorData.error) {
+            errorMessage =
+              typeof errorData.error === "string"
+                ? errorData.error
+                : String(errorData.error);
+          } else if (typeof errorData === "string") {
+            errorMessage = errorData;
+          }
+        } catch {
+          // Si no se puede parsear el JSON, usar el mensaje por defecto
+          errorMessage = `Error ${response.status}: ${response.statusText}`;
+        }
+        throw new Error(errorMessage);
       }
 
       const result = await response.json();
@@ -135,7 +170,11 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
       nextStep();
     } catch (error) {
       console.error("Error:", error);
-      toast.error("No se pudieron calcular los objetivos calóricos");
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "No se pudieron calcular los objetivos calóricos";
+      toast.error(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
@@ -211,7 +250,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
       </DialogTrigger>
       <DialogContent className="max-w-[95vw] sm:max-w-[600px] overflow-y-auto pt-4 sm:pt-8 px-4 sm:px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader className="pb-3 sm:pb-4">
-          <DialogTitle className="text-lg sm:text-2xl font-semibold tracking-heading">
+          <DialogTitle className="text-2xl font-semibold tracking-heading">
             Calculadora de Objetivos Calóricos
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
@@ -221,12 +260,12 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
         </DialogHeader>
 
         {/* Indicador de pasos mejorado */}
-        <div className="flex items-center justify-between mb-4 sm:mb-6 px-1 sm:px-2">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 px-0 sm:px-2 gap-1 sm:gap-2">
           {Array.from({ length: totalSteps }).map((_, i) => (
-            <div key={i} className="flex items-center flex-1">
-              <div className="flex items-center justify-center flex-1">
+            <div key={i} className="flex items-center flex-1 min-w-0">
+              <div className="flex items-center justify-center flex-1 min-w-0">
                 <div
-                  className={`flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-full transition-all duration-300 ${
+                  className={`flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-full transition-all duration-300 flex-shrink-0 ${
                     step > i + 1
                       ? "bg-green-500 text-white border border-green-500 shadow-sm"
                       : step === i + 1
@@ -237,7 +276,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                   {step > i + 1 ? (
                     <HugeiconsIcon
                       icon={Tick02Icon}
-                      className="h-4 w-4 sm:h-5 sm:w-5"
+                      className="h-3.5 w-3.5 sm:h-5 sm:w-5"
                     />
                   ) : (
                     <div className="scale-75 sm:scale-100">{stepIcons[i]}</div>
@@ -246,7 +285,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
               </div>
               {i < totalSteps - 1 && (
                 <div
-                  className={`h-0.5 flex-1 mx-1 sm:mx-2 transition-colors duration-300 ${
+                  className={`h-0.5 flex-1 mx-0.5 sm:mx-2 transition-colors duration-300 min-w-[8px] sm:min-w-0 ${
                     step > i + 1 ? "bg-green-500" : "bg-muted"
                   }`}
                 />
@@ -393,18 +432,18 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                   >
                     Nivel de Actividad
                   </Label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-2 gap-2 sm:gap-3">
                     <div
                       className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
                         formValues.activityLevel === "sedentary"
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                          ? "bg-primary text-primary-foreground"
+                          : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                       }`}
                       onClick={() => setValue("activityLevel", "sedentary")}
                     >
                       <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                         <div
-                          className={`p-2 sm:p-2.5 rounded-full ${
+                          className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                             formValues.activityLevel === "sedentary"
                               ? "bg-primary-foreground/20"
                               : "bg-muted"
@@ -412,19 +451,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         >
                           <HugeiconsIcon
                             icon={SmileIcon}
-                            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            className={`h-4 w-4 sm:h-6 sm:w-6 ${
                               formValues.activityLevel === "sedentary"
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"
                             }`}
                           />
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-0.5 sm:space-y-1">
                           <span className="text-xs font-semibold block">
                             Sedentario
                           </span>
                           <span
-                            className={`text-[10px] block ${
+                            className={`text-[10px] sm:text-[10px] block leading-tight ${
                               formValues.activityLevel === "sedentary"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -436,16 +475,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </div>
                     </div>
                     <div
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
                         formValues.activityLevel === "light"
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                          ? "bg-primary text-primary-foreground"
+                          : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                       }`}
                       onClick={() => setValue("activityLevel", "light")}
                     >
-                      <div className="flex flex-col items-center gap-2.5">
+                      <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                         <div
-                          className={`p-2 sm:p-2.5 rounded-full ${
+                          className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                             formValues.activityLevel === "light"
                               ? "bg-primary-foreground/20"
                               : "bg-muted"
@@ -453,19 +492,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         >
                           <HugeiconsIcon
                             icon={Activity01Icon}
-                            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            className={`h-4 w-4 sm:h-6 sm:w-6 ${
                               formValues.activityLevel === "light"
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"
                             }`}
                           />
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-0.5 sm:space-y-1">
                           <span className="text-xs font-semibold block">
                             Ligero
                           </span>
                           <span
-                            className={`text-[10px] block ${
+                            className={`text-[10px] sm:text-[10px] block leading-tight ${
                               formValues.activityLevel === "light"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -477,16 +516,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </div>
                     </div>
                     <div
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
                         formValues.activityLevel === "moderate"
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                          ? "bg-primary text-primary-foreground"
+                          : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                       }`}
                       onClick={() => setValue("activityLevel", "moderate")}
                     >
-                      <div className="flex flex-col items-center gap-2.5">
+                      <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                         <div
-                          className={`p-2 sm:p-2.5 rounded-full ${
+                          className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                             formValues.activityLevel === "moderate"
                               ? "bg-primary-foreground/20"
                               : "bg-muted"
@@ -494,19 +533,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         >
                           <HugeiconsIcon
                             icon={Activity03Icon}
-                            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            className={`h-4 w-4 sm:h-6 sm:w-6 ${
                               formValues.activityLevel === "moderate"
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"
                             }`}
                           />
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-0.5 sm:space-y-1">
                           <span className="text-xs font-semibold block">
                             Moderado
                           </span>
                           <span
-                            className={`text-[10px] block ${
+                            className={`text-[10px] sm:text-[10px] block leading-tight ${
                               formValues.activityLevel === "moderate"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -518,16 +557,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </div>
                     </div>
                     <div
-                      className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                      className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
                         formValues.activityLevel === "active"
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                          ? "bg-primary text-primary-foreground"
+                          : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                       }`}
                       onClick={() => setValue("activityLevel", "active")}
                     >
-                      <div className="flex flex-col items-center gap-2.5">
+                      <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                         <div
-                          className={`p-2 sm:p-2.5 rounded-full ${
+                          className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                             formValues.activityLevel === "active"
                               ? "bg-primary-foreground/20"
                               : "bg-muted"
@@ -535,19 +574,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         >
                           <HugeiconsIcon
                             icon={WorkoutRunIcon}
-                            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            className={`h-4 w-4 sm:h-6 sm:w-6 ${
                               formValues.activityLevel === "active"
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"
                             }`}
                           />
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-0.5 sm:space-y-1">
                           <span className="text-xs font-semibold block">
                             Activo
                           </span>
                           <span
-                            className={`text-[10px] block ${
+                            className={`text-[10px] sm:text-[10px] block leading-tight ${
                               formValues.activityLevel === "active"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -561,14 +600,14 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     <div
                       className={`border rounded-lg p-3 sm:p-4 cursor-pointer transition-all sm:col-span-2 ${
                         formValues.activityLevel === "very_active"
-                          ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                          : "border-border hover:border-primary/50 hover:bg-accent/50"
+                          ? "bg-primary text-primary-foreground"
+                          : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                       }`}
                       onClick={() => setValue("activityLevel", "very_active")}
                     >
-                      <div className="flex flex-col items-center gap-2.5">
+                      <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                         <div
-                          className={`p-2 sm:p-2.5 rounded-full ${
+                          className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                             formValues.activityLevel === "very_active"
                               ? "bg-primary-foreground/20"
                               : "bg-muted"
@@ -576,19 +615,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         >
                           <HugeiconsIcon
                             icon={WorkoutGymnasticsIcon}
-                            className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                            className={`h-4 w-4 sm:h-6 sm:w-6 ${
                               formValues.activityLevel === "very_active"
                                 ? "text-primary-foreground"
                                 : "text-muted-foreground"
                             }`}
                           />
                         </div>
-                        <div className="text-center space-y-1">
+                        <div className="text-center space-y-0.5 sm:space-y-1">
                           <span className="text-xs font-semibold block">
                             Muy activo
                           </span>
                           <span
-                            className={`text-[10px] block ${
+                            className={`text-[10px] sm:text-[10px] block leading-tight ${
                               formValues.activityLevel === "very_active"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -618,18 +657,18 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     <Label className="text-xs font-medium" htmlFor="goal">
                       Objetivo
                     </Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       <div
                         className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "lose-weight"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() => setValue("goal", "lose-weight")}
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.goal === "lose-weight"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -637,19 +676,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={Target02Icon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.goal === "lose-weight"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Perder peso
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.goal === "lose-weight"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -661,16 +700,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         </div>
                       </div>
                       <div
-                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "maintain"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() => setValue("goal", "maintain")}
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.goal === "maintain"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -678,19 +717,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={Pulse01Icon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.goal === "maintain"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Mantener
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.goal === "maintain"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -702,16 +741,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         </div>
                       </div>
                       <div
-                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.goal === "gain-muscle"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() => setValue("goal", "gain-muscle")}
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.goal === "gain-muscle"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -719,19 +758,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={PresentationBarChart02Icon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.goal === "gain-muscle"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Ganar músculo
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.goal === "gain-muscle"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -752,20 +791,20 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                     >
                       Preferencia Dietética
                     </Label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                    <div className="grid grid-cols-3 gap-2 sm:gap-3">
                       <div
                         className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "no-preference"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "no-preference")
                         }
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.dietaryPreference === "no-preference"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -773,19 +812,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={Dish01Icon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.dietaryPreference === "no-preference"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Sin preferencia
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.dietaryPreference === "no-preference"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -797,18 +836,18 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         </div>
                       </div>
                       <div
-                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "vegetarian"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() =>
                           setValue("dietaryPreference", "vegetarian")
                         }
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.dietaryPreference === "vegetarian"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -816,19 +855,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={BroccoliIcon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.dietaryPreference === "vegetarian"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Vegetariano
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.dietaryPreference === "vegetarian"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -840,16 +879,16 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                         </div>
                       </div>
                       <div
-                        className={`border rounded-lg p-4 text-center cursor-pointer transition-all ${
+                        className={`border rounded-lg p-3 sm:p-4 text-center cursor-pointer transition-all ${
                           formValues.dietaryPreference === "keto"
-                            ? "bg-primary text-primary-foreground border-primary shadow-md scale-[1.02]"
-                            : "border-border hover:border-primary/50 hover:bg-accent/50"
+                            ? "bg-primary text-primary-foreground"
+                            : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
                         }`}
                         onClick={() => setValue("dietaryPreference", "keto")}
                       >
-                        <div className="flex flex-col items-center gap-2.5">
+                        <div className="flex flex-col items-center gap-2 sm:gap-2.5">
                           <div
-                            className={`p-2 sm:p-2.5 rounded-full ${
+                            className={`p-2 sm:p-2.5 rounded-full flex-shrink-0 ${
                               formValues.dietaryPreference === "keto"
                                 ? "bg-primary-foreground/20"
                                 : "bg-muted"
@@ -857,19 +896,19 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                           >
                             <HugeiconsIcon
                               icon={CheeseIcon}
-                              className={`h-5 w-5 sm:h-6 sm:w-6 ${
+                              className={`h-4 w-4 sm:h-6 sm:w-6 ${
                                 formValues.dietaryPreference === "keto"
                                   ? "text-primary-foreground"
                                   : "text-muted-foreground"
                               }`}
                             />
                           </div>
-                          <div className="text-center space-y-1">
+                          <div className="text-center space-y-0.5 sm:space-y-1">
                             <span className="text-xs font-semibold block">
                               Keto
                             </span>
                             <span
-                              className={`text-[10px] block ${
+                              className={`text-[10px] sm:text-[10px] block leading-tight ${
                                 formValues.dietaryPreference === "keto"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -895,161 +934,133 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                 transition={{ duration: 0.3 }}
                 className="space-y-4 sm:space-y-5"
               >
-                <div className="bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-4 sm:p-6 rounded-lg text-center">
-                  <h3 className="text-xs font-medium text-muted-foreground mb-2">
+                <div className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-700 dark:to-gray-800 border border-border p-4 sm:p-6 rounded-lg text-center">
+                  <h3 className="text-xs font-medium text-muted-foreground dark:text-white mb-2">
                     Calorías Diarias Recomendadas
                   </h3>
-                  <div className="text-3xl sm:text-4xl font-bold tracking-tight text-primary">
+                  <div className="text-4xl font-bold tracking-heading text-foreground dark:text-white">
                     {calculatedValues.dailyCalorieTarget}
                   </div>
-                  <div className="text-xs text-muted-foreground mt-1">kcal</div>
+                  <div className="text-xs text-muted-foreground dark:text-white/80 mt-1">
+                    kcal
+                  </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-xs font-semibold tracking-heading">
+                <div className="space-y-3 sm:space-y-4">
+                  <h3 className="text-lg font-semibold tracking-heading">
                     Macronutrientes Diarios
                   </h3>
 
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-red-500"></div>
-                          <span className="text-xs font-medium">Proteínas</span>
+                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                    {/* Proteínas */}
+                    <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
+                            <HugeiconsIcon
+                              icon={SteakIcon}
+                              className="h-4 w-4 sm:h-6 sm:w-6 text-pink-600 dark:text-pink-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                              Proteínas
+                            </h1>
+                            <h2 className="text-xs sm:text-md font-medium">
+                              {calculatedValues.dailyProteinTarget}g
+                            </h2>
+                          </div>
                         </div>
-                        <span className="text-xs font-semibold">
-                          {calculatedValues.dailyProteinTarget}g
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                        <motion.div
-                          className="bg-red-500 h-full"
-                          initial={{ width: 0 }}
-                          animate={{
-                            width: `${Math.round(
-                              ((calculatedValues.dailyProteinTarget * 4) /
-                                calculatedValues.dailyCalorieTarget) *
-                                100,
-                            )}%`,
-                          }}
-                          transition={{ duration: 1, delay: 0.1 }}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {Math.round(
-                          ((calculatedValues.dailyProteinTarget * 4) /
-                            calculatedValues.dailyCalorieTarget) *
-                            100,
-                        )}
-                        % de tus calorías diarias
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-500"></div>
-                          <span className="text-xs font-medium">
-                            Carbohidratos
-                          </span>
+                    {/* Carbohidratos */}
+                    <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
+                            <HugeiconsIcon
+                              icon={RiceBowl01Icon}
+                              className="h-4 w-4 sm:h-6 sm:w-6 text-sky-600 dark:text-sky-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                              Carbohidratos
+                            </h1>
+                            <h2 className="text-xs sm:text-md font-medium">
+                              {calculatedValues.dailyCarbTarget}g
+                            </h2>
+                          </div>
                         </div>
-                        <span className="text-xs font-semibold">
-                          {calculatedValues.dailyCarbTarget}g
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                        <motion.div
-                          className="bg-blue-500 h-full"
-                          initial={{ width: 0 }}
-                          animate={{
-                            width: `${Math.round(
-                              ((calculatedValues.dailyCarbTarget * 4) /
-                                calculatedValues.dailyCalorieTarget) *
-                                100,
-                            )}%`,
-                          }}
-                          transition={{ duration: 1, delay: 0.2 }}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {Math.round(
-                          ((calculatedValues.dailyCarbTarget * 4) /
-                            calculatedValues.dailyCalorieTarget) *
-                            100,
-                        )}
-                        % de tus calorías diarias
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
 
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
-                          <span className="text-xs font-medium">Grasas</span>
+                    {/* Grasas */}
+                    <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
+                            <HugeiconsIcon
+                              icon={FrenchFries02Icon}
+                              className="h-4 w-4 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-300"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
+                              Grasas
+                            </h1>
+                            <h2 className="text-xs sm:text-md font-medium">
+                              {calculatedValues.dailyFatTarget}g
+                            </h2>
+                          </div>
                         </div>
-                        <span className="text-xs font-semibold">
-                          {calculatedValues.dailyFatTarget}g
-                        </span>
-                      </div>
-                      <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                        <motion.div
-                          className="bg-yellow-500 h-full"
-                          initial={{ width: 0 }}
-                          animate={{
-                            width: `${Math.round(
-                              ((calculatedValues.dailyFatTarget * 9) /
-                                calculatedValues.dailyCalorieTarget) *
-                                100,
-                            )}%`,
-                          }}
-                          transition={{ duration: 1, delay: 0.3 }}
-                        />
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        {Math.round(
-                          ((calculatedValues.dailyFatTarget * 9) /
-                            calculatedValues.dailyCalorieTarget) *
-                            100,
-                        )}
-                        % de tus calorías diarias
-                      </div>
-                    </div>
+                      </CardContent>
+                    </Card>
                   </div>
                 </div>
 
-                <div className="pt-2 border-t">
-                  <h3 className="text-xs font-semibold mb-3">
+                <div className="pt-3 sm:pt-4 border-t">
+                  <h3 className="text-lg font-semibold mb-3 tracking-heading">
                     Recomendaciones
                   </h3>
                   <motion.ul
-                    className="space-y-2 text-xs text-muted-foreground"
+                    className="space-y-2 text-xs sm:text-xs text-muted-foreground"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.5, delay: 0.5 }}
                   >
                     <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
+                      <span className="text-primary mt-0.5 flex-shrink-0">
+                        •
+                      </span>
                       <span>
                         Consume proteínas en cada comida para mantener la
                         saciedad.
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
+                      <span className="text-primary mt-0.5 flex-shrink-0">
+                        •
+                      </span>
                       <span>
                         Distribuye tus calorías a lo largo del día en 3-5
                         comidas.
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5">•</span>
+                      <span className="text-primary mt-0.5 flex-shrink-0">
+                        •
+                      </span>
                       <span>
                         Prioriza alimentos integrales y no procesados.
                       </span>
                     </li>
                     {formValues.dietaryPreference === "keto" && (
                       <li className="flex items-start gap-2">
-                        <span className="text-primary mt-0.5">•</span>
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
                         <span>
                           Mantén tu consumo de carbohidratos bajo para mantener
                           la cetosis.
@@ -1062,11 +1073,11 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
             )}
           </AnimatePresence>
 
-          <div className="flex justify-between items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t mt-4 sm:mt-6">
+          <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 sm:gap-3 pt-3 sm:pt-4 border-t mt-4 sm:mt-6">
             {step > 1 && (
               <Button
                 type="button"
-                className="text-xs"
+                className="text-xs w-full sm:w-auto order-2 sm:order-1"
                 size="sm"
                 variant="outline"
                 onClick={prevStep}
@@ -1075,12 +1086,12 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                 Anterior
               </Button>
             )}
-            <div className="flex-1" />
+            <div className="flex-1 hidden sm:block" />
             {step < 3 && (
               <Button
                 size="sm"
                 type="button"
-                className="text-xs"
+                className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 onClick={nextStep}
               >
                 Siguiente
@@ -1090,7 +1101,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
               <Button
                 size="sm"
                 type="submit"
-                className="text-xs"
+                className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -1107,7 +1118,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
               <Button
                 type="button"
                 size="sm"
-                className="text-xs"
+                className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 onClick={saveGoals}
                 disabled={isSubmitting || isSaved}
               >

@@ -36,6 +36,7 @@ export type Recommendations = {
       }>;
     }>;
   } | null;
+  recommendations?: string[];
   foodRecommendation: {
     macros: {
       protein: string;
@@ -337,7 +338,7 @@ export default function RecommendationsComponent() {
   }, []);
 
   return (
-    <Card className="w-full max-w-4xl mx-auto">
+    <Card className="bg-transparent border-none shadow-none">
       <CardHeader>
         <CardTitle className="text-2xl font-semibold tracking-heading">
           Tu Plan de Fitness Personalizado
@@ -347,7 +348,7 @@ export default function RecommendationsComponent() {
           nutrición para usted
         </CardDescription>
       </CardHeader>
-      <CardContent className="px-4">
+      <CardContent className="px-0">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-12">
             <Icons.spinner className="h-12 w-12 animate-spin text-muted-foreground mb-4" />
@@ -393,34 +394,35 @@ export default function RecommendationsComponent() {
                         isLoading={isLoading}
                         defaultOpen={["Día 1-0"]}
                       />
-                      {recommendations?.recommendations?.length > 0 && (
-                        <div className="mt-8 space-y-4">
-                          <h3 className="text-lg font-semibold tracking-heading">
-                            Recomendaciones
-                          </h3>
-                          <div className="space-y-3">
-                            {recommendations.recommendations.map(
-                              (recommendation: string, index: number) => (
-                                <div
-                                  key={index}
-                                  className="flex items-start gap-3"
-                                >
-                                  <div className="flex-shrink-0 mt-0.5">
-                                    <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
-                                      <span className="text-xs font-medium text-primary">
-                                        {index + 1}
-                                      </span>
+                      {recommendations?.recommendations &&
+                        recommendations.recommendations.length > 0 && (
+                          <div className="mt-8 space-y-4">
+                            <h3 className="text-lg font-semibold tracking-heading">
+                              Recomendaciones
+                            </h3>
+                            <div className="space-y-3">
+                              {recommendations.recommendations.map(
+                                (recommendation: string, index: number) => (
+                                  <div
+                                    key={index}
+                                    className="flex items-start gap-3"
+                                  >
+                                    <div className="flex-shrink-0 mt-0.5">
+                                      <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center">
+                                        <span className="text-xs font-medium text-primary">
+                                          {index + 1}
+                                        </span>
+                                      </div>
                                     </div>
+                                    <p className="text-xs text-muted-foreground">
+                                      {recommendation}
+                                    </p>
                                   </div>
-                                  <p className="text-xs text-muted-foreground">
-                                    {recommendation}
-                                  </p>
-                                </div>
-                              ),
-                            )}
+                                ),
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      )}
+                        )}
                     </>
                   ) : (
                     <div className="text-center py-8">
@@ -460,7 +462,7 @@ export default function RecommendationsComponent() {
                 <TabsContent value="workout" className="mt-0">
                   {showWorkoutGenerator ? (
                     <div className="space-y-4">
-                      <Card>
+                      <Card className="bg-transparent border-none shadow-none">
                         <CardHeader>
                           <CardTitle className="text-lg font-semibold tracking-heading">
                             Crea tu Rutina Personalizada
@@ -470,7 +472,7 @@ export default function RecommendationsComponent() {
                             preferencias y objetivos
                           </CardDescription>
                         </CardHeader>
-                        <CardContent className="px-4">
+                        <CardContent className="px-0">
                           <WorkoutGenerator />
                         </CardContent>
                       </Card>
@@ -478,7 +480,7 @@ export default function RecommendationsComponent() {
                   ) : (
                     <div className="text-center py-12 space-y-4">
                       <div className="space-y-2">
-                        <h3 className="text-lg font-semibold tracking-heading">
+                        <h3 className="text-2xl font-semibold tracking-heading">
                           Crea tu Plan de Entrenamiento
                         </h3>
                         <p className="text-xs text-muted-foreground max-w-md mx-auto">
@@ -493,7 +495,7 @@ export default function RecommendationsComponent() {
                       <Button
                         onClick={() => setShowWorkoutGenerator(true)}
                         className="text-xs"
-                        size="lg"
+                        size="sm"
                       >
                         Crear Rutina Personalizada
                       </Button>
@@ -518,7 +520,7 @@ export default function RecommendationsComponent() {
               <Button
                 variant="outline"
                 onClick={() => router.push("/dashboard")}
-                className="text-xs w-full"
+                className="text-xs"
                 size="lg"
               >
                 Ir al Dashboard

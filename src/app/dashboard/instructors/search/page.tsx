@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import InstructorSearchContent from "@/components/instructor/instructor-search-content";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // Componente que se utiliza como fallback (carga)
 const SearchPageLoading = () => (
@@ -7,19 +8,28 @@ const SearchPageLoading = () => (
     {[1, 2, 3].map((i) => (
       <div
         key={i}
-        className="rounded-lg border bg-card text-card-foreground shadow-sm p-4 space-y-4"
+        className="rounded-lg border bg-card overflow-hidden flex flex-col h-full"
       >
-        <div className="flex items-center space-x-3">
-          <div className="h-12 w-12 rounded-full bg-gray-200 animate-pulse"></div>
-          <div className="space-y-1">
-            <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse"></div>
-            <div className="h-3 w-1/2 bg-gray-200 rounded animate-pulse"></div>
+        <div className="flex flex-row items-start space-x-3 p-4 pb-2">
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-3/4" />
+            <Skeleton className="h-3 w-1/2" />
+            <Skeleton className="h-3 w-1/3" />
           </div>
         </div>
-        <div className="space-y-2">
-          <div className="h-3 w-full bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-3 w-2/3 bg-gray-200 rounded animate-pulse"></div>
-          <div className="h-3 w-1/4 bg-gray-200 rounded animate-pulse"></div>
+        <div className="px-4 py-2 space-y-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-5/6" />
+          <div className="flex gap-1.5 pt-1">
+            <Skeleton className="h-5 w-16 rounded-full" />
+            <Skeleton className="h-5 w-20 rounded-full" />
+            <Skeleton className="h-5 w-14 rounded-full" />
+          </div>
+        </div>
+        <div className="px-4 pb-3 pt-2 space-y-1">
+          <Skeleton className="h-8 w-full rounded-md" />
+          <Skeleton className="h-8 w-full rounded-md" />
         </div>
       </div>
     ))}

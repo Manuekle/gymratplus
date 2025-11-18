@@ -299,17 +299,19 @@ export default function WorkoutHistoryPage() {
 
       {/* Pestañas para filtrar */}
       <Tabs defaultValue="all" onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-3 sm:grid-cols-3 md:flex md:flex-wrap mb-4 h-auto gap-2 sm:gap-4 px-2">
-          <TabsTrigger value="all" className="text-xs">
-            Todos
-          </TabsTrigger>
-          <TabsTrigger value="completed" className="text-xs">
-            Completados
-          </TabsTrigger>
-          <TabsTrigger value="inProgress" className="text-xs">
-            En progreso
-          </TabsTrigger>
-        </TabsList>
+        <div className="w-full md:w-fit overflow-x-auto md:overflow-visible">
+          <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
+            <TabsTrigger value="all" className="text-xs flex-shrink-0">
+              Todos
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="text-xs flex-shrink-0">
+              Completados
+            </TabsTrigger>
+            <TabsTrigger value="inProgress" className="text-xs flex-shrink-0">
+              En progreso
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent
           value={activeTab}
