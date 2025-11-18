@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
@@ -115,7 +115,7 @@ interface FoodPlan {
   };
 }
 
-export default function FoodPlanResumePage() {
+function FoodPlanResumeContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { theme, systemTheme } = useTheme();
@@ -648,5 +648,37 @@ export default function FoodPlanResumePage() {
         </Card>
       </div>
     </div>
+  );
+}
+
+export default function FoodPlanResumePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-32" />
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-48" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-64 w-full" />
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-6 w-48" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-64 w-full" />
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      }
+    >
+      <FoodPlanResumeContent />
+    </Suspense>
   );
 }
