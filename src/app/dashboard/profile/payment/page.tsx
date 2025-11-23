@@ -25,6 +25,7 @@ import { Loader2 } from "lucide-react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
+  PaypalIcon,
   SparklesIcon,
   SquareLock01Icon,
 } from "@hugeicons/core-free-icons";
@@ -995,16 +996,10 @@ export default function InstructorRegistrationPage() {
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
                   <div className="flex flex-col items-center space-y-4">
                     <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="h-10 w-40"
-                      >
-                        <path
-                          fill="#003087"
-                          d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.533zm14.146-14.42a.805.805 0 0 0-.777-.59H10.7c-.294 0-.544.216-.59.51l-1.187 7.98a.59.59 0 0 0 .577.69h3.3c.26 0 .48.19.52.45l.7 4.72a.805.805 0 0 0 .777.59h4.778c.294 0 .544-.216.59-.51l1.187-7.98a.59.59 0 0 0-.577-.69h-3.3a.59.59 0 0 1-.52-.45l-.7-4.72z"
-                        />
-                      </svg>
+                      <HugeiconsIcon 
+                        icon={PaypalIcon}
+                        className="h-10 w-10 text-blue-600 dark:text-blue-400"
+                      />
                     </div>
 
                     <div className="text-center space-y-2">
@@ -1066,17 +1061,11 @@ export default function InstructorRegistrationPage() {
                     </>
                   ) : (
                     <>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        className="h-5 w-5"
-                      >
-                        <path
-                          fill="currentColor"
-                          d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.533zm14.146-14.42a.805.805 0 0 0-.777-.59H10.7c-.294 0-.544.216-.59.51l-1.187 7.98a.59.59 0 0 0 .577.69h3.3c.26 0 .48.19.52.45l.7 4.72a.805.805 0 0 0 .777.59h4.778c.294 0 .544-.216.59-.51l1.187-7.98a.59.59 0 0 0-.577-.69h-3.3a.59.59 0 0 1-.52-.45l-.7-4.72z"
-                        />
-                      </svg>
-                      Continuar con PayPal
+                      <HugeiconsIcon
+                        icon={PaypalIcon}
+                        className="h-5 w-5 text-blue-600 dark:text-blue-400"
+                      />
+                      Pagar con PayPal
                     </>
                   )}
                 </Button>
