@@ -845,21 +845,21 @@ export default function InstructorRegistrationPage() {
               {/* Plan Selection */}
               <div className="space-y-4">
                 <div className="text-center">
-                  <h3 className="text-lg font-semibold tracking-heading">
+                  <h3 className="text-sm font-semibold">
                     Elige tu Plan de Suscripción
                   </h3>
-                  <p className="text-sm text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Selecciona el plan que mejor se adapte a tus necesidades
                   </p>
                 </div>
 
                 {/* Plan Toggle */}
                 <div className="flex items-center justify-center">
-                  <div className="inline-flex items-center bg-muted/50 p-1 rounded-lg">
+                  <div className="inline-flex items-center bg-muted/50 p-1 rounded-full">
                     <button
                       type="button"
                       onClick={() => setIsAnnual(false)}
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${
                         !isAnnual
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -870,7 +870,7 @@ export default function InstructorRegistrationPage() {
                     <button
                       type="button"
                       onClick={() => setIsAnnual(true)}
-                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${
                         isAnnual
                           ? "bg-background text-foreground shadow-sm"
                           : "text-muted-foreground hover:text-foreground"
@@ -885,10 +885,10 @@ export default function InstructorRegistrationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Monthly Plan */}
                   <div
-                    className={`relative p-6 rounded-xl border-2 transition-all cursor-pointer ${
+                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
                       !isAnnual
-                        ? "border-primary bg-primary/5 shadow-md"
-                        : "border-border bg-card hover:border-primary/50"
+                        ? "border-zinc-200 bg-zinc-100 shadow-md dark:bg-zinc-900 dark:border-zinc-800"
+                        : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
                     }`}
                     onClick={() => setIsAnnual(false)}
                   >
@@ -901,20 +901,20 @@ export default function InstructorRegistrationPage() {
                     )}
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-lg font-semibold">Plan Mensual</h4>
+                        <h4 className="text-sm font-semibold">Plan Mensual</h4>
                         <p className="text-xs text-muted-foreground">
                           Facturación mensual
                         </p>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-bold">
+                        <span className="text-4xl tracking-heading font-bold">
                           ${planDetails.monthly.price}
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           /mes
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                      <div className="flex items-center gap-2 text-xs text-green-600 dark:text-green-400">
                         <HugeiconsIcon
                           icon={SparklesIcon}
                           className="h-4 w-4"
@@ -933,10 +933,10 @@ export default function InstructorRegistrationPage() {
 
                   {/* Annual Plan */}
                   <div
-                    className={`relative p-6 rounded-xl border-2 transition-all cursor-pointer ${
+                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
                       isAnnual
-                        ? "border-primary bg-primary/5 shadow-md"
-                        : "border-border bg-card hover:border-primary/50"
+                        ? "border-zinc-200 bg-zinc-100 shadow-md dark:bg-zinc-900 dark:border-zinc-800"
+                        : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
                     }`}
                     onClick={() => setIsAnnual(true)}
                   >
@@ -949,20 +949,20 @@ export default function InstructorRegistrationPage() {
                     )}
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-lg font-semibold">Plan Anual</h4>
+                        <h4 className="text-sm font-semibold">Plan Anual</h4>
                         <p className="text-xs text-muted-foreground">
                           Facturación anual
                         </p>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-4xl font-bold">
+                        <span className="text-4xl tracking-heading font-bold">
                           ${planDetails.annual.price}
                         </span>
-                        <span className="text-sm text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           /año
                         </span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                      <div className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
                         <HugeiconsIcon
                           icon={SparklesIcon}
                           className="h-4 w-4"
@@ -987,7 +987,7 @@ export default function InstructorRegistrationPage() {
                   <h3 className="text-base font-semibold tracking-heading mb-1">
                     Método de Pago
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Pago seguro procesado por PayPal
                   </p>
                 </div>
@@ -1008,7 +1008,7 @@ export default function InstructorRegistrationPage() {
                     </div>
 
                     <div className="text-center space-y-2">
-                      <p className="text-sm font-medium">
+                      <p className="text-xs font-medium">
                         Serás redirigido a PayPal para completar el pago
                       </p>
                       <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
