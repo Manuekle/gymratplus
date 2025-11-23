@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -19,7 +19,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
 import { Loader2 } from "lucide-react";
@@ -27,13 +26,9 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
   SparklesIcon,
-  CreditCardIcon,
-  AlertCircleIcon,
   SquareLock01Icon,
-  CalendarIcon,
 } from "@hugeicons/core-free-icons";
 
-import { CreditCard } from "@/components/shared/credit-card";
 import {
   Card,
   CardContent,
@@ -75,12 +70,6 @@ export default function InstructorRegistrationPage() {
   const [step, setStep] = useState(1);
   const [countdown, setCountdown] = useState(10);
   const [isAnnual, setIsAnnual] = useState(true);
-  const [cardData, setCardData] = useState({
-    cardNumber: "",
-    cardHolder: "",
-    expiryDate: "",
-    cvv: "",
-  });
 
   const form = useForm<InstructorFormValues>({
     resolver: zodResolver(instructorFormSchema),
@@ -99,15 +88,6 @@ export default function InstructorRegistrationPage() {
     mode: "onChange",
   });
 
-  // Check if all payment form fields are filled
-  const isPaymentFormValid = useMemo(() => {
-    return (
-      cardData.cardNumber.replace(/\s/g, "").length >= 16 &&
-      cardData.cardHolder.trim().length > 0 &&
-      cardData.expiryDate.length === 5 &&
-      cardData.cvv.length >= 3
-    );
-  }, [cardData]);
 
   // Function to format date as DD/MM/YYYY
   const formatDate = (date: Date): string => {
@@ -142,6 +122,54 @@ export default function InstructorRegistrationPage() {
       router.push("/dashboard/profile");
     }
   }, [step, countdown, router]);
+
+  // Handle PayPal return (success or cancel)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get("success");
+    const canceled = urlParams.get("canceled");
+
+    if (success === "true") {
+      // Usuario completó el pago en PayPal
+      const instructorData = sessionStorage.getItem("instructorRegistrationData");
+      if (instructorData) {
+        const payload = JSON.parse(instructorData);
+        
+        // Registrar instructor después del pago exitoso
+        fetch("/api/instructors/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        })
+          .then(async (res) => {
+            if (res.ok) {
+              sessionStorage.removeItem("instructorRegistrationData");
+              await update();
+              setStep(3);
+              setCountdown(10);
+              toast.success("¡Pago completado exitosamente!");
+              // Limpiar la URL
+              window.history.replaceState({}, "", "/dashboard/profile/payment");
+            } else {
+              const errorData = await res.json().catch(() => ({}));
+              throw new Error(errorData.error || "Error al registrar el instructor");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            toast.error(
+              error instanceof Error ? error.message : "Error al procesar el registro"
+            );
+          });
+      }
+    } else if (canceled === "true") {
+      // Usuario canceló el pago
+      toast.error("Pago cancelado");
+      sessionStorage.removeItem("instructorRegistrationData");
+      // Limpiar la URL
+      window.history.replaceState({}, "", "/dashboard/profile/payment");
+    }
+  }, [update]);
 
   // Check if user is already an instructor or has an active subscription
   useEffect(() => {
@@ -253,7 +281,6 @@ export default function InstructorRegistrationPage() {
       savings: "Ahorra $21.88",
     },
   };
-  const currentPlan = isAnnual ? planDetails.annual : planDetails.monthly;
 
   useEffect(() => {
     if (session?.user) {
@@ -278,9 +305,6 @@ export default function InstructorRegistrationPage() {
   const handlePaymentConfirm = async () => {
     setIsLoading(true);
     try {
-      // Simulate payment processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
       const values = form.getValues();
       // Convert specialty IDs to their display names
       const specialtyNames =
@@ -304,24 +328,35 @@ export default function InstructorRegistrationPage() {
         ).toISOString(), // 14 days from now
       };
 
-      // Process payment
+      // Process payment with PayPal
       const paymentResponse = await fetch("/api/payment/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ...payload,
-          cardData, // In a real app, make sure to handle card data securely (preferably with Stripe Elements or similar)
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!paymentResponse.ok) {
         const errorData = await paymentResponse.json().catch(() => ({}));
-        throw new Error(
-          errorData.error ||
-            "Error al procesar el pago. Por favor, verifica tus datos.",
-        );
+        const errorMessage = errorData.message || errorData.error || errorData.details || 
+          "Error al procesar el pago. Por favor, verifica tus datos.";
+        
+        console.error("Error del servidor:", errorData);
+        
+        throw new Error(errorMessage);
       }
 
+      const paymentData = await paymentResponse.json();
+
+      // Si hay una URL de aprobación de PayPal, redirigir al usuario
+      if (paymentData.approvalUrl) {
+        // Guardar los datos del instructor en sessionStorage para recuperarlos después
+        sessionStorage.setItem("instructorRegistrationData", JSON.stringify(payload));
+        // Redirigir a PayPal
+        window.location.href = paymentData.approvalUrl;
+        return;
+      }
+
+      // Si no hay URL de aprobación, continuar con el registro normal
       // Register instructor after successful payment
       const registrationResponse = await fetch("/api/instructors/register", {
         method: "POST",
@@ -807,252 +842,222 @@ export default function InstructorRegistrationPage() {
               }}
               className="space-y-6"
             >
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Plan Selection Card */}
-                <div>
-                  <div className="text-center mb-4">
-                    <h3 className="text-xs font-semibold">Elige tu Plan</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Selecciona la mejor opción para ti
-                    </p>
-                  </div>
+              {/* Plan Selection */}
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="text-lg font-semibold tracking-heading">
+                    Elige tu Plan de Suscripción
+                  </h3>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Selecciona el plan que mejor se adapte a tus necesidades
+                  </p>
+                </div>
 
-                  <div className="flex items-center justify-center mb-4">
-                    <div className="flex items-center bg-muted/30 p-0.5 rounded-full text-xs">
-                      <button
-                        type="button"
-                        onClick={() => setIsAnnual(false)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${!isAnnual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
-                      >
-                        Mensual
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setIsAnnual(true)}
-                        className={`px-3 py-1.5 text-xs font-medium rounded-full transition-colors ${isAnnual ? "bg-background text-foreground shadow-sm" : "text-muted-foreground"}`}
-                      >
-                        Anual
-                      </button>
+                {/* Plan Toggle */}
+                <div className="flex items-center justify-center">
+                  <div className="inline-flex items-center bg-muted/50 p-1 rounded-lg">
+                    <button
+                      type="button"
+                      onClick={() => setIsAnnual(false)}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                        !isAnnual
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Mensual
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsAnnual(true)}
+                      className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                        isAnnual
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      Anual
+                    </button>
+                  </div>
+                </div>
+
+                {/* Plan Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Monthly Plan */}
+                  <div
+                    className={`relative p-6 rounded-xl border-2 transition-all cursor-pointer ${
+                      !isAnnual
+                        ? "border-primary bg-primary/5 shadow-md"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                    onClick={() => setIsAnnual(false)}
+                  >
+                    {!isAnnual && (
+                      <div className="absolute top-3 right-3">
+                        <div className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-full">
+                          Seleccionado
+                        </div>
+                      </div>
+                    )}
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-lg font-semibold">Plan Mensual</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Facturación mensual
+                        </p>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold">
+                          ${planDetails.monthly.price}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          /mes
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <HugeiconsIcon
+                          icon={SparklesIcon}
+                          className="h-4 w-4"
+                        />
+                        <span className="font-medium">
+                          14 días de prueba gratis
+                        </span>
+                      </div>
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground">
+                          Próximo pago: {planDetails.monthly.nextPayment}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Price Card */}
-                  <div className="w-full flex justify-center">
-                    <div className="w-full max-w-[24rem] bg-gradient-to-br from-primary/5 to-primary/10 p-6 rounded-lg border border-zinc-200 dark:border-zinc-800">
-                      <div className="flex flex-col items-center text-center">
-                        <div className="flex items-baseline gap-1.5">
-                          <span className="text-3xl font-semibold tracking-tight">
-                            ${currentPlan.price}
-                          </span>
-                          <span className="text-xs text-muted-foreground">
-                            {isAnnual ? "/año" : "/mes"}
-                          </span>
+                  {/* Annual Plan */}
+                  <div
+                    className={`relative p-6 rounded-xl border-2 transition-all cursor-pointer ${
+                      isAnnual
+                        ? "border-primary bg-primary/5 shadow-md"
+                        : "border-border bg-card hover:border-primary/50"
+                    }`}
+                    onClick={() => setIsAnnual(true)}
+                  >
+                    {isAnnual && (
+                      <div className="absolute top-3 right-3">
+                        <div className="bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 rounded-full">
+                          Seleccionado
                         </div>
-
-                        {/* {isAnnual && (
-                          <div className="mt-3 inline-flex items-center px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                            <HugeiconsIcon
-                              icon={SparklesIcon}
-                              className="mr-1.5 h-3.5 w-3.5"
-                            />
-                            <span>Ahorra $21.88</span>
-                          </div>
-                        )} */}
-                        {!isAnnual ? (
-                          <div className="mt-3 inline-flex items-center px-3 py-1 dark:bg-primary/10 border border-zinc-300 dark:border-primary/10 bg-zinc-200 text-primary text-xs font-medium rounded-full">
-                            <HugeiconsIcon
-                              icon={SparklesIcon}
-                              className="mr-1.5 h-3.5 w-3.5 text-green-500 dark:text-green-400"
-                            />
-                            <span className="text-xs font-medium text-green-500 dark:text-green-400">
-                              14 días de prueba gratis
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="mt-3 inline-flex items-center px-3 py-1 dark:bg-primary/10 border border-zinc-300 dark:border-primary/10 bg-zinc-200 text-primary text-xs font-medium rounded-full">
-                            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
-                              Ahorra $21.88 con el plan anual
-                            </span>
-                          </div>
-                        )}
-
-                        <p className="mt-2 text-xs text-muted-foreground">
-                          Próximo pago: {currentPlan.nextPayment}
+                      </div>
+                    )}
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-lg font-semibold">Plan Anual</h4>
+                        <p className="text-xs text-muted-foreground">
+                          Facturación anual
+                        </p>
+                      </div>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold">
+                          ${planDetails.annual.price}
+                        </span>
+                        <span className="text-sm text-muted-foreground">
+                          /año
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400">
+                        <HugeiconsIcon
+                          icon={SparklesIcon}
+                          className="h-4 w-4"
+                        />
+                        <span className="font-medium">
+                          Ahorra $21.88 al año
+                        </span>
+                      </div>
+                      <div className="pt-2 border-t">
+                        <p className="text-xs text-muted-foreground">
+                          Próximo pago: {planDetails.annual.nextPayment}
                         </p>
                       </div>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Payment Method Section */}
-                <div className="space-y-4">
-                  <div className="text-center">
-                    <h3 className="text-xs font-semibold">Método de Pago</h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
-                      Información segura y encriptada
-                    </p>
-                  </div>
-
-                  {/* Credit Card Preview */}
-                  <CreditCard
-                    cardNumber={cardData.cardNumber}
-                    cardHolder={cardData.cardHolder}
-                    expiryDate={cardData.expiryDate}
-                    cvv={cardData.cvv}
-                  />
-
-                  {/* Card Details Form */}
+              {/* Payment Method */}
+              <div className="space-y-4 pt-4 border-t">
+                <div>
+                  <h3 className="text-base font-semibold tracking-heading mb-1">
+                    Método de Pago
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Pago seguro procesado por PayPal
+                  </p>
                 </div>
-                <div className="w-full col-span-1 md:col-span-2 space-y-4 bg-card p-4 rounded-lg border shadow-sm">
-                  <div className="space-y-1">
-                    <Label
-                      htmlFor="card-holder"
-                      className="text-xs font-medium"
-                    >
-                      Nombre del Titular
-                    </Label>
-                    <Input
-                      id="card-holder"
-                      type="text"
-                      placeholder="Ej: MARIA GONZALEZ"
-                      disabled={isLoading}
-                      className="h-9 text-xs"
-                      value={cardData.cardHolder}
-                      onChange={(e) =>
-                        setCardData({
-                          ...cardData,
-                          cardHolder: e.target.value.toUpperCase(),
-                        })
-                      }
-                    />
-                  </div>
 
-                  <div className="space-y-1">
-                    <Label
-                      htmlFor="card-number"
-                      className="text-xs font-medium"
-                    >
-                      Número de Tarjeta
-                    </Label>
-                    <div className="relative">
-                      <Input
-                        id="card-number"
-                        type="text"
-                        placeholder="0000 0000 0000 0000"
-                        disabled={isLoading}
-                        className="pl-9 text-xs font-mono tracking-wider"
-                        maxLength={19}
-                        value={cardData.cardNumber}
-                        onChange={(e) => {
-                          const value = e.target.value.replace(/\s/g, "");
-                          const formatted =
-                            value.match(/.{1,4}/g)?.join(" ") || value;
-                          setCardData({ ...cardData, cardNumber: formatted });
-                        }}
-                      />
-                      <HugeiconsIcon
-                        icon={CreditCardIcon}
-                        className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <Label htmlFor="expiry" className="text-xs font-medium">
-                        Vencimiento
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id="expiry"
-                          type="text"
-                          placeholder="MM/AA"
-                          disabled={isLoading}
-                          className="font-mono"
-                          maxLength={5}
-                          value={cardData.expiryDate}
-                          onChange={(e) => {
-                            let value = e.target.value.replace(/\D/g, "");
-                            if (value.length >= 2) {
-                              value =
-                                value.slice(0, 2) + "/" + value.slice(2, 4);
-                            }
-                            setCardData({ ...cardData, expiryDate: value });
-                          }}
-                        />
-                        <HugeiconsIcon
-                          icon={CalendarIcon}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-1">
-                      <Label
-                        htmlFor="cvc"
-                        className="text-xs font-medium flex items-center"
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
+                  <div className="flex flex-col items-center space-y-4">
+                    <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="h-10 w-40"
                       >
-                        CVV
-                        <HugeiconsIcon
-                          icon={AlertCircleIcon}
-                          className="ml-1 h-3.5 w-3.5 text-muted-foreground"
+                        <path
+                          fill="#003087"
+                          d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.533zm14.146-14.42a.805.805 0 0 0-.777-.59H10.7c-.294 0-.544.216-.59.51l-1.187 7.98a.59.59 0 0 0 .577.69h3.3c.26 0 .48.19.52.45l.7 4.72a.805.805 0 0 0 .777.59h4.778c.294 0 .544-.216.59-.51l1.187-7.98a.59.59 0 0 0-.577-.69h-3.3a.59.59 0 0 1-.52-.45l-.7-4.72z"
                         />
-                      </Label>
-                      <div className="relative">
-                        <Input
-                          id="cvc"
-                          type="text"
-                          placeholder="123"
-                          disabled={isLoading}
-                          className="font-mono"
-                          maxLength={3}
-                          value={cardData.cvv}
-                          onChange={(e) =>
-                            setCardData({
-                              ...cardData,
-                              cvv: e.target.value.replace(/\D/g, ""),
-                            })
-                          }
-                        />
+                      </svg>
+                    </div>
+
+                    <div className="text-center space-y-2">
+                      <p className="text-sm font-medium">
+                        Serás redirigido a PayPal para completar el pago
+                      </p>
+                      <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                         <HugeiconsIcon
                           icon={SquareLock01Icon}
-                          className="absolute right-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground"
+                          className="h-4 w-4 text-green-600 dark:text-green-400"
                         />
+                        <span>Pago 100% seguro y encriptado</span>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="pt-2">
-                    <p className="text-[11px] text-muted-foreground text-center leading-tight">
-                      Al continuar, aceptas nuestros{" "}
-                      <a href="#" className="text-primary hover:underline">
-                        Términos de Servicio
-                      </a>{" "}
-                      y{" "}
-                      <a href="#" className="text-primary hover:underline">
-                        Política de Privacidad
-                      </a>
-                    </p>
-                  </div>
+                <div className="text-center">
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    Al continuar, aceptas nuestros{" "}
+                    <a
+                      href="#"
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Términos de Servicio
+                    </a>{" "}
+                    y{" "}
+                    <a
+                      href="#"
+                      className="text-primary hover:underline font-medium"
+                    >
+                      Política de Privacidad
+                    </a>
+                  </p>
                 </div>
               </div>
 
               {/* Form Actions */}
-              <div className="flex flex-col sm:flex-row gap-2 pt-2 h-24 md:h-full">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
                 <Button
                   type="button"
                   variant="outline"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
-                  size="sm"
-                  className="text-xs flex-1"
+                  className="flex-1"
                 >
                   Volver
                 </Button>
                 <Button
                   type="submit"
-                  className="w-full gap-2"
-                  disabled={isLoading || !isPaymentFormValid}
+                  className="flex-1 gap-2"
+                  disabled={isLoading}
+                  size="lg"
                 >
                   {isLoading ? (
                     <>
@@ -1061,9 +1066,17 @@ export default function InstructorRegistrationPage() {
                     </>
                   ) : (
                     <>
-                      {isPaymentFormValid
-                        ? "Comenzar prueba gratis"
-                        : "Complete los datos de pago"}
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        className="h-5 w-5"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.533zm14.146-14.42a.805.805 0 0 0-.777-.59H10.7c-.294 0-.544.216-.59.51l-1.187 7.98a.59.59 0 0 0 .577.69h3.3c.26 0 .48.19.52.45l.7 4.72a.805.805 0 0 0 .777.59h4.778c.294 0 .544-.216.59-.51l1.187-7.98a.59.59 0 0 0-.577-.69h-3.3a.59.59 0 0 1-.52-.45l-.7-4.72z"
+                        />
+                      </svg>
+                      Continuar con PayPal
                     </>
                   )}
                 </Button>
