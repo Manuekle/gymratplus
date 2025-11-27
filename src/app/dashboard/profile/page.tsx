@@ -598,7 +598,7 @@ export default function ProfilePage() {
                   <Button
                     asChild
                     variant="outline"
-                    size="sm"
+                    size="default"
                     className="text-xs"
                   >
                     <Link href="/dashboard/profile/qr">
@@ -613,7 +613,7 @@ export default function ProfilePage() {
                     <Button
                       asChild
                       variant="default"
-                      size="sm"
+                      size="default"
                       className="text-xs"
                     >
                       <Link href="/dashboard/profile/payment">
@@ -689,7 +689,7 @@ export default function ProfilePage() {
                   isEditing ? handleSaveProfile : () => setIsEditing(true)
                 }
                 className="text-xs px-4"
-                size="sm"
+                size="default"
                 disabled={isUploading}
               >
                 {isUploading ? (
@@ -708,7 +708,7 @@ export default function ProfilePage() {
                 <Button
                   onClick={() => setIsEditing(false)}
                   className="text-xs px-4"
-                  size="sm"
+                  size="default"
                   variant="destructive"
                 >
                   Cancelar
@@ -820,7 +820,7 @@ export default function ProfilePage() {
                       <Button
                         variant="outline"
                         className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
-                        size="sm"
+                        size="default"
                         onClick={() => setShowCancelDialog(true)}
                       >
                         <HugeiconsIcon

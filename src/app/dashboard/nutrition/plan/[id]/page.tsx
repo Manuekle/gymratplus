@@ -287,7 +287,7 @@ export default function FoodPlanViewPage() {
         <p className="text-xs text-muted-foreground mb-4">
           El plan que buscas no existe o no tienes acceso a él.
         </p>
-        <Button variant="outline" size="sm" onClick={() => router.back()}>
+        <Button variant="outline" size="default" onClick={() => router.back()}>
           Volver
         </Button>
       </div>
@@ -343,7 +343,7 @@ export default function FoodPlanViewPage() {
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="text-xs w-full md:w-auto"
           onClick={() => router.back()}
         >

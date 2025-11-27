@@ -46,7 +46,7 @@ function ChatsContent() {
             <Button
               onClick={() => window.location.reload()}
               variant="outline"
-              size="sm"
+              size="default"
               className="mt-2"
             >
               Reintentar
@@ -102,7 +102,7 @@ function ChatsContent() {
               <div className="lg:hidden p-3 border-b flex items-center gap-3">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={() => setSelectedChatId(null)}
                   className="h-8 w-8 p-0"
                 >

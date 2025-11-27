@@ -54,7 +54,7 @@ export function PasswordInput({
       <Button
         type="button"
         variant="ghost"
-        size="sm"
+        size="default"
         className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
         onClick={() => setShowPassword(!showPassword)}
         disabled={props.disabled}

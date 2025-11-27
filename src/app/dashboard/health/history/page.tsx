@@ -129,7 +129,7 @@ export default function HealthHistoryPage() {
         <Button
           variant="outline"
           className="text-xs w-full md:w-auto"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/health")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
@@ -207,7 +207,7 @@ export default function HealthHistoryPage() {
                       <TableCell className="text-right">
                         <Button
                           variant="ghost"
-                          size="sm"
+                          size="default"
                           onClick={() => record.id && handleDelete(record.id)}
                           disabled={!record.id || isDeleting === record.id}
                           className="h-8 px-2 text-red-600 hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 dark:text-red-400"

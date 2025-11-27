@@ -103,7 +103,7 @@ const TimePicker: React.FC<TimePickerProps> = ({ value, onChange }) => {
           </Select>
         </div>
         <Button
-          size="sm"
+          size="default"
           className="text-xs w-full mt-4"
           onClick={handleConfirm}
         >

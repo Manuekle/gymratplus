@@ -363,7 +363,7 @@ export default function RecommendationsComponent() {
               variant="outline"
               onClick={() => router.push("/dashboard/profile")}
               className="text-xs"
-              size="sm"
+              size="default"
             >
               Volver al Perfil
             </Button>
@@ -495,7 +495,7 @@ export default function RecommendationsComponent() {
                       <Button
                         onClick={() => setShowWorkoutGenerator(true)}
                         className="text-xs"
-                        size="sm"
+                        size="default"
                       >
                         Crear Rutina Personalizada
                       </Button>

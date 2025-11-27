@@ -476,7 +476,7 @@ export function InstructorRegistrationForm({
                   <Button
                     type="button"
                     disabled={isLoading || !isFormValid}
-                    size="sm"
+                    size="default"
                     className="px-8"
                     onClick={() => setStep(2)}
                   >
@@ -606,7 +606,7 @@ export function InstructorRegistrationForm({
                   <Button
                     type="button"
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     className="h-auto py-1 px-4 text-xs font-normal text-muted-foreground hover:text-foreground hover:bg-transparent"
                     disabled={isLoading}
                   >
@@ -628,7 +628,7 @@ export function InstructorRegistrationForm({
                 <Button
                   type="button"
                   variant="outline"
-                  size="sm"
+                  size="default"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
                 >
@@ -637,7 +637,7 @@ export function InstructorRegistrationForm({
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  size="sm"
+                  size="default"
                   className="px-8"
                 >
                   {isLoading ? (

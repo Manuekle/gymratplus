@@ -314,7 +314,7 @@ export default function StudentsListPage() {
             {hasActiveFilters && (
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 className="mt-3 h-7 text-xs bg-transparent"
                 onClick={clearFilters}
               >

@@ -74,8 +74,6 @@ export default function WorkoutSummary() {
     setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
   };
 
-  console.log(workoutSessions);
-
   return (
     <Card className="rounded-lg border bg-card h-full flex flex-col">
       <CardHeader className="pb-4">
@@ -92,7 +90,7 @@ export default function WorkoutSummary() {
             href="/dashboard/workout/history"
             className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
-            Ver todos
+            Ver más
             <HugeiconsIcon
               icon={ArrowRight01Icon}
               className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
@@ -136,7 +134,7 @@ export default function WorkoutSummary() {
               {currentWorkouts.map((session) => (
                 <div key={session.id} className="p-3 border rounded-lg">
                   <div className="flex justify-between">
-                    <h4 className="font-semibold  tracking-heading text-lg">
+                    <h4 className="font-semibold tracking-heading text-lg">
                       {" "}
                       {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                     </h4>
@@ -186,7 +184,7 @@ export default function WorkoutSummary() {
                   <div className="flex items-center gap-2">
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="default"
                       onClick={handlePreviousPage}
                       disabled={currentPage === 0}
                       className="h-8 w-8 p-0"
@@ -201,7 +199,7 @@ export default function WorkoutSummary() {
                     </span>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="default"
                       onClick={handleNextPage}
                       disabled={currentPage === totalPages - 1}
                       className="h-8 w-8 p-0"

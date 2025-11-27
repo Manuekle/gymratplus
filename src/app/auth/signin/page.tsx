@@ -155,7 +155,7 @@ export default function SignInPage() {
                 />
               </div>
               <Button
-                size="sm"
+                size="default"
                 type="submit"
                 className="text-xs w-full"
                 disabled={loading || !!emailError}
@@ -183,7 +183,7 @@ export default function SignInPage() {
             <div className="border-t pt-4">
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 className="w-full text-xs"
                 onClick={async () => {
                   setLoadingGoogle(true);

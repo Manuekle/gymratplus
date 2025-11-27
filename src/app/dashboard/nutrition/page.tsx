@@ -530,12 +530,12 @@ export default function NutritionPage() {
               </span>
               <div className="flex flex-row gap-2 items-center">
                 <Link href="/dashboard/nutrition/food-plans">
-                  <Button size="sm" className="text-xs" variant="outline">
+                  <Button size="default" className="text-xs" variant="outline">
                     Ver Planes de Comida
                   </Button>
                 </Link>
                 <Link href="/dashboard/nutrition/register-food">
-                  <Button size="sm" className="text-xs" variant="default">
+                  <Button size="default" className="text-xs" variant="default">
                     Registrar Comida
                   </Button>
                 </Link>

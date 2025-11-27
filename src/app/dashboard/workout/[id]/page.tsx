@@ -137,7 +137,7 @@ export default function WorkouPage() {
         <Button
           variant="outline"
           className="text-xs w-full md:w-auto"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/workout")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
@@ -173,7 +173,7 @@ export default function WorkouPage() {
             </Badge>
             <Button
               variant="destructive"
-              size="sm"
+              size="default"
               onClick={() => setIsDeleteDialogOpen(true)}
               className="gap-2"
             >

@@ -191,7 +191,7 @@ function ResetPasswordForm() {
               <p className="text-[#E52020] text-xs text-center">{error}</p>
             )}
             <Button
-              size="sm"
+              size="default"
               className="w-full text-xs"
               onClick={() => router.push("/auth/forgot-password")}
             >
@@ -230,7 +230,7 @@ function ResetPasswordForm() {
               </p>
             </div>
             <Button
-              size="sm"
+              size="default"
               className="w-full text-xs"
               onClick={() => router.push("/auth/signin")}
             >
@@ -305,7 +305,7 @@ function ResetPasswordForm() {
               )}
             </div>
             <Button
-              size="sm"
+              size="default"
               type="submit"
               className="w-full text-xs"
               disabled={

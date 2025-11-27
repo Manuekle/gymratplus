@@ -446,7 +446,7 @@ export default function InstructorDashboardPage() {
                     </div>
                     <div className="flex flex-row sm:flex-col items-stretch sm:items-end gap-2">
                       <Button
-                        size="sm"
+                        size="default"
                         variant="default"
                         onClick={() => handleAcceptRequest(request.id)}
                         className="text-xs flex-1 sm:flex-none sm:w-auto"
@@ -458,7 +458,7 @@ export default function InstructorDashboardPage() {
                         Aceptar
                       </Button>
                       <Button
-                        size="sm"
+                        size="default"
                         variant="outline"
                         onClick={() => handleRejectRequest(request.id)}
                         className="text-xs flex-1 sm:flex-none sm:w-auto border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
@@ -626,7 +626,7 @@ export default function InstructorDashboardPage() {
                 <div className="pt-4 border-t">
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     className="w-full group"
                     asChild
                   >

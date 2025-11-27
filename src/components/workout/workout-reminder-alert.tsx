@@ -350,7 +350,7 @@ export function WorkoutReminderAlert({
               {/* Close button */}
               <Button
                 variant="ghost"
-                size="sm"
+                size="default"
                 className="absolute top-4 right-4 h-6 w-6 p-0"
                 onClick={handleDismiss}
               >

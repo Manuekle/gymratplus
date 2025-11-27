@@ -244,7 +244,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="text-xs" size="sm" variant="outline">
+        <Button className="text-xs" size="default" variant="outline">
           Actualizar Objetivos
         </Button>
       </DialogTrigger>
@@ -1078,7 +1078,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
               <Button
                 type="button"
                 className="text-xs w-full sm:w-auto order-2 sm:order-1"
-                size="sm"
+                size="default"
                 variant="outline"
                 onClick={prevStep}
                 disabled={isSubmitting}
@@ -1089,7 +1089,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
             <div className="flex-1 hidden sm:block" />
             {step < 3 && (
               <Button
-                size="sm"
+                size="default"
                 type="button"
                 className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 onClick={nextStep}
@@ -1099,7 +1099,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
             )}
             {step === 3 && (
               <Button
-                size="sm"
+                size="default"
                 type="submit"
                 className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 disabled={isSubmitting}
@@ -1117,7 +1117,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
             {step === 4 && (
               <Button
                 type="button"
-                size="sm"
+                size="default"
                 className="text-xs w-full sm:w-auto order-1 sm:order-2"
                 onClick={saveGoals}
                 disabled={isSubmitting || isSaved}

@@ -183,7 +183,7 @@ export default function WorkoutHistoryPage() {
           registrar tu progreso.
         </p>
         <Button
-          size="sm"
+          size="default"
           className="text-xs"
           onClick={() => router.push("/dashboard/workout")}
         >
@@ -196,12 +196,12 @@ export default function WorkoutHistoryPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div>
+        <div className="md:w-auto w-full">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard/workout")}
-            className="mb-2 text-xs"
+            className="mb-2 text-xs md:w-auto w-full"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
             Volver a la lista
@@ -382,7 +382,7 @@ export default function WorkoutHistoryPage() {
                   {session.completed ? (
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="default"
                       className="w-full text-xs text-muted-foreground"
                       onClick={() => handleSessionExpand(session.id)}
                     >
@@ -391,7 +391,7 @@ export default function WorkoutHistoryPage() {
                   ) : (
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="default"
                       className="w-full text-xs text-muted-foreground"
                       onClick={() => {
                         if (!session.completed) {

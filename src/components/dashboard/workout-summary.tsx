@@ -135,7 +135,7 @@ export default function WorkoutSummary() {
             workoutSessions.slice(0, 2).map((session) => (
               <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                  <h4 className="font-semibold tracking-heading text-xs sm:text-lg">
+                  <h4 className="font-semibold tracking-heading text-lg">
                     {session.notes?.replace("Día: ", "") || "Entrenamiento"}
                   </h4>
                   <span className="text-xs text-muted-foreground sm:text-right">

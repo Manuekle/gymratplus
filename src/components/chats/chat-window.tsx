@@ -37,6 +37,7 @@ import { useSession } from "next-auth/react";
 import { ChatMessageRenderer } from "./chat-message-renderer";
 import { ImageUploadButton } from "./image-upload-button";
 import type { Chat } from "@/hooks/use-chats";
+import Link from "next/link";
 
 interface ChatWindowProps {
   chatId: string;
@@ -367,12 +368,15 @@ export function ChatWindow({ chatId, chat, onTypingChange }: ChatWindowProps) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>Ver perfil</DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href={`/dashboard/instructors/${chat.otherUser.id}`}>
+                  Ver perfil
+                </Link>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setIsClearDialogOpen(true)}
                 className="text-destructive focus:text-destructive"
               >
-                <HugeiconsIcon icon={Delete02Icon} className="h-4 w-4 mr-2" />
                 Vaciar chat
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -535,7 +539,7 @@ export function ChatWindow({ chatId, chat, onTypingChange }: ChatWindowProps) {
             <AlertDialogAction
               onClick={handleClearChat}
               disabled={isClearing}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-destructive text-white hover:bg-destructive/90"
             >
               {isClearing ? "Vaciando..." : "Vaciar chat"}
             </AlertDialogAction>

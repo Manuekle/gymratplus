@@ -156,7 +156,7 @@ export default function GymRatLanding() {
               </Link>
               <ThemeToggle />
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
                 className="xl:hidden flex text-xs"
                 asChild
@@ -164,7 +164,7 @@ export default function GymRatLanding() {
                 <Link href="/auth/signin">Iniciar sesión</Link>
               </Button>
               <Button
-                size="sm"
+                size="default"
                 className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs"
                 asChild
               >

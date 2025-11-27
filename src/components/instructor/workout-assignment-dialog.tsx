@@ -416,7 +416,7 @@ export function WorkoutAssignmentDialog({
                   onChange={(e) => setCurrentDay(e.target.value)}
                 />
                 <Button
-                  size="sm"
+                  size="default"
                   className="text-xs"
                   onClick={handleAddDay}
                   disabled={!currentDay}
@@ -459,7 +459,7 @@ export function WorkoutAssignmentDialog({
               </div>
             )}
             <Button
-              size="sm"
+              size="default"
               variant="outline"
               className="text-xs"
               onClick={() => setStep(2)}
@@ -479,7 +479,7 @@ export function WorkoutAssignmentDialog({
                 </Label>
                 <div className="flex gap-2">
                   <Button
-                    size="sm"
+                    size="default"
                     variant="outline"
                     onClick={handlePreviousDay}
                     className="h-7 w-7 p-0"
@@ -487,7 +487,7 @@ export function WorkoutAssignmentDialog({
                     <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
                   </Button>
                   <Button
-                    size="sm"
+                    size="default"
                     variant="outline"
                     onClick={handleNextDay}
                     className="h-7 w-7 p-0"
@@ -573,7 +573,7 @@ export function WorkoutAssignmentDialog({
 
             <div className="flex justify-between">
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
                 className="text-xs"
                 onClick={() => setStep(1)}
@@ -581,7 +581,7 @@ export function WorkoutAssignmentDialog({
                 Anterior
               </Button>
               <Button
-                size="sm"
+                size="default"
                 className="text-xs"
                 onClick={() => setStep(3)}
                 disabled={selectedExercises.length === 0}
@@ -696,7 +696,7 @@ export function WorkoutAssignmentDialog({
             </div>
             <div className="flex justify-between pt-4">
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
                 className="text-xs"
                 onClick={() => setStep(2)}
@@ -705,7 +705,7 @@ export function WorkoutAssignmentDialog({
                 Anterior
               </Button>
               <Button
-                size="sm"
+                size="default"
                 onClick={handleSubmit}
                 className="text-xs"
                 disabled={

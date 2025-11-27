@@ -17,6 +17,8 @@ import { Badge } from "@/components/ui/badge";
 import WorkoutTimerFloat from "@/components/workout/workout-timer-float";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
 const Spinner = () => (
   <div className="animate-spin h-4 w-4 border border-current border-t-transparent rounded-full" />
@@ -506,7 +508,7 @@ export default function ActiveWorkoutPage() {
         </h2>
         <Button
           onClick={() => router.push("/dashboard/workout")}
-          size="sm"
+          size="default"
           className="text-xs"
         >
           Iniciar un entrenamiento
@@ -529,10 +531,11 @@ export default function ActiveWorkoutPage() {
       <div className="mb-4 flex justify-between w-full items-center">
         <Button
           variant="outline"
-          className="text-xs"
-          size="sm"
+          className="md:w-auto w-full text-xs"
+          size="default"
           onClick={() => router.push("/dashboard/workout")}
         >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
           Volver a la lista
         </Button>
       </div>
@@ -563,7 +566,7 @@ export default function ActiveWorkoutPage() {
             </div>
             <Button
               variant="secondary"
-              size="sm"
+              size="default"
               className="text-xs"
               onClick={() =>
                 setRestTimer({ active: false, timeLeft: 0, exerciseId: null })
@@ -587,7 +590,7 @@ export default function ActiveWorkoutPage() {
               <CardHeader className="pb-3">
                 <div className="flex flex-col gap-3">
                   <div>
-                    <CardTitle className="text-xs md:text-lg tracking-heading font-semibold">
+                    <CardTitle className="text-lg tracking-heading font-semibold">
                       {exercise.exercise.name}
                     </CardTitle>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -606,7 +609,7 @@ export default function ActiveWorkoutPage() {
                     ) : (
                       <Button
                         variant="outline"
-                        size="sm"
+                        size="default"
                         className="text-xs w-full md:w-auto"
                         onClick={() => completeExercise(exercise.id)}
                       >

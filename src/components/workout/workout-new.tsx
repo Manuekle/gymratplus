@@ -137,7 +137,7 @@ export function WorkoutNew({
             <Button
               key={day}
               variant={currentDay === day ? "default" : "outline"}
-              size="sm"
+              size="default"
               className="text-xs"
               onClick={() => handleDayChange(day)}
             >
@@ -147,7 +147,7 @@ export function WorkoutNew({
         </div>
 
         <Button
-          size="sm"
+          size="default"
           className="text-xs w-full md:w-auto"
           onClick={() => setIsModalOpen(true)}
         >

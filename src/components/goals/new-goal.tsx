@@ -152,7 +152,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="text-xs px-4">
+        <Button variant="outline" size="default" className="text-xs px-4">
           Nuevo objetivo
         </Button>
       </DialogTrigger>
@@ -422,7 +422,7 @@ export function NewGoal({ onSuccess, initialData }: GoalProps) {
 
           <DialogFooter className="pt-2">
             <Button
-              size="sm"
+              size="default"
               className="text-xs px-6"
               type="submit"
               disabled={isSubmitting}

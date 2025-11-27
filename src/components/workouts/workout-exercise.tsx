@@ -445,7 +445,7 @@ export default function WorkoutExercise({
           </div>
           <DialogFooter>
             <Button
-              size="sm"
+              size="default"
               type="submit"
               className="text-xs"
               disabled={

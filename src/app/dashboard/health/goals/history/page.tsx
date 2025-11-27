@@ -209,7 +209,7 @@ export default function GoalsHistoryPage() {
           <div className="w-full md:w-auto">
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               className="mb-2 text-xs w-full md:w-auto"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />
@@ -271,7 +271,7 @@ export default function GoalsHistoryPage() {
           <div className="w-full md:w-auto">
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               onClick={() => router.push("/dashboard/health/goals")}
               className="mb-2 text-xs w-full md:w-auto"
             >
@@ -290,7 +290,7 @@ export default function GoalsHistoryPage() {
             registrar tu progreso.
           </p>
           <Button
-            size="sm"
+            variant="default"
             className="text-xs"
             onClick={() => router.push("/dashboard/health/goal")}
           >
@@ -307,7 +307,7 @@ export default function GoalsHistoryPage() {
         <div className="w-full md:w-auto">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard/health/goals")}
             className="mb-2 text-xs w-full md:w-auto"
           >

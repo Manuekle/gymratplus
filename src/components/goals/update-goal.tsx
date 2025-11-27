@@ -121,7 +121,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="text-xs h-8 px-3">
+        <Button size="default" variant="outline" className="text-xs h-8 px-3">
           Actualizar
         </Button>
       </DialogTrigger>
@@ -217,7 +217,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
             <Button
               type="button"
               variant="ghost"
-              size="sm"
+              size="default"
               className="text-xs h-8"
               onClick={() => setOpen(false)}
             >
@@ -225,7 +225,7 @@ export function UpdateGoal({ onSuccess, goal }: GoalProps) {
             </Button>
             <Button
               type="submit"
-              size="sm"
+              size="default"
               className="text-xs h-8 px-4"
               disabled={isSubmitting || !isOwner}
             >

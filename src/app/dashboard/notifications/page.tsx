@@ -112,7 +112,7 @@ export default function NotificationsPage() {
         <div className="w-full md:w-auto">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard")}
             className="mb-2 text-xs w-full md:w-auto text-left"
           >
@@ -136,7 +136,7 @@ export default function NotificationsPage() {
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button size="sm" variant="outline" className="text-xs">
+              <Button size="default" variant="outline" className="text-xs">
                 <HugeiconsIcon icon={FilterAddIcon} className="mr-2 h-4 w-4" />
                 Filtrar
                 {selectedTypes.length > 0 && (
@@ -171,7 +171,7 @@ export default function NotificationsPage() {
               {unreadCount > 0 && (
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
                   onClick={async () => {
                     const success = await markAsRead("all");
                     if (success) {
@@ -187,7 +187,7 @@ export default function NotificationsPage() {
               )}
               <Button
                 variant="destructive"
-                size="sm"
+                size="default"
                 onClick={() => setIsDeleteAllDialogOpen(true)}
                 className="text-xs"
               >

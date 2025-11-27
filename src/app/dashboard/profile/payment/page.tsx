@@ -448,7 +448,7 @@ export default function InstructorRegistrationPage() {
           <Button
             variant="outline"
             className="text-xs"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard/profile")}
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
@@ -510,7 +510,7 @@ export default function InstructorRegistrationPage() {
         <Button
           variant="outline"
           className="text-xs"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/profile")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
@@ -1054,7 +1054,6 @@ export default function InstructorRegistrationPage() {
                   type="submit"
                   className="flex-1 gap-2"
                   disabled={isLoading}
-                  size="lg"
                 >
                   {isLoading ? (
                     <>

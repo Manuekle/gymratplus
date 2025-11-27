@@ -10,7 +10,7 @@ export default function WorkoutSkeleton() {
         <Button
           variant="outline"
           className="text-xs w-full md:w-auto"
-          size="sm"
+          size="default"
           disabled
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />

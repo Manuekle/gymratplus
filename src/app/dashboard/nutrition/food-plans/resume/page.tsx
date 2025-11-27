@@ -228,7 +228,7 @@ function FoodPlanResumeContent() {
         <Button
           variant="outline"
           className="text-xs"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/nutrition/food-plans")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
@@ -361,7 +361,7 @@ function FoodPlanResumeContent() {
         <Button
           variant="outline"
           className="text-xs"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/nutrition/food-plans")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />

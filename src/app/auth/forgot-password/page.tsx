@@ -294,7 +294,7 @@ export default function ForgotPasswordPage() {
               <Button
                 type="button"
                 variant="default"
-                size="sm"
+                size="default"
                 className="w-full text-xs"
                 onClick={() => {
                   setStep("email");
@@ -335,7 +335,7 @@ export default function ForgotPasswordPage() {
                 )}
               </div>
               <Button
-                size="sm"
+                size="default"
                 type="submit"
                 className="w-full text-xs"
                 disabled={loading || !!emailError}

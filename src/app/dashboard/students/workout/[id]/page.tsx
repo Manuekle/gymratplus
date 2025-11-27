@@ -263,7 +263,7 @@ export default function AssignedWorkoutViewPage() {
         <p className="text-xs text-muted-foreground mb-4">
           La rutina que buscas no existe o no tienes acceso a ella.
         </p>
-        <Button variant="outline" size="sm" onClick={() => router.back()}>
+        <Button variant="outline" size="default" onClick={() => router.back()}>
           Volver
         </Button>
       </div>
@@ -278,7 +278,7 @@ export default function AssignedWorkoutViewPage() {
       <div className="flex items-center justify-between">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="text-xs"
           onClick={() => router.back()}
         >

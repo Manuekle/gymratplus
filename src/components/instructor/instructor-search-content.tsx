@@ -489,7 +489,7 @@ export default function InstructorSearchContent() {
                           <div className="w-full space-y-1">
                             <div className="flex flex-row gap-1.5">
                               <Button
-                                size="sm"
+                                size="default"
                                 className={`text-[11px] h-8 flex-1 ${
                                   requestedInstructors.has(profile.id)
                                     ? "bg-red-600 hover:bg-red-700"
@@ -516,7 +516,7 @@ export default function InstructorSearchContent() {
                               </Button>
                               <Button
                                 asChild
-                                size="sm"
+                                size="default"
                                 className="text-[11px] bg-transparent"
                                 variant="outline"
                               >

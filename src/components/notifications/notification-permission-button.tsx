@@ -23,7 +23,7 @@ export function NotificationPermissionButton() {
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="default"
       onClick={handleRequest}
       disabled={isRequesting || permission === "denied"}
       className="text-xs"

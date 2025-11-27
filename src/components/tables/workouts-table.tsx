@@ -241,7 +241,7 @@ export default function WorkoutsTable() {
           <div className="hidden md:flex gap-2">
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               onClick={handlePrevious}
               disabled={isTransitioning}
               className="h-8 w-8 p-0 rounded-lg transition-all duration-200 hover:bg-primary/10"
@@ -250,7 +250,7 @@ export default function WorkoutsTable() {
             </Button>
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               onClick={handleNext}
               disabled={isTransitioning}
               className="h-8 w-8 p-0 rounded-lg transition-all duration-200 hover:bg-primary/10"

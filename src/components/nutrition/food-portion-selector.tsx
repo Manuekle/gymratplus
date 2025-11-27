@@ -117,7 +117,7 @@ export function FoodPortionSelector({
       <PopoverTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="h-8 text-xs justify-between min-w-[120px]"
         >
           <span className="truncate">
@@ -191,7 +191,7 @@ export function FoodPortionSelector({
                   setCustomUnit(value as "g" | "ml" | "unidad")
                 }
               >
-                <SelectTrigger className="h-8 text-xs w-[100px]" size="sm">
+                <SelectTrigger className="h-8 text-xs w-[100px]" size="default">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,7 +201,7 @@ export function FoodPortionSelector({
                 </SelectContent>
               </Select>
               <Button
-                size="sm"
+                size="default"
                 onClick={handleCustomSubmit}
                 className="h-8 text-xs"
               >

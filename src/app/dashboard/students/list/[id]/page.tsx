@@ -389,7 +389,7 @@ export default function StudentDetailPage() {
       <div className="flex flex-col items-center justify-center p-8 min-h-[60vh]">
         <Button
           onClick={() => (window.location.href = "/dashboard/students/list")}
-          size="sm"
+          size="default"
         >
           Volver a alumnos
         </Button>
@@ -402,7 +402,7 @@ export default function StudentDetailPage() {
       <div className="mb-4">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="md:w-auto w-full text-xs"
           onClick={() => (window.location.href = "/dashboard/students/list")}
         >
@@ -556,7 +556,7 @@ export default function StudentDetailPage() {
                   Rutinas Asignadas
                 </CardTitle>
                 <Button
-                  size="sm"
+                  size="default"
                   variant="default"
                   className="h-7 text-xs"
                   onClick={() => setIsAssignDialogOpen(true)}
@@ -692,7 +692,7 @@ export default function StudentDetailPage() {
                   Planes de Alimentación
                 </CardTitle>
                 <Button
-                  size="sm"
+                  size="default"
                   variant="default"
                   className="h-7 text-xs"
                   onClick={() =>
@@ -996,7 +996,7 @@ export default function StudentDetailPage() {
                             {session.completed ? (
                               <Button
                                 variant="outline"
-                                size="sm"
+                                size="default"
                                 className="w-full text-xs text-muted-foreground"
                                 onClick={() =>
                                   setExpandedSession(

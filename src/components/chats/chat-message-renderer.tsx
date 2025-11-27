@@ -407,7 +407,7 @@ export function ChatMessageRenderer({
                   <div className="flex items-center justify-end gap-1.5">
                     <Button
                       variant="ghost"
-                      size="sm"
+                      size="default"
                       onClick={() => {
                         setIsEditing(false);
                         setEditContent(message.content || "");
@@ -417,7 +417,7 @@ export function ChatMessageRenderer({
                       Cancelar
                     </Button>
                     <Button
-                      size="sm"
+                      size="default"
                       onClick={handleEdit}
                       disabled={!editContent.trim()}
                       className="h-7 px-2 text-xs"

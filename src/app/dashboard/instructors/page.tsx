@@ -171,7 +171,7 @@ export default function InstructorPage() {
             {instructors.length !== 1 ? "s" : ""}
           </p>
         </div>
-        <Button size="sm" asChild>
+        <Button size="default" asChild>
           <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
         </Button>
       </div>
@@ -331,7 +331,7 @@ export default function InstructorPage() {
                 <div className="flex flex-col gap-2 pt-2">
                   <div className="flex gap-2">
                     <Button
-                      size="sm"
+                      size="default"
                       variant="outline"
                       className="flex-1"
                       asChild
@@ -345,24 +345,19 @@ export default function InstructorPage() {
                     {instructor.studentInstructorId && (
                       <StartChatButton
                         studentInstructorId={instructor.studentInstructorId}
-                        size="sm"
+                        size="default"
                         variant="outline"
                       />
                     )}
                   </div>
                   <Button
-                    size="sm"
-                    variant="outline"
-                    className="w-full text-destructive border-destructive/50 hover:bg-destructive/10 hover:text-destructive"
+                    variant="destructive"
+                    className="w-full"
                     onClick={() => {
                       setInstructorToCancel(instructor);
                       setCancelDialogOpen(true);
                     }}
                   >
-                    <HugeiconsIcon
-                      icon={Cancel01Icon}
-                      className="h-4 w-4 mr-1.5"
-                    />
                     Cancelar Relación
                   </Button>
                 </div>
@@ -390,7 +385,7 @@ export default function InstructorPage() {
           </DialogHeader>
           <DialogFooter>
             <Button
-              size="sm"
+              size="default"
               variant="outline"
               onClick={() => {
                 setCancelDialogOpen(false);
@@ -401,7 +396,7 @@ export default function InstructorPage() {
               Cancelar
             </Button>
             <Button
-              size="sm"
+              size="default"
               variant="destructive"
               onClick={handleCancelInstructor}
               disabled={isCancelling}

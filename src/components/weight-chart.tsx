@@ -212,7 +212,7 @@ export function WeightChart() {
           </SelectContent>
         </Select>
         <Link href="/dashboard/health/history">
-          <Button size="sm" className="text-xs" variant="default">
+          <Button size="default" className="text-xs" variant="default">
             Historial
           </Button>
         </Link>

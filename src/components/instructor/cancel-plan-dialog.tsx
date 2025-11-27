@@ -90,7 +90,7 @@ export function CancelPlanDialog({
         </DialogHeader>
         <DialogFooter>
           <Button
-            size="sm"
+            size="default"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isLoading}
@@ -98,7 +98,7 @@ export function CancelPlanDialog({
             Volver
           </Button>
           <Button
-            size="sm"
+            size="default"
             variant="destructive"
             onClick={handleCancelPlan}
             disabled={isLoading}

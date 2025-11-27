@@ -265,12 +265,16 @@ export function GoalsDashboard() {
 
           <div className="flex items-center gap-2 w-full md:w-fit">
             <Link href="/dashboard/health/goals/history">
-              <Button size="sm" className="text-xs" variant="outline">
+              <Button size="default" className="text-xs" variant="outline">
                 Ver historial
               </Button>
             </Link>
             <Link href="/dashboard/health/goal">
-              <Button size="sm" className="text-xs w-full" variant="default">
+              <Button
+                size="default"
+                className="text-xs w-full"
+                variant="default"
+              >
                 Nuevo objetivo
               </Button>
             </Link>

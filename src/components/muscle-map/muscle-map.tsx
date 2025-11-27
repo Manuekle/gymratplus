@@ -220,7 +220,7 @@ export function MuscleMap({
         <div className="flex gap-1.5">
           <Button
             variant={view === "front" ? "default" : "outline"}
-            size="sm"
+            size="default"
             className="h-7 px-3 text-xs"
             onClick={() => setView("front")}
           >
@@ -228,7 +228,7 @@ export function MuscleMap({
           </Button>
           <Button
             variant={view === "back" ? "default" : "outline"}
-            size="sm"
+            size="default"
             className="h-7 px-3 text-xs"
             onClick={() => setView("back")}
           >

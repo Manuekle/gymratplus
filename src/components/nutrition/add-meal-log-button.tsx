@@ -555,7 +555,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
         <div className="flex justify-end gap-2 mt-4">
           <Button
             className="text-xs px-6"
-            size="sm"
+            size="default"
             onClick={() => setEditingItemIndex(null)}
           >
             Guardar
@@ -764,7 +764,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="text-xs px-6" size="sm">
+        <Button className="text-xs px-6" size="default">
           Registrar Comida
         </Button>
       </DialogTrigger>
@@ -861,7 +861,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
             <div className="flex justify-between gap-2 mt-4">
               <Button
                 className="text-xs px-6"
-                size="sm"
+                size="default"
                 variant="outline"
                 onClick={() => setStep("select")}
               >
@@ -869,7 +869,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               </Button>
               <Button
                 className="text-xs px-6"
-                size="sm"
+                size="default"
                 onClick={handleSubmit}
                 disabled={submitting || selectedItems.length === 0}
               >
@@ -894,7 +894,7 @@ export function AddMealLogButton({ selectedDate }: AddMealLogButtonProps = {}) {
               </div>
               {selectedItems.length > 0 && (
                 <Button
-                  size="sm"
+                  size="default"
                   className="text-xs px-6"
                   onClick={() => setStep("review")}
                 >

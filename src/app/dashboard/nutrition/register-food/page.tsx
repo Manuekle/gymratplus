@@ -1048,7 +1048,7 @@ export default function RegisterFoodPage() {
         <Button
           variant="outline"
           className="text-xs w-full"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/nutrition")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}

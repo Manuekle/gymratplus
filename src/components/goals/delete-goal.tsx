@@ -52,7 +52,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="destructive" className="text-xs px-4">
+        <Button size="default" variant="destructive" className="text-xs px-4">
           Eliminar
         </Button>
       </DialogTrigger>
@@ -71,7 +71,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
             <DialogClose asChild>
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 className="text-xs"
                 disabled={loading}
               >
@@ -79,7 +79,7 @@ export function DeleteGoal({ onSuccess, goal }: GoalProps) {
               </Button>
             </DialogClose>
             <Button
-              size="sm"
+              size="default"
               className="text-xs px-4"
               type="submit"
               variant="destructive"

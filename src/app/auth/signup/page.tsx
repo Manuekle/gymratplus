@@ -335,7 +335,7 @@ export default function SignUpPage() {
               </Label>
             </div>
             <Button
-              size="sm"
+              size="default"
               type="submit"
               className="w-full text-xs"
               disabled={
@@ -365,7 +365,7 @@ export default function SignUpPage() {
             <Button
               variant="outline"
               className="w-full text-xs"
-              size="sm"
+              size="default"
               onClick={async () => {
                 setLoadingGoogle(true);
                 await signIn("google", { callbackUrl: "/onboarding" });

@@ -406,7 +406,7 @@ export default function FoodRecommendations() {
           <Button
             variant="outline"
             className="text-xs w-full"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard/nutrition")}
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
@@ -437,7 +437,7 @@ export default function FoodRecommendations() {
                 onClick={generatePlan}
                 disabled={isLoading}
                 className="text-xs"
-                size="sm"
+                size="default"
               >
                 {isLoading ? (
                   <>
@@ -508,7 +508,7 @@ export default function FoodRecommendations() {
         <Button
           variant="outline"
           className="text-xs w-full"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard/nutrition")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
@@ -530,7 +530,7 @@ export default function FoodRecommendations() {
             {selectedRecommendation && (
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 className="text-xs"
                 onClick={() =>
                   router.push(

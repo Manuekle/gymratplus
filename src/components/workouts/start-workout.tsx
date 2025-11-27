@@ -219,7 +219,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button size="sm" variant="default" className="w-full">
+        <Button size="default" variant="default" className="w-full">
           Comenzar rutina
         </Button>
       </DialogTrigger>
@@ -249,7 +249,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
             <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 onClick={continueActiveWorkout}
                 className="text-xs"
                 disabled={loading}
@@ -257,7 +257,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 Continuar entrenamiento actual
               </Button>
               <Button
-                size="sm"
+                size="default"
                 variant="destructive"
                 onClick={finishAndStartNew}
                 className="text-xs"
@@ -327,7 +327,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 onClick={handleStartWorkout}
                 disabled={loading || !selectedDay}
                 className="text-xs w-full"
-                size="sm"
+                size="default"
               >
                 {loading ? (
                   <span className="flex flex-row items-center gap-2">

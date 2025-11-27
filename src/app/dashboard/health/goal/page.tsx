@@ -318,7 +318,7 @@ export default function GoalPage() {
         <Button
           variant="outline"
           className="text-xs w-full md:w-auto"
-          size="sm"
+          size="default"
           onClick={() => router.push("/dashboard")}
         >
           <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />{" "}
@@ -781,6 +781,7 @@ export default function GoalPage() {
               <Button
                 type="submit"
                 disabled={isSubmitting}
+                variant="default"
                 className="w-full sm:flex-1"
               >
                 {isSubmitting ? (

@@ -229,7 +229,7 @@ export function NewProgress({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="sm" className="text-xs px-4">
+        <Button size="default" className="text-xs px-4">
           Añadir registro
         </Button>
       </DialogTrigger>
@@ -403,7 +403,7 @@ export function NewProgress({
           <div className="flex justify-end space-x-2 pt-2">
             <Button
               variant="outline"
-              size="sm"
+              size="default"
               type="button"
               onClick={() => setIsOpen(false)}
               disabled={isSubmitting}
@@ -411,7 +411,7 @@ export function NewProgress({
               Cancelar
             </Button>
             <Button
-              size="sm"
+              size="default"
               className="text-xs px-6"
               type="submit"
               disabled={

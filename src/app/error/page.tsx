@@ -20,7 +20,7 @@ export default function ErrorPage() {
         </p>
         <div className="mt-6 flex flex-col gap-4">
           <Button
-            size="sm"
+            size="default"
             variant="default"
             className="w-full text-xs"
             onClick={() => router.push("/")}
@@ -28,7 +28,7 @@ export default function ErrorPage() {
             Volver al inicio
           </Button>
           <Button
-            size="sm"
+            size="default"
             variant="outline"
             className="w-full text-xs"
             onClick={() => router.refresh()}

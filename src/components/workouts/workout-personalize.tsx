@@ -274,7 +274,7 @@ export function WorkoutPersonalize() {
     <div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button className="text-xs" size="sm" variant="outline">
+          <Button className="text-xs" size="default" variant="outline">
             Personalizar rutina
           </Button>
         </DialogTrigger>
@@ -397,7 +397,7 @@ export function WorkoutPersonalize() {
                     onChange={(e) => setCurrentDay(e.target.value)}
                   />
                   <Button
-                    size="sm"
+                    size="default"
                     className="text-xs"
                     onClick={handleAddDay}
                     disabled={!currentDay}
@@ -440,7 +440,7 @@ export function WorkoutPersonalize() {
                 </div>
               )}
               <Button
-                size="sm"
+                size="default"
                 variant="outline"
                 className="text-xs"
                 onClick={() => setStep(2)}
@@ -460,7 +460,7 @@ export function WorkoutPersonalize() {
                   </Label>
                   <div className="flex gap-2">
                     <Button
-                      size="sm"
+                      size="default"
                       variant="outline"
                       onClick={handlePreviousDay}
                       className="h-7 w-7 p-0"
@@ -471,7 +471,7 @@ export function WorkoutPersonalize() {
                       />
                     </Button>
                     <Button
-                      size="sm"
+                      size="default"
                       variant="outline"
                       onClick={handleNextDay}
                       className="h-7 w-7 p-0"
@@ -558,7 +558,7 @@ export function WorkoutPersonalize() {
 
               <div className="flex justify-between">
                 <Button
-                  size="sm"
+                  size="default"
                   variant="outline"
                   className="text-xs"
                   onClick={() => setStep(1)}
@@ -566,7 +566,7 @@ export function WorkoutPersonalize() {
                   Anterior
                 </Button>
                 <Button
-                  size="sm"
+                  size="default"
                   className="text-xs"
                   onClick={() => setStep(3)}
                   disabled={selectedExercises.length === 0}
@@ -624,7 +624,7 @@ export function WorkoutPersonalize() {
 
               <div className="flex justify-between pt-4">
                 <Button
-                  size="sm"
+                  size="default"
                   variant="outline"
                   className="text-xs"
                   onClick={() => setStep(2)}
@@ -632,7 +632,7 @@ export function WorkoutPersonalize() {
                   Anterior
                 </Button>
                 <Button
-                  size="sm"
+                  size="default"
                   onClick={handleSubmit}
                   className="text-xs"
                   disabled={submitting || selectedExercises.length === 0}

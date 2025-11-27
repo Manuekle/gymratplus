@@ -299,7 +299,7 @@ export default function ProgressChart({
         <div className="flex flex-col gap-3 mb-6">
           <div className="flex flex-wrap gap-2 w-full">
             <Button
-              size="sm"
+              size="default"
               variant={dataType === "weight" ? "default" : "outline"}
               onClick={() => setDataType("weight")}
               className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"
@@ -307,7 +307,7 @@ export default function ProgressChart({
               Peso
             </Button>
             <Button
-              size="sm"
+              size="default"
               variant={dataType === "bodyFat" ? "default" : "outline"}
               onClick={() => setDataType("bodyFat")}
               className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"
@@ -315,7 +315,7 @@ export default function ProgressChart({
               Grasa corporal
             </Button>
             <Button
-              size="sm"
+              size="default"
               variant={dataType === "muscle" ? "default" : "outline"}
               onClick={() => setDataType("muscle")}
               className="text-xs flex-1 min-w-[calc(33.333%-0.5rem)] sm:flex-none"

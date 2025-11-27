@@ -1041,7 +1041,7 @@ export default function CreateMealPlanPage() {
         <Button
           variant="outline"
           className="text-xs w-full md:w-auto"
-          size="sm"
+          size="default"
           onClick={() =>
             router.push(`/dashboard/students/list/${studentRelationId}`)
           }
@@ -1254,7 +1254,7 @@ export default function CreateMealPlanPage() {
               <div className="flex justify-end">
                 <Button
                   variant="default"
-                  size="sm"
+                  size="default"
                   onClick={generateAutomaticPlan}
                   disabled={loading || !studentProfile}
                   className="text-xs"

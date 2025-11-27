@@ -138,7 +138,7 @@ export function NotificationBell() {
             <Button
               onClick={handleMarkAllAsRead}
               variant="ghost"
-              size="sm"
+              size="default"
               className="text-xs h-7"
             >
               Marcar todas
@@ -178,7 +178,7 @@ export function NotificationBell() {
         <div className="p-2 border-t">
           <Button
             variant="ghost"
-            size="sm"
+            size="default"
             asChild
             className="text-xs h-7 w-full"
           >

@@ -331,7 +331,7 @@ export default function PublicProfilePage() {
             El perfil que estás buscando no existe o hubo un problema de
             conexión.
           </p>
-          <Button onClick={() => router.push("/")} size="sm">
+          <Button onClick={() => router.push("/")} size="default">
             Volver al inicio
           </Button>
         </div>
@@ -349,7 +349,7 @@ export default function PublicProfilePage() {
         <div className="mb-6 w-full">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={() => router.push("/")}
             className="mb-4 text-xs w-full"
           >
@@ -487,7 +487,7 @@ export default function PublicProfilePage() {
                   {!viewerInfo.isInstructor && (
                     <div className="w-full space-y-1">
                       <Button
-                        size="sm"
+                        size="default"
                         className="text-[11px] h-8 w-full"
                         onClick={handleRequestInstructor}
                         disabled={isRequesting || hasRequested}
@@ -622,7 +622,7 @@ export default function PublicProfilePage() {
                     viewerInfo.hasActiveSubscription && (
                       <div className="w-full space-y-1">
                         <Button
-                          size="sm"
+                          size="default"
                           className="text-[11px] h-8 w-full"
                           onClick={handleRequestStudent}
                           disabled={isRequesting || hasRequested}
@@ -651,7 +651,7 @@ export default function PublicProfilePage() {
                             </p>
                           </div>
                           <Button
-                            size="sm"
+                            size="default"
                             className="w-full text-xs h-7 bg-green-600 hover:bg-green-700 text-white"
                             onClick={() => router.push("/pricing")}
                           >
@@ -670,7 +670,7 @@ export default function PublicProfilePage() {
                           estudiante
                         </p>
                         <Button
-                          size="sm"
+                          size="default"
                           variant="outline"
                           className="w-full text-xs h-7"
                           onClick={() =>

@@ -173,7 +173,7 @@ export function WorkoutGenerator() {
       <div className="flex flex-row gap-2">
         <Dialog>
           <DialogTrigger asChild className="mb-8">
-            <Button className="text-xs" size="sm">
+            <Button className="text-xs" size="default">
               Generar rutina
             </Button>
           </DialogTrigger>
@@ -197,7 +197,7 @@ export function WorkoutGenerator() {
                     onClick={prevStep}
                     disabled={step === 1}
                     className="text-xs px-4"
-                    size="sm"
+                    size="default"
                   >
                     Anterior
                   </Button>
@@ -207,7 +207,7 @@ export function WorkoutGenerator() {
                       onClick={nextStep}
                       disabled={!isStepValid()}
                       className="text-xs px-4"
-                      size="sm"
+                      size="default"
                     >
                       Siguiente
                     </Button>
@@ -216,7 +216,7 @@ export function WorkoutGenerator() {
                       onClick={handleSubmit}
                       disabled={!isStepValid() || isSubmitting}
                       className="text-xs px-4"
-                      size="sm"
+                      size="default"
                     >
                       {isSubmitting ? (
                         <>

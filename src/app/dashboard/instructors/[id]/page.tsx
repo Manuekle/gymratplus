@@ -384,7 +384,10 @@ export default function InstructorProfilePage() {
         <p className="text-xs text-muted-foreground mb-4 text-center max-w-md">
           El perfil que estás buscando no existe o hubo un problema de conexión.
         </p>
-        <Button onClick={() => router.push("/dashboard/instructors")} size="sm">
+        <Button
+          onClick={() => router.push("/dashboard/instructors")}
+          size="default"
+        >
           Volver a instructores
         </Button>
       </div>
@@ -430,7 +433,7 @@ export default function InstructorProfilePage() {
       <div className="mb-4">
         <Button
           variant="outline"
-          size="sm"
+          size="default"
           className="md:w-auto w-full text-xs"
           onClick={() => router.push("/dashboard/instructors")}
         >
@@ -578,7 +581,7 @@ export default function InstructorProfilePage() {
                       <div className="w-full space-y-1">
                         <div className="flex flex-row gap-1.5">
                           <Button
-                            size="sm"
+                            size="default"
                             className={`text-[11px] h-8 flex-1 ${
                               requestedInstructors.has(
                                 instructor.instructorProfileId,

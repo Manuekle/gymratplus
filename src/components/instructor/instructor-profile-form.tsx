@@ -323,14 +323,14 @@ export function InstructorProfileForm({
             <Button
               onClick={toggleEditMode}
               variant="outline"
-              size="sm"
+              size="default"
               className="text-xs"
             >
               Editar perfil
             </Button>
             <Button
               variant="destructive"
-              size="sm"
+              size="default"
               className="text-xs"
               onClick={() => setIsCancelDialogOpen(true)}
             >
