@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     if (!planType || !["monthly", "annual"].includes(planType)) {
       return NextResponse.json(
         { error: "Tipo de plan inválido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -50,7 +50,8 @@ export async function POST(req: Request) {
       billingCycles: [
         {
           frequency: {
-            intervalUnit: billingCycle === "MONTH" ? IntervalUnit.Month : IntervalUnit.Year,
+            intervalUnit:
+              billingCycle === "MONTH" ? IntervalUnit.Month : IntervalUnit.Year,
             intervalCount: 1,
           },
           tenureType: TenureType.Regular,
@@ -99,7 +100,7 @@ export async function POST(req: Request) {
         error: "Error al crear el plan de suscripción",
         details: error instanceof Error ? error.message : "Error desconocido",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

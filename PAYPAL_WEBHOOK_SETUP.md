@@ -3,12 +3,15 @@
 ## URL del Webhook
 
 ### Para Desarrollo (Sandbox)
+
 Si estás usando un túnel como ngrok o similar:
+
 ```
 https://tu-tunel-ngrok.ngrok.io/api/payment/paypal/webhook
 ```
 
 ### Para Producción
+
 ```
 https://tu-dominio.com/api/payment/paypal/webhook
 ```
@@ -72,11 +75,13 @@ Puedes probar el webhook usando:
 ## Troubleshooting
 
 ### El webhook no recibe eventos
+
 - Verifica que la URL sea accesible públicamente (HTTPS)
 - Revisa que el endpoint responda correctamente
 - Verifica los logs de PayPal en el dashboard
 
 ### Errores 500 en el webhook
+
 - Revisa los logs del servidor para ver el error específico
 - Verifica que las credenciales de PayPal estén correctas
 - Asegúrate de que la base de datos esté accesible
@@ -88,4 +93,3 @@ En producción, deberías verificar la firma del webhook para asegurarte de que 
 1. Obtener el Webhook ID de PayPal
 2. Verificar la firma del webhook usando el SDK de PayPal
 3. Solo procesar webhooks verificados
-

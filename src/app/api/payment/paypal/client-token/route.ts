@@ -11,9 +11,10 @@ export async function GET() {
     }
 
     const environment = process.env.PAYPAL_ENVIRONMENT || "sandbox";
-    const baseUrl = environment === "live" 
-      ? "https://api-m.paypal.com" 
-      : "https://api-m.sandbox.paypal.com";
+    const baseUrl =
+      environment === "live"
+        ? "https://api-m.paypal.com"
+        : "https://api-m.sandbox.paypal.com";
 
     const clientId = process.env.PAYPAL_CLIENT_ID;
     const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
@@ -21,7 +22,7 @@ export async function GET() {
     if (!clientId || !clientSecret) {
       return NextResponse.json(
         { error: "PayPal credentials not configured" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
@@ -30,8 +31,8 @@ export async function GET() {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": `Basic ${Buffer.from(
-          `${clientId}:${clientSecret}`
+        Authorization: `Basic ${Buffer.from(
+          `${clientId}:${clientSecret}`,
         ).toString("base64")}`,
       },
       body: new URLSearchParams({
@@ -45,12 +46,12 @@ export async function GET() {
       console.error("Error obteniendo client token:", errorText);
       return NextResponse.json(
         { error: "Error al obtener client token de PayPal" },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     const tokenData = await tokenResponse.json();
-    
+
     return NextResponse.json({
       accessToken: tokenData.access_token,
       expiresIn: tokenData.expires_in,
@@ -62,8 +63,7 @@ export async function GET() {
         error: "Error al obtener client token",
         details: error instanceof Error ? error.message : "Error desconocido",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

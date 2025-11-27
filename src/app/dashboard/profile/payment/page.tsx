@@ -89,7 +89,6 @@ export default function InstructorRegistrationPage() {
     mode: "onChange",
   });
 
-
   // Function to format date as DD/MM/YYYY
   const formatDate = (date: Date): string => {
     return date.toLocaleDateString("es-ES", {
@@ -132,10 +131,12 @@ export default function InstructorRegistrationPage() {
 
     if (success === "true") {
       // Usuario completó el pago en PayPal
-      const instructorData = sessionStorage.getItem("instructorRegistrationData");
+      const instructorData = sessionStorage.getItem(
+        "instructorRegistrationData",
+      );
       if (instructorData) {
         const payload = JSON.parse(instructorData);
-        
+
         // Registrar instructor después del pago exitoso
         fetch("/api/instructors/register", {
           method: "POST",
@@ -153,13 +154,17 @@ export default function InstructorRegistrationPage() {
               window.history.replaceState({}, "", "/dashboard/profile/payment");
             } else {
               const errorData = await res.json().catch(() => ({}));
-              throw new Error(errorData.error || "Error al registrar el instructor");
+              throw new Error(
+                errorData.error || "Error al registrar el instructor",
+              );
             }
           })
           .catch((error) => {
             console.error("Error:", error);
             toast.error(
-              error instanceof Error ? error.message : "Error al procesar el registro"
+              error instanceof Error
+                ? error.message
+                : "Error al procesar el registro",
             );
           });
       }
@@ -338,11 +343,14 @@ export default function InstructorRegistrationPage() {
 
       if (!paymentResponse.ok) {
         const errorData = await paymentResponse.json().catch(() => ({}));
-        const errorMessage = errorData.message || errorData.error || errorData.details || 
+        const errorMessage =
+          errorData.message ||
+          errorData.error ||
+          errorData.details ||
           "Error al procesar el pago. Por favor, verifica tus datos.";
-        
+
         console.error("Error del servidor:", errorData);
-        
+
         throw new Error(errorMessage);
       }
 
@@ -351,7 +359,10 @@ export default function InstructorRegistrationPage() {
       // Si hay una URL de aprobación de PayPal, redirigir al usuario
       if (paymentData.approvalUrl) {
         // Guardar los datos del instructor en sessionStorage para recuperarlos después
-        sessionStorage.setItem("instructorRegistrationData", JSON.stringify(payload));
+        sessionStorage.setItem(
+          "instructorRegistrationData",
+          JSON.stringify(payload),
+        );
         // Redirigir a PayPal
         window.location.href = paymentData.approvalUrl;
         return;
@@ -846,10 +857,10 @@ export default function InstructorRegistrationPage() {
               {/* Plan Selection */}
               <div className="space-y-4">
                 <div className="text-center">
-                  <h3 className="text-sm font-semibold">
+                  <h3 className="text-xs font-medium">
                     Elige tu Plan de Suscripción
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground">
                     Selecciona el plan que mejor se adapte a tus necesidades
                   </p>
                 </div>
@@ -888,7 +899,7 @@ export default function InstructorRegistrationPage() {
                   <div
                     className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
                       !isAnnual
-                        ? "border-zinc-200 bg-zinc-100 shadow-md dark:bg-zinc-900 dark:border-zinc-800"
+                        ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
                         : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
                     }`}
                     onClick={() => setIsAnnual(false)}
@@ -908,7 +919,7 @@ export default function InstructorRegistrationPage() {
                         </p>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-4xl tracking-heading font-bold">
+                        <span className="text-4xl tracking-heading font-semibold">
                           ${planDetails.monthly.price}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -936,7 +947,7 @@ export default function InstructorRegistrationPage() {
                   <div
                     className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
                       isAnnual
-                        ? "border-zinc-200 bg-zinc-100 shadow-md dark:bg-zinc-900 dark:border-zinc-800"
+                        ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
                         : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
                     }`}
                     onClick={() => setIsAnnual(true)}
@@ -956,7 +967,7 @@ export default function InstructorRegistrationPage() {
                         </p>
                       </div>
                       <div className="flex items-baseline gap-2">
-                        <span className="text-4xl tracking-heading font-bold">
+                        <span className="text-4xl tracking-heading font-semibold">
                           ${planDetails.annual.price}
                         </span>
                         <span className="text-xs text-muted-foreground">
@@ -984,19 +995,10 @@ export default function InstructorRegistrationPage() {
 
               {/* Payment Method */}
               <div className="space-y-4 pt-4 border-t">
-                <div>
-                  <h3 className="text-base font-semibold tracking-heading mb-1">
-                    Método de Pago
-                  </h3>
-                  <p className="text-xs text-muted-foreground">
-                    Pago seguro procesado por PayPal
-                  </p>
-                </div>
-
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 p-6 rounded-xl border border-blue-200 dark:border-blue-800">
                   <div className="flex flex-col items-center space-y-4">
                     <div className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-sm">
-                      <HugeiconsIcon 
+                      <HugeiconsIcon
                         icon={PaypalIcon}
                         className="h-10 w-10 text-blue-600 dark:text-blue-400"
                       />

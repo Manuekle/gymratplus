@@ -44,4 +44,3 @@ Estas variables son **opcionales** y el sistema las creará automáticamente si 
 - Los planes se crean con precios: $5.99/mes (mensual) y $50/año (anual)
 - Todos los planes incluyen 14 días de prueba gratis
 - En modo sandbox, puedes usar las credenciales de prueba de PayPal
-

@@ -24,7 +24,7 @@ export async function POST(req: Request) {
     if (!planId || !planType) {
       return NextResponse.json(
         { error: "Plan ID y tipo de plan son requeridos" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -76,7 +76,7 @@ export async function POST(req: Request) {
 
     // Buscar el link de aprobación en la respuesta
     const approvalLink = subscription.links?.find(
-      (link) => link.rel === "approve"
+      (link) => link.rel === "approve",
     );
 
     if (!approvalLink?.href) {
@@ -96,7 +96,7 @@ export async function POST(req: Request) {
         error: "Error al crear la suscripción",
         details: error instanceof Error ? error.message : "Error desconocido",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

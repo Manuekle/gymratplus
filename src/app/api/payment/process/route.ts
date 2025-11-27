@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     if (!planType || !["monthly", "annual"].includes(planType)) {
       return NextResponse.json(
         { error: "Tipo de plan inválido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -61,26 +61,27 @@ export async function POST(req: Request) {
       if (!productId) {
         try {
           const environment = process.env.PAYPAL_ENVIRONMENT || "sandbox";
-          const baseUrl = environment === "live" 
-            ? "https://api.paypal.com" 
-            : "https://api.sandbox.paypal.com";
-          
+          const baseUrl =
+            environment === "live"
+              ? "https://api.paypal.com"
+              : "https://api.sandbox.paypal.com";
+
           const clientId = process.env.PAYPAL_CLIENT_ID;
           const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
           if (!clientId || !clientSecret) {
             throw new Error(
-              "PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET deben estar configurados. Por favor, verifica tus variables de entorno."
+              "PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET deben estar configurados. Por favor, verifica tus variables de entorno.",
             );
           }
-          
+
           // Obtener access token
           const tokenResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
             method: "POST",
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
-              "Authorization": `Basic ${Buffer.from(
-                `${clientId}:${clientSecret}`
+              Authorization: `Basic ${Buffer.from(
+                `${clientId}:${clientSecret}`,
               ).toString("base64")}`,
             },
             body: "grant_type=client_credentials",
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
             const errorText = await tokenResponse.text();
             console.error("Error obteniendo token de PayPal:", errorText);
             throw new Error(
-              `Error de autenticación con PayPal (${tokenResponse.status}). Verifica que PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET sean correctos y correspondan al entorno ${environment}.`
+              `Error de autenticación con PayPal (${tokenResponse.status}). Verifica que PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET sean correctos y correspondan al entorno ${environment}.`,
             );
           }
 
@@ -102,19 +103,22 @@ export async function POST(req: Request) {
           }
 
           // Crear Product
-          const productResponse = await fetch(`${baseUrl}/v1/catalogs/products`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Authorization": `Bearer ${accessToken}`,
+          const productResponse = await fetch(
+            `${baseUrl}/v1/catalogs/products`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${accessToken}`,
+              },
+              body: JSON.stringify({
+                name: "GymRat Plus - Suscripción Instructor",
+                description: "Suscripción para instructores de GymRat Plus",
+                type: "SERVICE",
+                category: "SOFTWARE",
+              }),
             },
-            body: JSON.stringify({
-              name: "GymRat Plus - Suscripción Instructor",
-              description: "Suscripción para instructores de GymRat Plus",
-              type: "SERVICE",
-              category: "SOFTWARE",
-            }),
-          });
+          );
 
           if (productResponse.ok) {
             const productData = await productResponse.json();
@@ -124,16 +128,17 @@ export async function POST(req: Request) {
             const errorText = await productResponse.text();
             console.error("Error creando Product en PayPal:", errorText);
             throw new Error(
-              `No se pudo crear el Product en PayPal (${productResponse.status}). Por favor, crea un Product manualmente en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`
+              `No se pudo crear el Product en PayPal (${productResponse.status}). Por favor, crea un Product manualmente en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`,
             );
           }
         } catch (error) {
           console.error("Error creando Product:", error);
-          const errorMessage = error instanceof Error 
-            ? error.message 
-            : "Error desconocido al crear Product";
+          const errorMessage =
+            error instanceof Error
+              ? error.message
+              : "Error desconocido al crear Product";
           throw new Error(
-            `PAYPAL_PRODUCT_ID no está configurado y no se pudo crear automáticamente: ${errorMessage}. Por favor, crea un Product en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`
+            `PAYPAL_PRODUCT_ID no está configurado y no se pudo crear automáticamente: ${errorMessage}. Por favor, crea un Product en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`,
           );
         }
       }
@@ -146,7 +151,10 @@ export async function POST(req: Request) {
         billingCycles: [
           {
             frequency: {
-              intervalUnit: billingCycle === "MONTH" ? IntervalUnit.Month : IntervalUnit.Year,
+              intervalUnit:
+                billingCycle === "MONTH"
+                  ? IntervalUnit.Month
+                  : IntervalUnit.Year,
               intervalCount: 1,
             },
             tenureType: TenureType.Regular,
@@ -180,14 +188,16 @@ export async function POST(req: Request) {
       });
 
       if (result.statusCode !== 201 || !result.result) {
-        const errorDetails = result.body ? JSON.stringify(result.body) : "Sin detalles";
+        const errorDetails = result.body
+          ? JSON.stringify(result.body)
+          : "Sin detalles";
         console.error("Error creando plan:", {
           statusCode: result.statusCode,
           body: result.body,
           result: result.result,
         });
         throw new Error(
-          `Error al crear el plan en PayPal (${result.statusCode}): ${errorDetails}`
+          `Error al crear el plan en PayPal (${result.statusCode}): ${errorDetails}`,
         );
       }
 
@@ -223,7 +233,9 @@ export async function POST(req: Request) {
     });
 
     if (result.statusCode !== 201 || !result.result) {
-      const errorDetails = result.body ? JSON.stringify(result.body) : "Sin detalles";
+      const errorDetails = result.body
+        ? JSON.stringify(result.body)
+        : "Sin detalles";
       console.error("Error creando suscripción:", {
         statusCode: result.statusCode,
         body: result.body,
@@ -231,7 +243,7 @@ export async function POST(req: Request) {
         request: subscriptionRequest,
       });
       throw new Error(
-        `Error al crear la suscripción en PayPal (${result.statusCode}): ${errorDetails}`
+        `Error al crear la suscripción en PayPal (${result.statusCode}): ${errorDetails}`,
       );
     }
 
@@ -239,7 +251,7 @@ export async function POST(req: Request) {
 
     // Buscar el link de aprobación en la respuesta
     const approvalLink = subscription.links?.find(
-      (link) => link.rel === "approve"
+      (link) => link.rel === "approve",
     );
 
     if (!approvalLink?.href) {
@@ -289,14 +301,14 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Error processing payment:", error);
-    
+
     // Extraer más información del error
     let errorMessage = "Error desconocido";
     let errorDetails = "";
-    
+
     if (error instanceof Error) {
       errorMessage = error.message;
-      
+
       // Si el error tiene más información (como de PayPal SDK)
       if ("body" in error && typeof error.body === "string") {
         try {
@@ -309,12 +321,14 @@ export async function POST(req: Request) {
         errorDetails = JSON.stringify(error.result);
       }
     }
-    
+
     return new NextResponse(
       JSON.stringify({
         error: "Error al procesar la suscripción",
         message: errorMessage,
-        details: errorDetails || (error instanceof Error ? error.message : "Error desconocido"),
+        details:
+          errorDetails ||
+          (error instanceof Error ? error.message : "Error desconocido"),
         // Incluir información adicional para debugging
         ...(process.env.NODE_ENV === "development" && {
           stack: error instanceof Error ? error.stack : undefined,

@@ -8,7 +8,7 @@ export function getPayPalClient(): Client {
 
   if (!clientId || !clientSecret) {
     throw new Error(
-      "PayPal credentials not configured. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET environment variables."
+      "PayPal credentials not configured. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET environment variables.",
     );
   }
 
@@ -17,7 +17,8 @@ export function getPayPalClient(): Client {
       oAuthClientId: clientId,
       oAuthClientSecret: clientSecret,
     },
-    environment: environment === "live" ? Environment.Production : Environment.Sandbox,
+    environment:
+      environment === "live" ? Environment.Production : Environment.Sandbox,
   });
 }
 
@@ -31,4 +32,3 @@ export function getBaseUrl(): string {
   }
   return "http://localhost:3000";
 }
-

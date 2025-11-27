@@ -47,7 +47,9 @@ export async function POST(req: Request) {
         if (user) {
           // Obtener detalles de la suscripción para calcular fechas
           const paypalClient = getPayPalClient();
-          const subscriptionsController = new SubscriptionsController(paypalClient);
+          const subscriptionsController = new SubscriptionsController(
+            paypalClient,
+          );
           const result = await subscriptionsController.getSubscription({
             id: subscriptionId,
           });
@@ -177,7 +179,7 @@ export async function POST(req: Request) {
         error: "Error al procesar el webhook",
         details: error instanceof Error ? error.message : "Error desconocido",
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
