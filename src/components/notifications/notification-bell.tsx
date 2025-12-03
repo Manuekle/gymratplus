@@ -16,11 +16,9 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Notification01Icon } from "@hugeicons/core-free-icons";
-import { cn } from "@/lib/utils/utils";
 
 export function NotificationBell() {
   const [open, setOpen] = useState(false);
-  const [hasNewNotification, setHasNewNotification] = useState(false);
 
   // Función para obtener el emoji según el tipo de notificación
   const getNotificationEmoji = (type: string) => {
@@ -78,9 +76,6 @@ export function NotificationBell() {
             icon: getNotificationEmoji(notification.type),
           });
         });
-
-        setHasNewNotification(true);
-        setTimeout(() => setHasNewNotification(false), 2000);
       }
     }
 
@@ -93,7 +88,6 @@ export function NotificationBell() {
     if (open) {
       // Forzar refresh al abrir el popover para obtener notificaciones más recientes
       refetch();
-      setHasNewNotification(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]); // refetch es estable, no necesita estar en dependencias
@@ -119,12 +113,7 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative">
           <HugeiconsIcon icon={Notification01Icon} className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge
-              className={cn(
-                "absolute -top-1 -right-1 px-1 py-0 text-[8px] min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold transition-all duration-300",
-                hasNewNotification && "animate-pulse scale-110",
-              )}
-            >
+            <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[8px] min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold">
               {unreadCount > 9 ? "+9" : unreadCount}
             </Badge>
           )}

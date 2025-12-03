@@ -23,7 +23,7 @@ export function EmptyState({
 }: EmptyStateProps) {
   return (
     <div
-      className={`flex flex-col items-center justify-center text-center w-full ${className}`}
+      className={`flex flex-col items-center justify-center text-center w-full py-12 px-4 ${className}`}
     >
       {icon && <div className="mb-3">{icon}</div>}
       <h3 className="text-xs font-medium mb-2">{title}</h3>
@@ -35,14 +35,14 @@ export function EmptyState({
       {action &&
         (action.href ? (
           <Link href={action.href}>
-            <Button variant="default" size="sm" className="text-xs">
+            <Button variant="default" size="default" className="text-xs">
               {action.label}
             </Button>
           </Link>
         ) : action.onClick ? (
           <Button
             variant="default"
-            size="sm"
+            size="default"
             className="text-xs"
             onClick={action.onClick}
           >

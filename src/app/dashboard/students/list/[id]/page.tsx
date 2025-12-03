@@ -572,7 +572,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : workouts.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                   <h3 className="text-xs font-medium mb-2">
                     No hay rutinas asignadas
                   </h3>
@@ -712,7 +712,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-16 w-full" />
                 </div>
               ) : foodPlans.length === 0 ? (
-                <div className="flex flex-col items-center justify-center text-center py-8">
+                <div className="flex flex-col items-center justify-center text-center py-8 px-4">
                   <h3 className="text-xs font-medium mb-2">
                     No hay planes de alimentación
                   </h3>
@@ -875,7 +875,7 @@ export default function StudentDetailPage() {
                   <Skeleton className="h-24 w-full" />
                 </div>
               ) : workoutHistory.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
                   <h3 className="text-xs font-medium mb-2">
                     No hay entrenamientos completados
                   </h3>

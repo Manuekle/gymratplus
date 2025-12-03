@@ -78,7 +78,8 @@ type ExercisePlan = {
 
 export async function getOrCreateExercises(): Promise<Exercise[]> {
   try {
-    const existingExercises = (await prisma.exercise.findMany()) as unknown as Exercise[];
+    const existingExercises =
+      (await prisma.exercise.findMany()) as unknown as Exercise[];
     if (existingExercises.length > 0) {
       return existingExercises;
     }
@@ -613,9 +614,9 @@ export async function createUpperLowerSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-          methodology,
-        )
+            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+            methodology,
+          )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -865,9 +866,9 @@ export async function createPushPullLegsSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-          methodology,
-        )
+            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+            methodology,
+          )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -975,12 +976,13 @@ export async function createWeiderSplit(
         restTime: settings.restTime,
         notes: isPlank
           ? `${muscleGroupName} - Plancha 30-60 segundos`
-          : `${muscleGroupName} - ${i === 0
-            ? "Principal"
-            : i === 1
-              ? "Secundario"
-              : `Aislamiento ${i - 1}`
-          }`,
+          : `${muscleGroupName} - ${
+              i === 0
+                ? "Principal"
+                : i === 1
+                  ? "Secundario"
+                  : `Aislamiento ${i - 1}`
+            }`,
       });
     }
 

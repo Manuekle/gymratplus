@@ -124,7 +124,7 @@ export function MealLogList({
 
   if (mealLogs.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-center">
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
         <h3 className="text-xs font-medium mb-2">No hay comidas registradas</h3>
         <p className="text-xs text-muted-foreground max-w-sm">
           {selectedDate

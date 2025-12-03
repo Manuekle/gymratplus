@@ -16,6 +16,7 @@ import {
 import { NotificationItem } from "@/components/notifications/notification-item";
 import { NotificationPermissionButton } from "@/components/notifications/notification-permission-button";
 import { useNotificationsContext } from "@/providers/notifications-provider";
+import { EmptyState } from "@/components/ui/empty-state";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -252,18 +253,16 @@ export default function NotificationsPage() {
           {isLoading ? (
             <NotificationSkeleton cantidad={8} />
           ) : filteredNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <HugeiconsIcon
-                icon={Notification03Icon}
-                className="h-10 w-10 text-muted-foreground opacity-30 mb-3"
-              />
-              <h3 className="text-xs font-medium mb-2">
-                No hay notificaciones
-              </h3>
-              <p className="text-xs text-muted-foreground max-w-sm">
-                No tienes notificaciones en este momento
-              </p>
-            </div>
+            <EmptyState
+              title="No hay notificaciones"
+              description="No tienes notificaciones en este momento"
+              icon={
+                <HugeiconsIcon
+                  icon={Notification03Icon}
+                  className="h-10 w-10 text-muted-foreground opacity-30"
+                />
+              }
+            />
           ) : (
             <div className="border rounded-lg overflow-hidden">
               {Object.entries(groupedNotifications).map(
@@ -295,18 +294,16 @@ export default function NotificationsPage() {
           {isLoading ? (
             <NotificationSkeleton cantidad={8} />
           ) : filteredNotifications.filter((n) => !n.read).length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <HugeiconsIcon
-                icon={Notification03Icon}
-                className="h-10 w-10 text-muted-foreground opacity-30 mb-3"
-              />
-              <h3 className="text-xs font-medium mb-2">
-                No hay notificaciones sin leer
-              </h3>
-              <p className="text-xs text-muted-foreground max-w-sm">
-                Has leído todas tus notificaciones
-              </p>
-            </div>
+            <EmptyState
+              title="No hay notificaciones sin leer"
+              description="Has leído todas tus notificaciones"
+              icon={
+                <HugeiconsIcon
+                  icon={Notification03Icon}
+                  className="h-10 w-10 text-muted-foreground opacity-30"
+                />
+              }
+            />
           ) : (
             <div className="border rounded-lg overflow-hidden">
               <div className="divide-y">

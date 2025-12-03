@@ -174,7 +174,7 @@ export default function WorkoutHistoryPage() {
 
   if (workoutSessions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4 px-4">
         <h2 className="text-xs font-medium">
           No hay entrenamientos completados
         </h2>

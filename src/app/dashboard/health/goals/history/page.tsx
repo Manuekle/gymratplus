@@ -79,7 +79,7 @@ export default function GoalsHistoryPage() {
         const days = Math.ceil(
           (new Date(goal.completedDate).getTime() -
             new Date(goal.startDate).getTime()) /
-          (1000 * 60 * 60 * 24),
+            (1000 * 60 * 60 * 24),
         );
         return acc + days;
       }
@@ -105,10 +105,10 @@ export default function GoalsHistoryPage() {
     const daysToComplete =
       goal.completedDate && goal.startDate
         ? Math.ceil(
-          (new Date(goal.completedDate).getTime() -
-            new Date(goal.startDate).getTime()) /
-          (1000 * 60 * 60 * 24),
-        )
+            (new Date(goal.completedDate).getTime() -
+              new Date(goal.startDate).getTime()) /
+              (1000 * 60 * 60 * 24),
+          )
         : null;
     const completedDate = goal.completedDate
       ? new Date(goal.completedDate)
@@ -283,7 +283,7 @@ export default function GoalsHistoryPage() {
             </CardTitle>
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4 px-4">
           <h2 className="text-xs font-medium">No hay objetivos completados</h2>
           <p className="text-xs text-muted-foreground max-w-sm">
             Aún no has completado ningún objetivo. Crea uno para comenzar a
@@ -292,7 +292,7 @@ export default function GoalsHistoryPage() {
           <Button
             variant="default"
             className="text-xs"
-            size="sm"
+            size="default"
             onClick={() => router.push("/dashboard/health/goal")}
           >
             Crear objetivo

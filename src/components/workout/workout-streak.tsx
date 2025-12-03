@@ -140,41 +140,8 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           previousStreak.current = newStreak;
         }
 
-        // Verificar si está en el día crítico después de obtener los datos
-        // Usar los datos de check-reset para obtener información más precisa
-        if (newStreak > 0) {
-          try {
-            const checkResponse = await fetch(
-              "/api/workout-streak/check-reset",
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ userId }),
-              },
-            );
-
-            const checkResult = await checkResponse.json();
-
-            // Si está en el día crítico, mostrar alert
-            if (checkResult.isCriticalDay && newStreak > 0) {
-              const todayKey = new Date().toDateString();
-              const lastShownKey = sessionStorage.getItem(
-                "streakRiskAlertShown",
-              );
-
-              if (lastShownKey !== todayKey && !hasShownRiskAlert.current) {
-                showStreakRiskAlert(
-                  newStreak,
-                  checkResult.allowedRestDays || 0,
-                );
-                sessionStorage.setItem("streakRiskAlertShown", todayKey);
-                hasShownRiskAlert.current = true;
-              }
-            }
-          } catch (error) {
-            console.error("Error checking critical day in fetchStats:", error);
-          }
-        }
+        // Critical day check is handled by checkStreak() function
+        // to avoid duplicate checks and race conditions
       } catch (error) {
         console.error("Error fetching streak stats:", error);
         // En caso de error, mostrar 0 días

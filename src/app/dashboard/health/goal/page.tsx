@@ -448,9 +448,9 @@ export default function GoalPage() {
                     >
                       {unit
                         ? unitOptions
-                          .flatMap((group) => group.items)
-                          .find((u) => u.value === unit)?.label ||
-                        "Seleccionar unidad"
+                            .flatMap((group) => group.items)
+                            .find((u) => u.value === unit)?.label ||
+                          "Seleccionar unidad"
                         : "Seleccionar unidad"}
                       <HugeiconsIcon
                         icon={UnfoldMoreIcon}
@@ -531,7 +531,7 @@ export default function GoalPage() {
                       >
                         {exerciseType
                           ? exercises.find((ex) => ex.value === exerciseType)
-                            ?.label
+                              ?.label
                           : "Seleccionar ejercicio"}
                         <HugeiconsIcon
                           icon={UnfoldMoreIcon}

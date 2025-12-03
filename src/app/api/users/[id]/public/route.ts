@@ -74,9 +74,9 @@ export async function GET(
       isInstructor: user.isInstructor,
       profile: user.profile
         ? {
-          goal: user.profile.goal,
-          experienceLevel: user.experienceLevel || null,
-        }
+            goal: user.profile.goal,
+            experienceLevel: user.experienceLevel || null,
+          }
         : undefined,
     };
 

@@ -288,7 +288,7 @@ export function GoalsDashboard() {
               <ProgressSkeleton />
             </div>
           ) : goals.length === 0 ? (
-            <div className="text-center py-16">
+            <div className="text-center py-16 px-4">
               <h3 className="text-xs font-medium mb-2">
                 No hay objetivos activos
               </h3>

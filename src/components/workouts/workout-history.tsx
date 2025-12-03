@@ -11,6 +11,7 @@ import {
 import { differenceInDays } from "date-fns";
 
 import Link from "next/link";
+import { EmptyState } from "../ui/empty-state";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -122,14 +123,15 @@ export default function WorkoutSummary() {
               ))}
             </div>
           ) : workoutSessions.length === 0 ? (
-            <div className="justify-center py-40 items-center flex flex-col">
-              <h2 className="text-xs font-medium">
-                No hay entrenamientos recientes.
-              </h2>
-              <p className="text-muted-foreground text-xs">
-                Inicia un nuevo entrenamiento para ver tu historial aquí.
-              </p>
-            </div>
+            <EmptyState
+              title="No hay entrenamientos recientes"
+              description="Inicia un nuevo entrenamiento para ver tu historial aquí."
+              action={{
+                label: "Iniciar entrenamiento",
+                href: "/dashboard/workout/active",
+              }}
+              className="py-40"
+            />
           ) : (
             <>
               {currentWorkouts.map((session) => {
