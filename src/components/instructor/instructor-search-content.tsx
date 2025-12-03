@@ -19,13 +19,7 @@ import type { InstructorProfile, User } from "@prisma/client";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { CountrySelector } from "@/components/shared/country-selector";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { useCountries } from "@/hooks/use-countries";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SPECIALTIES } from "@/data/specialties";
@@ -69,7 +63,6 @@ export default function InstructorSearchContent() {
       setMaxPrice(searchParams.get("maxPrice") || "");
       setSelectedSpecialties(searchParams.get("tagFilter")?.split(",") || []);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
 
   const loadExistingRequests = useCallback(async () => {

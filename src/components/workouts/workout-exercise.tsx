@@ -41,7 +41,6 @@ export default function WorkoutExercise({
   isOpen,
   onClose,
   days,
-  existingExercises = [],
   onExerciseAdded,
   selectedDay = "",
 }: WorkoutExerciseProps) {

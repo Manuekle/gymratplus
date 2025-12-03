@@ -73,7 +73,8 @@ export function useChatMessages(chatId: string | null) {
         const lastMessageTime =
           messagesRef.current.length > 0
             ? new Date(
-                messagesRef.current[messagesRef.current.length - 1].createdAt,
+                messagesRef.current[messagesRef.current.length - 1]
+                  ?.createdAt ?? new Date().toISOString(),
               ).toISOString()
             : undefined;
 
@@ -100,7 +101,9 @@ export function useChatMessages(chatId: string | null) {
           if (newMessages.length > 0) {
             setMessages((prev) => {
               const existingIds = new Set(prev.map((m) => m.id));
-              const toAdd = newMessages.filter((m) => !existingIds.has(m.id));
+              const toAdd = newMessages.filter(
+                (m: ChatMessage) => !existingIds.has(m.id),
+              );
               if (toAdd.length === 0) return prev;
               const updated = [...prev, ...toAdd];
               messagesRef.current = updated;
@@ -246,7 +249,7 @@ export function useChatMessages(chatId: string | null) {
         isSendingRef.current = false;
       }
     },
-    [chatId, session, scrollToBottom],
+    [chatId, session, scrollToBottom, isSending],
   );
 
   useEffect(() => {
@@ -292,7 +295,7 @@ export function useChatMessages(chatId: string | null) {
       }
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [chatId, fetchMessages]);
+  }, [chatId, fetchMessages, isSending]);
 
   useEffect(() => {
     // Use requestAnimationFrame to ensure DOM is updated

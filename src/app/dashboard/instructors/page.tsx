@@ -16,11 +16,7 @@ import { toast } from "sonner";
 
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  GlobeIcon,
-  MapPinIcon,
-  Cancel01Icon,
-} from "@hugeicons/core-free-icons";
+import { GlobeIcon, MapPinIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { StartChatButton } from "@/components/chats/start-chat-button";
 import { useCountries } from "@/hooks/use-countries";

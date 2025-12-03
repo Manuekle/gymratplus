@@ -29,7 +29,6 @@ import {
   SentIcon,
   Cancel01Icon,
   MoreHorizontalIcon,
-  Delete02Icon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils/utils";

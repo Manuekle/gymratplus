@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
   Card,
@@ -143,13 +143,13 @@ export default function FoodPlanViewPage() {
   const planId = params?.id as string;
 
   const [foodPlan, setFoodPlan] = useState<FoodPlan | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchFoodPlan = async () => {
       if (!planId) return;
 
-      setLoading(true);
+      setIsLoading(true);
       try {
         const res = await fetch(`/api/food-recommendations/${planId}`);
         if (!res.ok) {
@@ -163,35 +163,14 @@ export default function FoodPlanViewPage() {
           description: "Hubo un problema al obtener la información del plan.",
         });
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     };
 
     fetchFoodPlan();
   }, [planId]);
 
-  // Calcular totales diarios
-  const dailyTotals = useMemo(() => {
-    if (!foodPlan?.meals) return null;
-
-    const totals = {
-      calories: 0,
-      protein: 0,
-      carbs: 0,
-      fat: 0,
-    };
-
-    Object.values(foodPlan.meals).forEach((meal) => {
-      if (meal?.totalCalories) totals.calories += meal.totalCalories;
-      if (meal?.totalProtein) totals.protein += meal.totalProtein;
-      if (meal?.totalCarbs) totals.carbs += meal.totalCarbs;
-      if (meal?.totalFat) totals.fat += meal.totalFat;
-    });
-
-    return totals;
-  }, [foodPlan]);
-
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="space-y-6">
         {/* Header Skeleton */}

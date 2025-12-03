@@ -3,7 +3,6 @@ import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
 import { sendEmail } from "@/lib/email/resend";
 import { renderPasswordResetCodeEmail } from "@/lib/email/templates/password-reset-code";
-import crypto from "crypto";
 
 // Función para validar email
 function validateEmail(email: string): boolean {
@@ -95,7 +94,7 @@ export async function POST(request: NextRequest) {
     // Enviar email con el código usando Resend
     const emailHtml = await renderPasswordResetCodeEmail({
       code: resetCode,
-      userName: user.name || undefined,
+      userName: user.name ?? undefined,
       userEmail: user.email,
       expiresIn: "10 minutos",
     });

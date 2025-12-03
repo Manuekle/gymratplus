@@ -34,7 +34,6 @@ import {
   TapeMeasureIcon,
   WeightScaleIcon,
 } from "@hugeicons/core-free-icons";
-import Link from "next/link";
 
 interface UserProfile {
   id: string;

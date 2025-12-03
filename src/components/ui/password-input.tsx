@@ -16,7 +16,6 @@ interface PasswordInputProps
 
 export function PasswordInput({
   className,
-  showStrengthIndicator = false,
   onStrengthChange,
   value,
   onChange,
