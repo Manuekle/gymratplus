@@ -1047,7 +1047,7 @@ export default function RegisterFoodPage() {
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs w-full"
+          className="text-xs w-full md:w-auto"
           size="default"
           onClick={() => router.push("/dashboard/nutrition")}
         >

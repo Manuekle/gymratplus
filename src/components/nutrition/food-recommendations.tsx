@@ -404,7 +404,7 @@ export default function FoodRecommendations() {
         <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
           <Button
             variant="outline"
-            className="text-xs w-full"
+            className="text-xs w-full md:w-auto"
             size="default"
             onClick={() => router.push("/dashboard/nutrition")}
           >
@@ -424,7 +424,7 @@ export default function FoodRecommendations() {
           <CardContent className="px-4">
             <div className="flex flex-col items-center justify-center py-12 space-y-4">
               <div className="text-center space-y-2">
-                <h3 className="text-lg font-semibold tracking-heading">
+                <h3 className="text-2xl font-semibold tracking-heading">
                   No hay planes disponibles
                 </h3>
                 <p className="text-xs text-muted-foreground max-w-md">
@@ -506,7 +506,7 @@ export default function FoodRecommendations() {
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs w-full"
+          className="text-xs w-full md:w-auto"
           size="default"
           onClick={() => router.push("/dashboard/nutrition")}
         >

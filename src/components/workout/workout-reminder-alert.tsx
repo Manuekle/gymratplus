@@ -426,7 +426,7 @@ export function WorkoutReminderAlert({
                       {isMarkingRestDay ? "Registrando..." : "Día de descanso"}
                     </Button>
                   )}
-                  <Link href="/dashboard/workout/active" className="w-full">
+                  <Link href="/dashboard/workout" className="w-full">
                     <Button className="w-full">Iniciar entrenamiento</Button>
                   </Link>
                 </div>

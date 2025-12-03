@@ -272,15 +272,12 @@ export default function GoalsHistoryPage() {
             <Button
               variant="outline"
               size="default"
-              onClick={() => router.push("/dashboard/health/goals")}
+              onClick={() => router.push("/dashboard/health")}
               className="mb-2 text-xs w-full md:w-auto"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />
               Volver a objetivos
             </Button>
-            <CardTitle className="text-2xl font-semibold tracking-heading pt-4">
-              Historial de Objetivos
-            </CardTitle>
           </div>
         </div>
         <div className="flex flex-col items-center justify-center min-h-[60vh] text-center gap-4 px-4">
