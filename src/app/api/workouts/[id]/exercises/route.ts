@@ -68,7 +68,7 @@ export async function GET(request: NextRequest) {
 
     if (!typedWorkout) {
       return NextResponse.json(
-        { error: "Workout no encontrado" },
+        { error: "Entrenamiento no encontrado" },
         { status: 404 },
       );
     }
@@ -149,7 +149,7 @@ export async function POST(request: NextRequest) {
         session.user.id,
       );
       return NextResponse.json(
-        { error: "Workout no encontrado o no autorizado" },
+        { error: "Entrenamiento no encontrado o no autorizado" },
         { status: 404 },
       );
     }

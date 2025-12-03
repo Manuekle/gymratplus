@@ -272,8 +272,10 @@ export default function ForgotPasswordPage() {
                 )}
               </div>
               <div className="text-center">
-                <button
+                <Button
                   type="button"
+                  variant="ghost"
+                  size="default"
                   onClick={handleResendCode}
                   disabled={loading}
                   className="text-xs text-primary hover:underline disabled:opacity-50"
@@ -281,7 +283,7 @@ export default function ForgotPasswordPage() {
                   {loading
                     ? "Reenviando..."
                     : "¿No recibiste el código? Reenviar"}
-                </button>
+                </Button>
               </div>
               {successMessage && (
                 <p className="text-green-600 dark:text-green-400 text-xs text-center">

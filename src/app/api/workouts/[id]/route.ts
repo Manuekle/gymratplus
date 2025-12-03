@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 
     if (!workout) {
       return NextResponse.json(
-        { error: "Workout no encontrado" },
+        { error: "Entrenamiento no encontrado" },
         { status: 404 },
       );
     }

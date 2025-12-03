@@ -150,14 +150,12 @@ export function FoodPortionSelector({
                   Math.abs(portion.value - currentQuantityInBase) < 1;
 
                 return (
-                  <button
+                  <Button
                     key={idx}
+                    variant={isSelected ? "default" : "outline"}
+                    size="default"
                     onClick={() => handlePortionSelect(portion)}
-                    className={`p-2 rounded-lg border text-left transition-all ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground border-primary"
-                        : "bg-card hover:bg-accent border-border"
-                    }`}
+                    className="p-2 rounded-lg text-left transition-all h-auto flex flex-col items-start"
                   >
                     <div className="text-xs font-medium mb-1">
                       {portion.label}
@@ -165,7 +163,7 @@ export function FoodPortionSelector({
                     <div className="text-xs opacity-80">
                       {portionMacros.calories} kcal
                     </div>
-                  </button>
+                  </Button>
                 );
               })}
             </div>

@@ -78,14 +78,14 @@ type ExercisePlan = {
 
 export async function getOrCreateExercises(): Promise<Exercise[]> {
   try {
-    const existingExercises = (await prisma.exercise.findMany()) as Exercise[];
+    const existingExercises = (await prisma.exercise.findMany()) as unknown as Exercise[];
     if (existingExercises.length > 0) {
       return existingExercises;
     }
 
     const createdExercises = (await prisma.$transaction(
       exercises.map((exercise) => prisma.exercise.create({ data: exercise })),
-    )) as Exercise[];
+    )) as unknown as Exercise[];
 
     console.log(`Created ${createdExercises.length} exercises`);
     return createdExercises;
@@ -287,9 +287,11 @@ function selectUniqueExercises(
   while (selectedExercises.length < count && pool.length > 0) {
     const randomIndex = Math.floor(Math.random() * pool.length);
     const exercise = pool.splice(randomIndex, 1)[0];
-    selectedExercises.push(exercise);
-    // Only mark as used if it was drawn from the unique pool
-    usedExercises.add(exercise.id);
+    if (exercise) {
+      selectedExercises.push(exercise);
+      // Only mark as used if it was drawn from the unique pool
+      usedExercises.add(exercise.id);
+    }
   }
 
   // If after drawing from unique pool we still need more, take from the full pool (repetition allowed)
@@ -300,7 +302,10 @@ function selectUniqueExercises(
     );
     for (let i = 0; i < remaining; i++) {
       const fallbackIndex = i % fallbackExercises.length; // Cycle through available fallbacks
-      selectedExercises.push(fallbackExercises[fallbackIndex]);
+      const fallbackExercise = fallbackExercises[fallbackIndex];
+      if (fallbackExercise) {
+        selectedExercises.push(fallbackExercise);
+      }
     }
   }
 
@@ -453,7 +458,7 @@ export async function createFullBodyWorkout(
 
     const finalExercises =
       methodology !== "standard"
-        ? applyMethodology(dayExercises, methodology, goal)
+        ? applyMethodology(dayExercises, methodology)
         : dayExercises;
 
     for (const ex of finalExercises) {
@@ -492,7 +497,16 @@ export async function createUpperLowerSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
@@ -599,10 +613,9 @@ export async function createUpperLowerSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-            goal,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -637,7 +650,16 @@ export async function createPushPullLegsSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
   const usedExercises = new Set<string>();
 
@@ -843,10 +865,9 @@ export async function createPushPullLegsSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-            goal,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -881,7 +902,16 @@ export async function createWeiderSplit(
   trainingFrequency: number,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   // Filter exercises by muscle group
@@ -945,13 +975,12 @@ export async function createWeiderSplit(
         restTime: settings.restTime,
         notes: isPlank
           ? `${muscleGroupName} - Plancha 30-60 segundos`
-          : `${muscleGroupName} - ${
-              i === 0
-                ? "Principal"
-                : i === 1
-                  ? "Secundario"
-                  : `Aislamiento ${i - 1}`
-            }`,
+          : `${muscleGroupName} - ${i === 0
+            ? "Principal"
+            : i === 1
+              ? "Secundario"
+              : `Aislamiento ${i - 1}`
+          }`,
       });
     }
 
@@ -959,7 +988,7 @@ export async function createWeiderSplit(
 
     const finalExercises =
       methodology !== "standard"
-        ? applyMethodology(dayExercises, methodology, goal)
+        ? applyMethodology(dayExercises, methodology)
         : dayExercises;
 
     for (const ex of finalExercises) {
@@ -997,7 +1026,16 @@ export async function createChestTricepsWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
@@ -1060,7 +1098,7 @@ export async function createChestTricepsWorkout(
 
   const finalExercises =
     methodology !== "standard"
-      ? applyMethodology(dayExercises, methodology, goal)
+      ? applyMethodology(dayExercises, methodology)
       : dayExercises;
 
   for (const ex of finalExercises) {
@@ -1089,7 +1127,16 @@ export async function createBackBicepsWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
@@ -1152,7 +1199,7 @@ export async function createBackBicepsWorkout(
 
   const finalExercises =
     methodology !== "standard"
-      ? applyMethodology(dayExercises, methodology, goal)
+      ? applyMethodology(dayExercises, methodology)
       : dayExercises;
 
   for (const ex of finalExercises) {
@@ -1181,7 +1228,16 @@ export async function createLegWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
@@ -1234,7 +1290,7 @@ export async function createLegWorkout(
 
   const finalExercises =
     methodology !== "standard"
-      ? applyMethodology(dayExercises, methodology, goal)
+      ? applyMethodology(dayExercises, methodology)
       : dayExercises;
 
   for (const ex of finalExercises) {
@@ -1263,7 +1319,16 @@ export async function createShoulderWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
@@ -1309,7 +1374,7 @@ export async function createShoulderWorkout(
 
   const finalExercises =
     methodology !== "standard"
-      ? applyMethodology(dayExercises, methodology, goal)
+      ? applyMethodology(dayExercises, methodology)
       : dayExercises;
 
   for (const ex of finalExercises) {
@@ -1338,7 +1403,16 @@ export async function createCoreWorkout(
   goal: WorkoutGoal,
   methodology: Methodology = "standard",
 ) {
-  const workoutExercises: ExercisePlan[] = [];
+  const workoutExercises: {
+    workoutId: string;
+    exerciseId: string;
+    sets: number;
+    reps: number;
+    restTime: number | null;
+    order: number;
+    notes: string | null;
+    weight: null;
+  }[] = [];
   let order = 1;
 
   const coreExercises = filterExercisesByMuscleGroup(exercises, "core");
@@ -1383,7 +1457,7 @@ export async function createCoreWorkout(
 
   const finalExercises =
     methodology !== "standard"
-      ? applyMethodology(dayExercises, methodology, goal)
+      ? applyMethodology(dayExercises, methodology)
       : dayExercises;
 
   for (const ex of finalExercises) {

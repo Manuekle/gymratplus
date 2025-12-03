@@ -352,16 +352,13 @@ export default function GoalPage() {
                     "activity",
                   ] as GoalType[]
                 ).map((t) => (
-                  <button
+                  <Button
                     key={t}
                     type="button"
+                    variant={type === t ? "secondary" : "outline"}
+                    size="default"
                     onClick={() => setType(t)}
-                    className={cn(
-                      "flex flex-col items-center border border-zinc-200 dark:border-zinc-800 justify-center p-3 rounded-lg transition-all h-full min-h-[100px]",
-                      type === t
-                        ? "bg-zinc-100 dark:bg-zinc-800 shadow-sm"
-                        : "bg-card hover:bg-accent/50 dark:hover:bg-zinc-800/70",
-                    )}
+                    className="flex flex-col items-center justify-center p-3 rounded-lg transition-all h-full min-h-[100px]"
                   >
                     <span className="text-2xl mb-1">{getTypeIcon(t)}</span>
                     <span className="text-xs font-medium capitalize">
@@ -370,7 +367,7 @@ export default function GoalPage() {
                       {t === "measurement" && "Medidas"}
                       {t === "activity" && "Actividad"}
                     </span>
-                  </button>
+                  </Button>
                 ))}
               </div>
             </div>
@@ -451,9 +448,9 @@ export default function GoalPage() {
                     >
                       {unit
                         ? unitOptions
-                            .flatMap((group) => group.items)
-                            .find((u) => u.value === unit)?.label ||
-                          "Seleccionar unidad"
+                          .flatMap((group) => group.items)
+                          .find((u) => u.value === unit)?.label ||
+                        "Seleccionar unidad"
                         : "Seleccionar unidad"}
                       <HugeiconsIcon
                         icon={UnfoldMoreIcon}
@@ -534,7 +531,7 @@ export default function GoalPage() {
                       >
                         {exerciseType
                           ? exercises.find((ex) => ex.value === exerciseType)
-                              ?.label
+                            ?.label
                           : "Seleccionar ejercicio"}
                         <HugeiconsIcon
                           icon={UnfoldMoreIcon}

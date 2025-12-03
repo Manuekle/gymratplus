@@ -37,7 +37,6 @@ import {
   PresentationBarChart02Icon,
 } from "@hugeicons/core-free-icons";
 import { format } from "date-fns";
-import { cn } from "@/lib/utils/utils";
 import { Icons } from "@/components/icons";
 // cambiar todo
 export default function FoodRecommendations() {
@@ -566,8 +565,10 @@ export default function FoodRecommendations() {
                       const isSelected = selectedRecommendation?.id === rec.id;
 
                       return (
-                        <button
+                        <Button
                           key={rec.id}
+                          variant={isSelected ? "default" : "outline"}
+                          size="default"
                           onClick={async () => {
                             // Cargar los datos completos del plan seleccionado
                             try {
@@ -585,12 +586,7 @@ export default function FoodRecommendations() {
                               setSelectedRecommendation(rec);
                             }
                           }}
-                          className={cn(
-                            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap flex-shrink-0",
-                            isSelected
-                              ? "bg-primary text-primary-foreground font-medium"
-                              : "bg-muted hover:bg-muted/80 text-muted-foreground",
-                          )}
+                          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-full text-xs transition-all whitespace-nowrap flex-shrink-0"
                         >
                           <HugeiconsIcon
                             icon={Calendar01Icon}
@@ -604,7 +600,7 @@ export default function FoodRecommendations() {
                               · {calorieTarget} kcal
                             </span>
                           )}
-                        </button>
+                        </Button>
                       );
                     })}
                 </div>

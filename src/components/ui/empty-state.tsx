@@ -35,15 +35,15 @@ export function EmptyState({
       {action &&
         (action.href ? (
           <Link href={action.href}>
-            <Button variant="outline" size="default" className="text-xs h-7">
+            <Button variant="default" size="sm" className="text-xs">
               {action.label}
             </Button>
           </Link>
         ) : action.onClick ? (
           <Button
-            variant="outline"
-            size="default"
-            className="text-xs h-7"
+            variant="default"
+            size="sm"
+            className="text-xs"
             onClick={action.onClick}
           >
             {action.label}

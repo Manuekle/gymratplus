@@ -74,9 +74,9 @@ export async function GET(
       isInstructor: user.isInstructor,
       profile: user.profile
         ? {
-            goal: user.profile.goal,
-            experienceLevel: user.experienceLevel || null,
-          }
+          goal: user.profile.goal,
+          experienceLevel: user.experienceLevel || null,
+        }
         : undefined,
     };
 
@@ -103,7 +103,7 @@ export async function GET(
     }
 
     return NextResponse.json(response, { status: 200 });
-  } catch {
+  } catch (error) {
     console.error("[GET_USER_PUBLIC_ERROR]", error);
 
     // Handle Prisma errors

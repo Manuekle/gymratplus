@@ -101,13 +101,15 @@ export function FoodSearchInput({
           className="absolute z-50 w-full mt-1 bg-popover border rounded-md shadow-md max-h-60 overflow-auto"
         >
           {suggestions.map((suggestion, idx) => (
-            <button
+            <Button
               key={idx}
+              variant="ghost"
+              size="default"
               onClick={() => handleSuggestionClick(suggestion)}
-              className="w-full text-left px-4 py-2 text-xs hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md"
+              className="w-full justify-start text-left px-4 py-2 text-xs hover:bg-accent transition-colors first:rounded-t-md last:rounded-b-md h-auto"
             >
               {suggestion}
-            </button>
+            </Button>
           ))}
         </div>
       )}

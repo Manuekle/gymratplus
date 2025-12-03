@@ -30,6 +30,7 @@ interface WorkoutSession {
   duration?: number;
   exercises: Exercise[];
   notes?: string;
+  completed: boolean;
 }
 
 export default function WorkoutSummary() {
@@ -132,46 +133,68 @@ export default function WorkoutSummary() {
               className="flex-1 h-full"
             />
           ) : (
-            workoutSessions.slice(0, 2).map((session) => (
-              <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                  <h4 className="font-semibold tracking-heading text-lg">
-                    {session.notes?.replace("Día: ", "") || "Entrenamiento"}
-                  </h4>
-                  <span className="text-xs text-muted-foreground sm:text-right">
-                    {(() => {
-                      const sessionDate = new Date(session.date);
-                      sessionDate.setHours(0, 0, 0, 0);
-                      const today = new Date();
-                      today.setHours(0, 0, 0, 0);
-                      const daysDiff = differenceInDays(today, sessionDate);
+            workoutSessions.slice(0, 2).map((session) => {
+              const sessionContent = (
+                <>
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                    <h4 className="font-semibold tracking-heading text-lg">
+                      {session.notes?.replace("Día: ", "") || "Entrenamiento"}
+                    </h4>
+                    <span className="text-xs text-muted-foreground sm:text-right">
+                      {(() => {
+                        const sessionDate = new Date(session.date);
+                        sessionDate.setHours(0, 0, 0, 0);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const daysDiff = differenceInDays(today, sessionDate);
 
-                      if (daysDiff === 0) {
-                        return "Hoy";
-                      } else if (daysDiff === 1) {
-                        return "Ayer";
-                      } else {
-                        return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
-                      }
-                    })()}
-                  </span>
-                </div>
-                <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
-                  <div className="flex items-center">
-                    <HugeiconsIcon
-                      icon={Clock01Icon}
-                      className="h-3 w-3 mr-1 text-foreground"
-                    />
-                    <span>
-                      {session.duration ? `${session.duration} min` : "N/A"}
+                        if (daysDiff === 0) {
+                          return "Hoy";
+                        } else if (daysDiff === 1) {
+                          return "Ayer";
+                        } else {
+                          return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                        }
+                      })()}
                     </span>
                   </div>
-                  <div>
-                    <span>{session.exercises.length} ejercicios</span>
+                  <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
+                    <div className="flex items-center">
+                      <HugeiconsIcon
+                        icon={Clock01Icon}
+                        className="h-3 w-3 mr-1 text-foreground"
+                      />
+                      <span>
+                        {session.duration ? `${session.duration} min` : "N/A"}
+                      </span>
+                    </div>
+                    <div>
+                      <span>{session.exercises.length} ejercicios</span>
+                    </div>
                   </div>
+                </>
+              );
+
+              // Only make it a link if the workout is not completed
+              if (!session.completed) {
+                return (
+                  <Link
+                    key={session.id}
+                    href={`/dashboard/workout/${session.id}`}
+                    className="block p-3 sm:p-4 border rounded-lg hover:border-foreground/20 hover:bg-accent/50 transition-colors cursor-pointer"
+                  >
+                    {sessionContent}
+                  </Link>
+                );
+              }
+
+              // For completed workouts, just show as a div
+              return (
+                <div key={session.id} className="p-3 sm:p-4 border rounded-lg">
+                  {sessionContent}
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </CardContent>

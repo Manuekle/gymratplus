@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   DialogDescription,
   DialogHeader,
@@ -77,17 +78,15 @@ export function StepResults({ workout }: StepResultsProps) {
           <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
             <div className="flex flex-nowrap overflow-x-auto pb-1 gap-1.5 hide-scrollbar">
               {workout.days.map((day, index) => (
-                <button
+                <Button
                   key={index}
+                  variant={selectedDay === day.day ? "default" : "outline"}
+                  size="default"
                   onClick={() => setSelectedDay(day.day)}
-                  className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${
-                    selectedDay === day.day
-                      ? "bg-primary/80 dark:bg-primary/20 border-primary/20 text-white dark:text-white font-medium"
-                      : "border-border/50 text-black dark:text-white hover:bg-muted/50"
-                  }`}
+                  className="flex-shrink-0 px-2 py-1 text-xs rounded-full transition-all"
                 >
                   {day.day}
-                </button>
+                </Button>
               ))}
             </div>
           </div>

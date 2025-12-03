@@ -118,7 +118,7 @@ export default function WorkouPage() {
   if (error) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[300px] text-center gap-4">
-        <h2 className="text-lg font-semibold text-destructive">{error}</h2>
+        <h2 className="text-3xl font-semibold tracking-heading text-destructive">{error}</h2>
         <Button
           variant="outline"
           onClick={() => router.push("/dashboard/workout")}

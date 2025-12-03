@@ -67,7 +67,7 @@ export function QuickActions() {
             transition={{ delay: index * 0.03, duration: 0.2 }}
           >
             <Link href={action.href}>
-              <div className="inline-flex items-center gap-2 px-3 py-2 border rounded-lg hover:bg-muted/50 transition-colors">
+              <div className="inline-flex items-center gap-2 px-3 py-1 border rounded-lg hover:bg-muted/50 transition-colors">
                 <HugeiconsIcon
                   icon={action.icon}
                   className="h-4 w-4 text-foreground"

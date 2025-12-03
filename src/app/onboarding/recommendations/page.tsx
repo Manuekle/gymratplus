@@ -6,6 +6,7 @@ import Recommendations from "@/components/recommendations";
 import { ThemeToggle } from "@/components/layout/theme/theme-toggle";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function RecommendationsPage() {
   const router = useRouter();
@@ -148,12 +149,14 @@ export default function RecommendationsPage() {
               </p>
             </div>
             <div>
-              <button
+              <Button
+                variant="ghost"
+                size="default"
                 onClick={() => router.push("/dashboard")}
                 className="text-xs font-medium text-foreground hover:text-primary transition-colors underline underline-offset-4"
               >
                 Ir al dashboard ahora
-              </button>
+              </Button>
             </div>
           </div>
         </div>

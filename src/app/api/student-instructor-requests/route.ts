@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(studentInstructorRequest, { status: 200 });
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

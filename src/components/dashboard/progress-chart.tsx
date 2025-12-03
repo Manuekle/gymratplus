@@ -366,12 +366,14 @@ export default function ProgressChart({
           ) : error ? (
             <div className="flex flex-col items-center justify-center h-full">
               <p className="text-red-500 mb-2">Error: {error}</p>
-              <button
+              <Button
+                variant="default"
+                size="default"
                 onClick={() => loadData()}
-                className="px-3 py-1 bg-primary text-white rounded-md text-xs"
+                className="px-3 py-1 text-xs"
               >
                 Reintentar
-              </button>
+              </Button>
             </div>
           ) : chartData.length === 0 ? (
             <EmptyState
