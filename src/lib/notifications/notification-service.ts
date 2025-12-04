@@ -30,7 +30,7 @@ export async function createNotification({
   message,
   type,
 }: CreateNotificationParams): Promise<Notification> {
-  return prisma.notification.create({
+  const notification = await prisma.notification.create({
     data: {
       userId,
       title,
@@ -39,6 +39,55 @@ export async function createNotification({
       read: false,
     },
   });
+
+  // Send Push Notification
+  try {
+    // @ts-ignore - PushSubscription is generated but not picked up by IDE sometimes
+    const subscriptions = await prisma.pushSubscription.findMany({
+      where: { userId },
+    });
+
+    if (subscriptions.length > 0) {
+      // Import web-push dynamically to avoid issues in edge runtimes if applicable
+      // though this is a server action/lib, dynamic import is safer for optional deps
+      const webpush = require("web-push");
+
+      // Ensure VAPID keys are available
+      if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+        webpush.setVapidDetails(
+          process.env.VAPID_SUBJECT || "mailto:support@gymratplus.com",
+          process.env.VAPID_PUBLIC_KEY,
+          process.env.VAPID_PRIVATE_KEY,
+        );
+
+        const payload = JSON.stringify({
+          title,
+          body: message,
+          url: "/dashboard/notifications", // Default URL, could be improved with type-specific URLs
+        });
+
+        await Promise.allSettled(
+          subscriptions.map((sub: any) =>
+            webpush.sendNotification(
+              {
+                endpoint: sub.endpoint,
+                keys: {
+                  p256dh: sub.p256dh,
+                  auth: sub.auth,
+                },
+              },
+              payload,
+            ),
+          ),
+        );
+      }
+    }
+  } catch (error) {
+    console.error("Error sending push notification:", error);
+    // Don't fail the notification creation if push fails
+  }
+
+  return notification;
 }
 
 export async function createNotificationByEmail({

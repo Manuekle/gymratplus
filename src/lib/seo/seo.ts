@@ -19,6 +19,7 @@ export interface SEOConfig {
   url?: string;
   noindex?: boolean;
   nofollow?: boolean;
+  manifest?: string;
   openGraph?: {
     title?: string;
     description?: string;
@@ -47,6 +48,7 @@ export function generateMetadata(config: SEOConfig = {}): Metadata {
     url,
     noindex = false,
     nofollow = false,
+    manifest,
     openGraph,
     twitter,
   } = config;
@@ -88,6 +90,7 @@ export function generateMetadata(config: SEOConfig = {}): Metadata {
     keywords: keywordsArray,
     metadataBase: new URL(SITE_CONFIG.url),
     robots: robots.join(", "),
+    manifest: manifest,
     openGraph: {
       title: openGraph?.title || fullTitle,
       description: openGraph?.description || metaDescription,

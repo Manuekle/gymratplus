@@ -153,27 +153,14 @@ export default function GymRatLanding() {
               >
                 Precios
               </Link>
-              <Link
-                href="/auth/signin"
-                className="hidden lg:flex text-foreground hover:text-black dark:hover:text-white transition-colors text-xs"
-              >
-                Iniciar sesión
-              </Link>
               <ThemeToggle />
+
               <Button
                 size="default"
-                variant="outline"
-                className="xl:hidden flex text-xs"
+                className="lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs"
                 asChild
               >
                 <Link href="/auth/signin">Iniciar sesión</Link>
-              </Button>
-              <Button
-                size="default"
-                className="hidden lg:flex bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 text-xs"
-                asChild
-              >
-                <Link href="/auth/signup">Comenzar</Link>
               </Button>
             </div>
           </div>
