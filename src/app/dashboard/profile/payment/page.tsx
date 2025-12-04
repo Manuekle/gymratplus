@@ -443,18 +443,17 @@ export default function InstructorRegistrationPage() {
 
   if (hasSubscription || step === 3) {
     return (
-      <div>
-        <div className="mb-4">
-          <Button
-            variant="outline"
-            className="text-xs"
-            size="default"
-            onClick={() => router.push("/dashboard/profile")}
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
-            Volver al perfil
-          </Button>
-        </div>
+      <div className="w-full">
+        <Button
+          variant="outline"
+          className="text-xs w-full md:w-auto"
+          size="default"
+          onClick={() => router.push("/dashboard/profile")}
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
+          Volver al perfil
+        </Button>
+
         <Card className="w-full overflow-hidden">
           <CardHeader className="pb-4">
             <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
@@ -509,7 +508,7 @@ export default function InstructorRegistrationPage() {
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full md:w-auto"
           size="default"
           onClick={() => router.push("/dashboard/profile")}
         >
@@ -871,20 +870,22 @@ export default function InstructorRegistrationPage() {
                     <button
                       type="button"
                       onClick={() => setIsAnnual(false)}
-                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${!isAnnual
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                        }`}
+                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${
+                        !isAnnual
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
                     >
                       Mensual
                     </button>
                     <button
                       type="button"
                       onClick={() => setIsAnnual(true)}
-                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${isAnnual
-                        ? "bg-background text-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                        }`}
+                      className={`px-4 py-2 text-xs font-medium rounded-full transition-all ${
+                        isAnnual
+                          ? "bg-background text-foreground shadow-sm"
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
                     >
                       Anual
                     </button>
@@ -895,10 +896,11 @@ export default function InstructorRegistrationPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Monthly Plan */}
                   <div
-                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${!isAnnual
-                      ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
-                      : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
-                      }`}
+                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
+                      !isAnnual
+                        ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
+                        : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
+                    }`}
                     onClick={() => setIsAnnual(false)}
                   >
                     {!isAnnual && (
@@ -942,10 +944,11 @@ export default function InstructorRegistrationPage() {
 
                   {/* Annual Plan */}
                   <div
-                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${isAnnual
-                      ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
-                      : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
-                      }`}
+                    className={`relative p-6 rounded-xl border transition-all cursor-pointer ${
+                      isAnnual
+                        ? "border-zinc-200 bg-zinc-100 hover:border-zinc-300 dark:bg-zinc-900/70 dark:border-zinc-800"
+                        : "border-zinc-200 bg-card hover:border-zinc-300 dark:bg-zinc-900/30 dark:border-zinc-800"
+                    }`}
                     onClick={() => setIsAnnual(true)}
                   >
                     {isAnnual && (

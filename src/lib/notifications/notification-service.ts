@@ -47,6 +47,10 @@ export async function createNotification({
       where: { userId },
     });
 
+    console.log(
+      `[Push] Found ${subscriptions.length} subscriptions for user ${userId}`,
+    );
+
     if (subscriptions.length > 0) {
       // Import web-push dynamically to avoid issues in edge runtimes if applicable
       // though this is a server action/lib, dynamic import is safer for optional deps
@@ -67,7 +71,9 @@ export async function createNotification({
           tag: notification.id,
         });
 
-        await Promise.allSettled(
+        console.log(`[Push] Sending payload: ${payload}`);
+
+        const results = await Promise.allSettled(
           subscriptions.map((sub: any) =>
             webpush.sendNotification(
               {
@@ -81,6 +87,19 @@ export async function createNotification({
             ),
           ),
         );
+
+        results.forEach((result, index) => {
+          if (result.status === "rejected") {
+            console.error(
+              `[Push] Failed to send to subscription ${index}:`,
+              result.reason,
+            );
+          } else {
+            console.log(`[Push] Successfully sent to subscription ${index}`);
+          }
+        });
+      } else {
+        console.warn("[Push] VAPID keys not configured");
       }
     }
   } catch (error) {
