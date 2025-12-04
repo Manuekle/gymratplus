@@ -125,7 +125,7 @@ export default function NotificationsPage() {
       </div>
 
       <div className="space-y-4 mb-6">
-        <div className="flex justify-between items-start">
+        <div className="flex flex-wrap justify-between items-center gap-4">
           <div>
             <h1 className="text-2xl font-semibold tracking-heading">
               Notificaciones

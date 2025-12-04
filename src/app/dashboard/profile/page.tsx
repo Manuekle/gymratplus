@@ -722,7 +722,7 @@ export default function ProfilePage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+          <CardHeader className="pb-3 flex flex-row flex-wrap items-center justify-between gap-4">
             <div>
               <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
                 Información de contacto

@@ -24,7 +24,7 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-export function PushNotificationManager() {
+export function PushNotificationManager({ className }: { className?: string }) {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [subscription, setSubscription] = useState<PushSubscription | null>(
     null,
@@ -118,7 +118,12 @@ export function PushNotificationManager() {
 
   if (!isSubscribed) {
     return (
-      <Button variant="outline" size="sm" onClick={subscribeToPush}>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={subscribeToPush}
+        className={className}
+      >
         <HugeiconsIcon icon={Notification01Icon} className="mr-2 h-4 w-4" />
         Activar Notificaciones
       </Button>
@@ -126,7 +131,12 @@ export function PushNotificationManager() {
   }
 
   return (
-    <Button variant="outline" size="sm" onClick={unsubscribeFromPush}>
+    <Button
+      variant="outline"
+      size="sm"
+      onClick={unsubscribeFromPush}
+      className={className}
+    >
       <HugeiconsIcon icon={NotificationOff01Icon} className="mr-2 h-4 w-4" />
       Desactivar Notificaciones
     </Button>

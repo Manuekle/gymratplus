@@ -182,7 +182,7 @@ export default function WorkoutSummary() {
                   return (
                     <Link
                       key={session.id}
-                      href={`/dashboard/workout/${session.id}`}
+                      href={`/dashboard/workout/active`}
                       className="block p-3 border rounded-lg hover:border-foreground/20 hover:bg-accent/50 transition-colors cursor-pointer"
                     >
                       {sessionContent}

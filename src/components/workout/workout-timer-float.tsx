@@ -40,7 +40,8 @@ export default function WorkoutTimerFloat({
   const [isPaused, setIsPaused] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
+  const [isDiscarding, setIsDiscarding] = useState(false);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const pauseTimeRef = useRef<number>(0);
 
@@ -97,7 +98,7 @@ export default function WorkoutTimerFloat({
 
   // Finalizar el entrenamiento
   const completeWorkout = async () => {
-    setLoading(true);
+    setIsCompleting(true);
     try {
       // Calcular duración en minutos
       const duration = Math.round(elapsedTime / 60);
@@ -127,14 +128,14 @@ export default function WorkoutTimerFloat({
         description: `No se pudo completar el entrenamiento`,
       });
     } finally {
-      setLoading(false);
+      setIsCompleting(false);
       setShowConfirmDialog(false);
     }
   };
 
   // Descartar el entrenamiento
   const discardWorkout = async () => {
-    setLoading(true);
+    setIsDiscarding(true);
     try {
       const response = await fetch(`/api/workout-session/${workoutSessionId}`, {
         method: "DELETE",
@@ -156,7 +157,7 @@ export default function WorkoutTimerFloat({
         description: `No se pudo descartar el entrenamiento`,
       });
     } finally {
-      setLoading(false);
+      setIsDiscarding(false);
       setShowConfirmDialog(false);
     }
   };
@@ -249,57 +250,49 @@ export default function WorkoutTimerFloat({
 
       {/* Diálogo de confirmación */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <DialogContent className="max-w-[95vw] sm:max-w-[600px] overflow-y-auto pt-4 sm:pt-8 px-4 sm:px-6 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-semibold tracking-heading">
-              ¿Qué deseas hacer con este entrenamiento?
+            <DialogTitle className="text-2xl font-semibold tracking-heading text-center">
+              ¿Terminar entrenamiento?
             </DialogTitle>
-            <DialogDescription className="text-xs text-muted-foreground">
-              Puedes completar el entrenamiento para guardarlo en tu historial o
-              descartarlo completamente.
+            <DialogDescription className="text-xs text-center text-muted-foreground">
+              Elige qué deseas hacer con la sesión actual.
             </DialogDescription>
           </DialogHeader>
 
-          <div className="flex flex-col space-y-2 py-4">
-            <div className="text-center mb-2">
-              <span className="text-xs text-muted-foreground">
-                Tiempo transcurrido
-              </span>
-              <div className="text-xl font-semibold ">
-                {formatTime(elapsedTime)}
-              </div>
+          <div className="flex flex-col items-center justify-center py-4 space-y-1">
+            <span className="text-xs text-muted-foreground font-medium">
+              Tiempo Total
+            </span>
+            <div className="text-4xl font-bold tracking-heading tabular-nums">
+              {formatTime(elapsedTime)}
             </div>
           </div>
 
-          <DialogFooter className="flex flex-col sm:flex-row gap-2">
+          <DialogFooter className="flex flex-row gap-3 w-full pt-2">
             <Button
               size="default"
-              variant="outline"
-              onClick={() => setShowConfirmDialog(false)}
-              className="text-xs"
-              disabled={loading}
+              variant="destructive"
+              className="flex-1 text-xs"
+              onClick={discardWorkout}
+              disabled={isCompleting || isDiscarding}
             >
-              Cancelar
+              {isDiscarding ? (
+                <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
+              ) : null}
+              Descartar
             </Button>
             <Button
               size="default"
               variant="default"
               onClick={completeWorkout}
-              disabled={loading}
-              className="sm:flex-1 text-xs"
+              disabled={isCompleting || isDiscarding}
+              className="flex-1 text-xs"
             >
-              {loading ? (
+              {isCompleting ? (
                 <Icons.spinner className="h-4 w-4 animate-spin ml-2" />
               ) : null}
-              Completar entrenamiento
-            </Button>
-            <Button
-              size="default"
-              className="bg-destructive text-white hover:bg-destructive/80 text-xs"
-              onClick={discardWorkout}
-              disabled={loading}
-            >
-              Descartar
+              Completar
             </Button>
           </DialogFooter>
         </DialogContent>

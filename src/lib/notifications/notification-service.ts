@@ -64,6 +64,7 @@ export async function createNotification({
           title,
           body: message,
           url: "/dashboard/notifications", // Default URL, could be improved with type-specific URLs
+          tag: notification.id,
         });
 
         await Promise.allSettled(

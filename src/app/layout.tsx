@@ -7,7 +7,7 @@ import ClientLayout from "./client-layout";
 
 // Metadata SEO para la página principal y por defecto
 export const metadata: Metadata = generateSEOMetadata({
-  title: "GymRat+ - Plataforma Inteligente de Fitness",
+  title: "GymRat+ | Plataforma Inteligente de Fitness",
   description:
     "La plataforma inteligente que conecta entrenadores y atletas para experiencias de entrenamiento personalizadas. Planes de nutrición inteligentes, seguimiento avanzado y coaching profesional en un solo lugar.",
   keywords: [
@@ -27,14 +27,14 @@ export const metadata: Metadata = generateSEOMetadata({
     "analíticas fitness",
   ],
   openGraph: {
-    title: "GymRat+ - Transforma tu cuerpo, transforma tu vida",
+    title: "GymRat+ | Transforma tu cuerpo, transforma tu vida",
     description:
       "Plataforma inteligente de fitness con planes de entrenamiento personalizados, nutrición inteligente y coaching profesional.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "GymRat+ - Plataforma Inteligente de Fitness",
+    title: "GymRat+ | Plataforma Inteligente de Fitness",
     description:
       "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
   },
