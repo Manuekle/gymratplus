@@ -7,6 +7,7 @@ import RedisInitializer from "@/components/init/redis-initializer";
 import { motion, AnimatePresence } from "framer-motion";
 import { StreakAlertProvider } from "@/providers/streak-alert-provider";
 import { NotificationsProvider } from "@/providers/notifications-provider";
+import { PWAInit } from "@/components/pwa/pwa-init";
 
 export default function ClientLayout({
   children,
@@ -21,6 +22,7 @@ export default function ClientLayout({
       disableTransitionOnChange
     >
       <AuthProvider>
+        <PWAInit />
         <RedisInitializer />
         <StreakAlertProvider>
           <NotificationsProvider>

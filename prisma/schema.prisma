@@ -80,6 +80,7 @@ model User {
   foodPlans            FoodPlan[]
   studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
   chatMessages         ChatMessage[]        @relation("ChatMessageSender")
+  pushSubscriptions    PushSubscription[]
 }
 
 model Profile {
@@ -599,4 +600,17 @@ model ChatMessage {
   @@index([senderId])
   @@index([createdAt])
   @@index([replyToId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  endpoint  String
+  p256dh    String
+  auth      String
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
 }

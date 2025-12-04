@@ -358,7 +358,11 @@ export default function GoalPage() {
                     variant={type === t ? "secondary" : "outline"}
                     size="default"
                     onClick={() => setType(t)}
-                    className="flex flex-col items-center justify-center p-3 rounded-lg transition-all h-full min-h-[100px]"
+                    className={`flex flex-col items-center justify-center h-full min-h-[100px] border rounded-lg p-3 sm:p-4 cursor-pointer transition-all ${
+                      type === t
+                        ? "bg-primary text-primary-foreground hover:bg-black dark:hover:bg-white"
+                        : "border-border hover:border-zinc-300 hover:bg-accent/50 dark:hover:border-zinc-800 shadow-sm"
+                    }`}
                   >
                     <span className="text-2xl mb-1">{getTypeIcon(t)}</span>
                     <span className="text-xs font-medium capitalize">

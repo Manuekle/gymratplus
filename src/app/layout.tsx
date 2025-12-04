@@ -38,6 +38,7 @@ export const metadata: Metadata = generateSEOMetadata({
     description:
       "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
   },
+  manifest: "/manifest.json",
 });
 
 export default function RootLayout({

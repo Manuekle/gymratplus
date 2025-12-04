@@ -11,6 +11,7 @@ import { QuickActions } from "@/components/dashboard/quick-actions";
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -21,6 +22,7 @@ export default function DashboardPage() {
   };
 
   if (status === "loading" || !session) {
+    // ... (keep loading state)
     return (
       <AnimatedLayout>
         <div className="space-y-6">
@@ -84,6 +86,7 @@ export default function DashboardPage() {
 
   return (
     <AnimatedLayout>
+      <InstallPrompt />
       <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
         {/* Accesos Rápidos */}
         <motion.div

@@ -26,7 +26,10 @@ import {
   StarIcon,
 } from "@hugeicons/core-free-icons";
 
+import { InstallPrompt } from "@/components/pwa/install-prompt";
+
 export default function GymRatLanding() {
+  // ... (keep existing state)
   const { resolvedTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -41,6 +44,7 @@ export default function GymRatLanding() {
     return "light";
   });
 
+  // ... (keep existing effects)
   // Sincronizar con next-themes cuando esté disponible
   useEffect(() => {
     setMounted(true);
@@ -112,6 +116,7 @@ export default function GymRatLanding() {
 
   return (
     <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white relative overflow-hidden transition-colors">
+      <InstallPrompt />
       {/* Background Grid */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:30px_30px]"></div>
 

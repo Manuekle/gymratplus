@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { NotificationItem } from "@/components/notifications/notification-item";
-import { NotificationPermissionButton } from "@/components/notifications/notification-permission-button";
+
 import { useNotificationsContext } from "@/providers/notifications-provider";
 import { EmptyState } from "@/components/ui/empty-state";
 import { toast } from "sonner";
@@ -37,6 +37,7 @@ import {
   FilterAddIcon,
   Notification03Icon,
 } from "@hugeicons/core-free-icons";
+import { PushNotificationManager } from "@/components/pwa/push-manager";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -122,19 +123,21 @@ export default function NotificationsPage() {
           </Button>
         </div>
       </div>
+
       <div className="space-y-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-heading">
-            Notificaciones
-          </h1>
-          <p className="text-xs text-muted-foreground">
-            Gestiona tus notificaciones y alertas
-          </p>
+        <div className="flex justify-between items-start">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-heading">
+              Notificaciones
+            </h1>
+            <p className="text-xs text-muted-foreground">
+              Gestiona tus notificaciones y alertas
+            </p>
+          </div>
+          <PushNotificationManager />
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <NotificationPermissionButton />
-
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button size="default" variant="outline" className="text-xs">

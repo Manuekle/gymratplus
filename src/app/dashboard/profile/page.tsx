@@ -57,6 +57,7 @@ import {
   Dumbbell01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
+import { PushNotificationManager } from "@/components/pwa/push-manager";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -721,13 +722,16 @@ export default function ProfilePage() {
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
-              Información de contacto
-            </CardTitle>
-            <CardDescription className="text-xs text-muted-foreground">
-              Datos de contacto y comunicación
-            </CardDescription>
+          <CardHeader className="pb-3 flex flex-row items-center justify-between">
+            <div>
+              <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+                Información de contacto
+              </CardTitle>
+              <CardDescription className="text-xs text-muted-foreground">
+                Datos de contacto y comunicación
+              </CardDescription>
+            </div>
+            <PushNotificationManager />
           </CardHeader>
           <CardContent className="px-4 space-y-4">
             {isEditing ? (
@@ -1401,7 +1405,7 @@ export default function ProfilePage() {
                   {/* Racha Actual */}
                   {(() => {
                     const streakColor = getStreakColor(
-                      streakStats.currentStreak,
+                      streakStats!.currentStreak,
                     );
                     return (
                       <div
@@ -1423,8 +1427,8 @@ export default function ProfilePage() {
                             <div
                               className={`text-lg sm:text-xl font-semibold ${streakColor.textColor}`}
                             >
-                              {streakStats.currentStreak} día
-                              {streakStats.currentStreak !== 1 ? "s" : ""}
+                              {streakStats!.currentStreak} día
+                              {streakStats!.currentStreak !== 1 ? "s" : ""}
                             </div>
                           </div>
                         </div>
@@ -1446,8 +1450,8 @@ export default function ProfilePage() {
                           Racha Más Larga
                         </div>
                         <div className="text-lg sm:text-xl font-semibold">
-                          {streakStats.longestStreak} día
-                          {streakStats.longestStreak !== 1 ? "s" : ""}
+                          {streakStats!.longestStreak} día
+                          {streakStats!.longestStreak !== 1 ? "s" : ""}
                         </div>
                       </div>
                     </div>
@@ -1468,8 +1472,8 @@ export default function ProfilePage() {
                         Total de días entrenados
                       </div>
                       <div className="text-muted-foreground text-xs">
-                        {streakStats.totalWorkoutDays} día
-                        {streakStats.totalWorkoutDays !== 1 ? "s" : ""}
+                        {streakStats!.totalWorkoutDays} día
+                        {streakStats!.totalWorkoutDays !== 1 ? "s" : ""}
                       </div>
                     </div>
                   </div>
@@ -1485,8 +1489,8 @@ export default function ProfilePage() {
                         Total de sesiones
                       </div>
                       <div className="text-muted-foreground text-xs">
-                        {streakStats.totalWorkoutSessions} sesión
-                        {streakStats.totalWorkoutSessions !== 1 ? "es" : ""}
+                        {streakStats!.totalWorkoutSessions} sesión
+                        {streakStats!.totalWorkoutSessions !== 1 ? "es" : ""}
                       </div>
                     </div>
                   </div>
@@ -1508,7 +1512,7 @@ export default function ProfilePage() {
                         <div className="text-muted-foreground text-xs">
                           {(() => {
                             const lastDate = new Date(
-                              streakStats.lastWorkoutDate,
+                              streakStats!.lastWorkoutDate!,
                             );
                             lastDate.setHours(0, 0, 0, 0);
                             const today = new Date();

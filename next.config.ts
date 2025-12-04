@@ -7,6 +7,17 @@ if (process.env.NODE_ENV === "production") {
   process.env.DATABASE_URL = process.env.DATABASE_URL_DEV;
 }
 
+import withPWAInit from "@ducanh2912/next-pwa";
+
+const withPWA = withPWAInit({
+  dest: "public",
+  register: true,
+  disable: false,
+  workboxOptions: {
+    importScripts: ["/custom-sw.js"],
+  },
+});
+
 const nextConfig: NextConfig = {
   images: {
     domains: [
@@ -38,4 +49,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA(nextConfig);
