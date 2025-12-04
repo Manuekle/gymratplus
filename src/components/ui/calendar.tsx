@@ -6,6 +6,8 @@ import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons";
 
 import { DayPicker } from "react-day-picker";
 
+import { es } from "date-fns/locale";
+
 import { cn } from "@/lib/utils/utils";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -17,13 +19,14 @@ function Calendar({
 }: React.ComponentProps<typeof DayPicker>) {
   return (
     <DayPicker
+      locale={es}
       showOutsideDays={showOutsideDays}
       className={cn("p-3", className)}
       classNames={{
         months: "flex flex-col sm:flex-row gap-2",
         month: "flex flex-col gap-4",
         caption: "flex justify-center pt-1 relative items-center w-full",
-        caption_label: "text-xs font-medium",
+        caption_label: "text-xs font-medium capitalize",
         nav: "flex items-center gap-1",
         nav_button: cn(
           buttonVariants({ variant: "outline" }),
