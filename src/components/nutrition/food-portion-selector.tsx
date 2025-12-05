@@ -118,7 +118,7 @@ export function FoodPortionSelector({
         <Button
           variant="outline"
           size="default"
-          className="h-8 text-xs justify-between min-w-[120px]"
+          className="text-xs justify-between min-w-[120px]"
         >
           <span className="truncate">
             {formatPortionLabel(
@@ -189,7 +189,7 @@ export function FoodPortionSelector({
                   setCustomUnit(value as "g" | "ml" | "unidad")
                 }
               >
-                <SelectTrigger className="h-8 text-xs w-[100px]" size="default">
+                <SelectTrigger className="text-xs w-[100px]" size="default">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -201,7 +201,7 @@ export function FoodPortionSelector({
               <Button
                 size="default"
                 onClick={handleCustomSubmit}
-                className="h-8 text-xs"
+                className="text-xs"
               >
                 Aplicar
               </Button>
