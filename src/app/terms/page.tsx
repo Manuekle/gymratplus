@@ -39,7 +39,7 @@ export default function TermsPage() {
           {/* Content */}
           <div className="space-y-12">
             <div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-[-0.04em]">
                 Términos de Servicio
               </h1>
               <p className="text-sm text-zinc-500 dark:text-zinc-500">
@@ -54,7 +54,7 @@ export default function TermsPage() {
 
             <div className="space-y-10 text-zinc-700 dark:text-zinc-300">
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   1. Aceptación de Términos
                 </h2>
                 <p className="leading-relaxed">
@@ -66,7 +66,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   2. Descripción del Servicio
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -104,7 +104,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   3. Registro y Cuenta
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -144,7 +144,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   4. Uso Aceptable
                 </h2>
                 <p className="mb-4 leading-relaxed">No está permitido:</p>
@@ -183,7 +183,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   5. Suscripciones y Pagos
                 </h2>
                 <p className="leading-relaxed">
@@ -194,7 +194,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   6. Limitación de Responsabilidad
                 </h2>
                 <p className="leading-relaxed">
@@ -206,7 +206,7 @@ export default function TermsPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   7. Modificaciones
                 </h2>
                 <p className="leading-relaxed">
@@ -217,7 +217,7 @@ export default function TermsPage() {
               </section>
 
               <section className="pt-8 border-t border-zinc-300 dark:border-zinc-700">
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   8. Contacto
                 </h2>
                 <p className="mb-3 leading-relaxed">

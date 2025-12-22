@@ -26,12 +26,16 @@ export async function proxy(req: NextRequest) {
   if (token && isDashboardRoute) {
     const profile = token.profile as { gender?: string; birthdate?: Date | string; height?: number; currentWeight?: number; goal?: string } | null | undefined;
 
-    if (profile) {
-      const { gender, birthdate, height, currentWeight, goal } = profile;
+    // Si no tiene perfil O si tiene perfil pero está incompleto, redirigir a onboarding
+    if (!profile) {
+      // No tiene perfil - debe completar onboarding
+      return NextResponse.redirect(new URL("/onboarding", req.url));
+    }
 
-      if (!gender || !birthdate || !height || !currentWeight || !goal) {
-        return NextResponse.redirect(new URL("/onboarding", req.url));
-      }
+    const { gender, birthdate, height, currentWeight, goal } = profile;
+    if (!gender || !birthdate || !height || !currentWeight || !goal) {
+      // Tiene perfil pero está incompleto - debe completar onboarding
+      return NextResponse.redirect(new URL("/onboarding", req.url));
     }
   }
 

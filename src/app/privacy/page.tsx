@@ -39,7 +39,7 @@ export default function PrivacyPage() {
           {/* Content */}
           <div className="space-y-12">
             <div>
-              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-[-0.04em]">
                 Política de Privacidad
               </h1>
               <p className="text-sm text-zinc-500 dark:text-zinc-500">
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
 
             <div className="space-y-10 text-zinc-700 dark:text-zinc-300">
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   1. Información que Recopilamos
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -91,7 +91,7 @@ export default function PrivacyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   2. Uso de la Información
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -126,7 +126,7 @@ export default function PrivacyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   3. Protección de Datos
                 </h2>
                 <p className="leading-relaxed">
@@ -137,7 +137,7 @@ export default function PrivacyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   4. Compartir Información
                 </h2>
                 <p className="mb-4 leading-relaxed">
@@ -170,7 +170,7 @@ export default function PrivacyPage() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   5. Tus Derechos
                 </h2>
                 <p className="mb-4 leading-relaxed">Tienes derecho a:</p>
@@ -209,7 +209,7 @@ export default function PrivacyPage() {
               </section>
 
               <section className="pt-8 border-t border-zinc-300 dark:border-zinc-700">
-                <h2 className="text-2xl font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
+                <h2 className="text-2xl tracking-[-0.02em] font-semibold mb-4 text-zinc-900 dark:text-zinc-100">
                   6. Contacto
                 </h2>
                 <p className="mb-3 leading-relaxed">
