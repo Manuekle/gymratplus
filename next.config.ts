@@ -62,7 +62,6 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {}, // Dejar vacío si no necesitas opciones específicas
   },
-  turbopack: {}, // Required for Next.js 16 with webpack plugins
 };
 
 export default withPWA(nextConfig);
