@@ -4,7 +4,7 @@ import { publishChatMessage } from "@/lib/database/chat-redis";
 import { publishNotification } from "@/lib/database/redis";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 const messageSchema = z
   .object({

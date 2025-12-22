@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 // POST /api/chats/create - Create a new chat for a student-instructor relationship
 export async function POST(req: NextRequest) {

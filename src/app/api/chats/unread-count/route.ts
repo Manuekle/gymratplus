@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 // GET /api/chats/unread-count - Get total unread messages count for the current user
 export async function GET() {

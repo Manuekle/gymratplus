@@ -29,9 +29,6 @@ const nextConfig: NextConfig = {
       "rijwjlzt9wsyq7fc.public.blob.vercel-storage.com",
     ],
   },
-  eslint: {
-    ignoreDuringBuilds: process.env.NODE_ENV === "production",
-  },
   typescript: {
     ignoreBuildErrors: process.env.NODE_ENV === "production", // Asegura que errores de TypeScript detengan la compilación
   },
@@ -47,6 +44,7 @@ const nextConfig: NextConfig = {
   experimental: {
     serverActions: {}, // Dejar vacío si no necesitas opciones específicas
   },
+  turbopack: {}, // Required for Next.js 16 with webpack plugins
 };
 
 export default withPWA(nextConfig);

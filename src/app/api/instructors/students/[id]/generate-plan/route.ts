@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../../../../auth";
+import { auth } from "../../../../../../../auth.ts";
 import {
   createNutritionPlan,
   type NutritionPlan,

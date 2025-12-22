@@ -4,7 +4,7 @@ import {
   markNotificationAsRead,
 } from "@/lib/notifications/notification-service";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 export async function PATCH(request: NextRequest) {
   try {

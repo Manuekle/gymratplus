@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { createFoodRecommendationNormalized } from "@/lib/nutrition/food-recommendation-helpers";
-import { auth } from "../../../../../../../../../auth";
+import { auth } from "../../../../auth.ts";
 
 interface NutritionPlan {
   name?: string;

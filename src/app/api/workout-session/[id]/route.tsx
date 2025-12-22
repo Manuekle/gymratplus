@@ -1,12 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth/next";
+import { auth } from "../../../../../auth";
 import { publishNotification } from "@/lib/database/redis";
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

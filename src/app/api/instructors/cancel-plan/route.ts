@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
 import { createNotification } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 export async function POST() {
   try {

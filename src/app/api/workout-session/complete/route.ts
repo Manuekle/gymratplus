@@ -3,7 +3,7 @@ import { prisma } from "@/lib/database/prisma";
 import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
 import { createNotification } from "@/lib/notifications/notification-service";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 export async function PUT(req: NextRequest) {
   try {

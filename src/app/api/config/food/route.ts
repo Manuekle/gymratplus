@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { foodsToCreate } from "@/data/food";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 const prisma = new PrismaClient();
 

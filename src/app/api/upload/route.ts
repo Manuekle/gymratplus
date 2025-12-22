@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import { redis } from "@/lib/database/redis";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../auth";
+import { auth } from "../../../../auth.ts";
 
 export async function POST(request: NextRequest) {
   try {

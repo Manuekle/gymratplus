@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { getPayPalClient, getBaseUrl } from "@/lib/paypal/client";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 import {
   SubscriptionsController,
   PlanRequestStatus,

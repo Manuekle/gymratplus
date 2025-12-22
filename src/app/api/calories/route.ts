@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { redis } from "@/lib/database/redis";
-import { auth } from "../../../../../../../../../auth";
+import { auth } from "../../../../auth.ts";
 
 const CALCULATION_CACHE_TTL = 60 * 5; // 5 minutes
 

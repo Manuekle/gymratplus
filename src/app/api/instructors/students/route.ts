@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { requireFeature } from "@/lib/subscriptions/check-access";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 export async function GET() {
   try {

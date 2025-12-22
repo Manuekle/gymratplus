@@ -3,7 +3,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { exercises } from "@/data/exercises";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 export async function POST(_req: NextRequest) {
   const session = await auth();

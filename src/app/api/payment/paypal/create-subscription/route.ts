@@ -7,7 +7,7 @@ import {
   PayeePaymentMethodPreference,
 } from "@paypal/paypal-server-sdk";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../../../../../../auth";
+import { auth } from "../../../../../../auth.ts";
 
 export async function POST(req: Request) {
   try {

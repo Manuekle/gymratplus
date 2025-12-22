@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
-import { auth } from "../../../../../../../../../../auth";
+import { auth } from "../../../../../auth.ts";
 
 const instructorProfileUpdateSchema = z.object({
   bio: z.string().optional(),

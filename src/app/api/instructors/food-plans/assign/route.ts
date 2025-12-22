@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { createFoodRecommendationNormalized } from "@/lib/nutrition/food-recommendation-helpers";
-import { auth } from "../../../../../../../../../../../auth";
+import { auth } from "../../../../../../auth.ts";
 
 export async function POST(request: NextRequest) {
   try {

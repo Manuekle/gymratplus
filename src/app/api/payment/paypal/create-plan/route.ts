@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getPayPalClient } from "@/lib/paypal/client";
-import { auth } from "../../../../../../../../../../../auth";
+import { auth } from "../../../../../../auth.ts";
 import {
   SubscriptionsController,
   PlanRequestStatus,

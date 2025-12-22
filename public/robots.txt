@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://gymratplus.com
+
+# Sitemaps
+Sitemap: https://gymratplus.com/sitemap.xml
