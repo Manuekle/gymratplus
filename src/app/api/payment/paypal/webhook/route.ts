@@ -1,7 +1,8 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { getPayPalClient } from "@/lib/paypal/client";
+import { paypalClient } from "@/lib/payment/paypal-client";
 import { SubscriptionsController } from "@paypal/paypal-server-sdk";
+import { getTierFromPayPalPlan, SubscriptionTier } from "@/lib/subscriptions/feature-gates";
 
 export async function POST(req: Request) {
   try {
@@ -45,10 +46,10 @@ export async function POST(req: Request) {
         });
 
         if (user) {
-          // Obtener detalles de la suscripción para calcular fechas
-          const paypalClient = getPayPalClient();
+          // Obtener detalles de la suscripción para calcular fechas y tier
+          const payPalClientInstance = getPayPalClient();
           const subscriptionsController = new SubscriptionsController(
-            paypalClient,
+            payPalClientInstance,
           );
           const result = await subscriptionsController.getSubscription({
             id: subscriptionId,
@@ -61,13 +62,34 @@ export async function POST(req: Request) {
               ? new Date(billingInfo.next_billing_time)
               : null;
 
+            // Determine tier from plan ID
+            const planId = subscription.planId || '';
+            const tier = getTierFromPayPalPlan(planId);
+
+            // Determine if user should be instructor based on tier
+            const shouldBeInstructor = tier === SubscriptionTier.INSTRUCTOR;
+
             await prisma.user.update({
               where: { id: user.id },
               data: {
                 subscriptionStatus: "active",
+                subscriptionTier: tier,
                 currentPeriodEnd: nextBillingTime,
+                isInstructor: shouldBeInstructor,
               },
             });
+
+            // Update instructor profile if needed
+            if (shouldBeInstructor) {
+              await prisma.instructorProfile.upsert({
+                where: { userId: user.id },
+                update: { isPaid: true },
+                create: {
+                  userId: user.id,
+                  isPaid: true,
+                },
+              });
+            }
           }
         }
       }
@@ -86,6 +108,8 @@ export async function POST(req: Request) {
             where: { id: user.id },
             data: {
               subscriptionStatus: "canceled",
+              subscriptionTier: SubscriptionTier.FREE,
+              isInstructor: false,
             },
           });
 
@@ -127,6 +151,7 @@ export async function POST(req: Request) {
 
         if (user) {
           // Actualizar el estado a activo cuando se completa el pago
+          // Note: On payment completed, tier should already be set from ACTIVATED event
           await prisma.user.update({
             where: { id: user.id },
             data: {
@@ -134,11 +159,22 @@ export async function POST(req: Request) {
             },
           });
 
-          // Asegurar que el perfil de instructor esté marcado como pagado
-          await prisma.instructorProfile.updateMany({
-            where: { userId: user.id },
-            data: { isPaid: true },
+          // Update instructor profile only if user is instructor tier
+          const updatedUser = await prisma.user.findUnique({
+            where: { id: user.id },
+            select: { subscriptionTier: true },
           });
+
+          if (updatedUser?.subscriptionTier === SubscriptionTier.INSTRUCTOR) {
+            await prisma.instructorProfile.upsert({
+              where: { userId: user.id },
+              update: { isPaid: true },
+              create: {
+                userId: user.id,
+                isPaid: true,
+              },
+            });
+          }
         }
       }
     } else if (eventType === "BILLING.SUBSCRIPTION.UPDATED") {

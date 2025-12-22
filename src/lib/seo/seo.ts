@@ -5,7 +5,7 @@ const SITE_CONFIG = {
   name: "GymRat+",
   description:
     "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
-  url: "https://gymratplus.vercel.app",
+  url: "https://gymratplus.com",
   ogImage: "/og-image.png",
   twitterHandle: "@gymratplus",
 } as const;

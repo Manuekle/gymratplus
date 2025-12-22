@@ -49,163 +49,26 @@ export async function POST(req: Request) {
     const price = prices[planType as keyof typeof prices];
     const billingCycle = planType === "monthly" ? "MONTH" : "YEAR";
 
-    // Crear o verificar el plan de suscripción en PayPal
-    let planId = process.env[`PAYPAL_PLAN_ID_${planType.toUpperCase()}`];
+    // Map plan types to real PayPal Plan IDs
+    const PAYPAL_PLAN_IDS: Record<string, string> = {
+      'monthly': 'P-3NC83718PK617725CNFENPCA',    // Plan PRO - $9.99/mes
+      'annual': 'P-8D459588D1260134BNFENROI',     // Plan INSTRUCTOR - $19.99/mes
+      'pro': 'P-3NC83718PK617725CNFENPCA',        // Alias for PRO
+      'instructor': 'P-8D459588D1260134BNFENROI', // Alias for INSTRUCTOR
+    };
 
-    // Si no existe un plan pre-configurado, crear uno nuevo
+    // Get Plan ID from mapping
+    let planId = PAYPAL_PLAN_IDS[planType.toLowerCase()];
+
     if (!planId) {
-      // Obtener o crear el Product ID
-      let productId = process.env.PAYPAL_PRODUCT_ID;
-
-      // Si no existe PAYPAL_PRODUCT_ID, intentar crear un Product usando la API REST de PayPal
-      if (!productId) {
-        try {
-          const environment = process.env.PAYPAL_ENVIRONMENT || "sandbox";
-          const baseUrl =
-            environment === "live"
-              ? "https://api.paypal.com"
-              : "https://api.sandbox.paypal.com";
-
-          const clientId = process.env.PAYPAL_CLIENT_ID;
-          const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
-
-          if (!clientId || !clientSecret) {
-            throw new Error(
-              "PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET deben estar configurados. Por favor, verifica tus variables de entorno.",
-            );
-          }
-
-          // Obtener access token
-          const tokenResponse = await fetch(`${baseUrl}/v1/oauth2/token`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: `Basic ${Buffer.from(
-                `${clientId}:${clientSecret}`,
-              ).toString("base64")}`,
-            },
-            body: "grant_type=client_credentials",
-          });
-
-          if (!tokenResponse.ok) {
-            const errorText = await tokenResponse.text();
-            console.error("Error obteniendo token de PayPal:", errorText);
-            throw new Error(
-              `Error de autenticación con PayPal (${tokenResponse.status}). Verifica que PAYPAL_CLIENT_ID y PAYPAL_CLIENT_SECRET sean correctos y correspondan al entorno ${environment}.`,
-            );
-          }
-
-          const tokenData = await tokenResponse.json();
-          const accessToken = tokenData.access_token;
-
-          if (!accessToken) {
-            throw new Error("No se recibió el access token de PayPal");
-          }
-
-          // Crear Product
-          const productResponse = await fetch(
-            `${baseUrl}/v1/catalogs/products`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${accessToken}`,
-              },
-              body: JSON.stringify({
-                name: "GymRat Plus - Suscripción Instructor",
-                description: "Suscripción para instructores de GymRat Plus",
-                type: "SERVICE",
-                category: "SOFTWARE",
-              }),
-            },
-          );
-
-          if (productResponse.ok) {
-            const productData = await productResponse.json();
-            productId = productData.id;
-            console.log(`Product creado en PayPal: ${productId}`);
-          } else {
-            const errorText = await productResponse.text();
-            console.error("Error creando Product en PayPal:", errorText);
-            throw new Error(
-              `No se pudo crear el Product en PayPal (${productResponse.status}). Por favor, crea un Product manualmente en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`,
-            );
-          }
-        } catch (error) {
-          console.error("Error creando Product:", error);
-          const errorMessage =
-            error instanceof Error
-              ? error.message
-              : "Error desconocido al crear Product";
-          throw new Error(
-            `PAYPAL_PRODUCT_ID no está configurado y no se pudo crear automáticamente: ${errorMessage}. Por favor, crea un Product en PayPal Dashboard (https://developer.paypal.com/dashboard) y configura PAYPAL_PRODUCT_ID en las variables de entorno.`,
-          );
-        }
-      }
-
-      const planRequest = {
-        productId: productId,
-        name: planName,
-        description: `Suscripción ${planType === "monthly" ? "mensual" : "anual"} para instructores`,
-        status: PlanRequestStatus.Active,
-        billingCycles: [
-          {
-            frequency: {
-              intervalUnit:
-                billingCycle === "MONTH"
-                  ? IntervalUnit.Month
-                  : IntervalUnit.Year,
-              intervalCount: 1,
-            },
-            tenureType: TenureType.Regular,
-            sequence: 1,
-            totalCycles: 0, // 0 = sin límite de ciclos
-            pricingScheme: {
-              fixedPrice: {
-                value: price,
-                currencyCode: "USD",
-              },
-            },
-          },
-        ],
-        paymentPreferences: {
-          autoBillOutstanding: true,
-          setupFee: {
-            value: "0.00",
-            currencyCode: "USD",
-          },
-          setupFeeFailureAction: SetupFeeFailureAction.Continue,
-          paymentFailureThreshold: 3,
-        },
-        taxes: {
-          percentage: "0",
-          inclusive: false,
-        },
-      };
-
-      const result = await subscriptionsController.createBillingPlan({
-        body: planRequest,
-      });
-
-      if (result.statusCode !== 201 || !result.result) {
-        const errorDetails = result.body
-          ? JSON.stringify(result.body)
-          : "Sin detalles";
-        console.error("Error creando plan:", {
-          statusCode: result.statusCode,
-          body: result.body,
-          result: result.result,
-        });
-        throw new Error(
-          `Error al crear el plan en PayPal (${result.statusCode}): ${errorDetails}`,
-        );
-      }
-
-      planId = result.result.id;
-      console.log(`Plan creado en PayPal: ${planId} (${planType})`);
+      return NextResponse.json(
+        { error: `Plan type inválido: ${planType}` },
+        { status: 400 },
+      );
     }
 
-    // Crear la suscripción en PayPal
+
+    // Crear la suscripción en PayPal usando el Plan ID existente
     const subscriptionRequest = {
       planId: planId,
       startTime: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 días de prueba gratis

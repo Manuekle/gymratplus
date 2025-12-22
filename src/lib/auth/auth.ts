@@ -36,6 +36,8 @@ declare module "next-auth" {
       experienceLevel: string | null;
       profile: ProfileType | null;
       instructorProfile: InstructorProfileType | null;
+      subscriptionTier: string; // 'FREE', 'PRO', 'INSTRUCTOR'
+      subscriptionStatus: string | null;
       _localStorage: {
         name: string | null;
         email: string | null;
@@ -44,6 +46,8 @@ declare module "next-auth" {
         isInstructor: boolean;
         profile: ProfileType | null;
         instructorProfile: InstructorProfileType | null;
+        subscriptionTier: string;
+        subscriptionStatus: string | null;
       };
     } & DefaultSession["user"];
   }
@@ -70,6 +74,8 @@ declare module "next-auth/jwt" {
     profile: ProfileType | null;
     instructorProfile: InstructorProfileType | null;
     interests?: string[];
+    subscriptionTier: string; // 'FREE', 'PRO', 'INSTRUCTOR'
+    subscriptionStatus: string | null;
   }
 }
 
@@ -186,6 +192,8 @@ export const authOptions: NextAuthOptions = {
           token.profile = (dbUser.profile as ProfileType | null) ?? null;
           token.instructorProfile =
             (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
+          token.subscriptionTier = (dbUser as any).subscriptionTier ?? 'FREE';
+          token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
         }
       }
 
@@ -213,6 +221,8 @@ export const authOptions: NextAuthOptions = {
           token.profile = (dbUser.profile as ProfileType | null) ?? null;
           token.instructorProfile =
             (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
+          token.subscriptionTier = (dbUser as any).subscriptionTier ?? 'FREE';
+          token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
         }
 
         // Si session tiene datos específicos, también actualizarlos
@@ -232,7 +242,7 @@ export const authOptions: NextAuthOptions = {
       if (!session.user || !token.id) return session as NextAuthSession;
 
       // Usamos el token tipado para poblar la sesión
-      const typedToken = token as JWT;
+      const typedToken = token;
 
       const sessionUser = {
         ...session.user,
@@ -246,6 +256,8 @@ export const authOptions: NextAuthOptions = {
         experienceLevel: typedToken.experienceLevel,
         profile: typedToken.profile,
         instructorProfile: typedToken.instructorProfile,
+        subscriptionTier: typedToken.subscriptionTier,
+        subscriptionStatus: typedToken.subscriptionStatus,
       };
 
       const localStorageData = {
@@ -253,6 +265,8 @@ export const authOptions: NextAuthOptions = {
         // Asegurar que profile/instructorProfile se mantienen con el tipo correcto
         profile: typedToken.profile,
         instructorProfile: typedToken.instructorProfile,
+        subscriptionTier: typedToken.subscriptionTier,
+        subscriptionStatus: typedToken.subscriptionStatus,
       };
 
       return {

@@ -55,6 +55,7 @@ import {
   QrCodeIcon,
   FireIcon,
   Dumbbell01Icon,
+  Camera01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
 
@@ -563,7 +564,7 @@ export default function ProfilePage() {
                       document.getElementById("profile-image-upload")?.click()
                     }
                   >
-                      <HugeiconsIcon icon={Camera01Icon} className="text-white w-6 h-6" />
+                    <HugeiconsIcon icon={Camera01Icon} className="text-white w-6 h-6" />
                     <input
                       id="profile-image-upload"
                       type="file"

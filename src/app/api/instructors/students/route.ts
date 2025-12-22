@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { requireFeature } from "@/lib/subscriptions/check-access";
 
 export async function GET() {
   try {
@@ -9,6 +10,16 @@ export async function GET() {
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Check subscription tier for student management feature
+    try {
+      await requireFeature('STUDENT_MANAGEMENT');
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Upgrade required - This feature requires INSTRUCTOR tier" },
+        { status: 403 }
+      );
     }
 
     // Verificar si el usuario es un instructor y obtener su perfil de instructor

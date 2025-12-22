@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import "./globals.css";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/seo";
 import ClientLayout from "./client-layout";
+import { JsonLd } from "@/components/seo/json-ld";
 
 // Metadata SEO para la página principal y por defecto
 export const metadata: Metadata = generateSEOMetadata({
@@ -56,6 +57,7 @@ export default function RootLayout({
         className="min-h-screen bg-background antialiased"
         suppressHydrationWarning
       >
+        <JsonLd />
         <ClientLayout>{children}</ClientLayout>
       </body>
     </html>

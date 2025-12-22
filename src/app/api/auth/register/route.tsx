@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import bcrypt from "bcryptjs";
 import { redis } from "@/lib/database/redis";
+import { sendEmailVerification } from "@/lib/auth/verification-service";
 
 // Función para validar fortaleza de contraseña
 function validatePasswordStrength(password: string): {
@@ -179,10 +180,19 @@ export async function POST(request: Request) {
       ex: 60 * 10, // 10 minutos
     });
 
+    // Enviar código de verificación por email
+    try {
+      await sendEmailVerification(user.id, email, name);
+    } catch (emailError) {
+      console.error("Error enviando email de verificación:", emailError);
+      // No fallamos el registro si falla el email, pero el frontend debería saberlo
+    }
+
     return NextResponse.json(
       {
-        user: userWithoutPassword,
-        message: "Usuario registrado exitosamente",
+        user: { ...userWithoutPassword, id: user.id }, // Aseguramos que el ID se devuelva explícitamente y typing correcto
+        verificationRequired: true,
+        message: "Usuario registrado exitosamente. Por favor verifica tu email.",
       },
       { status: 201 },
     );

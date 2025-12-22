@@ -4,16 +4,16 @@ if (!self.define) {
   const e = (e, a) => (
     (e = new URL(e + ".js", a).href),
     t[e] ||
-      new Promise((t) => {
-        if ("document" in self) {
-          const s = document.createElement("script");
-          ((s.src = e), (s.onload = t), document.head.appendChild(s));
-        } else ((s = e), importScripts(e), t());
-      }).then(() => {
-        let s = t[e];
-        if (!s) throw new Error(`Module ${e} didn’t register its module`);
-        return s;
-      })
+    new Promise((t) => {
+      if ("document" in self) {
+        const s = document.createElement("script");
+        ((s.src = e), (s.onload = t), document.head.appendChild(s));
+      } else ((s = e), importScripts(e), t());
+    }).then(() => {
+      let s = t[e];
+      if (!s) throw new Error(`Module ${e} didn’t register its module`);
+      return s;
+    })
   );
   self.define = (a, i) => {
     const n =
@@ -1029,10 +1029,6 @@ define(["./workbox-f1770938"], function (s) {
         { url: "/custom-sw.js", revision: "f7aab97c08c5c71ded57704f73871c0a" },
         { url: "/file.svg", revision: "d09f95206c3fa0bb9bd9fefabfd0ea71" },
         { url: "/globe.svg", revision: "2aaafa6a49b6563925fe440891e32717" },
-        {
-          url: "/googled600ed8d8ca80c92.html",
-          revision: "b89ce90371f57d53e6dff22b7580cf9c",
-        },
         {
           url: "/icons/browserconfig.xml",
           revision: "a4481f947e4584f2760ba19063d6dbf8",

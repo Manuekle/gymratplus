@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Loader2, CheckCircle2, XCircle, Mail, Smartphone } from "lucide-react";
-import { maskPhoneNumber } from "@/lib/sms/twilio";
+import { maskPhoneNumber } from "@/lib/utils/phone";
 
 interface VerificationFormProps {
   type: "email" | "sms";
@@ -37,6 +37,7 @@ export function VerificationForm({
   const maskedDestination = React.useMemo(() => {
     if (type === "email") {
       const [local, domain] = destination.split("@");
+      if (!local || !domain) return destination;
       return `${local.substring(0, 2)}***@${domain}`;
     }
     return maskPhoneNumber(destination);
@@ -87,7 +88,8 @@ export function VerificationForm({
       setTimeout(() => {
         onVerified?.();
       }, 1500);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Error al verificar el código. Intenta de nuevo.");
       setCode("");
     } finally {
@@ -119,7 +121,8 @@ export function VerificationForm({
       }
 
       setCountdown(60); // 60 segundos de espera
-    } catch {
+    } catch (err) {
+      console.error(err);
       setError("Error al reenviar el código. Intenta de nuevo.");
     } finally {
       setIsResending(false);

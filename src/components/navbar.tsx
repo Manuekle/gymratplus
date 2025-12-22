@@ -42,16 +42,15 @@ export function Navbar() {
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ease-in-out border-b
-      ${
-        scrolled
+      ${scrolled
           ? "bg-background/90 backdrop-blur-lg border-border/50"
           : "bg-background/70 backdrop-blur-md border-transparent"
-      }`}
+        }`}
     >
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
           <div className="flex flex-row items-center space-x-2">
-            <h1 className="text-xl font-semibold tracking-heading transition-colors duration-200 hover:text-primary">
+            <h1 className="text-xl font-semibold tracking-[-0.04em] transition-colors duration-200 hover:text-primary">
               GymRat+
             </h1>
           </div>
@@ -96,16 +95,16 @@ export function Navbar() {
                       </AvatarFallback>
                     </Avatar>
                   )) || (
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
-                        {session?.user?.name
-                          ?.split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-xs">
+                          {session?.user?.name
+                            ?.split(" ")
+                            .map((word) => word[0])
+                            .join("")
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

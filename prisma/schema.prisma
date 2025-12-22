@@ -67,8 +67,9 @@ model User {
   weights            Weight[]
   workoutStreak      WorkoutStreak?
   // Subscription fields
+  subscriptionTier   String?            @default("FREE") // 'FREE', 'PRO', 'INSTRUCTOR'
   subscriptionStatus String?            @default("inactive") // 'inactive', 'trialing', 'active', 'past_due', 'canceled', or 'unpaid'
-  planType           String?            @default("free") // 'free', 'monthly', 'annual'
+  planType           String?            @default("free") // 'free', 'monthly', 'annual' (DEPRECATED - use subscriptionTier)
   trialEndsAt        DateTime? // Fecha de finalización del período de prueba
   currentPeriodEnd   DateTime? // Fecha de finalización del período de pago actual
   cancelAtPeriodEnd  Boolean            @default(false) // Si es true, la suscripción se cancelará al final del período actual

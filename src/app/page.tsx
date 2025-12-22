@@ -74,17 +74,15 @@ export default function GymRatLanding() {
       {/* Glass Grid Pattern */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.015)_1px,transparent_1px)] dark:bg-[linear-gradient(rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:40px_40px]" />
 
-      {/* Navigation - Glassmorphism */}
-      <nav className="relative z-50 backdrop-blur-xl bg-white/60 dark:bg-black/60 border-b border-zinc-200/50 dark:border-zinc-800/50 shadow-lg shadow-zinc-900/5 dark:shadow-zinc-100/5">
+      {/* Navigation - Clean & Transparent */}
+      <nav className="relative z-50 backdrop-blur-md bg-white/40 dark:bg-black/40 border-b border-zinc-200/30 dark:border-zinc-800/30">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex justify-between items-center">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 flex items-center justify-center">
-                <span className="text-white dark:text-black font-bold text-xs">
-                  G+
-                </span>
+                <span className="text-white dark:text-black font-bold text-xs">G+</span>
               </div>
-              <span className="text-lg font-semibold tracking-[-0.02em]">
+              <span className="text-xl font-semibold tracking-[-0.04em]">
                 GymRat+
               </span>
             </div>
@@ -163,19 +161,21 @@ export default function GymRatLanding() {
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-center">
             <div className="relative w-[280px]">
-              <Image
-                key={currentTheme}
-                src={
-                  currentTheme === "dark"
-                    ? "/images/phone_dark.png"
-                    : "/images/phone_light.png"
-                }
-                alt="GymRat+ App"
-                width={280}
-                height={560}
-                className="drop-shadow-2xl"
-                priority
-              />
+              <div className="flex-1 relative" suppressHydrationWarning>
+                <Image
+                  key={currentTheme}
+                  src={
+                    currentTheme === "dark"
+                      ? "/images/phone_dark.png"
+                      : "/images/phone_light.png"
+                  }
+                  alt="GymRat+ App"
+                  width={280}
+                  height={560}
+                  className="drop-shadow-2xl"
+                  priority
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -333,9 +333,9 @@ export default function GymRatLanding() {
             ].map((plan, i) => (
               <div
                 key={i}
-                className={`backdrop-blur-xl rounded-2xl border p-8 transition-all duration-300 hover:-translate-y-2 ${plan.popular
-                    ? "bg-gradient-to-br from-zinc-900/90 to-zinc-800/90 dark:from-zinc-100/90 dark:to-zinc-200/90 border-zinc-700 dark:border-zinc-300 shadow-2xl shadow-zinc-900/20 dark:shadow-zinc-100/20"
-                    : "bg-white/40 dark:bg-black/40 border-zinc-200/50 dark:border-zinc-800/50 hover:bg-white/60 dark:hover:bg-black/60"
+                className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
+                  ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                  : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
                   }`}
               >
                 {plan.popular && (
@@ -344,7 +344,7 @@ export default function GymRatLanding() {
                   </Badge>
                 )}
                 <h3
-                  className={`text-2xl font-bold tracking-[-0.02em] mb-2 ${plan.popular ? "text-zinc-100 dark:text-zinc-900" : "text-zinc-900 dark:text-zinc-100"}`}
+                  className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${plan.popular ? "text-zinc-100 dark:text-zinc-900" : "text-zinc-900 dark:text-zinc-100"}`}
                 >
                   {plan.name}
                 </h3>
@@ -375,8 +375,8 @@ export default function GymRatLanding() {
                 </ul>
                 <Button
                   className={`w-full ${plan.popular
-                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                    ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                    : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
                     }`}
                   asChild
                 >
@@ -392,15 +392,39 @@ export default function GymRatLanding() {
       <footer className="relative z-10 mt-20 backdrop-blur-xl bg-white/40 dark:bg-black/40 border-t border-zinc-200/50 dark:border-zinc-800/50">
         <div className="max-w-6xl mx-auto px-6 py-12">
           <div className="text-center">
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-zinc-800 to-zinc-600 dark:from-zinc-200 dark:to-zinc-400 flex items-center justify-center">
-                <span className="text-white dark:text-black font-bold text-xs">
-                  G+
-                </span>
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <div className="relative w-8 h-8">
+                <Image
+                  src="/icons/logo-dark.png"
+                  alt="GymRat+ Logo"
+                  fill
+                  className="object-contain dark:hidden"
+                />
+                <Image
+                  src="/icons/logo-light.png"
+                  alt="GymRat+ Logo"
+                  fill
+                  className="object-contain hidden dark:block"
+                />
               </div>
-              <span className="text-lg font-semibold tracking-[-0.02em]">
+              <span className="text-xl font-semibold tracking-[-0.04em]">
                 GymRat+
               </span>
+            </div>
+            <div className="flex items-center justify-center gap-6 mb-3">
+              <Link
+                href="/privacy"
+                className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                Política de Privacidad
+              </Link>
+              <span className="text-zinc-400 dark:text-zinc-600">•</span>
+              <Link
+                href="/terms"
+                className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+              >
+                Términos de Servicio
+              </Link>
             </div>
             <p className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
               © 2025 GymRat+. Todos los derechos reservados.

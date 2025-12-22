@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     const emailResult = await sendEmail({
       to: user.email,
-      subject: "Tu código de verificación - GymRatPlus",
+      subject: "Tu código de verificación - GymRat+",
       html: emailHtml,
     });
 

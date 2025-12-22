@@ -42,7 +42,8 @@ export async function createNotification({
 
   // Send Push Notification
   try {
-    // @ts-expect-error - PushSubscription is generated but not picked up by IDE sometimes
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore - PushSubscription is generated but not picked up by IDE sometimes
     const subscriptions = await prisma.pushSubscription.findMany({
       where: { userId },
     });
@@ -54,7 +55,10 @@ export async function createNotification({
     if (subscriptions.length > 0) {
       // Import web-push dynamically to avoid issues in edge runtimes if applicable
       // though this is a server action/lib, dynamic import is safer for optional deps
-      const webpush = await import("web-push");
+      const webpushModule = await import("web-push");
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const webpush = webpushModule.default || webpushModule;
 
       // Ensure VAPID keys are available
       if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {

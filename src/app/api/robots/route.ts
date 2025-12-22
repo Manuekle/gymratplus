@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 export async function GET() {
   const robotsTxt = `User-agent: *
 Allow: /
-Sitemap: https://gymratplus.vercel.app/sitemap.xml`;
+Sitemap: https://gymratplus.com/sitemap.xml`;
 
   return new NextResponse(robotsTxt, {
     headers: {

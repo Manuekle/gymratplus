@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://gymratplus.vercel.app
-
-# Sitemaps
-Sitemap: https://gymratplus.vercel.app/sitemap.xml

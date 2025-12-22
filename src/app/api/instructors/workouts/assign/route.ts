@@ -2,6 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { requireFeature } from "@/lib/subscriptions/check-access";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +10,16 @@ export async function POST(request: NextRequest) {
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
+    }
+
+    // Check subscription tier for workout assignment feature
+    try {
+      await requireFeature('WORKOUT_ASSIGNMENT');
+    } catch (error) {
+      return NextResponse.json(
+        { error: "Upgrade required - This feature requires INSTRUCTOR tier" },
+        { status: 403 }
+      );
     }
 
     // Verificar que el usuario sea un instructor

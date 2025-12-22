@@ -5,6 +5,7 @@ import {
   Head,
   Heading,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -25,6 +26,8 @@ export function PasswordResetCodeEmail({
   userEmail,
   expiresIn = "10 minutos",
 }: PasswordResetCodeEmailProps) {
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://gymratplus.com";
+
   return (
     <Html lang="es" dir="ltr">
       <Head />
@@ -39,6 +42,13 @@ export function PasswordResetCodeEmail({
           <Container className="mx-auto max-w-[520px] px-[24px] py-[32px]">
             {/* Header - Minimalista */}
             <Section className="mb-[24px]">
+              <Img
+                src={`${baseUrl}/icons/logo-light.png`}
+                width="48"
+                height="48"
+                alt="GymRat+"
+                className="mb-[16px] rounded-[12px]"
+              />
               <Heading className="text-[24px] tracking-heading font-semibold text-gray-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>

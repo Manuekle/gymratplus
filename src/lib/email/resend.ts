@@ -24,9 +24,8 @@ function getDefaultFromEmail(): string {
     return process.env.RESEND_FROM_EMAIL;
   }
 
-  // Si no hay dominio verificado, usar el dominio de prueba de Resend
-  // Este dominio funciona sin verificación para desarrollo
-  return "GymRat+ <onboarding@resend.dev>";
+  // Si no hay dominio verificado, usar 'no-reply@gymratplus.com' como solicita el usuario
+  return "GymRat+ <no-reply@gymratplus.com>";
 }
 
 export async function sendEmail({
@@ -42,12 +41,17 @@ export async function sendEmail({
   }
 
   try {
-    const data = await resend.emails.send({
+    const { data, error } = await resend.emails.send({
       from,
       to,
       subject,
       html,
     });
+
+    if (error) {
+      console.error("Error enviando email (Resend):", error);
+      return { success: false, error: error.message };
+    }
 
     return { success: true, data };
   } catch (error) {
