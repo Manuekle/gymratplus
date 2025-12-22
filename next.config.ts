@@ -20,13 +20,31 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   images: {
-    domains: [
-      "lh3.googleusercontent.com",
-      "lh4.googleusercontent.com",
-      "lh5.googleusercontent.com",
-      "lh6.googleusercontent.com",
-      "flagcdn.com",
-      "rijwjlzt9wsyq7fc.public.blob.vercel-storage.com",
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "lh3.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh4.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh5.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "lh6.googleusercontent.com",
+      },
+      {
+        protocol: "https",
+        hostname: "flagcdn.com",
+      },
+      {
+        protocol: "https",
+        hostname: "rijwjlzt9wsyq7fc.public.blob.vercel-storage.com",
+      },
     ],
   },
   typescript: {

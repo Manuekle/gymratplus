@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { put } from "@vercel/blob";
 import { redis } from "@/lib/database/redis";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../auth.ts";
+import { auth } from "../../../../auth";
 
 export async function POST(request: NextRequest) {
   try {
@@ -88,9 +88,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-};
