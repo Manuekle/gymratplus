@@ -93,7 +93,7 @@ export const config = {
     }),
   ],
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
@@ -182,18 +182,16 @@ export const config = {
         image: token.picture ?? session.user.image ?? null,
         isInstructor: token.isInstructor as boolean,
         experienceLevel: token.experienceLevel as string | null,
-        profile: token.profile as ProfileType | null,
-        instructorProfile:
-          token.instructorProfile as InstructorProfileType | null,
+        profile: token.profile as any,
+        instructorProfile: token.instructorProfile as any,
         subscriptionTier: token.subscriptionTier as string,
         subscriptionStatus: token.subscriptionStatus as string | null,
       };
 
       const localStorageData = {
         ...sessionUser,
-        profile: token.profile as ProfileType | null,
-        instructorProfile:
-          token.instructorProfile as InstructorProfileType | null,
+        profile: token.profile as any,
+        instructorProfile: token.instructorProfile as any,
         subscriptionTier: token.subscriptionTier as string,
         subscriptionStatus: token.subscriptionStatus as string | null,
       };

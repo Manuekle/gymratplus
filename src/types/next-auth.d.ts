@@ -7,8 +7,23 @@ declare module "next-auth" {
       id: string;
       isInstructor: boolean;
       experienceLevel: string | null;
-      profile: unknown;
-      instructorProfile: unknown;
+      profile?: {
+        phone?: string;
+        birthdate?: Date | string;
+        preferredWorkoutTime?: string;
+        dailyActivity?: string;
+        goal?: string;
+        dietaryPreference?: string;
+        monthsTraining?: number;
+        height?: number;
+        currentWeight?: number;
+        gender?: string;
+      };
+      instructorProfile?: {
+        id?: string;
+        userId?: string;
+        isPaid?: boolean;
+      };
       subscriptionTier: string;
       subscriptionStatus: string | null;
       _localStorage: {
@@ -17,8 +32,23 @@ declare module "next-auth" {
         image: string | null;
         experienceLevel: string | null;
         isInstructor: boolean;
-        profile: unknown;
-        instructorProfile: unknown;
+        profile?: {
+          phone?: string;
+          birthdate?: Date | string;
+          preferredWorkoutTime?: string;
+          dailyActivity?: string;
+          goal?: string;
+          dietaryPreference?: string;
+          monthsTraining?: number;
+          height?: number;
+          currentWeight?: number;
+          gender?: string;
+        };
+        instructorProfile?: {
+          id?: string;
+          userId?: string;
+          isPaid?: boolean;
+        };
         subscriptionTier: string;
         subscriptionStatus: string | null;
       };
@@ -51,8 +81,23 @@ declare module "next-auth/jwt" {
     isInstructor?: boolean;
     experienceLevel?: string | null;
     interests?: string[];
-    profile?: unknown;
-    instructorProfile?: unknown;
+    profile?: {
+      phone?: string;
+      birthdate?: Date | string;
+      preferredWorkoutTime?: string;
+      dailyActivity?: string;
+      goal?: string;
+      dietaryPreference?: string;
+      monthsTraining?: number;
+      height?: number;
+      currentWeight?: number;
+      gender?: string;
+    };
+    instructorProfile?: {
+      id?: string;
+      userId?: string;
+      isPaid?: boolean;
+    };
     subscriptionTier?: string;
     subscriptionStatus?: string | null;
   }

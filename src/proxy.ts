@@ -23,11 +23,15 @@ export async function proxy(req: NextRequest) {
   }
 
   // Si el usuario está autenticado pero no tiene perfil o está incompleto
-  if (token?.profile && isDashboardRoute) {
-    const { gender, birthdate, height, currentWeight, goal } = token.profile;
+  if (token && isDashboardRoute) {
+    const profile = token.profile as { gender?: string; birthdate?: Date | string; height?: number; currentWeight?: number; goal?: string } | null | undefined;
 
-    if (!gender || !birthdate || !height || !currentWeight || !goal) {
-      return NextResponse.redirect(new URL("/onboarding", req.url));
+    if (profile) {
+      const { gender, birthdate, height, currentWeight, goal } = profile;
+
+      if (!gender || !birthdate || !height || !currentWeight || !goal) {
+        return NextResponse.redirect(new URL("/onboarding", req.url));
+      }
     }
   }
 
