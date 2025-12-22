@@ -6,7 +6,7 @@ export async function proxy(req: NextRequest) {
   // Get the current token
   const token = await getToken({
     req,
-    secret: process.env.NEXTAUTH_SECRET
+    secret: process.env.NEXTAUTH_SECRET,
   });
   const path = req.nextUrl.pathname;
 

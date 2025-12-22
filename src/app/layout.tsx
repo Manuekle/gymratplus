@@ -8,39 +8,41 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Metadata SEO para la página principal y por defecto
-export const metadata: Metadata = generateSEOMetadata({
-  title: "GymRat+ | Plataforma Inteligente de Fitness",
-  description:
-    "La plataforma inteligente que conecta entrenadores y atletas para experiencias de entrenamiento personalizadas. Planes de nutrición inteligentes, seguimiento avanzado y coaching profesional en un solo lugar.",
-  keywords: [
-    "fitness",
-    "entrenamiento personalizado",
-    "nutrición inteligente",
-    "coaching profesional",
-    "entrenadores",
-    "atletas",
-    "planes de entrenamiento",
-    "seguimiento de progreso",
-    "app fitness",
-    "gymrat",
-    "rutinas de ejercicio",
-    "macronutrientes",
-    "calorías",
-    "analíticas fitness",
-  ],
-  openGraph: {
-    title: "GymRat+ | Transforma tu cuerpo, transforma tu vida",
-    description:
-      "Plataforma inteligente de fitness con planes de entrenamiento personalizados, nutrición inteligente y coaching profesional.",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
+export const metadata: Metadata = {
+  ...generateSEOMetadata({
     title: "GymRat+ | Plataforma Inteligente de Fitness",
     description:
-      "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
-  },
-  manifest: "/manifest.json",
+      "La plataforma inteligente que conecta entrenadores y atletas para experiencias de entrenamiento personalizadas. Planes de nutrición inteligentes, seguimiento avanzado y coaching profesional en un solo lugar.",
+    keywords: [
+      "fitness",
+      "entrenamiento personalizado",
+      "nutrición inteligente",
+      "coaching profesional",
+      "entrenadores",
+      "atletas",
+      "planes de entrenamiento",
+      "seguimiento de progreso",
+      "app fitness",
+      "gymrat",
+      "rutinas de ejercicio",
+      "macronutrientes",
+      "calorías",
+      "analíticas fitness",
+    ],
+    openGraph: {
+      title: "GymRat+ | Transforma tu cuerpo, transforma tu vida",
+      description:
+        "Plataforma inteligente de fitness con planes de entrenamiento personalizados, nutrición inteligente y coaching profesional.",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "GymRat+ | Plataforma Inteligente de Fitness",
+      description:
+        "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
+    },
+    manifest: "/manifest.json",
+  }),
   icons: {
     icon: [
       { url: "/icons/logo-light.png", sizes: "192x192", type: "image/png" },
@@ -49,7 +51,7 @@ export const metadata: Metadata = generateSEOMetadata({
     ],
     apple: "/icons/favicon-180x180.png",
   },
-});
+};
 
 export default function RootLayout({
   children,
