@@ -12,23 +12,23 @@ import {
 } from "@react-email/components";
 import { render } from "@react-email/render";
 
-interface PasswordResetCodeEmailProps {
+interface EmailVerificationCodeProps {
   code: string;
   userName?: string;
   userEmail?: string;
   expiresIn?: string;
 }
 
-export function PasswordResetCodeEmail({
+export function EmailVerificationCode({
   code,
   userName,
   userEmail,
   expiresIn = "10 minutos",
-}: PasswordResetCodeEmailProps) {
+}: EmailVerificationCodeProps) {
   return (
     <Html lang="es" dir="ltr">
       <Head />
-      <Preview>Tu código de verificación: {code} - GymRat+</Preview>
+      <Preview>Verifica tu email - Código: {code} - GymRat+</Preview>
       <Tailwind>
         <Body
           style={{
@@ -37,28 +37,28 @@ export function PasswordResetCodeEmail({
           }}
         >
           <Container className="mx-auto max-w-[520px] px-[24px] py-[32px]">
-            {/* Header - Minimalista */}
+            {/* Header */}
             <Section className="mb-[24px]">
               <Heading className="text-[24px] tracking-heading font-semibold text-gray-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>
               <Text className="text-[13px] text-gray-500 m-0">
-                Código de verificación
+                Verificación de cuenta
               </Text>
             </Section>
 
-            {/* Greeting - Compacto */}
+            {/* Greeting */}
             <Section className="mb-[20px]">
               <Text className="text-[15px] text-gray-900 mb-[12px] leading-[22px] m-0">
-                {userName ? `Hola ${userName},` : "Hola,"}
+                {userName ? `¡Hola ${userName}!` : "¡Hola!"}
               </Text>
               <Text className="text-[15px] text-gray-700 mb-0 leading-[22px] m-0">
-                Usa este código para restablecer tu contraseña
-                {userEmail && ` de ${userEmail}`}:
+                Bienvenido a GymRat+. Usa este código para verificar tu email
+                {userEmail && ` (${userEmail})`}:
               </Text>
             </Section>
 
-            {/* Code Display - Moderno y destacado */}
+            {/* Code Display */}
             <Section className="text-center mb-[24px]">
               <div
                 style={{
@@ -79,22 +79,34 @@ export function PasswordResetCodeEmail({
               </div>
             </Section>
 
-            {/* Expiry Notice - Compacto */}
+            {/* Expiry Notice */}
             <Section className="mb-[20px]">
               <Text className="text-[13px] text-gray-600 mb-0 leading-[18px] text-center m-0">
                 Válido por {expiresIn}
               </Text>
             </Section>
 
-            {/* Security Notice - Minimalista */}
+            {/* Welcome Message */}
+            <Section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-[14px] text-gray-700 mb-[8px] leading-[20px] m-0">
+                <strong>🎉 ¡Estás a un paso de comenzar!</strong>
+              </Text>
+              <Text className="text-[13px] text-gray-600 mb-0 leading-[18px] m-0">
+                Una vez verificado tu email, podrás acceder a todas las
+                funcionalidades de GymRat+: entrenamientos personalizados,
+                planes nutricionales, seguimiento de progreso y mucho más.
+              </Text>
+            </Section>
+
+            {/* Security Notice */}
             <Section className="bg-gray-50 rounded-[8px] p-[16px] mb-[20px]">
               <Text className="text-[12px] text-gray-600 mb-0 leading-[18px] m-0">
-                <strong>Seguridad:</strong> Si no solicitaste este cambio,
+                <strong>Seguridad:</strong> Si no solicitaste esta verificación,
                 ignora este email. Nunca compartas este código con nadie.
               </Text>
             </Section>
 
-            {/* Footer - Minimalista */}
+            {/* Footer */}
             <Section className="border-t border-gray-100 pt-[20px]">
               <Text className="text-xs text-gray-400 mb-[4px] m-0 text-center">
                 © {new Date().getFullYear()} GymRat+. Todos los derechos
@@ -108,7 +120,7 @@ export function PasswordResetCodeEmail({
   );
 }
 
-PasswordResetCodeEmail.PreviewProps = {
+EmailVerificationCode.PreviewProps = {
   code: "123456",
   userName: "Juan Pérez",
   userEmail: "juan@ejemplo.com",
@@ -116,8 +128,8 @@ PasswordResetCodeEmail.PreviewProps = {
 };
 
 // Función para renderizar el email a HTML
-export async function renderPasswordResetCodeEmail(
-  props: PasswordResetCodeEmailProps,
+export async function renderEmailVerificationCode(
+  props: EmailVerificationCodeProps,
 ): Promise<string> {
-  return await render(<PasswordResetCodeEmail {...props} />);
+  return await render(<EmailVerificationCode {...props} />);
 }

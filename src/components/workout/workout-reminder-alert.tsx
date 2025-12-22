@@ -408,7 +408,7 @@ export function WorkoutReminderAlert({
                   <h2 className="text-2xl font-semibold tracking-heading text-zinc-900 dark:text-white">
                     {getTitle()}
                   </h2>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 ">
                     {getMessage()}
                   </p>
                 </div>

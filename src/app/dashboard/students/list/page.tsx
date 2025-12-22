@@ -355,7 +355,7 @@ export default function StudentsListPage() {
                           </p>
                           <Badge
                             variant={activityStatus.variant}
-                            className="text-[10px] h-5"
+                            className="text-xs h-5"
                           >
                             {activityStatus.text}
                           </Badge>
@@ -448,7 +448,7 @@ export default function StudentsListPage() {
                         {student.hasActiveWorkoutPlan && (
                           <Badge
                             variant="outline"
-                            className="text-[10px] h-5 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
+                            className="text-xs h-5 bg-blue-50 dark:bg-blue-950/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-950/40 transition-colors"
                           >
                             Entrenamiento
                           </Badge>
@@ -456,7 +456,7 @@ export default function StudentsListPage() {
                         {student.hasActiveMealPlan && (
                           <Badge
                             variant="outline"
-                            className="text-[10px] h-5 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
+                            className="text-xs h-5 bg-green-50 dark:bg-green-950/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 hover:bg-green-100 dark:hover:bg-green-950/40 transition-colors"
                           >
                             Nutrición
                           </Badge>

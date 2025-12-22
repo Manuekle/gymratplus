@@ -264,7 +264,7 @@ export default function WorkoutTimerFloat({
             <span className="text-xs text-muted-foreground font-medium">
               Tiempo Total
             </span>
-            <div className="text-4xl font-bold tracking-heading tabular-nums">
+            <div className="text-4xl font-bold tracking-[-0.04em]">
               {formatTime(elapsedTime)}
             </div>
           </div>

@@ -26,7 +26,7 @@ function getDefaultFromEmail(): string {
 
   // Si no hay dominio verificado, usar el dominio de prueba de Resend
   // Este dominio funciona sin verificación para desarrollo
-  return "GymRatPlus <onboarding@resend.dev>";
+  return "GymRat+ <onboarding@resend.dev>";
 }
 
 export async function sendEmail({

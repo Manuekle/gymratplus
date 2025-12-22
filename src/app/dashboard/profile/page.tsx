@@ -57,7 +57,7 @@ import {
   Dumbbell01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
-import { PushNotificationManager } from "@/components/pwa/push-manager";
+
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -196,7 +196,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-            "",
+          "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -214,7 +214,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Load streak stats
       if (session.user.id) {
@@ -563,9 +563,7 @@ export default function ProfilePage() {
                       document.getElementById("profile-image-upload")?.click()
                     }
                   >
-                    <span className="text-white font-medium tracking-heading text-xs">
-                      cambiar
-                    </span>
+                      <HugeiconsIcon icon={Camera01Icon} className="text-white w-6 h-6" />
                     <input
                       id="profile-image-upload"
                       type="file"
@@ -671,12 +669,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                            "es-ES",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
                         : "";
                     })()}
                   </span>
@@ -731,7 +729,6 @@ export default function ProfilePage() {
                 Datos de contacto y comunicación
               </CardDescription>
             </div>
-            <PushNotificationManager />
           </CardHeader>
           <CardContent className="px-4 space-y-4">
             {isEditing ? (
@@ -821,9 +818,12 @@ export default function ProfilePage() {
                   </div>
                   {isInstructor ? (
                     <div className="space-y-2">
+                      <p className="text-xs text-muted-foreground text-left">
+                        Podrás reactivarla cuando quieras
+                      </p>
                       <Button
-                        variant="outline"
-                        className="w-full text-xs bg-red-50 hover:bg-red-100 text-red-600 border-red-200"
+                        variant="destructive"
+                        className="w-full text-xs"
                         size="default"
                         onClick={() => setShowCancelDialog(true)}
                       >
@@ -902,9 +902,6 @@ export default function ProfilePage() {
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
-                      <p className="text-xs text-muted-foreground text-center">
-                        Podrás reactivarla cuando quieras
-                      </p>
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -972,13 +969,13 @@ export default function ProfilePage() {
                           )?.profile?.birthdate;
                           return birthdate
                             ? new Date(birthdate as string).toLocaleDateString(
-                                "es-ES",
-                                {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                },
-                              )
+                              "es-ES",
+                              {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              },
+                            )
                             : "Fecha no disponible";
                         })()}
                       </div>
@@ -1288,7 +1285,7 @@ export default function ProfilePage() {
                     Objetivo actual
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="default" className="text-xs">
                       {(() => {
                         const goal = (
                           session?.user as {
@@ -1524,9 +1521,8 @@ export default function ProfilePage() {
                             } else if (daysDiff === 1) {
                               return "Ayer";
                             } else {
-                              return `Hace ${daysDiff} ${
-                                daysDiff === 1 ? "día" : "días"
-                              }`;
+                              return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
+                                }`;
                             }
                           })()}
                         </div>

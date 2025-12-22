@@ -188,7 +188,7 @@ export function GoalsDashboard() {
 
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="space-y-0.5">
-                  <span className="text-muted-foreground text-[10px]">
+                  <span className="text-muted-foreground text-xs">
                     Valor inicial
                   </span>
                   <p className="font-medium">
@@ -196,7 +196,7 @@ export function GoalsDashboard() {
                   </p>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-muted-foreground text-[10px]">
+                  <span className="text-muted-foreground text-xs">
                     Valor actual
                   </span>
                   <p className="font-medium text-primary">
@@ -204,7 +204,7 @@ export function GoalsDashboard() {
                   </p>
                 </div>
                 <div className="space-y-0.5">
-                  <span className="text-muted-foreground text-[10px]">
+                  <span className="text-muted-foreground text-xs">
                     Objetivo
                   </span>
                   <p className="font-medium">
@@ -213,7 +213,7 @@ export function GoalsDashboard() {
                 </div>
                 {goal.targetDate && (
                   <div className="space-y-0.5">
-                    <span className="text-muted-foreground text-[10px]">
+                    <span className="text-muted-foreground text-xs">
                       Fecha objetivo
                     </span>
                     <p className="font-medium">

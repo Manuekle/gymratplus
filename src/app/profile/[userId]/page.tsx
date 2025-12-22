@@ -488,7 +488,7 @@ export default function PublicProfilePage() {
                     <div className="w-full space-y-1">
                       <Button
                         size="default"
-                        className="text-[11px] h-8 w-full"
+                        className="text-xs h-8 w-full"
                         onClick={handleRequestInstructor}
                         disabled={isRequesting || hasRequested}
                       >
@@ -499,7 +499,7 @@ export default function PublicProfilePage() {
                             : "Solicitar Entrenamiento"}
                       </Button>
                       {!viewerInfo.isAuthenticated && (
-                        <p className="text-[10px] text-muted-foreground text-center">
+                        <p className="text-xs text-muted-foreground text-center">
                           Inicia sesión para solicitar entrenamiento
                         </p>
                       )}
@@ -623,7 +623,7 @@ export default function PublicProfilePage() {
                       <div className="w-full space-y-1">
                         <Button
                           size="default"
-                          className="text-[11px] h-8 w-full"
+                          className="text-xs h-8 w-full"
                           onClick={handleRequestStudent}
                           disabled={isRequesting || hasRequested}
                         >

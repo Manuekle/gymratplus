@@ -7,6 +7,12 @@ export interface Country {
     common: string;
     official: string;
   };
+  translations?: {
+    spa?: {
+      common: string;
+      official: string;
+    };
+  };
   cca2: string;
   flag: string;
   flags: {
@@ -27,7 +33,7 @@ export function useCountries() {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://restcountries.com/v3.1/all?fields=name,cca2,flag,flags,region,capital",
+          "https://restcountries.com/v3.1/all?fields=name,cca2,flag,flags,region,capital,translations",
         );
 
         if (!response.ok) {
@@ -35,12 +41,29 @@ export function useCountries() {
         }
 
         const data = await response.json();
-        const sortedCountries = data.sort((a: Country, b: Country) =>
-          a.name.common.localeCompare(b.name.common),
+        const countriesWithSpanishNames = data.map((country: Country) => ({
+          ...country,
+          name: {
+            ...country.name,
+            common:
+              country.translations?.spa?.common ||
+              country.name.common ||
+              "Unknown",
+            official:
+              country.translations?.spa?.official ||
+              country.name.official ||
+              "Unknown",
+          },
+        }));
+
+        const sortedCountries = countriesWithSpanishNames.sort(
+          (a: Country, b: Country) =>
+            a.name.common.localeCompare(b.name.common),
         );
 
         setCountries(sortedCountries);
       } catch (err) {
+        console.error("Error fetching countries:", err);
         setError(err instanceof Error ? err.message : "An error occurred");
       } finally {
         setLoading(false);

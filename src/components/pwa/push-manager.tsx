@@ -120,7 +120,7 @@ export function PushNotificationManager({ className }: { className?: string }) {
     return (
       <Button
         variant="outline"
-        size="sm"
+        size="default"
         onClick={subscribeToPush}
         className={className}
       >
@@ -133,7 +133,7 @@ export function PushNotificationManager({ className }: { className?: string }) {
   return (
     <Button
       variant="outline"
-      size="sm"
+      size="default"
       onClick={unsubscribeFromPush}
       className={className}
     >

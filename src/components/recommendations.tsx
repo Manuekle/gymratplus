@@ -521,7 +521,7 @@ export default function RecommendationsComponent() {
                 variant="outline"
                 onClick={() => router.push("/dashboard")}
                 className="text-xs"
-                size="lg"
+                size="default"
               >
                 Ir al Dashboard
               </Button>

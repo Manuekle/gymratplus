@@ -144,7 +144,7 @@ export default function NotificationsPage() {
                 <HugeiconsIcon icon={FilterAddIcon} className="mr-2 h-4 w-4" />
                 Filtrar
                 {selectedTypes.length > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded-full">
+                  <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
                     {selectedTypes.length}
                   </span>
                 )}

@@ -27,6 +27,7 @@ import {
   CalendarCheckIn01Icon,
   ArrowLeft01Icon,
   Calendar02Icon,
+  Apple01Icon,
 } from "@hugeicons/core-free-icons";
 import {
   Dialog,
@@ -422,12 +423,12 @@ export default function StudentDetailPage() {
                     src={student.image || undefined}
                     alt={student.name || "Alumno"}
                   />
-                  <AvatarFallback className="text-xl tracking-heading font-semibold">
+                  <AvatarFallback className="text-xl tracking-[-0.02em] font-medium">
                     {student.name?.charAt(0).toUpperCase() || "A"}
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-center space-y-1">
-                  <h2 className="text-lg tracking-heading font-semibold">
+                  <h2 className="text-lg tracking-[0.02em] font-medium">
                     {student.name}
                   </h2>
                   <p className="text-xs text-muted-foreground">
@@ -514,9 +515,7 @@ export default function StudentDetailPage() {
 
               {/* Active Plans */}
               <div className="space-y-1.5">
-                <h3 className="text-xs tracking-heading font-semibold">
-                  Planes Activos
-                </h3>
+                <h3 className="text-xs font-medium">Planes Activos</h3>
                 {student.hasActiveWorkoutPlan && (
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <HugeiconsIcon
@@ -537,7 +536,7 @@ export default function StudentDetailPage() {
                 )}
                 {!student.hasActiveWorkoutPlan &&
                   !student.hasActiveMealPlan && (
-                    <p className="text-xs text-muted-foreground italic">
+                    <p className="text-xs text-muted-foreground">
                       Sin planes activos
                     </p>
                   )}
@@ -558,10 +557,14 @@ export default function StudentDetailPage() {
                 <Button
                   size="default"
                   variant="default"
-                  className="h-7 text-xs"
+                  className="text-xs"
                   onClick={() => setIsAssignDialogOpen(true)}
                 >
-                  Asignar Rutina
+                  <HugeiconsIcon
+                    icon={Dumbbell01Icon}
+                    className="h-4 w-4 md:mr-2"
+                  />
+                  <span className="hidden md:inline">Asignar Rutina</span>
                 </Button>
               </div>
             </CardHeader>
@@ -694,14 +697,18 @@ export default function StudentDetailPage() {
                 <Button
                   size="default"
                   variant="default"
-                  className="h-7 text-xs"
+                  className="text-xs"
                   onClick={() =>
                     router.push(
                       `/dashboard/students/list/${studentRelationId}/mealplan`,
                     )
                   }
                 >
-                  Crear Plan
+                  <HugeiconsIcon
+                    icon={Apple01Icon}
+                    className="h-4 w-4 md:mr-2"
+                  />
+                  <span className="hidden md:inline">Crear Plan</span>
                 </Button>
               </div>
             </CardHeader>

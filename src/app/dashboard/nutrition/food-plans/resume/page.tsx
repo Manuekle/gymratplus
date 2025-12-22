@@ -345,7 +345,7 @@ function FoodPlanResumeContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col-reverse md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
         <div>
           <h1 className="text-2xl font-semibold tracking-heading">
             Resumen del Plan
@@ -360,7 +360,7 @@ function FoodPlanResumeContent() {
         </div>
         <Button
           variant="outline"
-          className="text-xs"
+          className="text-xs w-full md:w-auto"
           size="default"
           onClick={() => router.push("/dashboard/nutrition/food-plans")}
         >

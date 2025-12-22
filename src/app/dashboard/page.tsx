@@ -7,7 +7,7 @@ import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
-import { QuickActions } from "@/components/dashboard/quick-actions";
+
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -89,6 +89,7 @@ export default function DashboardPage() {
       <InstallPrompt />
       <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
         {/* Accesos Rápidos */}
+        {/* Accesos Rápidos - oculto temporalmente
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -96,6 +97,7 @@ export default function DashboardPage() {
         >
           <QuickActions />
         </motion.div>
+        */}
 
         {/* Progreso y Objetivos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

@@ -275,7 +275,7 @@ export default function ProgressChart({
   return (
     <Card className="h-full flex flex-col">
       <CardHeader>
-        <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+        <CardTitle className="text-2xl font-semibold tracking-heading">
           Seguimiento de Progreso
         </CardTitle>
         <CardDescription className="text-xs sm:text-xs">

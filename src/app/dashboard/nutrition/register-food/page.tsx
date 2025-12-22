@@ -1920,7 +1920,7 @@ export default function RegisterFoodPage() {
 
                         <Button
                           className="w-full"
-                          size="lg"
+                          size="default"
                           onClick={handleSubmit}
                           disabled={submitting || selectedItems.length === 0}
                         >

@@ -77,7 +77,7 @@ export function CreditCard({
 
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
-                  <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
+                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Titular
                   </div>
                   <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 uppercase tracking-wide truncate max-w-[180px]">
@@ -85,7 +85,7 @@ export function CreditCard({
                   </div>
                 </div>
                 <div className="space-y-1 text-right">
-                  <div className="text-[9px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
+                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
                     Vence
                   </div>
                   <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 tracking-wide">
@@ -106,7 +106,7 @@ export function CreditCard({
                 {cvv || "•••"}
               </span>
             </div>
-            <div className="text-[9px] text-slate-500 dark:text-neutral-400 text-right uppercase tracking-wider font-medium">
+            <div className="text-xs text-slate-500 dark:text-neutral-400 text-right uppercase tracking-wider font-medium">
               CVV
             </div>
           </div>

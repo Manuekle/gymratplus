@@ -248,9 +248,7 @@ export function InstructorProfileForm({
               <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 Biografía
               </h4>
-              <p className="text-xs text-foreground leading-relaxed">
-                {profileData.bio}
-              </p>
+              <p className="text-xs text-foreground ">{profileData.bio}</p>
             </div>
           )}
 

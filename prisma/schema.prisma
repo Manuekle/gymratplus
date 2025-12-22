@@ -41,8 +41,10 @@ model User {
   id                 String             @id @default(cuid())
   name               String?
   email              String?            @unique
+  phone              String?            @unique // Número de teléfono único
   experienceLevel    String?
   emailVerified      DateTime?
+  phoneVerified      DateTime?          // Fecha de verificación del teléfono
   image              String?
   password           String?
   isInstructor       Boolean            @default(false)
@@ -81,6 +83,7 @@ model User {
   studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
   chatMessages         ChatMessage[]        @relation("ChatMessageSender")
   pushSubscriptions    PushSubscription[]
+  verificationCodes    VerificationCode[]   @relation("UserVerificationCodes")
 }
 
 model Profile {
@@ -613,4 +616,23 @@ model PushSubscription {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+}
+
+model VerificationCode {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation("UserVerificationCodes", fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // 'email' | 'sms' | 'password-reset'
+  code        String   // Código de 6 dígitos
+  destination String   // Email o número de teléfono
+  expiresAt   DateTime // Fecha de expiración (10 minutos)
+  attempts    Int      @default(0) // Intentos fallidos
+  verified    Boolean  @default(false) // Si fue verificado exitosamente
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
+  @@index([type])
+  @@index([destination])
+  @@index([expiresAt])
 }

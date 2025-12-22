@@ -141,7 +141,7 @@ export function ChatList({
                 {chat.unreadCount > 0 && (
                   <Badge
                     variant="default"
-                    className="h-5 min-w-5 px-1.5 text-[10px] font-semibold flex-shrink-0 rounded-full bg-primary text-primary-foreground"
+                    className="h-5 min-w-5 px-1.5 text-xs font-semibold flex-shrink-0 rounded-full bg-primary text-primary-foreground"
                   >
                     {chat.unreadCount > 99 ? "99+" : chat.unreadCount}
                   </Badge>

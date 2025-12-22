@@ -143,7 +143,7 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
         <DialogTitle className="text-2xl font-semibold tracking-heading">
           ¿Qué metodología te interesa?
         </DialogTitle>
-        <DialogDescription className="text-[10px] md:text-xs text-muted-foreground">
+        <DialogDescription className="text-xs md:text-xs text-muted-foreground">
           Selecciona la técnica de entrenamiento que prefieres utilizar
         </DialogDescription>
       </DialogHeader>
@@ -176,7 +176,7 @@ export function StepMethodology({ value, onChange }: StepMethodologyProps) {
                     <h3 className="text-xs font-medium leading-tight text-foreground peer-data-[state=checked]:text-black dark:peer-data-[state=checked]:text-white transition-colors">
                       {method.name}
                     </h3>
-                    <p className="text-[10px] md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
+                    <p className="text-xs md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
                       {method.description}
                     </p>
                   </div>

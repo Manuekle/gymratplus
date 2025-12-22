@@ -519,7 +519,7 @@ export default function InstructorRegistrationPage() {
 
       <Card className="w-full overflow-hidden">
         <CardHeader className="pb-4">
-          <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
             Configuración de Pago
           </CardTitle>
           <CardDescription className="text-muted-foreground text-xs">
@@ -912,7 +912,7 @@ export default function InstructorRegistrationPage() {
                     )}
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-sm font-semibold">Plan Mensual</h4>
+                        <h4 className="text-xs font-semibold">Plan Mensual</h4>
                         <p className="text-xs text-muted-foreground">
                           Facturación mensual
                         </p>
@@ -960,7 +960,7 @@ export default function InstructorRegistrationPage() {
                     )}
                     <div className="space-y-3">
                       <div>
-                        <h4 className="text-sm font-semibold">Plan Anual</h4>
+                        <h4 className="text-xs font-semibold">Plan Anual</h4>
                         <p className="text-xs text-muted-foreground">
                           Facturación anual
                         </p>
@@ -1019,7 +1019,7 @@ export default function InstructorRegistrationPage() {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground ">
                     Al continuar, aceptas nuestros{" "}
                     <a
                       href="#"
@@ -1045,7 +1045,7 @@ export default function InstructorRegistrationPage() {
                   variant="outline"
                   onClick={() => setStep(1)}
                   disabled={isLoading}
-                  size="lg"
+                  size="default"
                   className="flex-1"
                 >
                   Volver
@@ -1053,7 +1053,7 @@ export default function InstructorRegistrationPage() {
                 <Button
                   type="submit"
                   className="flex-1 gap-2"
-                  size="lg"
+                  size="default"
                   disabled={isLoading}
                 >
                   {isLoading ? (

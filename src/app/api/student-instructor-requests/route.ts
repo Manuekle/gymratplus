@@ -35,6 +35,7 @@ export async function GET() {
               select: {
                 name: true,
                 email: true,
+                isInstructor: true, // Incluir el estado booleano real
               },
             },
           },
@@ -74,8 +75,15 @@ export async function POST(req: NextRequest) {
 
     // Si ya existe un registro, actualizarlo en lugar de crear uno nuevo
     if (existingRecord) {
-      // Si ya hay una solicitud pendiente o activa, devolver error
-      if (["pending", "active"].includes(existingRecord.status)) {
+      const isPending = existingRecord.status === "pending";
+      const requestDate = new Date(existingRecord.startDate);
+      const now = new Date();
+      const hoursDiff =
+        (now.getTime() - requestDate.getTime()) / (1000 * 60 * 60);
+      const isExpired = isPending && hoursDiff >= 24;
+
+      // Si ya hay una solicitud pendiente (no expirada) o activa, devolver error
+      if (["pending", "active"].includes(existingRecord.status) && !isExpired) {
         return NextResponse.json(
           {
             error:
@@ -85,12 +93,14 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Si existe pero está en otro estado (ej: rejected, cancelled), actualizarlo
+      // Si existe pero está en otro estado (ej: rejected, cancelled) o está expirada, actualizarlo
       const updateData: {
         status: string;
         agreedPrice?: number;
+        startDate?: Date;
       } = {
         status: "pending",
+        startDate: new Date(), // Resetear fecha de solicitud
       };
 
       if (agreedPrice !== undefined) {
@@ -124,6 +134,60 @@ export async function POST(req: NextRequest) {
 
       return NextResponse.json(updatedRequest, { status: 200 });
     }
+
+    // Validar si el estudiante ya tiene una solicitud pendiente o activa con OTRO instructor
+    // Y verificar si ese instructor sigue ACTIVO (isInstructor = true). Si no está activo, permitimos la nueva solicitud.
+    const activeRequests = await prisma.studentInstructor.findMany({
+      where: {
+        studentId: studentId,
+        status: { in: ["pending", "active"] },
+        instructorProfileId: { not: instructorProfileId }, // Excluir la solicitud actual si es la misma
+      },
+      include: {
+        instructor: {
+          select: {
+            user: {
+              select: {
+                isInstructor: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Filtrar solicitudes que realmente bloquean (solo las de instructores ACTIVOS y NO expiradas)
+    const blockingRequest = activeRequests.find((req) => {
+      // Si el instructor no es activo, no bloquea
+      if (!req.instructor?.user?.isInstructor) return false;
+
+      // Si está activo (contratado), siempre bloquea
+      if (req.status === "active") return true;
+
+      // Si está pendiente, verificar si expiró (24h)
+      if (req.status === "pending") {
+        const reqDate = new Date(req.startDate);
+        const reqNow = new Date();
+        const reqHoursDiff =
+          (reqNow.getTime() - reqDate.getTime()) / (1000 * 60 * 60);
+        return reqHoursDiff < 24; // Bloquea solo si NO ha expirado (< 24h)
+      }
+
+      return false;
+    });
+
+    if (blockingRequest) {
+      return NextResponse.json(
+        {
+          error:
+            "Ya tienes una solicitud pendiente o activa con otro instructor activo. Debes cancelarla primero.",
+        },
+        { status: 409 },
+      );
+    }
+
+    // Si llegamos aqui, o no tiene solicitudes, o las que tiene son de instructores inactivos (isInstructor=false).
+    // Podemos proceder.
 
     // Crear la nueva solicitud
     const createData: {

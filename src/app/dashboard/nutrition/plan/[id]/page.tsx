@@ -453,7 +453,7 @@ export default function FoodPlanViewPage() {
                   className="h-4 w-4 text-muted-foreground mt-0.5 flex-shrink-0"
                 />
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-muted-foreground leading-relaxed">
+                  <p className="text-xs text-muted-foreground ">
                     {foodPlan.notes}
                   </p>
                 </div>

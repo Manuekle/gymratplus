@@ -131,94 +131,92 @@ export default function QRCodePage() {
   const isInstructor = session.user.isInstructor || false;
 
   return (
-    <div className="container mx-auto p-4 md:p-6 max-w-4xl">
-      <Card>
-        <CardHeader>
-          <div className="flex items-center gap-3">
-            <div>
-              <CardTitle className="text-2xl font-semibold tracking-heading">
-                Mi Código QR
-              </CardTitle>
-              <CardDescription className="text-muted-foreground text-xs">
-                Comparte este código QR para que otros puedan ver tu perfil
-              </CardDescription>
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div>
+            <CardTitle className="text-2xl font-semibold tracking-heading">
+              Mi Código QR
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-xs">
+              Comparte este código QR para que otros puedan ver tu perfil
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="px-4">
+        <div className="flex flex-col items-center gap-6">
+          {/* User Info */}
+          <div className="flex flex-col items-center gap-3">
+            <Avatar className="h-20 w-20">
+              <AvatarImage
+                src={session.user.image || undefined}
+                alt={session.user.name || "Usuario"}
+              />
+              <AvatarFallback className="text-xl tracking-heading font-semibold">
+                {session.user.name?.charAt(0) || "U"}
+              </AvatarFallback>
+            </Avatar>
+            <div className="text-center">
+              <h3 className="text-lg font-semibold tracking-heading">
+                {session.user.name || "Usuario"}
+              </h3>
+              {isInstructor && (
+                <Badge variant="outline" className="mt-1 text-xs">
+                  Instructor
+                </Badge>
+              )}
+              {!isInstructor && (
+                <Badge variant="outline" className="mt-1 text-xs">
+                  Estudiante
+                </Badge>
+              )}
             </div>
           </div>
-        </CardHeader>
-        <CardContent className="px-4">
-          <div className="flex flex-col items-center gap-6">
-            {/* User Info */}
-            <div className="flex flex-col items-center gap-3">
-              <Avatar className="h-20 w-20">
-                <AvatarImage
-                  src={session.user.image || undefined}
-                  alt={session.user.name || "Usuario"}
+
+          {/* QR Code */}
+          {qrUrl && (
+            <div className="flex flex-col items-center gap-4">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
+                <QRCodeCanvas
+                  value={qrUrl}
+                  size={256}
+                  level="H"
+                  includeMargin={true}
+                  id="qr-code-canvas"
                 />
-                <AvatarFallback className="text-xl tracking-heading font-semibold">
-                  {session.user.name?.charAt(0) || "U"}
-                </AvatarFallback>
-              </Avatar>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold tracking-heading">
-                  {session.user.name || "Usuario"}
-                </h3>
-                {isInstructor && (
-                  <Badge variant="outline" className="mt-1 text-xs">
-                    Instructor
-                  </Badge>
-                )}
-                {!isInstructor && (
-                  <Badge variant="outline" className="mt-1 text-xs">
-                    Estudiante
-                  </Badge>
-                )}
               </div>
+              <p className="text-xs text-muted-foreground text-center max-w-md">
+                Escanea este código QR con la cámara de tu celular para ver mi
+                perfil
+                {isInstructor
+                  ? " y conocer mis servicios"
+                  : " y entrenar conmigo"}
+              </p>
             </div>
+          )}
 
-            {/* QR Code */}
-            {qrUrl && (
-              <div className="flex flex-col items-center gap-4">
-                <div className="p-4 bg-white rounded-lg border border-gray-200">
-                  <QRCodeCanvas
-                    value={qrUrl}
-                    size={256}
-                    level="H"
-                    includeMargin={true}
-                    id="qr-code-canvas"
-                  />
-                </div>
-                <p className="text-xs text-muted-foreground text-center max-w-md">
-                  Escanea este código QR con la cámara de tu celular para ver mi
-                  perfil
-                  {isInstructor
-                    ? " y conocer mis servicios"
-                    : " y entrenar conmigo"}
-                </p>
-              </div>
-            )}
-
-            {/* Actions */}
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
-              <Button
-                onClick={handleDownload}
-                disabled={!qrUrl || isDownloading}
-                variant="outline"
-                className="flex-1"
-              >
-                {isDownloading ? "Descargando..." : "Descargar QR"}
-              </Button>
-              <Button
-                onClick={handleShare}
-                disabled={!qrUrl}
-                variant="default"
-                className="flex-1"
-              >
-                Compartir
-              </Button>
-            </div>
+          {/* Actions */}
+          <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+            <Button
+              onClick={handleDownload}
+              disabled={!qrUrl || isDownloading}
+              variant="outline"
+              className="flex-1"
+            >
+              {isDownloading ? "Descargando..." : "Descargar QR"}
+            </Button>
+            <Button
+              onClick={handleShare}
+              disabled={!qrUrl}
+              variant="default"
+              className="flex-1"
+            >
+              Compartir
+            </Button>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

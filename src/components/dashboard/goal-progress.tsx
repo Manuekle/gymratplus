@@ -66,7 +66,7 @@ export default function GoalProgress() {
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 sm:gap-0">
           <div>
-            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               Progreso de Objetivos
             </CardTitle>
             <CardDescription className="text-xs sm:text-xs">
@@ -141,7 +141,7 @@ export default function GoalProgress() {
                     </span>
                   </div>
                   <Progress value={progressValue} className="h-1.5 mb-2" />
-                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-muted-foreground">
+                  <div className="flex items-center justify-between text-xs sm:text-xs text-muted-foreground">
                     <span>
                       {goal.currentValue} {goal.unit}
                     </span>

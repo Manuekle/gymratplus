@@ -92,7 +92,7 @@ export default function PricingPage() {
           {/* Plan Alumno */}
           <Card className="relative flex flex-col shadow-md dark:shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-visible">
             <div className="absolute -top-3 md:-top-4 left-1/2 transform -translate-x-1/2 z-20">
-              <div className="bg-green-600 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-semibold shadow-lg">
+              <div className="bg-green-600 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-xs font-semibold shadow-lg">
                 Gratis
               </div>
             </div>
@@ -106,7 +106,7 @@ export default function PricingPage() {
                     $0
                   </span>
                 </div>
-                <p className="text-[11px] md:text-xs text-muted-foreground mt-2">
+                <p className="text-xs md:text-xs text-muted-foreground mt-2">
                   Perfecto para empezar tu journey fitness
                 </p>
               </div>
@@ -116,7 +116,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Planes de entrenamiento básicos
                   </span>
                 </li>
@@ -125,7 +125,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Seguimiento de progreso
                   </span>
                 </li>
@@ -134,14 +134,14 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Acceso a la comunidad
                   </span>
                 </li>
               </ul>
               <Button
                 variant="default"
-                className="w-full text-[11px] md:text-xs py-2.5 md:py-3 text-white bg-green-600 hover:bg-green-700 transition-colors shadow-lg"
+                className="w-full text-xs md:text-xs py-2.5 md:py-3 text-white bg-green-600 hover:bg-green-700 transition-colors shadow-lg"
                 onClick={() => handlePlanSelect("alumno")}
                 disabled={isLoading}
               >
@@ -153,7 +153,7 @@ export default function PricingPage() {
           {/* Plan Instructor Mensual */}
           <Card className="relative flex flex-col shadow-xl dark:shadow-2xl transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-700 overflow-visible md:scale-105 z-10">
             <div className="absolute -top-3 md:-top-4 left-1/2 transform -translate-x-1/2 z-20">
-              <div className="bg-black dark:bg-white text-white dark:text-black px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-semibold shadow-lg">
+              <div className="bg-black dark:bg-white text-white dark:text-black px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-xs font-semibold shadow-lg">
                 Más popular
               </div>
             </div>
@@ -170,7 +170,7 @@ export default function PricingPage() {
                     /mes
                   </span>
                 </div>
-                <p className="text-[11px] md:text-xs text-muted-foreground mt-2">
+                <p className="text-xs md:text-xs text-muted-foreground mt-2">
                   Para entrenadores profesionales
                 </p>
               </div>
@@ -180,7 +180,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Todo lo del plan Alumno
                   </span>
                 </li>
@@ -189,7 +189,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Gestión de clientes
                   </span>
                 </li>
@@ -198,7 +198,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Creación de entrenamientos personalizados
                   </span>
                 </li>
@@ -207,13 +207,13 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-black dark:text-white flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Dashboard de analíticas avanzadas
                   </span>
                 </li>
               </ul>
               <Button
-                className="w-full text-[11px] md:text-xs py-2.5 md:py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-lg"
+                className="w-full text-xs md:text-xs py-2.5 md:py-3 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-100 transition-colors shadow-lg"
                 onClick={() => handlePlanSelect("instructor-monthly")}
                 disabled={isLoading}
               >
@@ -225,7 +225,7 @@ export default function PricingPage() {
           {/* Plan Instructor Anual */}
           <Card className="relative flex flex-col shadow-md dark:shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-[1.02] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 overflow-visible">
             <div className="absolute -top-3 md:-top-4 left-1/2 transform -translate-x-1/2 z-20">
-              <div className="bg-sky-600 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-[10px] md:text-xs font-semibold shadow-lg">
+              <div className="bg-sky-600 text-white px-3 md:px-4 py-1 md:py-1.5 rounded-full text-xs md:text-xs font-semibold shadow-lg">
                 Ahorra 18%
               </div>
             </div>
@@ -242,7 +242,7 @@ export default function PricingPage() {
                     /año
                   </span>
                 </div>
-                <p className="text-[11px] md:text-xs text-muted-foreground mt-2">
+                <p className="text-xs md:text-xs text-muted-foreground mt-2">
                   Paga una vez y olvídate todo el año
                 </p>
               </div>
@@ -252,7 +252,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Todo lo del plan Instructor
                   </span>
                 </li>
@@ -261,7 +261,7 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Soporte prioritario
                   </span>
                 </li>
@@ -270,14 +270,14 @@ export default function PricingPage() {
                     icon={Tick02Icon}
                     className="w-4 h-4 md:w-5 md:h-5 text-sky-600 dark:text-sky-400 flex-shrink-0 mt-0.5"
                   />
-                  <span className="text-[11px] md:text-xs leading-relaxed">
+                  <span className="text-xs md:text-xs ">
                     Acceso anticipado a nuevas funciones
                   </span>
                 </li>
               </ul>
               <Button
                 variant="default"
-                className="w-full text-[11px] md:text-xs py-2.5 md:py-3 text-white bg-sky-600 hover:bg-sky-700 transition-colors shadow-lg"
+                className="w-full text-xs md:text-xs py-2.5 md:py-3 text-white bg-sky-600 hover:bg-sky-700 transition-colors shadow-lg"
                 onClick={() => handlePlanSelect("instructor-yearly")}
                 disabled={isLoading}
               >
@@ -295,7 +295,7 @@ export default function PricingPage() {
             <DialogTitle className="text-xl md:text-2xl font-semibold">
               ¿Ya tienes una cuenta?
             </DialogTitle>
-            <DialogDescription className="text-xs md:text-xs pt-2 leading-relaxed">
+            <DialogDescription className="text-xs md:text-xs pt-2 ">
               Para continuar con el plan de Instructor, necesitamos saber si ya
               tienes una cuenta en GymRat+. Esto nos ayudará a redirigirte al
               lugar correcto.

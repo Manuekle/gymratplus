@@ -260,35 +260,41 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
         </DialogHeader>
 
         {/* Indicador de pasos mejorado */}
-        <div className="flex items-center justify-between mb-4 sm:mb-6 px-0 sm:px-2 gap-1 sm:gap-2">
+        <div className="flex items-center justify-between mb-4 sm:mb-6 px-0 sm:px-2 w-full">
           {Array.from({ length: totalSteps }).map((_, i) => (
-            <div key={i} className="flex items-center flex-1 min-w-0">
-              <div className="flex items-center justify-center flex-1 min-w-0">
-                <div
-                  className={`flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-full transition-all duration-300 flex-shrink-0 ${
-                    step > i + 1
-                      ? "bg-green-500 text-white border border-green-500 shadow-sm"
-                      : step === i + 1
-                        ? "bg-primary text-primary-foreground border border-primary shadow-md scale-110"
-                        : "bg-muted text-muted-foreground border border-muted"
-                  }`}
-                >
-                  {step > i + 1 ? (
-                    <HugeiconsIcon
-                      icon={Tick02Icon}
-                      className="h-3.5 w-3.5 sm:h-5 sm:w-5"
-                    />
-                  ) : (
-                    <div className="scale-75 sm:scale-100">{stepIcons[i]}</div>
-                  )}
-                </div>
+            <div
+              key={i}
+              className={`flex items-center ${i < totalSteps - 1 ? "flex-1" : ""}`}
+            >
+              <div
+                className={`flex items-center justify-center w-7 h-7 sm:w-10 sm:h-10 rounded-full transition-all duration-300 flex-shrink-0 ${
+                  step > i + 1 || (step === totalSteps && i === totalSteps - 1)
+                    ? "bg-green-500 text-white border border-green-500 shadow-sm"
+                    : step === i + 1
+                      ? "bg-primary text-primary-foreground border border-primary shadow-md scale-110"
+                      : "bg-muted text-muted-foreground border border-muted"
+                }`}
+              >
+                {step > i + 1 ||
+                (step === totalSteps && i === totalSteps - 1) ? (
+                  <HugeiconsIcon
+                    icon={Tick02Icon}
+                    className="h-3.5 w-3.5 sm:h-5 sm:w-5"
+                  />
+                ) : (
+                  <div className="scale-75 sm:scale-100">{stepIcons[i]}</div>
+                )}
               </div>
               {i < totalSteps - 1 && (
-                <div
-                  className={`h-0.5 flex-1 mx-0.5 sm:mx-2 transition-colors duration-300 min-w-[8px] sm:min-w-0 ${
-                    step > i + 1 ? "bg-green-500" : "bg-muted"
-                  }`}
-                />
+                <div className="flex-1 mx-2 sm:mx-4 h-0.5 bg-muted overflow-hidden">
+                  <div
+                    className={`h-full transition-all duration-500 ease-out ${
+                      step > i + 1
+                        ? "bg-green-500 w-full"
+                        : "bg-transparent w-0"
+                    }`}
+                  />
+                </div>
               )}
             </div>
           ))}
@@ -463,7 +469,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                             Sedentario
                           </span>
                           <span
-                            className={`text-[10px] sm:text-[10px] block leading-tight ${
+                            className={`text-xs sm:text-xs block leading-tight ${
                               formValues.activityLevel === "sedentary"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -504,7 +510,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                             Ligero
                           </span>
                           <span
-                            className={`text-[10px] sm:text-[10px] block leading-tight ${
+                            className={`text-xs sm:text-xs block leading-tight ${
                               formValues.activityLevel === "light"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -545,7 +551,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                             Moderado
                           </span>
                           <span
-                            className={`text-[10px] sm:text-[10px] block leading-tight ${
+                            className={`text-xs sm:text-xs block leading-tight ${
                               formValues.activityLevel === "moderate"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -586,7 +592,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                             Activo
                           </span>
                           <span
-                            className={`text-[10px] sm:text-[10px] block leading-tight ${
+                            className={`text-xs sm:text-xs block leading-tight ${
                               formValues.activityLevel === "active"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -627,7 +633,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                             Muy activo
                           </span>
                           <span
-                            className={`text-[10px] sm:text-[10px] block leading-tight ${
+                            className={`text-xs sm:text-xs block leading-tight ${
                               formValues.activityLevel === "very_active"
                                 ? "text-primary-foreground/80"
                                 : "text-muted-foreground"
@@ -688,7 +694,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Perder peso
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.goal === "lose-weight"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -729,7 +735,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Mantener
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.goal === "maintain"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -770,7 +776,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Ganar músculo
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.goal === "gain-muscle"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -824,7 +830,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Sin preferencia
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.dietaryPreference === "no-preference"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -867,7 +873,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Vegetariano
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.dietaryPreference === "vegetarian"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -908,7 +914,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                               Keto
                             </span>
                             <span
-                              className={`text-[10px] sm:text-[10px] block leading-tight ${
+                              className={`text-xs sm:text-xs block leading-tight ${
                                 formValues.dietaryPreference === "keto"
                                   ? "text-primary-foreground/80"
                                   : "text-muted-foreground"
@@ -946,128 +952,257 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                   </div>
                 </div>
 
-                <div className="space-y-3 sm:space-y-4">
-                  <h3 className="text-lg font-semibold tracking-heading">
-                    Macronutrientes Diarios
-                  </h3>
+                <div className="md:hidden max-h-[50vh] overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-lg font-semibold tracking-heading">
+                      Macronutrientes Diarios
+                    </h3>
 
-                  <div className="grid grid-cols-3 gap-2 sm:gap-4">
-                    {/* Proteínas */}
-                    <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
-                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
-                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
-                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
-                            <HugeiconsIcon
-                              icon={SteakIcon}
-                              className="h-4 w-4 sm:h-6 sm:w-6 text-pink-600 dark:text-pink-300"
-                            />
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                      {/* Proteínas */}
+                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={SteakIcon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-pink-600 dark:text-pink-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Proteínas
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyProteinTarget}g
+                              </h2>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                              Proteínas
-                            </h1>
-                            <h2 className="text-xs sm:text-md font-medium">
-                              {calculatedValues.dailyProteinTarget}g
-                            </h2>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
 
-                    {/* Carbohidratos */}
-                    <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
-                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
-                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
-                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
-                            <HugeiconsIcon
-                              icon={RiceBowl01Icon}
-                              className="h-4 w-4 sm:h-6 sm:w-6 text-sky-600 dark:text-sky-300"
-                            />
+                      {/* Carbohidratos */}
+                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={RiceBowl01Icon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-sky-600 dark:text-sky-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Carbohidratos
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyCarbTarget}g
+                              </h2>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                              Carbohidratos
-                            </h1>
-                            <h2 className="text-xs sm:text-md font-medium">
-                              {calculatedValues.dailyCarbTarget}g
-                            </h2>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
 
-                    {/* Grasas */}
-                    <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
-                      <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
-                        <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
-                          <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
-                            <HugeiconsIcon
-                              icon={FrenchFries02Icon}
-                              className="h-4 w-4 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-300"
-                            />
+                      {/* Grasas */}
+                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={FrenchFries02Icon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Grasas
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyFatTarget}g
+                              </h2>
+                            </div>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <h1 className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                              Grasas
-                            </h1>
-                            <h2 className="text-xs sm:text-md font-medium">
-                              {calculatedValues.dailyFatTarget}g
-                            </h2>
-                          </div>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        </CardContent>
+                      </Card>
+                    </div>
                   </div>
-                </div>
 
-                <div className="pt-3 sm:pt-4 border-t">
-                  <h3 className="text-lg font-semibold mb-3 tracking-heading">
-                    Recomendaciones
-                  </h3>
-                  <motion.ul
-                    className="space-y-2 text-xs sm:text-xs text-muted-foreground"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
-                  >
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5 flex-shrink-0">
-                        •
-                      </span>
-                      <span>
-                        Consume proteínas en cada comida para mantener la
-                        saciedad.
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5 flex-shrink-0">
-                        •
-                      </span>
-                      <span>
-                        Distribuye tus calorías a lo largo del día en 3-5
-                        comidas.
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-primary mt-0.5 flex-shrink-0">
-                        •
-                      </span>
-                      <span>
-                        Prioriza alimentos integrales y no procesados.
-                      </span>
-                    </li>
-                    {formValues.dietaryPreference === "keto" && (
+                  <div className="pt-3 sm:pt-4 border-t mt-3">
+                    <h3 className="text-lg font-semibold mb-3 tracking-heading">
+                      Recomendaciones
+                    </h3>
+                    <motion.ul
+                      className="space-y-2 text-xs sm:text-xs text-muted-foreground"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
                       <li className="flex items-start gap-2">
                         <span className="text-primary mt-0.5 flex-shrink-0">
                           •
                         </span>
                         <span>
-                          Mantén tu consumo de carbohidratos bajo para mantener
-                          la cetosis.
+                          Consume proteínas en cada comida para mantener la
+                          saciedad.
                         </span>
                       </li>
-                    )}
-                  </motion.ul>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
+                        <span>
+                          Distribuye tus calorías a lo largo del día en 3-5
+                          comidas.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
+                        <span>
+                          Prioriza alimentos integrales y no procesados.
+                        </span>
+                      </li>
+                      {formValues.dietaryPreference === "keto" && (
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5 flex-shrink-0">
+                            •
+                          </span>
+                          <span>
+                            Mantén tu consumo de carbohidratos bajo para
+                            mantener la cetosis.
+                          </span>
+                        </li>
+                      )}
+                    </motion.ul>
+                  </div>
+                </div>
+
+                {/* Desktop version - no scroll */}
+                <div className="hidden md:block">
+                  <div className="space-y-3 sm:space-y-4">
+                    <h3 className="text-lg font-semibold tracking-heading">
+                      Macronutrientes Diarios
+                    </h3>
+
+                    <div className="grid grid-cols-3 gap-2 sm:gap-4">
+                      {/* Proteínas */}
+                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={SteakIcon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-pink-600 dark:text-pink-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Proteínas
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyProteinTarget}g
+                              </h2>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Carbohidratos */}
+                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={RiceBowl01Icon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-sky-600 dark:text-sky-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Carbohidratos
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyCarbTarget}g
+                              </h2>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+
+                      {/* Grasas */}
+                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                        <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
+                          <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
+                            <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
+                              <HugeiconsIcon
+                                icon={FrenchFries02Icon}
+                                className="h-4 w-4 sm:h-6 sm:w-6 text-amber-600 dark:text-amber-300"
+                              />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h1 className="text-xs sm:text-xs text-muted-foreground truncate">
+                                Grasas
+                              </h1>
+                              <h2 className="text-xs sm:text-md font-medium">
+                                {calculatedValues.dailyFatTarget}g
+                              </h2>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 sm:pt-4 border-t">
+                    <h3 className="text-lg font-semibold mb-3 tracking-heading">
+                      Recomendaciones
+                    </h3>
+                    <motion.ul
+                      className="space-y-2 text-xs sm:text-xs text-muted-foreground"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      transition={{ duration: 0.5, delay: 0.5 }}
+                    >
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
+                        <span>
+                          Consume proteínas en cada comida para mantener la
+                          saciedad.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
+                        <span>
+                          Distribuye tus calorías a lo largo del día en 3-5
+                          comidas.
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="text-primary mt-0.5 flex-shrink-0">
+                          •
+                        </span>
+                        <span>
+                          Prioriza alimentos integrales y no procesados.
+                        </span>
+                      </li>
+                      {formValues.dietaryPreference === "keto" && (
+                        <li className="flex items-start gap-2">
+                          <span className="text-primary mt-0.5 flex-shrink-0">
+                            •
+                          </span>
+                          <span>
+                            Mantén tu consumo de carbohidratos bajo para
+                            mantener la cetosis.
+                          </span>
+                        </li>
+                      )}
+                    </motion.ul>
+                  </div>
                 </div>
               </motion.div>
             )}

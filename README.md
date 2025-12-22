@@ -138,8 +138,20 @@ BLOB_READ_WRITE_TOKEN="vercel_blob_rw_token_aqui"
 RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
 # Email desde el cual se enviarán los emails
 # SIN DOMINIO: No configures esta variable, se usará "onboarding@resend.dev" automáticamente
-# CON DOMINIO: "GymRatPlus <noreply@tudominio.com>" (debe estar verificado en Resend)
-# RESEND_FROM_EMAIL="GymRatPlus <noreply@tudominio.com>"
+# CON DOMINIO: "GymRat+ <no-reply@gymratplus.com>" (debe estar verificado en Resend)
+# RESEND_FROM_EMAIL="GymRat+ <no-reply@gymratplus.com>"
+
+# ============================================
+# ============================================
+# Twilio (Verificación por SMS)
+# ============================================
+# Para verificación de teléfono por SMS
+# 1. Crea una cuenta en: https://www.twilio.com/try-twilio
+# 2. Obtén tu Account SID y Auth Token desde: https://console.twilio.com/
+# 3. Compra un número de teléfono o usa el de prueba
+TWILIO_ACCOUNT_SID="ACxxxxxxxxxxxxxxxxxxxxx"
+TWILIO_AUTH_TOKEN="your_auth_token_here"
+TWILIO_PHONE_NUMBER="+1234567890"
 
 # ============================================
 # Entorno
@@ -162,6 +174,8 @@ NODE_ENV="development"
 - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` - Solo si quieres login con Google
 - `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` - Solo si quieres notificaciones en tiempo real
 - `BLOB_READ_WRITE_TOKEN` - Solo si quieres subir archivos en los chats
+- `RESEND_API_KEY` / `RESEND_FROM_EMAIL` - Solo si quieres enviar emails de verificación
+- `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN` / `TWILIO_PHONE_NUMBER` - Solo si quieres verificación por SMS
 
 ### Generar NEXTAUTH_SECRET
 
@@ -343,7 +357,7 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
    ```env
    RESEND_API_KEY="re_xxxxxxxxxxxxxxxxxxxxx"
-   RESEND_FROM_EMAIL="GymRatPlus <noreply@tudominio.com>"
+   RESEND_FROM_EMAIL="GymRat+ <no-reply@gymratplus.com>"
    ```
 
    El dominio debe estar verificado en [Resend Domains](https://resend.com/domains).

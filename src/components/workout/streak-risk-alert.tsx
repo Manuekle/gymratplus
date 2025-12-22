@@ -85,7 +85,7 @@ export function StreakRiskAlert({
                   <h2 className="text-2xl font-semibold tracking-heading text-zinc-900 dark:text-white">
                     Racha en Riesgo
                   </h2>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-400 ">
                     Has usado tus {allowedRestDays} días de descanso permitidos.
                     Tu racha de{" "}
                     <span className="font-semibold text-red-600 dark:text-red-400">
@@ -100,7 +100,7 @@ export function StreakRiskAlert({
                 <div className="pt-2">
                   <Link href="/dashboard/workout" onClick={handleClose}>
                     <Button
-                      size="lg"
+                      size="default"
                       className="w-full bg-red-600 hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600 text-white"
                     >
                       Entrenar Ahora

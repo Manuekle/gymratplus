@@ -127,7 +127,7 @@ export function StepSplit({ value, onChange }: StepSplitProps) {
         <DialogTitle className="text-2xl font-semibold tracking-heading">
           ¿Qué tipo de rutina prefieres?
         </DialogTitle>
-        <DialogDescription className="text-[10px] md:text-xs text-muted-foreground">
+        <DialogDescription className="text-xs md:text-xs text-muted-foreground">
           Elige cómo quieres distribuir los grupos musculares en tu
           entrenamiento
         </DialogDescription>
@@ -156,7 +156,7 @@ export function StepSplit({ value, onChange }: StepSplitProps) {
                   <h3 className="text-xs font-medium leading-tight text-foreground peer-data-[state=checked]:text-black dark:peer-data-[state=checked]:text-white transition-colors">
                     {split.name}
                   </h3>
-                  <p className="text-[10px] md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
+                  <p className="text-xs md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
                     {split.description}
                   </p>
                 </div>

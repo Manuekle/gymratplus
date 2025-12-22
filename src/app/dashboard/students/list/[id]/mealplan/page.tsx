@@ -1257,7 +1257,7 @@ export default function CreateMealPlanPage() {
                   size="default"
                   onClick={generateAutomaticPlan}
                   disabled={loading || !studentProfile}
-                  className="text-xs"
+                  className="text-xs w-full sm:w-auto"
                 >
                   {loading ? (
                     <>
@@ -2118,7 +2118,7 @@ export default function CreateMealPlanPage() {
 
                             <Button
                               className="w-full"
-                              size="lg"
+                              size="default"
                               onClick={handleSubmit}
                               disabled={
                                 isSubmitting ||

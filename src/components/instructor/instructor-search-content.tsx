@@ -57,6 +57,7 @@ export default function InstructorSearchContent() {
   // **NUEVO useEffect para inicializar los estados desde searchParams**
   useEffect(() => {
     // Esto se ejecuta SOLAMENTE en el cliente, después de la hidratación
+    // Aseguramos que los hooks actualizados (como useCountries en español) se utilicen
     if (searchParams) {
       setCountry(searchParams.get("country") || "");
       setIsRemote(searchParams.get("isRemote") === "true");
@@ -74,10 +75,38 @@ export default function InstructorSearchContent() {
 
       if (requestsResponse.ok) {
         const requests = await requestsResponse.json();
-        // Incluir todas las solicitudes (pending, active, etc.)
-        const requestIds = requests.map(
-          (req: { instructorProfileId: string }) => req.instructorProfileId,
-        );
+        // Solo incluir solicitudes pendientes (NO expiradas) o activas de instructores ACTIVOS
+        const requestIds = requests
+          .filter(
+            (req: {
+              status: string;
+              startDate: string;
+              instructor?: { user?: { isInstructor?: boolean } };
+            }) => {
+              const isInstructorActive =
+                req.instructor?.user?.isInstructor === true;
+
+              if (!isInstructorActive) return false; // Instructor inactivo no bloquea
+
+              if (req.status.toLowerCase() === "active") return true; // Activo siempre bloquea
+
+              if (
+                req.status.toLowerCase() === "pending" ||
+                req.status.toLowerCase() === "accepted"
+              ) {
+                const reqDate = new Date(req.startDate);
+                const now = new Date();
+                const hoursDiff =
+                  (now.getTime() - reqDate.getTime()) / (1000 * 60 * 60);
+                return hoursDiff < 24; // Solo bloquea si NO ha expirado (< 24h)
+              }
+
+              return false;
+            },
+          )
+          .map(
+            (req: { instructorProfileId: string }) => req.instructorProfileId,
+          );
         setRequestedInstructors(new Set(requestIds));
       }
 
@@ -302,11 +331,10 @@ export default function InstructorSearchContent() {
                           ? "default"
                           : "secondary"
                       }
-                      className={`px-2.5 py-1 text-[10px] transition-all cursor-pointer flex-shrink-0 rounded-full ${
-                        selectedSpecialties.includes(spec.id)
+                      className={`px-2.5 py-1 text-xs transition-all cursor-pointer flex-shrink-0 rounded-full ${selectedSpecialties.includes(spec.id)
                           ? "bg-primary text-primary-foreground"
                           : "bg-background border border-input hover:bg-accent"
-                      }`}
+                        }`}
                       onClick={() => handleSpecialtyToggle(spec.id)}
                     >
                       {spec.name}
@@ -316,7 +344,7 @@ export default function InstructorSearchContent() {
               </div>
               {selectedSpecialties.length > 0 && (
                 <div className="mt-2 flex flex-wrap gap-1.5 items-center">
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     Seleccionadas ({selectedSpecialties.length}):
                   </span>
                   {selectedSpecialties.map((specId) => {
@@ -325,7 +353,7 @@ export default function InstructorSearchContent() {
                       <Badge
                         key={specId}
                         variant="default"
-                        className="px-2.5 py-0.5 text-[10px] bg-primary text-primary-foreground rounded-full"
+                        className="px-2.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full"
                       >
                         {spec.name}
                       </Badge>
@@ -404,39 +432,42 @@ export default function InstructorSearchContent() {
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
-                    <div className="space-y-0.5 flex-1 min-w-0">
+                    <div className="space-y-0.5 flex-1">
                       <CardTitle className="text-xs leading-tight">
                         {instructor.name}
                       </CardTitle>
                       {(instructor.instructorProfile?.city ||
                         countryData?.name?.common) && (
-                        <div className="flex items-center text-[10px] text-muted-foreground gap-1.5 flex-wrap">
-                          {countryData && (
-                            <span className="flex items-center gap-1">
-                              <Image
-                                src={
-                                  countryData.flags.svg || "/placeholder.svg"
-                                }
-                                alt={countryData.name.common}
-                                width={14}
-                                height={10}
-                                className="w-3.5 h-2.5 object-cover rounded-sm"
-                              />
-                              <span className="truncate">
-                                {countryData.name.common}
-                              </span>
-                            </span>
-                          )}
-                          {instructor.instructorProfile?.isRemote && (
-                            <Badge
-                              variant="outline"
-                              className="text-[9px] px-1 py-0 h-4"
-                            >
-                              Remoto
-                            </Badge>
-                          )}
-                        </div>
-                      )}
+                          <div className="flex items-center text-xs text-muted-foreground gap-1.5 flex-wrap">
+                            {countryData && (
+                              <Badge
+                                variant="outline"
+                                className="flex items-center gap-1 text-xs px-2 py-0 rounded-full"
+                              >
+                                <Image
+                                  src={
+                                    countryData.flags.svg || "/placeholder.svg"
+                                  }
+                                  alt={countryData.name.common}
+                                  width={14}
+                                  height={10}
+                                  className="w-3.5 h-2.5 object-cover rounded-sm"
+                                />
+                                <span className="truncate">
+                                  {countryData.name.common}
+                                </span>
+                              </Badge>
+                            )}
+                            {instructor.instructorProfile?.isRemote && (
+                              <Badge
+                                variant="default"
+                                className="text-xs px-2 py-0 rounded-full"
+                              >
+                                Remoto
+                              </Badge>
+                            )}
+                          </div>
+                        )}
                       {instructor.instructorProfile?.pricePerMonth && (
                         <div className="text-xs font-semibold">
                           $
@@ -449,7 +480,7 @@ export default function InstructorSearchContent() {
                     </div>
                   </CardHeader>
                   <CardContent className="flex-1 px-4 py-2 space-y-2">
-                    <p className="text-[11px] text-muted-foreground line-clamp-2 leading-relaxed">
+                    <p className="text-xs text-muted-foreground line-clamp-2 ">
                       {instructor.instructorProfile?.bio ||
                         "Entrenador certificado con experiencia en entrenamiento personalizado."}
                     </p>
@@ -462,13 +493,13 @@ export default function InstructorSearchContent() {
                             <Badge
                               key={`${tag}-${idx}`}
                               variant="outline"
-                              className="text-[9px] px-1.5 py-0"
+                              className="text-xs px-1.5 py-0"
                             >
                               {tag.trim()}
                             </Badge>
                           ))
                       ) : (
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           Sin especialidades
                         </span>
                       )}
@@ -483,11 +514,10 @@ export default function InstructorSearchContent() {
                             <div className="flex flex-row gap-1.5">
                               <Button
                                 size="default"
-                                className={`text-[11px] h-8 flex-1 ${
-                                  requestedInstructors.has(profile.id)
+                                className={`text-xs flex-1 ${requestedInstructors.has(profile.id)
                                     ? "bg-red-600 hover:bg-red-700"
                                     : ""
-                                }`}
+                                  }`}
                                 onClick={() =>
                                   handleRequestInstructor(profile.id)
                                 }
@@ -510,7 +540,7 @@ export default function InstructorSearchContent() {
                               <Button
                                 asChild
                                 size="default"
-                                className="text-[11px] bg-transparent"
+                                className="text-xs bg-transparent"
                                 variant="outline"
                               >
                                 <Link
@@ -522,7 +552,7 @@ export default function InstructorSearchContent() {
                             </div>
                             {requestedInstructors.size > 0 &&
                               !requestedInstructors.has(profile.id) && (
-                                <p className="text-[10px] text-red-500 text-center leading-tight">
+                                <p className="text-xs text-red-500 text-center leading-tight">
                                   Debes cancelar tu solicitud actual primero
                                 </p>
                               )}
@@ -531,7 +561,7 @@ export default function InstructorSearchContent() {
                       }
                       return (
                         <div className="w-full text-center">
-                          <p className="text-[10px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             Perfil de entrenador no disponible
                           </p>
                         </div>

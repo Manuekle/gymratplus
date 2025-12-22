@@ -89,7 +89,7 @@ export function StepGoal({ value, onChange }: StepGoalProps) {
         <DialogTitle className="text-2xl font-semibold tracking-heading">
           ¿Cuál es tu objetivo principal?
         </DialogTitle>
-        <DialogDescription className="text-[10px] md:text-xs text-muted-foreground">
+        <DialogDescription className="text-xs md:text-xs text-muted-foreground">
           Selecciona el objetivo que mejor se adapte a tus metas actuales
         </DialogDescription>
       </DialogHeader>
@@ -117,7 +117,7 @@ export function StepGoal({ value, onChange }: StepGoalProps) {
                   <h3 className="text-xs font-medium leading-tight text-foreground peer-data-[state=checked]:text-black dark:peer-data-[state=checked]:text-white transition-colors">
                     {goal.name}
                   </h3>
-                  <p className="text-[10px] md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
+                  <p className="text-xs md:text-xs text-muted-foreground peer-data-[state=checked]:text-black/70 dark:peer-data-[state=checked]:text-white/80 leading-tight line-clamp-2 transition-colors">
                     {goal.description}
                   </p>
                 </div>

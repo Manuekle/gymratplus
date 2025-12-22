@@ -94,7 +94,28 @@ export default function InstructorProfilePage() {
       if (requestsResponse.ok) {
         const requests = await requestsResponse.json();
         const requestIds = requests
-          .filter((req: { status: string }) => req.status === "pending")
+          .filter(
+            (req: {
+              status: string;
+              startDate: string;
+              instructor?: { user?: { isInstructor?: boolean } };
+            }) => {
+              const isInstructorActive =
+                req.instructor?.user?.isInstructor === true;
+
+              if (!isInstructorActive) return false;
+
+              if (req.status === "pending") {
+                const reqDate = new Date(req.startDate);
+                const now = new Date();
+                const hoursDiff =
+                  (now.getTime() - reqDate.getTime()) / (1000 * 60 * 60);
+                return hoursDiff < 24; // Solo bloquea si NO ha expirado (< 24h)
+              }
+
+              return false;
+            },
+          )
           .map(
             (req: { instructorProfileId: string }) => req.instructorProfileId,
           );
@@ -582,7 +603,7 @@ export default function InstructorProfilePage() {
                         <div className="flex flex-row gap-1.5">
                           <Button
                             size="default"
-                            className={`text-[11px] h-8 flex-1 ${
+                            className={`text-xs h-8 flex-1 ${
                               requestedInstructors.has(
                                 instructor.instructorProfileId,
                               )
@@ -621,7 +642,7 @@ export default function InstructorProfilePage() {
                           !requestedInstructors.has(
                             instructor.instructorProfileId,
                           ) && (
-                            <p className="text-[10px] text-red-500 text-center leading-tight">
+                            <p className="text-xs text-red-500 text-center leading-tight">
                               Debes cancelar tu solicitud actual primero
                             </p>
                           )}

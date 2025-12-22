@@ -503,7 +503,7 @@ export default function ActiveWorkoutPage() {
   if (!workoutSession) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 md:p-8 text-center gap-4">
-        <h2 className="text-lg md:text-xl font-semibold">
+        <h2 className="text-3xl font-semibold tracking-[-0.04em]">
           No hay entrenamiento activo
         </h2>
         <Button

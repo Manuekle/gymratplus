@@ -349,7 +349,7 @@ export default function InstructorDashboardPage() {
             />
           </CardHeader>
           <CardContent className="px-4">
-            <div className="text-2xl font-semibold tracking-heading">
+            <div className="text-xl font-semibold tracking-heading">
               {stats?.studentsWithWorkoutPlans || 0} entrenamiento
             </div>
             <p className="text-xs text-muted-foreground">

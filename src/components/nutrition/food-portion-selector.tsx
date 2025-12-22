@@ -179,7 +179,7 @@ export function FoodPortionSelector({
                 placeholder="Cantidad"
                 value={customValue}
                 onChange={(e) => setCustomValue(e.target.value)}
-                className="h-8 text-xs"
+                className="text-xs"
                 min="0"
                 step="0.1"
               />

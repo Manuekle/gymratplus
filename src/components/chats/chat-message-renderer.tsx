@@ -132,7 +132,7 @@ export function ChatMessageRenderer({
           >
             <p className="text-xs">Mensaje eliminado</p>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-1 px-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+          <p className="text-xs text-muted-foreground mt-1 px-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
             {formatMessageDate(message.createdAt)}
           </p>
         </div>
@@ -250,9 +250,7 @@ export function ChatMessageRenderer({
           );
         }
         return (
-          <p className="whitespace-pre-wrap break-words leading-relaxed">
-            {message.content}
-          </p>
+          <p className="whitespace-pre-wrap break-words ">{message.content}</p>
         );
     }
   };
@@ -373,7 +371,7 @@ export function ChatMessageRenderer({
                   <p className="font-medium mb-0.5 truncate text-foreground">
                     {repliedToMessage.sender.name || "Usuario"}
                   </p>
-                  <p className="text-muted-foreground line-clamp-2 text-[11px]">
+                  <p className="text-muted-foreground line-clamp-2 text-xs">
                     {repliedToMessage.content ||
                       (repliedToMessage.type === "image" && "📷 Imagen") ||
                       (repliedToMessage.type === "video" && "🎥 Video") ||
@@ -432,11 +430,11 @@ export function ChatMessageRenderer({
             </div>
           </div>
           <div className="flex items-center gap-1.5 mt-1 px-1.5">
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               {formatMessageDate(message.createdAt)}
             </p>
             {message.edited && (
-              <span className="text-[10px] text-muted-foreground italic">
+              <span className="text-xs text-muted-foreground italic">
                 (editado)
               </span>
             )}

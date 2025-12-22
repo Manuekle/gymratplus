@@ -616,7 +616,7 @@ export function InstructorRegistrationForm({
                     />
                     Agregar código de descuento
                   </Button>
-                  <p className="text-xs text-muted-foreground/80 leading-relaxed">
+                  <p className="text-xs text-muted-foreground/80 ">
                     Al proporcionar tu información de tarjeta, permites a Vertex
                     cobrar tu tarjeta por pagos futuros en acuerdo con sus
                     términos.

@@ -63,13 +63,13 @@ export function InstallPrompt() {
 
   return (
     <div className="fixed bottom-4 left-4 right-4 p-4 bg-background border rounded-lg shadow-lg z-50 md:max-w-sm md:left-auto flex items-center justify-between gap-4">
-      <div className="text-sm">
+      <div className="text-xs">
         <p className="font-medium">Instalar GymRat+</p>
         <p className="text-muted-foreground text-xs">
           Accede más rápido y úsala sin conexión
         </p>
       </div>
-      <Button size="sm" onClick={handleInstallClick}>
+      <Button size="default" onClick={handleInstallClick}>
         <HugeiconsIcon icon={Download01Icon} className="mr-2 h-4 w-4" />
         Instalar
       </Button>
