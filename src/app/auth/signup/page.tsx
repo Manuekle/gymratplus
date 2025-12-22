@@ -354,7 +354,9 @@ export default function SignUpPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   onStrengthChange={setPasswordStrength}
                   aria-invalid={!!passwordError}
-                  aria-describedby={passwordError ? "password-error" : undefined}
+                  aria-describedby={
+                    passwordError ? "password-error" : undefined
+                  }
                 />
                 {password && (
                   <PasswordStrength password={password} className="mt-1" />
@@ -460,7 +462,10 @@ export default function SignUpPage() {
             </div>
             <div className="mt-4 text-center text-xs">
               ¿Ya tienes una cuenta?{" "}
-              <Link href="/auth/signin" className="text-primary hover:underline">
+              <Link
+                href="/auth/signin"
+                className="text-primary hover:underline"
+              >
                 Inicia sesión
               </Link>
             </div>

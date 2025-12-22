@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
 import { createNotification } from "@/lib/notifications/notification-service";
+import { auth } from "../../../../../../../../../../auth";
 
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

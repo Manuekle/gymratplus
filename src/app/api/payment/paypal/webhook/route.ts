@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { paypalClient } from "@/lib/payment/paypal-client";
 import { SubscriptionsController } from "@paypal/paypal-server-sdk";
-import { getTierFromPayPalPlan, SubscriptionTier } from "@/lib/subscriptions/feature-gates";
+import {
+  getTierFromPayPalPlan,
+  SubscriptionTier,
+} from "@/lib/subscriptions/feature-gates";
 
 export async function POST(req: Request) {
   try {
@@ -63,7 +66,7 @@ export async function POST(req: Request) {
               : null;
 
             // Determine tier from plan ID
-            const planId = subscription.planId || '';
+            const planId = subscription.planId || "";
             const tier = getTierFromPayPalPlan(planId);
 
             // Determine if user should be instructor based on tier

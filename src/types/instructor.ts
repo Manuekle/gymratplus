@@ -8,8 +8,10 @@ export interface InstructorWithProfile extends User {
   instructorProfile: InstructorProfile | null;
 }
 
-export interface InstructorResponse
-  extends Omit<User, "password" | "emailVerified"> {
+export interface InstructorResponse extends Omit<
+  User,
+  "password" | "emailVerified"
+> {
   instructorProfile:
     | (Omit<InstructorProfile, "userId" | "createdAt" | "updatedAt"> & {
         tags: string[];

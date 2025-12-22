@@ -192,7 +192,7 @@ export const authOptions: NextAuthOptions = {
           token.profile = (dbUser.profile as ProfileType | null) ?? null;
           token.instructorProfile =
             (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
-          token.subscriptionTier = (dbUser as any).subscriptionTier ?? 'FREE';
+          token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
           token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
         }
       }
@@ -221,7 +221,7 @@ export const authOptions: NextAuthOptions = {
           token.profile = (dbUser.profile as ProfileType | null) ?? null;
           token.instructorProfile =
             (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
-          token.subscriptionTier = (dbUser as any).subscriptionTier ?? 'FREE';
+          token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
           token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
         }
 

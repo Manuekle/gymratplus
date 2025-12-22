@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
+import { auth } from "../../../../../../../../../../auth";
 
 // GET /api/progress/[id] - Obtener un registro específico
 export async function GET(request: NextRequest) {
@@ -16,7 +15,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -69,7 +68,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -184,7 +183,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

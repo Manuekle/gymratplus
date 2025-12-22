@@ -1,14 +1,13 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
 import { publishGoalNotification } from "@/lib/notifications/goal-notifications";
+import { auth } from "../../../../../../../../../auth";
 
 // GET /api/goals - Obtener objetivos del usuario
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -59,7 +58,7 @@ export async function GET(req: NextRequest) {
 // POST /api/goals - Crear un nuevo objetivo
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

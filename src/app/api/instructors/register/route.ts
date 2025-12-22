@@ -1,9 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
 import { createNotification } from "@/lib/notifications/notification-service";
+import { auth } from "../../../../../../../../../../auth";
 
 const instructorRegisterSchema = z.object({
   bio: z.string().optional(),
@@ -18,7 +17,7 @@ const instructorRegisterSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

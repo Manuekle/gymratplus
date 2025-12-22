@@ -8,8 +8,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { EyeIcon, SquareLock01Icon } from "@hugeicons/core-free-icons";
 import { cn } from "@/lib/utils/utils";
 
-interface PasswordInputProps
-  extends Omit<React.ComponentPropsWithoutRef<typeof Input>, "type"> {
+interface PasswordInputProps extends Omit<
+  React.ComponentPropsWithoutRef<typeof Input>,
+  "type"
+> {
   showStrengthIndicator?: boolean;
   onStrengthChange?: (strength: number) => void;
 }

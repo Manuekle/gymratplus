@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth";
+import { auth } from "../../../../../../../../../auth";
 
 import {
   createLegWorkout,
@@ -12,7 +11,7 @@ import {
 } from "@/lib/workout/workout-utils";
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session)
     return NextResponse.json({ error: "No autenticado" }, { status: 401 });
 
@@ -128,7 +127,7 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json(
       { error: "No se pudo autenticar el usuario" },

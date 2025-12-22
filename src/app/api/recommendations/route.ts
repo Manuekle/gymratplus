@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth/next";
+import { auth } from "../../../../../../../../../auth";
 import {
   calculateExperienceLevel,
   createWorkoutPlan,
@@ -60,7 +59,7 @@ interface ResponseData {
 
 export async function POST(req: Request): Promise<NextResponse> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
@@ -295,9 +294,8 @@ export async function POST(req: Request): Promise<NextResponse> {
     };
 
     // Save the food recommendation to the database using normalized structure
-    const { createFoodRecommendationNormalized } = await import(
-      "@/lib/nutrition/food-recommendation-helpers"
-    );
+    const { createFoodRecommendationNormalized } =
+      await import("@/lib/nutrition/food-recommendation-helpers");
 
     // Extraer valores numéricos de macros
     let proteinTarget: number | undefined = dailyProteinTarget;

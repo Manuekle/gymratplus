@@ -31,7 +31,7 @@ export interface SendSMSOptions {
   message: string;
 }
 
-// Re-exportar utilidades para compatibilidad si es necesario, 
+// Re-exportar utilidades para compatibilidad si es necesario,
 // pero mejor usar directamente desde @/lib/utils/phone
 export { validatePhoneNumber, maskPhoneNumber } from "@/lib/utils/phone";
 

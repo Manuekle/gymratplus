@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../../auth";
 
 const DEFAULT_EXERCISES = [
   {
@@ -23,7 +22,7 @@ const DEFAULT_EXERCISES = [
 
 export async function POST() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

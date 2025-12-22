@@ -1,6 +1,4 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { getPayPalClient, getBaseUrl } from "@/lib/paypal/client";
 import {
   SubscriptionsController,
@@ -9,10 +7,11 @@ import {
   PayeePaymentMethodPreference,
 } from "@paypal/paypal-server-sdk";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../../../auth";
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../../../auth";
 
 // Habilita el registro detallado de consultas de Prisma
 const prismaWithLogging = prisma.$extends({
@@ -24,7 +23,7 @@ export async function GET() {
   try {
     // Obtener la sesión del usuario
     console.log("Obteniendo sesión del usuario...");
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       console.error("No se encontró sesión de usuario");

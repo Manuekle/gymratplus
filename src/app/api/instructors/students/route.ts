@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { requireFeature } from "@/lib/subscriptions/check-access";
+import { auth } from "../../../../../../../../../../auth";
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -14,11 +13,11 @@ export async function GET() {
 
     // Check subscription tier for student management feature
     try {
-      await requireFeature('STUDENT_MANAGEMENT');
+      await requireFeature("STUDENT_MANAGEMENT");
     } catch (error) {
       return NextResponse.json(
         { error: "Upgrade required - This feature requires INSTRUCTOR tier" },
-        { status: 403 }
+        { status: 403 },
       );
     }
 

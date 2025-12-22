@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { redis } from "@/lib/database/redis";
+import { auth } from "../../../../../../../../../../auth";
 
 // Add a TTL constant
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutes
@@ -10,7 +9,7 @@ const PROFILE_CACHE_TTL = 60 * 5; // 5 minutes
 export async function POST(req: NextRequest) {
   try {
     // Verificar autenticación
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json(

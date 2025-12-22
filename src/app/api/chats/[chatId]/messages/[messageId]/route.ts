@@ -1,8 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
+import { auth } from "../../../../../../../../../../../../auth";
 
 const editMessageSchema = z.object({
   content: z.string().min(1).max(5000),
@@ -14,7 +13,7 @@ export async function PATCH(
   { params }: { params: Promise<{ chatId: string; messageId: string }> },
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -142,7 +141,7 @@ export async function DELETE(
   { params }: { params: Promise<{ chatId: string; messageId: string }> },
 ) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

@@ -133,9 +133,8 @@ export async function sendEmailVerification(
   );
 
   // Enviar email
-  const { renderEmailVerificationCode } = await import(
-    "@/lib/email/templates/email-verification-code"
-  );
+  const { renderEmailVerificationCode } =
+    await import("@/lib/email/templates/email-verification-code");
   const emailHtml = await renderEmailVerificationCode({
     code,
     userName,

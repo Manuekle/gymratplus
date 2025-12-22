@@ -1,7 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
+import { auth } from "../../../../../../../../../../auth";
 
 /**
  * Endpoint para verificar y resetear rachas
@@ -9,7 +8,7 @@ import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
  */
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -58,7 +57,7 @@ export async function POST(request: NextRequest) {
  */
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

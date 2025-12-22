@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const parsedData = typeof tokenData === "string" ? JSON.parse(tokenData) : tokenData;
+    const parsedData =
+      typeof tokenData === "string" ? JSON.parse(tokenData) : tokenData;
 
     // Verificar si el token ha expirado
     if (parsedData.expiresAt && Date.now() > parsedData.expiresAt) {
@@ -122,7 +123,7 @@ export async function POST(request: NextRequest) {
       `session:${user.id}`,
     ];
 
-    await Promise.all(cacheKeys.map((key) => redis.del(key))).catch(() => { });
+    await Promise.all(cacheKeys.map((key) => redis.del(key))).catch(() => {});
 
     return NextResponse.json(
       { message: "Contraseña restablecida exitosamente" },

@@ -1,13 +1,12 @@
 import { NextResponse, NextRequest } from "next/server";
 import { put } from "@vercel/blob";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { redis } from "@/lib/database/redis";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../auth";
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

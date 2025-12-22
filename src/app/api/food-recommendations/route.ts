@@ -1,8 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth/next";
 import { createFoodRecommendationNormalized } from "@/lib/nutrition/food-recommendation-helpers";
+import { auth } from "../../../../../../../../../auth";
 
 interface NutritionPlan {
   name?: string;
@@ -26,7 +25,7 @@ interface RequestBody {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -104,7 +103,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -166,7 +165,7 @@ export async function GET() {
 // TODO: QUITAR ESTO DESPUÉS DE PROBAR - Solo para testing
 // DELETE todas las recomendaciones de comida del usuario
 export async function DELETE() {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

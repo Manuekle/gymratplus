@@ -1,12 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import {
   createGoalCompletedNotification,
   publishGoalNotification,
 } from "@/lib/notifications/goal-notifications";
 import { createNotification } from "@/lib/notifications/notification-service";
+import { auth } from "../../../../../../../../../../auth";
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
 export async function PUT(request: NextRequest) {
@@ -21,7 +20,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -160,7 +159,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

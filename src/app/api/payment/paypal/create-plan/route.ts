@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { getPayPalClient } from "@/lib/paypal/client";
+import { auth } from "../../../../../../../../../../../auth";
 import {
   SubscriptionsController,
   PlanRequestStatus,
@@ -12,7 +11,7 @@ import {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

@@ -1,12 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth/next";
 import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
+import { auth } from "../../../../../../../../../auth";
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json(

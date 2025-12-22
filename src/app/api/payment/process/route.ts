@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { getPayPalClient, getBaseUrl } from "@/lib/paypal/client";
+import { auth } from "../../../../../../../../../../auth";
 import {
   SubscriptionsController,
   PlanRequestStatus,
@@ -16,7 +15,7 @@ import {
 
 export async function POST(req: Request) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return new NextResponse(JSON.stringify({ error: "No autorizado" }), {
@@ -51,10 +50,10 @@ export async function POST(req: Request) {
 
     // Map plan types to real PayPal Plan IDs
     const PAYPAL_PLAN_IDS: Record<string, string> = {
-      'monthly': 'P-3NC83718PK617725CNFENPCA',    // Plan PRO - $9.99/mes
-      'annual': 'P-8D459588D1260134BNFENROI',     // Plan INSTRUCTOR - $19.99/mes
-      'pro': 'P-3NC83718PK617725CNFENPCA',        // Alias for PRO
-      'instructor': 'P-8D459588D1260134BNFENROI', // Alias for INSTRUCTOR
+      monthly: "P-3NC83718PK617725CNFENPCA", // Plan PRO - $9.99/mes
+      annual: "P-8D459588D1260134BNFENROI", // Plan INSTRUCTOR - $19.99/mes
+      pro: "P-3NC83718PK617725CNFENPCA", // Alias for PRO
+      instructor: "P-8D459588D1260134BNFENROI", // Alias for INSTRUCTOR
     };
 
     // Get Plan ID from mapping
@@ -66,7 +65,6 @@ export async function POST(req: Request) {
         { status: 400 },
       );
     }
-
 
     // Crear la suscripción en PayPal usando el Plan ID existente
     const subscriptionRequest = {

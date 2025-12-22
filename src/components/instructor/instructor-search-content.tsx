@@ -331,10 +331,11 @@ export default function InstructorSearchContent() {
                           ? "default"
                           : "secondary"
                       }
-                      className={`px-2.5 py-1 text-xs transition-all cursor-pointer flex-shrink-0 rounded-full ${selectedSpecialties.includes(spec.id)
+                      className={`px-2.5 py-1 text-xs transition-all cursor-pointer flex-shrink-0 rounded-full ${
+                        selectedSpecialties.includes(spec.id)
                           ? "bg-primary text-primary-foreground"
                           : "bg-background border border-input hover:bg-accent"
-                        }`}
+                      }`}
                       onClick={() => handleSpecialtyToggle(spec.id)}
                     >
                       {spec.name}
@@ -438,36 +439,36 @@ export default function InstructorSearchContent() {
                       </CardTitle>
                       {(instructor.instructorProfile?.city ||
                         countryData?.name?.common) && (
-                          <div className="flex items-center text-xs text-muted-foreground gap-1.5 flex-wrap">
-                            {countryData && (
-                              <Badge
-                                variant="outline"
-                                className="flex items-center gap-1 text-xs px-2 py-0 rounded-full"
-                              >
-                                <Image
-                                  src={
-                                    countryData.flags.svg || "/placeholder.svg"
-                                  }
-                                  alt={countryData.name.common}
-                                  width={14}
-                                  height={10}
-                                  className="w-3.5 h-2.5 object-cover rounded-sm"
-                                />
-                                <span className="truncate">
-                                  {countryData.name.common}
-                                </span>
-                              </Badge>
-                            )}
-                            {instructor.instructorProfile?.isRemote && (
-                              <Badge
-                                variant="default"
-                                className="text-xs px-2 py-0 rounded-full"
-                              >
-                                Remoto
-                              </Badge>
-                            )}
-                          </div>
-                        )}
+                        <div className="flex items-center text-xs text-muted-foreground gap-1.5 flex-wrap">
+                          {countryData && (
+                            <Badge
+                              variant="outline"
+                              className="flex items-center gap-1 text-xs px-2 py-0 rounded-full"
+                            >
+                              <Image
+                                src={
+                                  countryData.flags.svg || "/placeholder.svg"
+                                }
+                                alt={countryData.name.common}
+                                width={14}
+                                height={10}
+                                className="w-3.5 h-2.5 object-cover rounded-sm"
+                              />
+                              <span className="truncate">
+                                {countryData.name.common}
+                              </span>
+                            </Badge>
+                          )}
+                          {instructor.instructorProfile?.isRemote && (
+                            <Badge
+                              variant="default"
+                              className="text-xs px-2 py-0 rounded-full"
+                            >
+                              Remoto
+                            </Badge>
+                          )}
+                        </div>
+                      )}
                       {instructor.instructorProfile?.pricePerMonth && (
                         <div className="text-xs font-semibold">
                           $
@@ -514,10 +515,11 @@ export default function InstructorSearchContent() {
                             <div className="flex flex-row gap-1.5">
                               <Button
                                 size="default"
-                                className={`text-xs flex-1 ${requestedInstructors.has(profile.id)
+                                className={`text-xs flex-1 ${
+                                  requestedInstructors.has(profile.id)
                                     ? "bg-red-600 hover:bg-red-700"
                                     : ""
-                                  }`}
+                                }`}
                                 onClick={() =>
                                   handleRequestInstructor(profile.id)
                                 }

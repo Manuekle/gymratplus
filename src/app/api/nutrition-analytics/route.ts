@@ -1,15 +1,14 @@
 import { NextResponse, NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { startOfWeek, startOfDay, endOfDay, addDays, format } from "date-fns";
+import { auth } from "../../../../../../../../../auth";
 
 const prisma = new PrismaClient();
 
 // GET nutrition analytics
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

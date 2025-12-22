@@ -1,7 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../../../auth";
 import {
   createGoalAchievedNotification,
   createGoalProgressUpdatedNotification,
@@ -22,7 +21,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.email) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

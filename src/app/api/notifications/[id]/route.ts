@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import {
   deleteNotification,
   markNotificationAsRead,
 } from "@/lib/notifications/notification-service";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../../auth";
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -19,7 +18,7 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -58,7 +57,7 @@ export async function PATCH(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });

@@ -192,7 +192,8 @@ export async function POST(request: Request) {
       {
         user: { ...userWithoutPassword, id: user.id }, // Aseguramos que el ID se devuelva explícitamente y typing correcto
         verificationRequired: true,
-        message: "Usuario registrado exitosamente. Por favor verifica tu email.",
+        message:
+          "Usuario registrado exitosamente. Por favor verifica tu email.",
       },
       { status: 201 },
     );

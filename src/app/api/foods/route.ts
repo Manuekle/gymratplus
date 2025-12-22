@@ -1,15 +1,14 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { PrismaClient, Prisma } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { foodsToCreate } from "@/data/food";
+import { auth } from "../../../../../../../../../auth";
 
 const prisma = new PrismaClient();
 
 // GET all foods (system foods and user's custom foods)
 export async function GET(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -108,7 +107,7 @@ export async function GET(req: NextRequest) {
 // POST create a custom food
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -162,7 +161,7 @@ export async function POST(req: NextRequest) {
 // PUT seed the database with initial foods
 export async function PUT() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

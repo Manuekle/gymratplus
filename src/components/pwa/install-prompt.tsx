@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { MultiplicationSignIcon } from "@hugeicons/core-free-icons";
 
-
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
   userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
@@ -21,7 +20,7 @@ export function InstallPrompt() {
   useEffect(() => {
     setIsIOS(
       /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-      !(window as unknown as { MSStream: unknown }).MSStream,
+        !(window as unknown as { MSStream: unknown }).MSStream,
     );
 
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
@@ -94,7 +93,6 @@ export function InstallPrompt() {
             onClick={handleInstallClick}
             className="h-7 px-3 text-xs backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-800/50 dark:border-zinc-200/50"
           >
-
             Instalar
           </Button>
         </div>

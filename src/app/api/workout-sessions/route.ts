@@ -1,9 +1,8 @@
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
 import { z } from "zod";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
+import { auth } from "../../../../../../../../../auth";
 
 // Types removed - using inline types where needed
 
@@ -31,7 +30,7 @@ export async function GET(
   request: NextRequest,
 ): Promise<NextResponse<unknown>> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json(
@@ -206,7 +205,7 @@ export async function POST(
   request: NextRequest,
 ): Promise<NextResponse<unknown>> {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user?.id) {
       return NextResponse.json(

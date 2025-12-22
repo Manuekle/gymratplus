@@ -81,7 +81,11 @@ export default function GymRatLanding() {
             <div className="flex items-center gap-3">
               {mounted ? (
                 <Image
-                  src={currentTheme === "dark" ? "/icons/logo-dark.png" : "/icons/logo-light.png"}
+                  src={
+                    currentTheme === "dark"
+                      ? "/icons/logo-dark.png"
+                      : "/icons/logo-light.png"
+                  }
                   alt="GymRat+"
                   width={32}
                   height={32}
@@ -345,10 +349,11 @@ export default function GymRatLanding() {
             ].map((plan, i) => (
               <div
                 key={i}
-                className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
-                  ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
-                  : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
-                  }`}
+                className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
+                  plan.popular
+                    ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                    : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
+                }`}
               >
                 {plan.popular && (
                   <Badge className="mb-4 bg-zinc-700 dark:bg-zinc-300 text-zinc-100 dark:text-zinc-900">
@@ -356,25 +361,28 @@ export default function GymRatLanding() {
                   </Badge>
                 )}
                 <h3
-                  className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${plan.popular
-                    ? "text-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-900 dark:text-zinc-100"
-                    }`}
+                  className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${
+                    plan.popular
+                      ? "text-zinc-100 dark:text-zinc-900"
+                      : "text-zinc-900 dark:text-zinc-100"
+                  }`}
                 >
                   {plan.name}
                 </h3>
                 <div
-                  className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${plan.popular
-                    ? "text-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-900 dark:text-zinc-100"
-                    }`}
+                  className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${
+                    plan.popular
+                      ? "text-zinc-100 dark:text-zinc-900"
+                      : "text-zinc-900 dark:text-zinc-100"
+                  }`}
                 >
                   {plan.price}
                   <span
-                    className={`text-xs font-normal ${plan.popular
-                      ? "text-zinc-300 dark:text-zinc-700"
-                      : "text-zinc-600 dark:text-zinc-400"
-                      }`}
+                    className={`text-xs font-normal ${
+                      plan.popular
+                        ? "text-zinc-300 dark:text-zinc-700"
+                        : "text-zinc-600 dark:text-zinc-400"
+                    }`}
                   >
                     /mes
                   </span>
@@ -384,16 +392,18 @@ export default function GymRatLanding() {
                     <li key={j} className="flex items-center gap-2">
                       <HugeiconsIcon
                         icon={Tick02Icon}
-                        className={`w-5 h-5 ${plan.popular
-                          ? "text-zinc-300 dark:text-zinc-700"
-                          : "text-zinc-600 dark:text-zinc-400"
-                          }`}
+                        className={`w-5 h-5 ${
+                          plan.popular
+                            ? "text-zinc-300 dark:text-zinc-700"
+                            : "text-zinc-600 dark:text-zinc-400"
+                        }`}
                       />
                       <span
-                        className={`text-xs tracking-[-0.02em] ${plan.popular
-                          ? "text-zinc-200 dark:text-zinc-800"
-                          : "text-zinc-700 dark:text-zinc-300"
-                          }`}
+                        className={`text-xs tracking-[-0.02em] ${
+                          plan.popular
+                            ? "text-zinc-200 dark:text-zinc-800"
+                            : "text-zinc-700 dark:text-zinc-300"
+                        }`}
                       >
                         {feature}
                       </span>
@@ -401,10 +411,11 @@ export default function GymRatLanding() {
                   ))}
                 </ul>
                 <Button
-                  className={`w-full ${plan.popular
-                    ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                    : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
-                    }`}
+                  className={`w-full ${
+                    plan.popular
+                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                  }`}
                   asChild
                 >
                   <Link href="/auth/signup">Comenzar</Link>
@@ -423,7 +434,11 @@ export default function GymRatLanding() {
               {mounted ? (
                 <div className="relative w-8 h-8">
                   <Image
-                    src={currentTheme === "dark" ? "/icons/logo-dark.png" : "/icons/logo-light.png"}
+                    src={
+                      currentTheme === "dark"
+                        ? "/icons/logo-dark.png"
+                        : "/icons/logo-light.png"
+                    }
                     alt="GymRat+ Logo"
                     fill
                     className="object-contain"
@@ -454,9 +469,9 @@ export default function GymRatLanding() {
             <p className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
               © 2025 GymRat+. Todos los derechos reservados.
             </p>
-          </div >
-        </div >
-      </footer >
+          </div>
+        </div>
+      </footer>
 
       <style jsx global>{`
         @keyframes blob {
@@ -509,6 +524,6 @@ export default function GymRatLanding() {
           animation-delay: 4s;
         }
       `}</style>
-    </div >
+    </div>
   );
 }

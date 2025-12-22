@@ -1,14 +1,13 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth/next";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
 import { redis } from "@/lib/database/redis";
+import { auth } from "../../../../../../../../../auth";
 
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutos
 
 export async function GET() {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session?.user) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -55,7 +54,7 @@ export async function GET() {
 // Existing POST and PUT routes remain the same...
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session || !session.user) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
@@ -173,7 +172,7 @@ export async function POST(req: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -248,7 +247,7 @@ export async function PUT(request: NextRequest) {
     });
 
     // Refrescar la sesión actualizada
-    const updatedSession = await getServerSession(authOptions);
+    const updatedSession = await auth();
 
     return NextResponse.json({
       success: true,

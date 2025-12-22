@@ -1,9 +1,8 @@
 import { NextResponse, NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
 import { createNotification } from "@/lib/notifications/notification-service";
+import { auth } from "../../../../../../../../../../auth";
 
 // Esquema de validación para la solicitud del instructor a un estudiante
 const requestStudentSchema = z.object({
@@ -12,7 +11,7 @@ const requestStudentSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });

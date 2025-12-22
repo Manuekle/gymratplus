@@ -1,55 +1,35 @@
 import { DefaultSession } from "next-auth";
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    id?: string;
-    isInstructor?: boolean;
-    experienceLevel?: string;
-    profile?: {
-      phone?: string;
-      birthdate?: Date | string;
-      preferredWorkoutTime?: string;
-      dailyActivity?: string;
-      goal?: string;
-      dietaryPreference?: string;
-      monthsTraining?: number;
-      trainingDays?: string[];
-      height?: string;
-      currentWeight?: string;
-      gender?: string;
-    };
-  }
-}
-
+// Extend NextAuth v5 types
 declare module "next-auth" {
   interface Session {
     user: {
-      id?: string;
-      isInstructor?: boolean;
-      experienceLevel?: string;
-      profile?: unknown;
-      instructorProfile?: unknown;
-      _localStorage?: {
-        name?: string | null;
-        email?: string | null;
-        image?: string | null;
-        experienceLevel?: string | null;
-        isInstructor?: boolean;
-        profile?: unknown;
-        instructorProfile?: unknown;
+      id: string;
+      isInstructor: boolean;
+      experienceLevel: string | null;
+      profile: unknown;
+      instructorProfile: unknown;
+      subscriptionTier: string;
+      subscriptionStatus: string | null;
+      _localStorage: {
+        name: string | null;
+        email: string | null;
+        image: string | null;
+        experienceLevel: string | null;
+        isInstructor: boolean;
+        profile: unknown;
+        instructorProfile: unknown;
+        subscriptionTier: string;
+        subscriptionStatus: string | null;
       };
     } & DefaultSession["user"];
-    phone?: string;
-    birthdate?: Date | string;
-    height?: string;
-    currentWeight?: string;
   }
 
   interface User {
-    id?: string;
+    id: string;
     isInstructor?: boolean;
-    experienceLevel?: string;
-    interests?: string[]; // Nuevo campo para intereses
+    experienceLevel?: string | null;
+    interests?: string[];
     profile?: {
       phone?: string;
       birthdate?: Date | string;
@@ -62,5 +42,18 @@ declare module "next-auth" {
       currentWeight?: number;
       gender?: string;
     };
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id?: string;
+    isInstructor?: boolean;
+    experienceLevel?: string | null;
+    interests?: string[];
+    profile?: unknown;
+    instructorProfile?: unknown;
+    subscriptionTier?: string;
+    subscriptionStatus?: string | null;
   }
 }

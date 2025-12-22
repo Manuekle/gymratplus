@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/auth";
+import { auth } from "../../../../../../../../../../auth";
 const prisma = new PrismaClient();
 
 // GET a specific recipe
@@ -19,7 +18,7 @@ export async function GET(request: NextRequest) {
 
     const recipeId = id;
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
     if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
@@ -70,7 +69,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -245,7 +244,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const session = await getServerSession(authOptions);
+    const session = await auth();
 
     if (!session || !session.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

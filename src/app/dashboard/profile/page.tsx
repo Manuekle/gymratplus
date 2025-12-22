@@ -59,7 +59,6 @@ import {
 } from "@hugeicons/core-free-icons";
 import { Loader2 } from "lucide-react";
 
-
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
   // 365+: Blanco brillante / Dorado (temperatura máxima)
@@ -197,7 +196,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-          "",
+            "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -215,7 +214,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => { });
+        .catch(() => {});
 
       // Load streak stats
       if (session.user.id) {
@@ -564,7 +563,10 @@ export default function ProfilePage() {
                       document.getElementById("profile-image-upload")?.click()
                     }
                   >
-                    <HugeiconsIcon icon={Camera01Icon} className="text-white w-6 h-6" />
+                    <HugeiconsIcon
+                      icon={Camera01Icon}
+                      className="text-white w-6 h-6"
+                    />
                     <input
                       id="profile-image-upload"
                       type="file"
@@ -670,12 +672,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                          "es-ES",
-                          {
-                            month: "long",
-                            year: "numeric",
-                          },
-                        )
+                            "es-ES",
+                            {
+                              month: "long",
+                              year: "numeric",
+                            },
+                          )
                         : "";
                     })()}
                   </span>
@@ -970,13 +972,13 @@ export default function ProfilePage() {
                           )?.profile?.birthdate;
                           return birthdate
                             ? new Date(birthdate as string).toLocaleDateString(
-                              "es-ES",
-                              {
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                              },
-                            )
+                                "es-ES",
+                                {
+                                  day: "numeric",
+                                  month: "long",
+                                  year: "numeric",
+                                },
+                              )
                             : "Fecha no disponible";
                         })()}
                       </div>
@@ -1522,8 +1524,9 @@ export default function ProfilePage() {
                             } else if (daysDiff === 1) {
                               return "Ayer";
                             } else {
-                              return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
-                                }`;
+                              return `Hace ${daysDiff} ${
+                                daysDiff === 1 ? "día" : "días"
+                              }`;
                             }
                           })()}
                         </div>

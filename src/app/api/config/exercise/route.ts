@@ -2,12 +2,11 @@
 // Archivo: app/api/config/exercise/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { authOptions } from "@/lib/auth/auth";
-import { getServerSession } from "next-auth/next";
 import { exercises } from "@/data/exercises";
+import { auth } from "../../../../../../../../../../auth";
 
 export async function POST(_req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -35,7 +34,7 @@ export async function POST(_req: NextRequest) {
 }
 
 export async function DELETE(_req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

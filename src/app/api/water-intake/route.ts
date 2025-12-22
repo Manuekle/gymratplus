@@ -1,6 +1,4 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { getServerSession } from "next-auth/next";
-import { authOptions } from "@/lib/auth/auth";
 import { prisma } from "@/lib/database/prisma";
 import {
   storeWaterIntake,
@@ -9,10 +7,11 @@ import {
 } from "@/lib/database/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/notifications/create-system-notifications";
 import { startOfDay } from "date-fns";
+import { auth } from "../../../../../../../../../auth";
 
 // POST update water intake
 export async function POST(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
@@ -163,7 +162,7 @@ export async function POST(req: NextRequest) {
 
 // GET current water intake
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session?.user) {
     return NextResponse.json({ error: "No autorizado" }, { status: 401 });
