@@ -40,6 +40,14 @@ export const metadata: Metadata = generateSEOMetadata({
       "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
   },
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/icons/logo-light.png", sizes: "192x192", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+    ],
+    apple: "/icons/favicon-180x180.png",
+  },
 });
 
 export default function RootLayout({

@@ -5,7 +5,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -17,7 +21,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -25,10 +29,14 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": [
+        "./src/*"
+      ]
     }
   },
-  "typeRoots": ["./node_modules/@types"],
+  "typeRoots": [
+    "./node_modules/@types"
+  ],
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -36,7 +44,12 @@
     ".next/types/**/*.ts",
     "types/**/*.d.ts",
     "src/**/*",
-    "next-sitemap.config.js"
+    "next-sitemap.config.js",
+    ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".next", "out"]
+  "exclude": [
+    "node_modules",
+    ".next",
+    "out"
+  ]
 }
