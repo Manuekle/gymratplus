@@ -26,7 +26,7 @@ export function EmailVerificationCode({
   userEmail,
   expiresIn = "10 minutos",
 }: EmailVerificationCodeProps) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://gymratplus.com";
+  const baseUrl = process.env.NEXTAUTH_URL || "https://gymratplus.com";
 
   return (
     <Html lang="es" dir="ltr">

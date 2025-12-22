@@ -1,5 +1,5 @@
 {
-  "name": "GymRat+ - Entrenador Personal IA",
+  "name": "GymRat+ - Plataforma Inteligente de Fitness",
   "short_name": "GymRat+",
   "description": "Tu compañero definitivo de entrenamiento y nutrición con IA. Planes personalizados, seguimiento de progreso y comunidad.",
   "start_url": "/",
@@ -7,7 +7,12 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
-  "categories": ["fitness", "health", "lifestyle", "sports"],
+  "categories": [
+    "fitness",
+    "health",
+    "lifestyle",
+    "sports"
+  ],
   "icons": [
     {
       "src": "/icons/favicon-192x192.png",
