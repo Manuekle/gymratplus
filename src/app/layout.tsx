@@ -6,7 +6,6 @@ import "./globals.css";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/seo";
 import ClientLayout from "./client-layout";
 import { JsonLd } from "@/components/seo/json-ld";
-import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // Metadata SEO para la página principal y por defecto
 export const metadata: Metadata = {
