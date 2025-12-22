@@ -4,7 +4,10 @@ import { getToken } from "next-auth/jwt";
 
 export async function proxy(req: NextRequest) {
   // Get the current token
-  const token = await getToken({ req });
+  const token = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET
+  });
   const path = req.nextUrl.pathname;
 
   const protectedRoutes = [
