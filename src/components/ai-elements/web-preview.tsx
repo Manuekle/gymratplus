@@ -14,7 +14,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils/utils";
-import { ChevronDownIcon } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
@@ -110,7 +111,7 @@ export const WebPreviewNavigationButton = ({
           className="h-8 w-8 p-0 hover:text-foreground"
           disabled={disabled}
           onClick={onClick}
-          size="sm"
+          size="default"
           variant="ghost"
           {...props}
         >
@@ -155,7 +156,7 @@ export const WebPreviewUrl = ({
 
   return (
     <Input
-      className="h-8 flex-1 text-sm"
+      className="h-8 flex-1 text-xs"
       onChange={onChange ?? handleChange}
       onKeyDown={handleKeyDown}
       placeholder="Enter URL..."
@@ -209,7 +210,7 @@ export const WebPreviewConsole = ({
 
   return (
     <Collapsible
-      className={cn("border-t bg-muted/50 font-mono text-sm", className)}
+      className={cn("border-t bg-muted/50 font-mono text-xs", className)}
       onOpenChange={setConsoleOpen}
       open={consoleOpen}
       {...props}
@@ -220,7 +221,8 @@ export const WebPreviewConsole = ({
           variant="ghost"
         >
           Console
-          <ChevronDownIcon
+          <HugeiconsIcon
+            icon={ArrowDown01Icon}
             className={cn(
               "h-4 w-4 transition-transform duration-200",
               consoleOpen && "rotate-180",

@@ -17,8 +17,8 @@ import {
 
 const quickActions = [
   {
-    title: "Generar Plan",
-    href: "/dashboard/recommendations",
+    title: "Chat con Rocco IA",
+    href: "/dashboard/chats",
     icon: AiChat02Icon,
   },
   {

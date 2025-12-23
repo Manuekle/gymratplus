@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           {/* Back Link */}
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-12"
+            className="inline-flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors mb-12"
           >
             <svg
               className="w-4 h-4"
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
               <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-[-0.04em]">
                 Política de Privacidad
               </h1>
-              <p className="text-sm text-zinc-500 dark:text-zinc-500">
+              <p className="text-xs text-zinc-500 dark:text-zinc-500">
                 Última actualización:{" "}
                 {new Date().toLocaleDateString("es-ES", {
                   year: "numeric",

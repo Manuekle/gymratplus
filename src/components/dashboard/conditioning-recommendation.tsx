@@ -60,13 +60,13 @@ export default function ConditioningRecommendation() {
               <HugeiconsIcon icon={BatteryCharging01Icon} className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold">{title}</h3>
+              <h3 className="text-xs font-semibold">{title}</h3>
               <p className="text-xs text-muted-foreground mt-0.5">
                 {description}
               </p>
             </div>
           </div>
-          <Button onClick={handleStart} size="sm" variant="default">
+          <Button onClick={handleStart} size="default" variant="default">
             Iniciar
             <HugeiconsIcon
               icon={ArrowRight01Icon}

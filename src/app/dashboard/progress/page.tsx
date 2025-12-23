@@ -129,7 +129,7 @@ export default function ProgressPage() {
                     onChange={(e) => setWeight(e.target.value)}
                     className="pl-8"
                   />
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">
                     kg
                   </span>
                 </div>
@@ -200,13 +200,13 @@ export default function ProgressPage() {
                   <HugeiconsIcon icon={Calendar01Icon} className="h-8 w-8" />
                 </div>
                 <h3 className="font-medium text-lg mb-1">Tu Línea de Tiempo</h3>
-                <p className="text-sm max-w-xs mx-auto mb-4">
+                <p className="text-xs max-w-xs mx-auto mb-4">
                   Comienza a subir fotos para ver cómo tu cuerpo evoluciona
                   semana tras semana.
                 </p>
                 <Button
                   variant="outline"
-                  size="sm"
+                  size="default"
                   onClick={() => setIsOpen(true)}
                 >
                   <HugeiconsIcon icon={PlusSignIcon} className="h-3 w-3 mr-1" />{" "}
@@ -225,7 +225,7 @@ export default function ProgressPage() {
                   Consejos para tus fotos
                 </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-3">
+              <CardContent className="text-xs space-y-3">
                 <p>
                   📸 <strong>Iluminación:</strong> Usa luz natural frente a ti,
                   evita sombras fuertes.

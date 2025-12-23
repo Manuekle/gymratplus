@@ -454,7 +454,7 @@ export function ChatMessageRenderer({
               alt={message.content || "Imagen"}
               width={1200}
               height={1200}
-              className="max-w-full max-h-[90vh] object-contain"
+              className="max-w-full  object-contain"
               unoptimized
             />
             <Button

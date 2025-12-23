@@ -301,8 +301,8 @@ export default function StepOnboarding() {
         description: "La información de tu perfil ha sido actualizada.",
       });
 
-      // Redirigir a la página de recomendaciones después de guardar el perfil
-      router.push("/onboarding/recommendations");
+      // Redirigir a la dashboard después de guardar el perfil
+      router.push("/dashboard");
     } catch (error) {
       console.error("Error submitting profile:", error);
       toast.error("No se ha podido guardar el perfil", {

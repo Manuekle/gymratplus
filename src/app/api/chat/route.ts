@@ -30,7 +30,6 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-
   // Build personalized context
   const userContext = `
 CONTEXTO DEL USUARIO:

@@ -301,7 +301,7 @@ export default function BillingPage() {
                       <span className="text-3xl font-semibold">
                         {plan.price}
                       </span>
-                      <span className="text-sm text-muted-foreground">
+                      <span className="text-xs text-muted-foreground">
                         /mes
                       </span>
                     </div>
@@ -311,7 +311,7 @@ export default function BillingPage() {
                           ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
                           : "bg-black dark:bg-black text-white hover:bg-zinc-900"
                       }`}
-                      size="sm"
+                      size="default"
                       disabled={
                         isDisabled ||
                         loading !== null ||
@@ -349,7 +349,7 @@ export default function BillingPage() {
                       session?.user?.subscriptionStatus !== "canceled" && (
                         <Button
                           variant="destructive"
-                          size="sm"
+                          size="default"
                           className="w-full text-xs h-8 mt-2"
                           onClick={() => setShowCancelDialog(true)}
                           disabled={loading !== null}
@@ -383,7 +383,7 @@ export default function BillingPage() {
             <DialogTitle className="text-2xl font-semibold tracking-heading">
               Confirmar cambio de suscripción
             </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">
+            <DialogDescription className="text-xs text-muted-foreground">
               Estás a punto de cambiar tu suscripción al plan{" "}
               {selectedPlan?.name}.
             </DialogDescription>
@@ -391,12 +391,12 @@ export default function BillingPage() {
           <div className="py-4">
             <div className="space-y-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Plan:</span>
-                <span className="text-sm">{selectedPlan?.name}</span>
+                <span className="text-xs font-medium">Plan:</span>
+                <span className="text-xs">{selectedPlan?.name}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm font-medium">Precio:</span>
-                <span className="text-sm font-semibold">
+                <span className="text-xs font-medium">Precio:</span>
+                <span className="text-xs font-semibold">
                   {selectedPlan?.price}/mes
                 </span>
               </div>
@@ -452,7 +452,7 @@ export default function BillingPage() {
             <DialogTitle className="text-2xl font-semibold tracking-heading text-destructive">
               Cancelar Suscripción
             </DialogTitle>
-            <DialogDescription className="text-sm text-muted-foreground">
+            <DialogDescription className="text-xs text-muted-foreground">
               ¿Estás seguro de que deseas cancelar tu suscripción? Perderás
               acceso a las funciones premium inmediatamente y volverás al plan
               gratuito.

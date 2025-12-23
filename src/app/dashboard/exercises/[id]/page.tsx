@@ -104,10 +104,10 @@ export default async function ExerciseDetailPage({
               {exercise.name}
             </h1>
 
-            <div className="flex flex-wrap gap-2 text-sm">
+            <div className="flex flex-wrap gap-2 text-xs">
               <Badge
                 variant="outline"
-                className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
+                className="px-3 py-1 text-xs flex items-center gap-1.5 capitalize"
               >
                 <HugeiconsIcon
                   icon={Target01Icon}
@@ -117,7 +117,7 @@ export default async function ExerciseDetailPage({
               </Badge>
               <Badge
                 variant="outline"
-                className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
+                className="px-3 py-1 text-xs flex items-center gap-1.5 capitalize"
               >
                 <HugeiconsIcon
                   icon={Dumbbell01Icon}
@@ -133,7 +133,7 @@ export default async function ExerciseDetailPage({
                       ? "secondary"
                       : "destructive"
                 }
-                className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
+                className="px-3 py-1 text-xs flex items-center gap-1.5 capitalize"
               >
                 <HugeiconsIcon
                   icon={ChartBarLineIcon}
@@ -177,15 +177,15 @@ export default async function ExerciseDetailPage({
             </CardHeader>
             <CardContent>
               <ul className="space-y-3">
-                <li className="flex gap-3 text-sm text-indigo-900/80 dark:text-indigo-200/80">
+                <li className="flex gap-3 text-xs text-indigo-900/80 dark:text-indigo-200/80">
                   <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
                   Mejora la fuerza y resistencia del {exercise.muscleGroup}.
                 </li>
-                <li className="flex gap-3 text-sm text-indigo-900/80 dark:text-indigo-200/80">
+                <li className="flex gap-3 text-xs text-indigo-900/80 dark:text-indigo-200/80">
                   <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
                   Ideal para rutinas de nivel {exercise.difficulty}.
                 </li>
-                <li className="flex gap-3 text-sm text-indigo-900/80 dark:text-indigo-200/80">
+                <li className="flex gap-3 text-xs text-indigo-900/80 dark:text-indigo-200/80">
                   <span className="h-1.5 w-1.5 rounded-full bg-indigo-500 mt-2 shrink-0" />
                   Compatible con entrenamiento{" "}
                   {exercise.equipment
@@ -202,7 +202,7 @@ export default async function ExerciseDetailPage({
             <CardHeader>
               <CardTitle className="text-lg">Tips de Entrenador</CardTitle>
             </CardHeader>
-            <CardContent className="text-sm text-muted-foreground space-y-4">
+            <CardContent className="text-xs text-muted-foreground space-y-4">
               <p>
                 Mantén siempre la espalda recta y el core activado. Controla la
                 respiración: exhala al hacer fuerza, inhala al volver a la

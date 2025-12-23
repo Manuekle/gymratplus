@@ -73,7 +73,7 @@ export function BillingHistory() {
     <>
       {invoices.length === 0 ? (
         <div className="text-center py-12 border rounded-lg border-dashed">
-          <p className="text-muted-foreground text-sm">
+          <p className="text-muted-foreground text-xs">
             Aún no tienes facturas generadas.
           </p>
           <p className="text-xs text-muted-foreground/60 mt-1">
@@ -133,7 +133,7 @@ export function BillingHistory() {
                     }).format(invoice.amount)}
                   </TableCell>
                   <TableCell>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       {invoice.planName}
                     </span>
                   </TableCell>

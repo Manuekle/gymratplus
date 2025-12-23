@@ -66,7 +66,7 @@ export default function EvolutionCharts() {
             className="h-10 w-10 mb-2 opacity-50"
           />
           <p>No hay suficientes datos para mostrar la gráfica.</p>
-          <p className="text-sm">
+          <p className="text-xs">
             Registra tu peso en las fotos de progreso o en tu perfil.
           </p>
         </CardContent>

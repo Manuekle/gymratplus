@@ -17,11 +17,7 @@ import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
 import { WorkoutStreak } from "./workout/workout-streak";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Door01Icon,
-  BubbleChatIcon,
-  SparklesIcon,
-} from "@hugeicons/core-free-icons";
+import { Door01Icon, BubbleChatIcon } from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { useChatUnreadCount } from "@/hooks/use-chat-unread-count";
 import { Badge } from "@/components/ui/badge";
@@ -65,16 +61,7 @@ export function Navbar() {
                 <WorkoutStreak userId={session.user.id} />
               </div>
             )}
-            <Link href="/dashboard/recommendations">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
-              >
-                <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4" />
-                <span className="sr-only">Recomendaciones IA</span>
-              </Button>
-            </Link>
+
             <Link href="/dashboard/chats">
               <Button variant="ghost" size="icon" className="relative">
                 <HugeiconsIcon icon={BubbleChatIcon} className="h-4 w-4" />

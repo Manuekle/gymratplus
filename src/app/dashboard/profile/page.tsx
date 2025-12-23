@@ -58,7 +58,7 @@ import {
   Dumbbell01Icon,
   Camera01Icon,
 } from "@hugeicons/core-free-icons";
-import { Loader2 } from "lucide-react";
+import { Loader } from "@/components/ai-elements/loader";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -1640,7 +1640,7 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-1">
                   <div className="font-medium">Plan actual</div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs text-muted-foreground">
                     {session?.user?.subscriptionTier === "PRO"
                       ? "Pro"
                       : session?.user?.subscriptionTier === "INSTRUCTOR"

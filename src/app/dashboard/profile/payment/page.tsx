@@ -191,7 +191,7 @@ export default function PaymentPage() {
                         {plan.price}
                       </span>
                       <span
-                        className={`text-sm ${
+                        className={`text-xs ${
                           plan.popular
                             ? "text-zinc-400 dark:text-zinc-600"
                             : "text-zinc-600 dark:text-zinc-400"

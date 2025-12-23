@@ -4,7 +4,12 @@ import { useChat, type UIMessage } from "@ai-sdk/react";
 
 import { Card } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AiChat02Icon, SentIcon } from "@hugeicons/core-free-icons";
+import {
+  AiChat02Icon,
+  SentIcon,
+  AiInnovation03Icon,
+  Restaurant02Icon,
+} from "@hugeicons/core-free-icons";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils/utils";
 import { useSession } from "next-auth/react";
@@ -14,6 +19,9 @@ import { ChatWindow } from "@/components/chats/chat-window";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { AIWorkoutPlanDialog } from "@/components/ai/ai-workout-plan-dialog";
+import { AINutritionPlanDialog } from "@/components/ai/ai-nutrition-plan-dialog";
+import { toast } from "sonner";
 
 // Definir interfaz para el usuario de la sesión
 interface CustomUser {
@@ -49,6 +57,14 @@ export default function ChatPage() {
 
   // Local input state for Rocco chat
   const [localInput, setLocalInput] = useState("");
+
+  // AI Plan generation states
+  const [generatingWorkout, setGeneratingWorkout] = useState(false);
+  const [generatingNutrition, setGeneratingNutrition] = useState(false);
+  const [workoutPlan, setWorkoutPlan] = useState<any>(null);
+  const [nutritionPlan, setNutritionPlan] = useState<any>(null);
+  const [showWorkoutDialog, setShowWorkoutDialog] = useState(false);
+  const [showNutritionDialog, setShowNutritionDialog] = useState(false);
 
   // Instructor chats state
   const { chats, isLoading: chatsLoading } = useChats();
@@ -87,24 +103,61 @@ export default function ChatPage() {
       },
       lastMessage: lastMessage
         ? {
-          id: lastMessage.id,
-          content: getMessageText(lastMessage),
-          senderId: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-          sender: {
-            id: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-            name: lastMessage.role === "user" ? user?.name || "Tú" : "Rocco",
-            image: null,
-            email: null,
-          },
-          type: "text",
-          read: true,
-          createdAt: new Date().toISOString(),
-        }
+            id: lastMessage.id,
+            content: getMessageText(lastMessage),
+            senderId: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
+            sender: {
+              id: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
+              name: lastMessage.role === "user" ? user?.name || "Tú" : "Rocco",
+              image: null,
+              email: null,
+            },
+            type: "text",
+            read: true,
+            createdAt: new Date().toISOString(),
+          }
         : null,
       unreadCount: 0,
       updatedAt: new Date().toISOString(),
     };
   }, [messages, user]);
+
+  // AI Plan generation handlers
+  const handleGenerateWorkout = async () => {
+    setGeneratingWorkout(true);
+    try {
+      const response = await fetch("/api/ai/generate-workout-plan", {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("Error generando plan");
+      const plan = await response.json();
+      setWorkoutPlan(plan);
+      setShowWorkoutDialog(true);
+    } catch (error) {
+      console.error("Error generating workout:", error);
+      toast.error("Error al generar el plan de entrenamiento");
+    } finally {
+      setGeneratingWorkout(false);
+    }
+  };
+
+  const handleGenerateNutrition = async () => {
+    setGeneratingNutrition(true);
+    try {
+      const response = await fetch("/api/ai/generate-nutrition-plan", {
+        method: "POST",
+      });
+      if (!response.ok) throw new Error("Error generando plan");
+      const plan = await response.json();
+      setNutritionPlan(plan);
+      setShowNutritionDialog(true);
+    } catch (error) {
+      console.error("Error generating nutrition:", error);
+      toast.error("Error al generar el plan nutricional");
+    } finally {
+      setGeneratingNutrition(false);
+    }
+  };
 
   const allChats = useMemo(() => [roccoChat, ...chats], [roccoChat, chats]);
 
@@ -112,8 +165,8 @@ export default function ChatPage() {
     <div className="h-[calc(100vh-12rem)] flex flex-col">
       {/* Header */}
       <div className="flex-none mb-4">
-        <h1 className="text-2xl font-bold tracking-tight">Chats</h1>
-        <p className="text-sm text-muted-foreground mt-1">
+        <h1 className="text-3xl font-bold tracking-tight">Chats</h1>
+        <p className="text-xs text-muted-foreground mt-1">
           Comunícate con tu instructor o consulta con Rocco IA
         </p>
       </div>
@@ -123,7 +176,7 @@ export default function ChatPage() {
         <Card className="flex flex-col overflow-hidden p-0">
           {chatsLoading ? (
             <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-muted-foreground">Cargando chats...</p>
+              <p className="text-xs text-muted-foreground">Cargando chats...</p>
             </div>
           ) : (
             <ChatList
@@ -140,7 +193,7 @@ export default function ChatPage() {
           {selectedChatId === "rocco-ai" ? (
             <div className="flex-1 flex flex-col h-full bg-muted/20 dark:bg-muted/10 min-h-0">
               {/* Header */}
-              <div className="border-b bg-background dark:bg-background flex items-center px-4 py-3 flex-shrink-0">
+              <div className="border-b bg-background dark:bg-background flex items-center justify-between px-4 py-3 flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
                     <HugeiconsIcon
@@ -149,15 +202,44 @@ export default function ChatPage() {
                     />
                   </div>
                   <div className="flex flex-col">
-                    <p className="text-xs font-medium">
-                      Rocco - Entrenador IA
-                    </p>
+                    <p className="text-xs font-medium">Rocco - Entrenador IA</p>
                     {status === "streaming" && (
                       <p className="text-xs text-muted-foreground italic">
                         escribiendo...
                       </p>
                     )}
                   </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={handleGenerateWorkout}
+                    disabled={generatingWorkout}
+                    className="text-xs gap-1.5"
+                  >
+                    <HugeiconsIcon
+                      icon={AiInnovation03Icon}
+                      className="h-3.5 w-3.5"
+                    />
+                    {generatingWorkout
+                      ? "Generando..."
+                      : "Plan de Entrenamiento"}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={handleGenerateNutrition}
+                    disabled={generatingNutrition}
+                    className="text-xs gap-1.5"
+                  >
+                    <HugeiconsIcon
+                      icon={Restaurant02Icon}
+                      className="h-3.5 w-3.5"
+                    />
+                    {generatingNutrition ? "Generando..." : "Plan Nutricional"}
+                  </Button>
                 </div>
               </div>
 
@@ -175,7 +257,7 @@ export default function ChatPage() {
                       <h3 className="text-lg font-semibold mb-2">
                         ¡Hola! Soy Rocco
                       </h3>
-                      <p className="text-sm text-muted-foreground max-w-sm">
+                      <p className="text-xs text-muted-foreground max-w-sm">
                         Pregúntame sobre entrenamiento, nutrición o técnicas de
                         ejercicio
                       </p>
@@ -188,7 +270,10 @@ export default function ChatPage() {
                     return (
                       <div
                         key={message.id}
-                        className={cn("flex gap-2.5", isOwn && "flex-row-reverse")}
+                        className={cn(
+                          "flex gap-2.5",
+                          isOwn && "flex-row-reverse",
+                        )}
                       >
                         {!isOwn && (
                           <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -201,7 +286,7 @@ export default function ChatPage() {
                         <div
                           className={cn(
                             "flex flex-col max-w-[75%] sm:max-w-[65%]",
-                            isOwn && "items-end"
+                            isOwn && "items-end",
                           )}
                         >
                           {!isOwn && (
@@ -211,10 +296,10 @@ export default function ChatPage() {
                           )}
                           <div
                             className={cn(
-                              "rounded-2xl px-4 py-2.5 text-sm break-words whitespace-pre-wrap",
+                              "rounded-2xl px-4 py-2.5 text-xs break-words whitespace-pre-wrap",
                               isOwn
                                 ? "bg-primary text-primary-foreground"
-                                : "bg-background dark:bg-background border border-border/50 dark:border-border/30"
+                                : "bg-background dark:bg-background border border-border/50 dark:border-border/30",
                             )}
                           >
                             {textContent}
@@ -294,13 +379,25 @@ export default function ChatPage() {
             />
           ) : (
             <div className="flex items-center justify-center h-full">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Selecciona un chat para comenzar
               </p>
             </div>
           )}
         </Card>
       </div>
+
+      {/* AI Plan Dialogs */}
+      <AIWorkoutPlanDialog
+        open={showWorkoutDialog}
+        onOpenChange={setShowWorkoutDialog}
+        workoutPlan={workoutPlan}
+      />
+      <AINutritionPlanDialog
+        open={showNutritionDialog}
+        onOpenChange={setShowNutritionDialog}
+        nutritionPlan={nutritionPlan}
+      />
     </div>
   );
 }

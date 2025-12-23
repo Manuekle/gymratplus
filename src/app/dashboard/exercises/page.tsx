@@ -240,7 +240,7 @@ export default function ExercisesPage() {
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground line-clamp-2">
+                  <p className="text-xs text-muted-foreground line-clamp-2">
                     {exercise.description || "Sin descripción disponible."}
                   </p>
                 </CardContent>

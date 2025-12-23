@@ -1,5 +1,4 @@
 import type { NextAuthConfig } from "next-auth";
-import { SubscriptionTier, hasAccess } from "@/lib/subscriptions/feature-gates";
 
 export const authConfig = {
   pages: {
