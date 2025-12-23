@@ -4,53 +4,16 @@ import { useChat, type UIMessage } from "@ai-sdk/react";
 
 import { Card } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AiChat02Icon, CopyIcon } from "@hugeicons/core-free-icons";
+import { AiChat02Icon, SentIcon } from "@hugeicons/core-free-icons";
 import { useEffect, useState, useMemo } from "react";
 import { cn } from "@/lib/utils/utils";
 import { useSession } from "next-auth/react";
 import { useChats } from "@/hooks/use-chats";
 import { ChatList } from "@/components/chats/chat-list";
 import { ChatWindow } from "@/components/chats/chat-window";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationEmptyState,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import {
-  Message,
-  MessageContent,
-  MessageResponse,
-  MessageActions,
-  MessageAction,
-} from "@/components/ai-elements/message";
-import {
-  PromptInput,
-  PromptInputHeader,
-  PromptInputBody,
-  PromptInputFooter,
-  PromptInputTools,
-  PromptInputSubmit,
-  PromptInputTextarea,
-  PromptInputAttachments,
-  PromptInputAttachment,
-  PromptInputActionMenu,
-  PromptInputActionMenuContent,
-  PromptInputActionMenuTrigger,
-  PromptInputActionAddAttachments,
-} from "@/components/ai-elements/prompt-input";
-import {
-  Source,
-  Sources,
-  SourcesContent,
-  SourcesTrigger,
-} from "@/components/ai-elements/sources";
-import {
-  Reasoning,
-  ReasoningContent,
-  ReasoningTrigger,
-} from "@/components/ai-elements/reasoning";
-import { Loader } from "@/components/ai-elements/loader";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 // Definir interfaz para el usuario de la sesión
 interface CustomUser {
@@ -84,6 +47,9 @@ export default function ChatPage() {
   // Using standard useChat configuration. 'api' defaults to '/api/chat'.
   const { messages, sendMessage, status } = useChat();
 
+  // Local input state for Rocco chat
+  const [localInput, setLocalInput] = useState("");
+
   // Instructor chats state
   const { chats, isLoading: chatsLoading } = useChats();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(
@@ -94,15 +60,16 @@ export default function ChatPage() {
 
   const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
 
-  // Check subscription access
+  // Check PRO access only when selecting Rocco AI
   useEffect(() => {
-    if (user) {
+    if (user && selectedChatId === "rocco-ai") {
       const userTier = user.subscriptionTier || "FREE";
       if (userTier !== "PRO" && userTier !== "INSTRUCTOR") {
+        // Redirect to upgrade page
         window.location.href = "/dashboard/profile/billing?upgrade=pro";
       }
     }
-  }, [user]);
+  }, [user, selectedChatId]);
 
   // Memorizar el objeto Rocco para evitar re-renders innecesarios
   const roccoChat = useMemo(() => {
@@ -120,19 +87,19 @@ export default function ChatPage() {
       },
       lastMessage: lastMessage
         ? {
-            id: lastMessage.id,
-            content: getMessageText(lastMessage),
-            senderId: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-            sender: {
-              id: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-              name: lastMessage.role === "user" ? user?.name || "Tú" : "Rocco",
-              image: null,
-              email: null,
-            },
-            type: "text",
-            read: true,
-            createdAt: new Date().toISOString(),
-          }
+          id: lastMessage.id,
+          content: getMessageText(lastMessage),
+          senderId: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
+          sender: {
+            id: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
+            name: lastMessage.role === "user" ? user?.name || "Tú" : "Rocco",
+            image: null,
+            email: null,
+          },
+          type: "text",
+          read: true,
+          createdAt: new Date().toISOString(),
+        }
         : null,
       unreadCount: 0,
       updatedAt: new Date().toISOString(),
@@ -171,183 +138,154 @@ export default function ChatPage() {
         {/* Chat Window */}
         <Card className="flex flex-col overflow-hidden p-0">
           {selectedChatId === "rocco-ai" ? (
-            <>
-              {/* AI Elements Chat Implementation */}
-              <div className="flex flex-col h-full overflow-hidden">
-                <div className="p-4 border-b shrink-0">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-                      <HugeiconsIcon
-                        icon={AiChat02Icon}
-                        className="h-5 w-5 text-primary"
-                      />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-sm">
-                        Rocco - Entrenador IA
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Asistente virtual de fitness
+            <div className="flex-1 flex flex-col h-full bg-muted/20 dark:bg-muted/10 min-h-0">
+              {/* Header */}
+              <div className="border-b bg-background dark:bg-background flex items-center px-4 py-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                    <HugeiconsIcon
+                      icon={AiChat02Icon}
+                      className="h-4 w-4 text-primary"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-xs font-medium">
+                      Rocco - Entrenador IA
+                    </p>
+                    {status === "streaming" && (
+                      <p className="text-xs text-muted-foreground italic">
+                        escribiendo...
                       </p>
-                    </div>
+                    )}
                   </div>
                 </div>
+              </div>
 
-                <div className="flex-1 overflow-hidden flex flex-col relative w-full">
-                  <Conversation>
-                    <ConversationContent>
-                      {messages.length === 0 && (
-                        <ConversationEmptyState
-                          icon={
-                            <div className="bg-primary/10 p-6 rounded-full mb-4 mx-auto w-fit">
-                              <HugeiconsIcon
-                                icon={AiChat02Icon}
-                                className="h-12 w-12 text-primary"
-                              />
-                            </div>
-                          }
-                          title="¡Hola! Soy Rocco"
-                          description="Pregúntame sobre entrenamiento, nutrición o técnicas de ejercicio"
+              {/* Messages Area */}
+              <ScrollArea className="flex-1 min-h-0">
+                <div className="p-4 space-y-3">
+                  {messages.length === 0 && (
+                    <div className="flex flex-col items-center justify-center h-full py-12 text-center">
+                      <div className="bg-primary/10 p-6 rounded-full mb-4">
+                        <HugeiconsIcon
+                          icon={AiChat02Icon}
+                          className="h-12 w-12 text-primary"
                         />
-                      )}
-                      {messages.map((message) => (
-                        <div key={message.id}>
-                          {message.role === "assistant" &&
-                            message.parts?.filter(
-                              (part) => part.type === "source-url",
-                            ).length > 0 && (
-                              <Sources>
-                                <SourcesTrigger
-                                  count={
-                                    message.parts.filter(
-                                      (part) => part.type === "source-url",
-                                    ).length
-                                  }
-                                />
-                                {message.parts
-                                  .filter((part) => part.type === "source-url")
-                                  .map((part: any, i) => (
-                                    <SourcesContent key={`${message.id}-${i}`}>
-                                      <Source
-                                        key={`${message.id}-${i}`}
-                                        href={part.url}
-                                        title={part.url}
-                                      />
-                                    </SourcesContent>
-                                  ))}
-                              </Sources>
-                            )}
-                          {message.parts?.map((part, i) => {
-                            switch (part.type) {
-                              case "text":
-                                return (
-                                  <Message
-                                    key={`${message.id}-${i}`}
-                                    from={message.role}
-                                    className={cn(
-                                      message.role === "user"
-                                        ? "ml-auto"
-                                        : "mr-auto",
-                                    )}
-                                  >
-                                    <MessageContent>
-                                      <MessageResponse>
-                                        {part.text}
-                                      </MessageResponse>
-                                    </MessageContent>
-                                    {message.role === "assistant" && (
-                                      <MessageActions>
-                                        <MessageAction
-                                          onClick={() =>
-                                            navigator.clipboard.writeText(
-                                              part.text,
-                                            )
-                                          }
-                                          label="Copy"
-                                        >
-                                          <HugeiconsIcon
-                                            icon={CopyIcon}
-                                            className="size-3"
-                                          />
-                                        </MessageAction>
-                                      </MessageActions>
-                                    )}
-                                  </Message>
-                                );
-                              case "reasoning":
-                                return (
-                                  <Reasoning
-                                    key={`${message.id}-${i}`}
-                                    className="w-full"
-                                    isStreaming={
-                                      status === "streaming" &&
-                                      i === message.parts.length - 1 &&
-                                      message.id === messages.at(-1)?.id
-                                    }
-                                  >
-                                    <ReasoningTrigger />
-                                    <ReasoningContent>
-                                      {part.text}
-                                    </ReasoningContent>
-                                  </Reasoning>
-                                );
-                              default:
-                                return null;
-                            }
-                          })}
-                        </div>
-                      ))}
-                      {status === "submitted" && <Loader />}
-                    </ConversationContent>
-                    <ConversationScrollButton />
-                  </Conversation>
-                </div>
+                      </div>
+                      <h3 className="text-lg font-semibold mb-2">
+                        ¡Hola! Soy Rocco
+                      </h3>
+                      <p className="text-sm text-muted-foreground max-w-sm">
+                        Pregúntame sobre entrenamiento, nutrición o técnicas de
+                        ejercicio
+                      </p>
+                    </div>
+                  )}
+                  {messages.map((message) => {
+                    const isOwn = message.role === "user";
+                    const textContent = getMessageText(message);
 
-                <div className="p-4 border-t shrink-0">
-                  <PromptInput
-                    onSubmit={async (message) => {
-                      const hasText = Boolean(message.text);
-                      const hasAttachments = Boolean(message.files?.length);
-                      if (!(hasText || hasAttachments)) {
-                        return;
-                      }
-
-                      await sendMessage({
-                        parts: [{ type: "text", text: message.text || "" }],
-                      } as any);
-                    }}
-                    className="mt-0"
-                    globalDrop
-                    multiple
-                  >
-                    <PromptInputHeader>
-                      <PromptInputAttachments>
-                        {(attachment) => (
-                          <PromptInputAttachment
-                            key={attachment.id}
-                            data={attachment}
-                          />
+                    return (
+                      <div
+                        key={message.id}
+                        className={cn("flex gap-2.5", isOwn && "flex-row-reverse")}
+                      >
+                        {!isOwn && (
+                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <HugeiconsIcon
+                              icon={AiChat02Icon}
+                              className="h-4 w-4 text-primary"
+                            />
+                          </div>
                         )}
-                      </PromptInputAttachments>
-                    </PromptInputHeader>
-                    <PromptInputBody>
-                      <PromptInputTextarea placeholder="Escribe tu pregunta..." />
-                    </PromptInputBody>
-                    <PromptInputFooter>
-                      <PromptInputTools>
-                        <PromptInputActionMenu>
-                          <PromptInputActionMenuTrigger />
-                          <PromptInputActionMenuContent>
-                            <PromptInputActionAddAttachments />
-                          </PromptInputActionMenuContent>
-                        </PromptInputActionMenu>
-                      </PromptInputTools>
-                      <PromptInputSubmit />
-                    </PromptInputFooter>
-                  </PromptInput>
+                        <div
+                          className={cn(
+                            "flex flex-col max-w-[75%] sm:max-w-[65%]",
+                            isOwn && "items-end"
+                          )}
+                        >
+                          {!isOwn && (
+                            <p className="text-xs font-medium text-foreground mb-1 px-1">
+                              Rocco
+                            </p>
+                          )}
+                          <div
+                            className={cn(
+                              "rounded-2xl px-4 py-2.5 text-sm break-words whitespace-pre-wrap",
+                              isOwn
+                                ? "bg-primary text-primary-foreground"
+                                : "bg-background dark:bg-background border border-border/50 dark:border-border/30"
+                            )}
+                          >
+                            {textContent}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {status === "submitted" && (
+                    <div className="flex gap-2.5">
+                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <HugeiconsIcon
+                          icon={AiChat02Icon}
+                          className="h-4 w-4 text-primary"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1 px-4 py-2.5 rounded-2xl bg-background dark:bg-background border border-border/50">
+                        <div className="flex space-x-1">
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
+                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </ScrollArea>
+
+              {/* Input Area */}
+              <div className="border-t bg-background dark:bg-background p-3 flex-shrink-0">
+                <div className="flex items-end gap-2">
+                  <div className="flex-1 relative bg-muted/50 dark:bg-muted/30 rounded-2xl border border-border/50 dark:border-border/30 focus-within:bg-background dark:focus-within:bg-background focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
+                    <Input
+                      type="text"
+                      value={localInput}
+                      onChange={(e) => setLocalInput(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          if (localInput.trim()) {
+                            sendMessage({
+                              parts: [{ type: "text", text: localInput }],
+                            } as any);
+                            setLocalInput("");
+                          }
+                        }
+                      }}
+                      placeholder="Escribe un mensaje..."
+                      className="h-11 text-xs px-4 pr-12 border-0 focus-visible:ring-0 bg-transparent placeholder:text-muted-foreground/60"
+                      disabled={status === "streaming"}
+                    />
+                  </div>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      if (localInput.trim()) {
+                        sendMessage({
+                          parts: [{ type: "text", text: localInput }],
+                        } as any);
+                        setLocalInput("");
+                      }
+                    }}
+                    disabled={!localInput.trim() || status === "streaming"}
+                    size="icon"
+                    className="h-11 w-11 flex-shrink-0 rounded-full bg-primary text-primary-foreground shadow-sm hover:shadow transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                  >
+                    <HugeiconsIcon icon={SentIcon} className="h-5 w-5" />
+                  </Button>
                 </div>
               </div>
-            </>
+            </div>
           ) : selectedChat ? (
             <ChatWindow
               chatId={selectedChatId!}
