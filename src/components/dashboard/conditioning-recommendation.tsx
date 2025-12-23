@@ -57,10 +57,7 @@ export default function ConditioningRecommendation() {
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="p-2 rounded bg-muted">
-              <HugeiconsIcon
-                icon={BatteryCharging01Icon}
-                className="h-5 w-5"
-              />
+              <HugeiconsIcon icon={BatteryCharging01Icon} className="h-5 w-5" />
             </div>
             <div>
               <h3 className="text-sm font-semibold">{title}</h3>
@@ -69,13 +66,12 @@ export default function ConditioningRecommendation() {
               </p>
             </div>
           </div>
-          <Button
-            onClick={handleStart}
-            size="sm"
-            variant="default"
-          >
+          <Button onClick={handleStart} size="sm" variant="default">
             Iniciar
-            <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1.5 h-3.5 w-3.5" />
+            <HugeiconsIcon
+              icon={ArrowRight01Icon}
+              className="ml-1.5 h-3.5 w-3.5"
+            />
           </Button>
         </div>
       </CardContent>
