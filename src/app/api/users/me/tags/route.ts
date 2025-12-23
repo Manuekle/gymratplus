@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest) {
     const { redis } = await import("@/lib/database/redis");
     await redis.del(`user:${session.user.id}:data`);
     await redis.del(`session:${session.user.id}`);
-  } catch { }
+  } catch {}
 
   // Devuelve los intereses actualizados
   return NextResponse.json({ interests: user.interests });

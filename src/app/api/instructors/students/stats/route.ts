@@ -80,12 +80,12 @@ export async function GET() {
     const avgStreak =
       totalStudents > 0
         ? Math.round(
-          studentRelationships.reduce(
-            (acc, rel) =>
-              acc + (rel.student.workoutStreak?.currentStreak || 0),
-            0,
-          ) / totalStudents,
-        )
+            studentRelationships.reduce(
+              (acc, rel) =>
+                acc + (rel.student.workoutStreak?.currentStreak || 0),
+              0,
+            ) / totalStudents,
+          )
         : 0;
 
     const totalRevenue = studentRelationships.reduce(

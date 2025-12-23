@@ -86,6 +86,10 @@ model User {
   pushSubscriptions    PushSubscription[]
   verificationCodes    VerificationCode[]   @relation("UserVerificationCodes")
   invoices             Invoice[]            @relation("UserInvoices")
+  
+  // New relations for Phase 1 & 2
+  createdExercises     Exercise[]           @relation("CreatedExercises")
+  progressPhotos       ProgressPhoto[]
 }
 
 model Profile {
@@ -130,8 +134,34 @@ model Exercise {
   imageUrl         String?
   sets             WorkoutExercise[]
   exerciseSessions ExerciseSession[] // Relación inversa con ExerciseSession
+  
+  // New fields for Phase 1 (Library & Instructor Content)
+  createdById      String?           // Null = System default, ID = Instructor custom
+  createdBy        User?             @relation("CreatedExercises", fields: [createdById], references: [id])
+  difficulty       String            @default("intermediate") // beginner, intermediate, advanced (for Conditioning)
+  
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
+
+  @@index([createdById])
+  @@index([muscleGroup])
+}
+
+model ProgressPhoto {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime @default(now())
+  weight    Float?   // Peso al momento de la foto
+  frontUrl  String?
+  sideUrl   String?
+  backUrl   String?
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([date])
 }
 
 model Workout {

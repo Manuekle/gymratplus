@@ -299,10 +299,11 @@ export default function BillingPage() {
                       </span>
                     </div>
                     <Button
-                      className={`w-full ${isCurrentPlan
+                      className={`w-full ${
+                        isCurrentPlan
                           ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
                           : "bg-black dark:bg-black text-white hover:bg-zinc-900"
-                        }`}
+                      }`}
                       size="sm"
                       disabled={
                         isDisabled ||
@@ -390,7 +391,9 @@ export default function BillingPage() {
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Ciclo de facturación:</span>
+                <span className="text-muted-foreground">
+                  Ciclo de facturación:
+                </span>
                 <span>Mensual</span>
               </div>
             </div>

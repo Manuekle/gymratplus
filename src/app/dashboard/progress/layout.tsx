@@ -2,12 +2,13 @@ import AnimatedLayout from "@/components/layout/animated-layout";
 import { customSEO } from "@/lib/seo/seo";
 
 export const metadata = customSEO({
-  title: "Registro de Instructor",
-  description: "Completa tu perfil para convertirte en instructor de GymRat+",
-  keywords: ["instructor", "registro", "gymrat+", "coach", "entrenador"],
+  title: "Mi Evolución",
+  description:
+    "Sigue tu transformación física con fotos de progreso y registro de peso.",
+  keywords: ["progreso", "fotos", "evolución", "gymrat", "transformación"],
 });
 
-export default function InstructorRegisterLayout({
+export default function ProgressLayout({
   children,
 }: {
   children: React.ReactNode;

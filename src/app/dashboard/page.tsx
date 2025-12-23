@@ -7,6 +7,7 @@ import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
+import ConditioningRecommendation from "@/components/dashboard/conditioning-recommendation";
 
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -88,6 +89,9 @@ export default function DashboardPage() {
     <AnimatedLayout>
       <InstallPrompt />
       <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
+        {/* Recomendación de Acondicionamiento */}
+        <ConditioningRecommendation />
+
         {/* Accesos Rápidos */}
         {/* Accesos Rápidos - oculto temporalmente
         <motion.div
