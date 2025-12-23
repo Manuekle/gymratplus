@@ -24,7 +24,16 @@ export async function proxy(req: NextRequest) {
 
   // Si el usuario está autenticado pero no tiene perfil o está incompleto
   if (token && isDashboardRoute) {
-    const profile = token.profile as { gender?: string; birthdate?: Date | string; height?: number; currentWeight?: number; goal?: string } | null | undefined;
+    const profile = token.profile as
+      | {
+          gender?: string;
+          birthdate?: Date | string;
+          height?: number;
+          currentWeight?: number;
+          goal?: string;
+        }
+      | null
+      | undefined;
 
     // Si no tiene perfil O si tiene perfil pero está incompleto, redirigir a onboarding
     if (!profile) {

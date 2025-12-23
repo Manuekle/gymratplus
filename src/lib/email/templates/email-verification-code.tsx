@@ -49,20 +49,20 @@ export function EmailVerificationCode({
                 alt="GymRat+"
                 className="mb-[16px] rounded-[12px]"
               />
-              <Heading className="text-[24px] tracking-heading font-semibold text-gray-900 m-0 mb-[4px]">
+              <Heading className="text-[24px] tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>
-              <Text className="text-[13px] text-gray-500 m-0">
+              <Text className="text-[13px] text-zinc-500 m-0">
                 Verificación de cuenta
               </Text>
             </Section>
 
             {/* Greeting */}
             <Section className="mb-[20px]">
-              <Text className="text-[15px] text-gray-900 mb-[12px] leading-[22px] m-0">
+              <Text className="text-[15px] text-zinc-900 mb-[12px] leading-[22px] m-0">
                 {userName ? `¡Hola ${userName}!` : "¡Hola!"}
               </Text>
-              <Text className="text-[15px] text-gray-700 mb-0 leading-[22px] m-0">
+              <Text className="text-[15px] text-zinc-700 mb-0 leading-[22px] m-0">
                 Bienvenido a GymRat+. Usa este código para verificar tu email
                 {userEmail && ` (${userEmail})`}:
               </Text>
@@ -91,17 +91,17 @@ export function EmailVerificationCode({
 
             {/* Expiry Notice */}
             <Section className="mb-[20px]">
-              <Text className="text-[13px] text-gray-600 mb-0 leading-[18px] text-center m-0">
+              <Text className="text-[13px] text-zinc-600 mb-0 leading-[18px] text-center m-0">
                 Válido por {expiresIn}
               </Text>
             </Section>
 
             {/* Welcome Message */}
             <Section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-[8px] p-[16px] mb-[20px]">
-              <Text className="text-[14px] text-gray-700 mb-[8px] leading-[20px] m-0">
+              <Text className="text-[14px] text-zinc-700 mb-[8px] leading-[20px] m-0">
                 <strong>🎉 ¡Estás a un paso de comenzar!</strong>
               </Text>
-              <Text className="text-[13px] text-gray-600 mb-0 leading-[18px] m-0">
+              <Text className="text-[13px] text-zinc-600 mb-0 leading-[18px] m-0">
                 Una vez verificado tu email, podrás acceder a todas las
                 funcionalidades de GymRat+: entrenamientos personalizados,
                 planes nutricionales, seguimiento de progreso y mucho más.
@@ -109,16 +109,16 @@ export function EmailVerificationCode({
             </Section>
 
             {/* Security Notice */}
-            <Section className="bg-gray-50 rounded-[8px] p-[16px] mb-[20px]">
-              <Text className="text-[12px] text-gray-600 mb-0 leading-[18px] m-0">
+            <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-[12px] text-zinc-600 mb-0 leading-[18px] m-0">
                 <strong>Seguridad:</strong> Si no solicitaste esta verificación,
                 ignora este email. Nunca compartas este código con nadie.
               </Text>
             </Section>
 
             {/* Footer */}
-            <Section className="border-t border-gray-100 pt-[20px]">
-              <Text className="text-xs text-gray-400 mb-[4px] m-0 text-center">
+            <Section className="border-t border-zinc-100 pt-[20px]">
+              <Text className="text-xs text-zinc-400 mb-[4px] m-0 text-center">
                 © {new Date().getFullYear()} GymRat+. Todos los derechos
                 reservados.
               </Text>

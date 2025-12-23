@@ -4,22 +4,12 @@ import { prisma } from "@/lib/database/prisma";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
+import { authConfig } from "@/auth.config";
 import type { NextAuthConfig } from "next-auth";
 
 // --- Type Definitions ---
 
-type ProfileType = {
-  id: string;
-  userId: string;
-  [key: string]: unknown;
-};
-
-type InstructorProfileType = {
-  id: string;
-  userId: string;
-  isPaid: boolean;
-  [key: string]: unknown;
-};
+import type { Profile, InstructorProfile } from "@prisma/client";
 
 interface CustomUserForCredentials {
   id: string;
@@ -33,6 +23,7 @@ interface CustomUserForCredentials {
 // --- NextAuth v5 Configuration ---
 
 export const config = {
+  ...authConfig,
   adapter: PrismaAdapter(prisma),
   providers: [
     GoogleProvider({
@@ -92,80 +83,51 @@ export const config = {
       },
     }),
   ],
-  session: {
-    strategy: "jwt" as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
-  },
   callbacks: {
+    // We do NOT override 'authorized' here because middleware uses authConfig.
+    // However, for Node environment usage (session checking), authConfig 'authorized' logic is still valid.
+    // If we want to extend it, we could.
+    // But 'jwt' and 'session' are the critical Node-side callbacks.
+
     async jwt({ token, user, trigger, session }) {
-      const isLoginOrInitialSession = !!user;
       const userId = user?.id || token.sub;
 
       if (!userId) return token;
 
-      // Get fresh data from database on login or if token is missing extended data
-      if (isLoginOrInitialSession || !token.profile) {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: userId },
-          include: {
-            profile: true,
-            instructorProfile: true,
-          },
-        });
+      // Always get fresh data from database to ensure subscription status is up to date
+      const dbUser = await prisma.user.findUnique({
+        where: { id: userId },
+        include: {
+          profile: true,
+          instructorProfile: true,
+        },
+      });
 
-        if (dbUser) {
-          // Update basic fields
-          token.sub = dbUser.id;
-          token.name = dbUser.name ?? null;
-          token.email = dbUser.email ?? null;
-          token.picture = dbUser.image ?? null;
+      if (dbUser) {
+        // Update basic fields
+        token.sub = dbUser.id;
+        token.name = dbUser.name ?? null;
+        token.email = dbUser.email ?? null;
+        token.picture = dbUser.image ?? null;
 
-          // Update extended fields
-          token.isInstructor = dbUser.isInstructor ?? false;
-          token.experienceLevel = dbUser.experienceLevel ?? null;
-          token.interests = (dbUser.interests as string[]) ?? [];
-          token.profile = (dbUser.profile as ProfileType | null) ?? null;
-          token.instructorProfile =
-            (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
-          token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
-          token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
-        }
+        // Update extended fields
+        token.isInstructor = dbUser.isInstructor ?? false;
+        token.experienceLevel = dbUser.experienceLevel ?? null;
+        token.interests = (dbUser.interests as string[]) ?? [];
+        token.profile = dbUser.profile as Profile | null as any;
+        token.instructorProfile =
+          dbUser.instructorProfile as InstructorProfile | null as any;
+        token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
+        token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
       }
 
-      // Handle 'update' trigger - Force reload from database
-      if (trigger === "update") {
-        const dbUser = await prisma.user.findUnique({
-          where: { id: userId },
-          include: {
-            profile: true,
-            instructorProfile: true,
-          },
-        });
-
-        if (dbUser) {
-          // Update all fields from database
-          token.sub = dbUser.id;
-          token.name = dbUser.name ?? null;
-          token.email = dbUser.email ?? null;
-          token.picture = dbUser.image ?? null;
-          token.isInstructor = dbUser.isInstructor ?? false;
-          token.experienceLevel = dbUser.experienceLevel ?? null;
-          token.interests = (dbUser.interests as string[]) ?? [];
-          token.profile = (dbUser.profile as ProfileType | null) ?? null;
-          token.instructorProfile =
-            (dbUser.instructorProfile as InstructorProfileType | null) ?? null;
-          token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
-          token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
+      // Handle 'update' trigger - Allows manual overrides if necessary (e.g. optimistic updates or additional payload)
+      if (trigger === "update" && session?.user) {
+        if (session.user.image !== undefined) {
+          token.picture = session.user.image;
         }
-
-        // If session has specific data, also update it
-        if (session?.user) {
-          if (session.user.image !== undefined) {
-            token.picture = session.user.image;
-          }
-          if (session.user.isInstructor !== undefined) {
-            token.isInstructor = session.user.isInstructor;
-          }
+        if (session.user.isInstructor !== undefined) {
+          token.isInstructor = session.user.isInstructor;
         }
       }
 
@@ -204,6 +166,14 @@ export const config = {
         },
       };
     },
+    // We removed 'redirect' here because it's in auth.config.ts?
+    // Wait, auth.config.ts has a simple logic. The previous redirect logic was quite specific.
+    // If we want to KEEP the previous redirect logic, we should probably add it back or ensure auth.config.ts version covers it.
+    // The previous logic handled base URL redirects. auth.config.ts version (in my plan) didn't include the redirect logic?
+    // Let me check what I wrote for auth.config.ts step... I copied `callbacks: { authorized }`.
+    // I did NOT copy the `redirect` callback to auth.config.ts.
+    // So I should keep `redirect` HERE effectively by merging, but `...authConfig` is spread first.
+    // So if I add `redirect` here, it works.
     async redirect({ url, baseUrl }) {
       try {
         // If URL is the base, redirect to dashboard
@@ -229,12 +199,6 @@ export const config = {
       }
     },
   },
-  pages: {
-    signIn: "/auth/signin",
-    error: "/auth/error",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthConfig;
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);

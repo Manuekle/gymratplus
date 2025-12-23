@@ -170,5 +170,9 @@ export const PAYPAL_PLAN_MAPPING: Record<string, SubscriptionTier> = {
  * Get subscription tier from PayPal plan ID
  */
 export function getTierFromPayPalPlan(planId: string): SubscriptionTier {
+  if (planId === process.env.PAYPAL_PLAN_ID_PRO) return SubscriptionTier.PRO;
+  if (planId === process.env.PAYPAL_PLAN_ID_INSTRUCTOR)
+    return SubscriptionTier.INSTRUCTOR;
+
   return PAYPAL_PLAN_MAPPING[planId] || SubscriptionTier.FREE;
 }

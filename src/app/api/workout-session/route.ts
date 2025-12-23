@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function POST(req: NextRequest) {
   try {

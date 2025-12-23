@@ -1,15 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon } from "@hugeicons/core-free-icons";
-import { Loader2, Check, ArrowLeft } from "lucide-react";
+import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
+import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,8 +14,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Tick02Icon } from "@hugeicons/core-free-icons";
 
-export default function SubscriptionPage() {
+export default function PaymentPage() {
   const { data: session } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
@@ -30,45 +30,105 @@ export default function SubscriptionPage() {
       return;
     }
 
+    // Check if user already has an active subscription
+    const user = session.user as any;
+    if (
+      user?.subscriptionStatus === "active" ||
+      user?.subscriptionStatus === "trialing"
+    ) {
+      toast.error("Ya tienes una suscripción activa", {
+        description: "Ve a Billing para gestionar tu suscripción",
+      });
+      router.push("/dashboard/profile/billing");
+      return;
+    }
+
+    // Redirect to instructor registration for instructor plan
+    if (planId === "instructor") {
+      router.push("/dashboard/profile/billing/instructor-register");
+      return;
+    }
+
+    // Redirect to free plan (no payment needed)
+    if (planId === "free") {
+      toast.info("Ya tienes el plan gratuito");
+      return;
+    }
+
+    // Process Pro plan payment
     setLoading(planId);
 
     try {
-      const planTypeMap: Record<string, string> = {
-        pro: "monthly",
-        instructor: "annual",
-      };
-
       const response = await fetch("/api/payment/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          planType: planTypeMap[planId],
-        }),
+        body: JSON.stringify({ planId }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error || "Error al procesar el pago");
+        toast.error(data.error || "Error al procesar el pago", {
+          description: data.details
+            ? `Detalles: ${JSON.stringify(data.details)}`
+            : undefined,
+        });
+        return;
       }
 
       if (data.approvalUrl) {
         window.location.href = data.approvalUrl;
       } else {
-        throw new Error("No se recibió URL de aprobación");
+        toast.error("No se recibió URL de aprobación de PayPal");
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error processing payment:", error);
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Error al procesar la suscripción",
+        error instanceof Error ? error.message : "Error al procesar el pago",
       );
+    } finally {
       setLoading(null);
     }
   };
 
-  const currentTier = (session?.user as any)?.subscriptionTier || "FREE";
+  const plans = [
+    {
+      id: "free",
+      name: "Gratis",
+      price: "$0",
+      period: "/mes",
+      features: ["Entrenamientos básicos", "Seguimiento de peso", "Comunidad"],
+      tier: "FREE",
+      disabled: true,
+    },
+    {
+      id: "pro",
+      name: "Pro",
+      price: "$9.99",
+      period: "/mes",
+      features: [
+        "Todo en Gratis",
+        "Planes personalizados",
+        "Nutrición IA",
+        "Chat con instructores",
+      ],
+      popular: true,
+      tier: "PRO",
+    },
+    {
+      id: "instructor",
+      name: "Instructor",
+      price: "$19.99",
+      period: "/mes",
+      features: [
+        "Todo en Pro",
+        "Gestión de estudiantes",
+        "Planes ilimitados",
+        "Analíticas avanzadas",
+      ],
+      tier: "INSTRUCTOR",
+    },
+  ];
 
   return (
     <div className="">
@@ -83,64 +143,19 @@ export default function SubscriptionPage() {
       </div>
 
       <Card>
-        {/* Heading */}
-
-        <CardHeader className="pb-3 flex flex-row flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div>
-              <CardTitle className="text-2xl font-semibold tracking-heading">
-                Suscripciones
-              </CardTitle>
-              <CardDescription className="text-muted-foreground text-xs">
-                Elige un plan para continuar
-              </CardDescription>
-            </div>
-          </div>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-2xl font-semibold tracking-heading">
+            Elige tu Plan
+          </CardTitle>
+          <CardDescription className="text-muted-foreground text-xs">
+            Selecciona el plan que mejor se adapte a tus necesidades
+          </CardDescription>
         </CardHeader>
         <CardContent className="py-0 md:py-12">
           {/* Plans Grid */}
           <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {[
-              {
-                id: "free",
-                name: "Gratis",
-                price: "$0",
-                features: [
-                  "Entrenamientos básicos",
-                  "Seguimiento de peso",
-                  "Comunidad",
-                ],
-                tier: "FREE",
-                disabled: true,
-              },
-              {
-                id: "pro",
-                name: "Pro",
-                price: "$9.99",
-                features: [
-                  "Todo en Gratis",
-                  "Planes personalizados",
-                  "Nutrición IA",
-                  "Chat con instructores",
-                ],
-                popular: true,
-                tier: "PRO",
-              },
-              {
-                id: "instructor",
-                name: "Instructor",
-                price: "$19.99",
-                features: [
-                  "Todo en Pro",
-                  "Gestión de estudiantes",
-                  "Planes ilimitados",
-                  "Analíticas avanzadas",
-                ],
-                tier: "INSTRUCTOR",
-              },
-            ].map((plan, i) => {
-              const isCurrentPlan = currentTier === plan.tier;
-              const isDisabled = plan.disabled || isCurrentPlan;
+            {plans.map((plan, i) => {
+              const isDisabled = plan.disabled;
 
               return (
                 <div
@@ -156,32 +171,36 @@ export default function SubscriptionPage() {
                       Más popular
                     </Badge>
                   )}
-                  <h3
-                    className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${
-                      plan.popular
-                        ? "text-zinc-100 dark:text-zinc-900"
-                        : "text-zinc-900 dark:text-zinc-100"
-                    }`}
-                  >
-                    {plan.name}
-                  </h3>
-                  <div
-                    className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${
-                      plan.popular
-                        ? "text-zinc-100 dark:text-zinc-900"
-                        : "text-zinc-900 dark:text-zinc-100"
-                    }`}
-                  >
-                    {plan.price}
-                    <span
-                      className={`text-xs font-normal ${
+                  <div className="mb-6">
+                    <h3
+                      className={`text-2xl font-bold mb-2 ${
                         plan.popular
-                          ? "text-zinc-300 dark:text-zinc-700"
-                          : "text-zinc-600 dark:text-zinc-400"
+                          ? "text-zinc-100 dark:text-zinc-900"
+                          : "text-zinc-900 dark:text-zinc-100"
                       }`}
                     >
-                      /mes
-                    </span>
+                      {plan.name}
+                    </h3>
+                    <div className="flex items-baseline gap-1">
+                      <span
+                        className={`text-4xl font-bold ${
+                          plan.popular
+                            ? "text-zinc-100 dark:text-zinc-900"
+                            : "text-zinc-900 dark:text-zinc-100"
+                        }`}
+                      >
+                        {plan.price}
+                      </span>
+                      <span
+                        className={`text-sm ${
+                          plan.popular
+                            ? "text-zinc-400 dark:text-zinc-600"
+                            : "text-zinc-600 dark:text-zinc-400"
+                        }`}
+                      >
+                        {plan.period}
+                      </span>
+                    </div>
                   </div>
                   <ul className="space-y-3 mb-8">
                     {plan.features.map((feature, j) => (
@@ -215,19 +234,11 @@ export default function SubscriptionPage() {
                     disabled={isDisabled || loading !== null}
                     onClick={() => !isDisabled && handleSubscribe(plan.id)}
                   >
-                    {loading === plan.id ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Procesando...
-                      </>
-                    ) : isCurrentPlan ? (
-                      <>
-                        <Check className="mr-2 h-4 w-4" />
-                        Plan Actual
-                      </>
-                    ) : (
-                      "Comenzar"
-                    )}
+                    {loading === plan.id
+                      ? "Procesando..."
+                      : isDisabled
+                        ? "Plan Actual"
+                        : "Comenzar"}
                   </Button>
                 </div>
               );

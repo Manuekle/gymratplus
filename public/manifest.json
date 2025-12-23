@@ -7,12 +7,7 @@
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
-  "categories": [
-    "fitness",
-    "health",
-    "lifestyle",
-    "sports"
-  ],
+  "categories": ["fitness", "health", "lifestyle", "sports"],
   "icons": [
     {
       "src": "/icons/favicon-192x192.png",

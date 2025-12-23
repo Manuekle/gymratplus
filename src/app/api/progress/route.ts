@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 
 import { prisma } from "@/lib/database/prisma";
 import type { Prisma } from "@prisma/client";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // GET /api/progress - Obtener registros de progreso (peso, grasa corporal, masa muscular)
 export async function GET(req: NextRequest) {

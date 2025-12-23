@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { startOfWeek, startOfDay, endOfDay, addDays, format } from "date-fns";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 const prisma = new PrismaClient();
 

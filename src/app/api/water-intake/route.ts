@@ -7,7 +7,7 @@ import {
 } from "@/lib/database/redis";
 import { createWaterGoalCompletedNotification } from "@/lib/notifications/create-system-notifications";
 import { startOfDay } from "date-fns";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // POST update water intake
 export async function POST(req: NextRequest) {

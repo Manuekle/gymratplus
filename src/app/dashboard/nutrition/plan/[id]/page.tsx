@@ -353,7 +353,7 @@ export default function FoodPlanViewPage() {
         <CardContent className="px-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             {/* Calorías */}
-            <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-900 dark:to-gray-800">
+            <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-900 dark:to-zinc-800">
               <CardContent className="px-4 py-3">
                 <div className="flex items-center justify-between">
                   <div>
@@ -376,7 +376,7 @@ export default function FoodPlanViewPage() {
 
             {/* Proteínas */}
             {foodPlan.macros.protein && (
-              <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+              <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
                 <CardContent className="px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -400,7 +400,7 @@ export default function FoodPlanViewPage() {
 
             {/* Carbohidratos */}
             {foodPlan.macros.carbs && (
-              <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+              <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
                 <CardContent className="px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div>
@@ -424,7 +424,7 @@ export default function FoodPlanViewPage() {
 
             {/* Grasas */}
             {foodPlan.macros.fat && (
-              <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+              <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
                 <CardContent className="px-4 py-3">
                   <div className="flex items-center justify-between">
                     <div>

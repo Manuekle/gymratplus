@@ -85,6 +85,7 @@ model User {
   chatMessages         ChatMessage[]        @relation("ChatMessageSender")
   pushSubscriptions    PushSubscription[]
   verificationCodes    VerificationCode[]   @relation("UserVerificationCodes")
+  invoices             Invoice[]            @relation("UserInvoices")
 }
 
 model Profile {
@@ -636,4 +637,25 @@ model VerificationCode {
   @@index([type])
   @@index([destination])
   @@index([expiresAt])
+}
+
+model Invoice {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("UserInvoices", fields: [userId], references: [id], onDelete: Cascade)
+  invoiceNumber   String   @unique
+  subscriptionId  String?
+  planName        String   // "Pro", "Instructor"
+  planType        String   // "monthly", "annual"
+  amount          Float
+  currency        String   @default("USD")
+  status          String   @default("paid") // "paid", "pending", "failed"
+  billingDate     DateTime @default(now())
+  paidAt          DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+  @@index([invoiceNumber])
+  @@index([billingDate])
 }

@@ -214,7 +214,7 @@ export default function WorkoutHistoryPage() {
 
       {/* Tarjetas de estadísticas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+        <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
           <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
@@ -235,7 +235,7 @@ export default function WorkoutHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-gray-800">
+        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-zinc-800">
           <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
@@ -256,7 +256,7 @@ export default function WorkoutHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-gray-800">
+        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-zinc-800">
           <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">
@@ -275,7 +275,7 @@ export default function WorkoutHistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-gray-800">
+        <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-zinc-800">
           <CardContent className="px-4 pt-2">
             <div className="flex items-center justify-between">
               <div className="gap-2 flex flex-col">

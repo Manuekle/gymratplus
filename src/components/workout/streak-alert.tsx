@@ -136,8 +136,8 @@ const getStreakColor = (streak: number) => {
 
   // 0: Gris sin racha
   return {
-    dayColor: "bg-gray-400",
-    svgFilter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+    dayColor: "bg-zinc-400",
+    svgFilter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
     filter: "saturate(0.8) brightness(0.9)",
   };
 };

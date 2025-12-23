@@ -76,8 +76,8 @@ const getStreakColor = (streak: number) => {
     };
   // 0: Gris sin racha
   return {
-    text: "text-white bg-gray-500/80 dark:bg-gray-600/30 shadow-lg shadow-gray-500/20 dark:shadow-gray-600/20",
-    svgFilter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+    text: "text-white bg-zinc-500/80 dark:bg-zinc-600/30 shadow-lg shadow-zinc-500/20 dark:shadow-zinc-600/20",
+    svgFilter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
     filter: "saturate(0.8) brightness(0.9)",
   };
 };
@@ -256,7 +256,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           height={16}
           className="h-4 w-4 opacity-50 animate-pulse"
           style={{
-            filter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+            filter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
           }}
         />
         <Badge
@@ -280,7 +280,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
           height={16}
           className="h-4 w-4"
           style={{
-            filter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+            filter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
           }}
         />
         <Badge variant="secondary" className="text-xs text-muted-foreground">

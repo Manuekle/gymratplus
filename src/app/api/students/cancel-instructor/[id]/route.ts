@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { createNotificationByEmail } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function PUT(
   request: NextRequest,

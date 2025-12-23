@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { Prisma } from "@prisma/client";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // GET /api/chats - Get all chats for the current user
 export async function GET() {

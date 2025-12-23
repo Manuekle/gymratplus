@@ -163,7 +163,7 @@ export default function FoodRecommendations() {
 
         {/* Macros Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+          <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
@@ -175,7 +175,7 @@ export default function FoodRecommendations() {
               <Skeleton className="h-10 w-10 rounded-full" />
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+          <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
@@ -187,7 +187,7 @@ export default function FoodRecommendations() {
               <Skeleton className="h-10 w-10 rounded-full" />
             </CardContent>
           </Card>
-          <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+          <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
             <CardHeader className="pb-2">
               <Skeleton className="h-4 w-24" />
             </CardHeader>
@@ -614,7 +614,7 @@ export default function FoodRecommendations() {
             <p className="text-xs text-muted-foreground">Protein</p>
             
           </div> */}
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -636,7 +636,7 @@ export default function FoodRecommendations() {
             <p className="text-xs text-muted-foreground">Carbs</p>
             {formatMacro(macros.carbs)}
           </div> */}
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -660,7 +660,7 @@ export default function FoodRecommendations() {
             <p className="text-xs text-muted-foreground">Fat</p>
             {formatMacro(macros.fat)}
           </div> */}
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>

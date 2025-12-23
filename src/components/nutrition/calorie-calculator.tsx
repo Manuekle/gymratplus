@@ -940,7 +940,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                 transition={{ duration: 0.3 }}
                 className="space-y-4 sm:space-y-5"
               >
-                <div className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-700 dark:to-gray-800 border border-border p-4 sm:p-6 rounded-lg text-center">
+                <div className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-700 dark:to-zinc-800 border border-border p-4 sm:p-6 rounded-lg text-center">
                   <h3 className="text-xs font-medium text-muted-foreground dark:text-white mb-2">
                     Calorías Diarias Recomendadas
                   </h3>
@@ -960,7 +960,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
 
                     <div className="grid grid-cols-3 gap-2 sm:gap-4">
                       {/* Proteínas */}
-                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
@@ -982,7 +982,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </Card>
 
                       {/* Carbohidratos */}
-                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
@@ -1004,7 +1004,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </Card>
 
                       {/* Grasas */}
-                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">
@@ -1087,7 +1087,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
 
                     <div className="grid grid-cols-3 gap-2 sm:gap-4">
                       {/* Proteínas */}
-                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center flex-shrink-0">
@@ -1109,7 +1109,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </Card>
 
                       {/* Carbohidratos */}
-                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-sky-100 dark:bg-sky-800 flex items-center justify-center flex-shrink-0">
@@ -1131,7 +1131,7 @@ export function CalorieCalculator({ onGoalsUpdated }: CalorieCalculatorProps) {
                       </Card>
 
                       {/* Grasas */}
-                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                      <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
                         <CardContent className="px-2 sm:px-4 py-2 sm:py-3">
                           <div className="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:gap-3 sm:text-left">
                             <div className="h-8 w-8 sm:h-12 sm:w-12 rounded-full bg-amber-100 dark:bg-amber-800 flex items-center justify-center flex-shrink-0">

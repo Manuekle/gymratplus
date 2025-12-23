@@ -49,8 +49,8 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
         <div className="absolute inset-0 flex flex-col justify-between py-4 pointer-events-none">
           {[0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((level, index) => (
             <div key={index} className="flex items-center">
-              <div className="w-4 h-px bg-gray-300" />
-              <span className="text-[8px] text-gray-300 ml-1">
+              <div className="w-4 h-px bg-zinc-300" />
+              <span className="text-[8px] text-zinc-300 ml-1">
                 {level.toFixed(1)}
               </span>
             </div>

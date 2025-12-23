@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../auth.ts";
+import { auth } from "@auth";
 
 // DELETE /api/chats/[chatId]/messages - Delete all messages in a chat
 export async function DELETE(

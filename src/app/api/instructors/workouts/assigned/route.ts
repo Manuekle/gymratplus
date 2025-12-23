@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../auth.ts";
+import { auth } from "@auth";
 
 // Habilita el registro detallado de consultas de Prisma
 const prismaWithLogging = prisma.$extends({

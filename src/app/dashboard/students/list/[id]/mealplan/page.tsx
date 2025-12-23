@@ -1144,7 +1144,7 @@ export default function CreateMealPlanPage() {
               {/* Macros Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {/* Proteínas */}
-                <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-gray-800">
+                <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
                   <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1180,7 +1180,7 @@ export default function CreateMealPlanPage() {
                 </Card>
 
                 {/* Carbohidratos */}
-                <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-gray-800">
+                <Card className="bg-gradient-to-br from-sky-50 to-white dark:from-sky-900 dark:to-zinc-800">
                   <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>
@@ -1215,7 +1215,7 @@ export default function CreateMealPlanPage() {
                 </Card>
 
                 {/* Grasas */}
-                <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-gray-800">
+                <Card className="bg-gradient-to-br from-amber-100 to-white dark:from-amber-900 dark:to-zinc-800">
                   <CardContent className="px-4">
                     <div className="flex items-center justify-between">
                       <div>

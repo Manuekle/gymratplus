@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
 import { createNotificationByEmail } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // Esquema de validación para la solicitud del instructor
 const requestInstructorSchema = z.object({

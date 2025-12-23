@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function GET() {
   try {
@@ -80,12 +80,12 @@ export async function GET() {
     const avgStreak =
       totalStudents > 0
         ? Math.round(
-            studentRelationships.reduce(
-              (acc, rel) =>
-                acc + (rel.student.workoutStreak?.currentStreak || 0),
-              0,
-            ) / totalStudents,
-          )
+          studentRelationships.reduce(
+            (acc, rel) =>
+              acc + (rel.student.workoutStreak?.currentStreak || 0),
+            0,
+          ) / totalStudents,
+        )
         : 0;
 
     const totalRevenue = studentRelationships.reduce(

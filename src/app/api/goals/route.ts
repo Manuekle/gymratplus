@@ -2,7 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/database/prisma";
 import { publishGoalNotification } from "@/lib/notifications/goal-notifications";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // GET /api/goals - Obtener objetivos del usuario
 export async function GET(req: NextRequest) {

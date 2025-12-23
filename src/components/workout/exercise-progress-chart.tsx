@@ -99,12 +99,12 @@ const COLORS = [
   "#F5EAC2", // Soft Buttercup
 
   // Soft Neutrals
-  "#E0E0E0", // Soft Gray
+  "#E0E0E0", // Soft zinc
   "#E5E5E5", // Light Ash
   "#EBEBEB", // Pale Silver
   "#D9D9D9", // Soft Stone
   "#E2E2E2", // Light Slate
-  "#EFEFEF", // Pale Gray
+  "#EFEFEF", // Pale zinc
   "#DBDBDB", // Soft Cloud
   "#E7E7E7", // Light Fog
   "#D5D5D5", // Soft Pewter

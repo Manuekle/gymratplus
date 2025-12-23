@@ -15,7 +15,7 @@ export default function ErrorPage() {
         <h1 className="text-4xl font-semibold  tracking-heading text-black dark:text-white">
           ¡Oops!
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300 text-xs">
+        <p className="mt-2 text-zinc-600 dark:text-zinc-300 text-xs">
           Algo salió mal. Por favor, intenta nuevamente más tarde.
         </p>
         <div className="mt-6 flex flex-col gap-4">

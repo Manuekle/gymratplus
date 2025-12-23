@@ -2,7 +2,7 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 
 // Types removed - using inline types where needed
 

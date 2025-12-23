@@ -235,7 +235,7 @@ export function WorkoutNew({
       )}
 
       {!isLoading && exercises.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
+        <div className="text-center py-8 text-zinc-500">
           No hay ejercicios para {currentDay}
         </div>
       )}

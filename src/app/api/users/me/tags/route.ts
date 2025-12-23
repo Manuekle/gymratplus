@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../../auth.ts";
+import { auth } from "@auth";
 
 // GET /api/users/me/tags - Get current user's interests
 export async function GET() {
@@ -45,7 +45,7 @@ export async function PUT(req: NextRequest) {
     const { redis } = await import("@/lib/database/redis");
     await redis.del(`user:${session.user.id}:data`);
     await redis.del(`session:${session.user.id}`);
-  } catch {}
+  } catch { }
 
   // Devuelve los intereses actualizados
   return NextResponse.json({ interests: user.interests });

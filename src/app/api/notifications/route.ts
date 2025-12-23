@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
-import { auth } from "../../../../auth.ts";
+import { auth } from "@auth";
 import {
   getUserNotifications,
   createNotification,

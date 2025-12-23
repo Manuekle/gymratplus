@@ -563,7 +563,7 @@ export default function InstructorDashboardPage() {
                             ${student.agreedPrice}/mes
                           </p>
                         )}
-                        <div className="flex gap-2 mt-1 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-300">
+                        <div className="flex gap-2 mt-1 overflow-x-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-zinc-300">
                           {student.hasActiveWorkoutPlan && (
                             <Badge
                               variant="outline"
@@ -584,7 +584,7 @@ export default function InstructorDashboardPage() {
                             !student.hasActiveMealPlan && (
                               <Badge
                                 variant="outline"
-                                className="text-xs whitespace-nowrap bg-gray-50 dark:bg-gray-900/20 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-800"
+                                className="text-xs whitespace-nowrap bg-zinc-50 dark:bg-zinc-900/20 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-800"
                               >
                                 Sin planes activos
                               </Badge>

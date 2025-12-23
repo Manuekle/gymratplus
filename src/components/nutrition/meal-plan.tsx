@@ -164,7 +164,7 @@ export function MealPlan({
         </CardHeader>
         <CardContent className="px-0">
           <div className="grid grid-cols-3 gap-4">
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50/80 to-white/80 dark:from-pink-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-pink-50/80 to-white/80 dark:from-pink-900/80 dark:to-zinc-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -182,7 +182,7 @@ export function MealPlan({
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50/80 to-white/80 dark:from-sky-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-sky-50/80 to-white/80 dark:from-sky-900/80 dark:to-zinc-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>
@@ -202,7 +202,7 @@ export function MealPlan({
                 </div>
               </CardContent>
             </Card>
-            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100/80 to-white/80 dark:from-amber-900/80 dark:to-gray-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
+            <Card className="col-span-3 md:col-span-1 bg-gradient-to-br from-amber-100/80 to-white/80 dark:from-amber-900/80 dark:to-zinc-800/80 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg">
               <CardContent className="px-4">
                 <div className="flex items-center justify-between">
                   <div>

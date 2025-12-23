@@ -322,8 +322,8 @@ export function WorkoutReminderAlert({
   const activeDays = getActiveDays(currentStreak);
   // Racha en gris (sin color)
   const streakColor = {
-    dayColor: "bg-gray-400",
-    svgFilter: "saturate(0.8) brightness(0.9) grayscale(0.5)",
+    dayColor: "bg-zinc-400",
+    svgFilter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
     filter: "saturate(0.8) brightness(0.9)",
   };
 
