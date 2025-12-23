@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 /**
  * Endpoint para verificar y resetear rachas
