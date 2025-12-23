@@ -2,6 +2,8 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
 import { QRCodeCanvas } from "qrcode.react";
 import {
   Card,
@@ -13,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+
 import { toast } from "sonner";
 
 export default function QRCodePage() {
@@ -157,19 +159,22 @@ export default function QRCodePage() {
                 {session.user.name?.charAt(0) || "U"}
               </AvatarFallback>
             </Avatar>
-            <div className="text-center">
-              <h3 className="text-lg font-semibold tracking-heading">
+            <div className="text-center flex flex-row items-center justify-center gap-2">
+              <h3 className="text-2xl font-semibold tracking-heading">
                 {session.user.name || "Usuario"}
               </h3>
-              {isInstructor && (
-                <Badge variant="outline" className="mt-1 text-xs">
-                  Instructor
-                </Badge>
-              )}
-              {!isInstructor && (
-                <Badge variant="outline" className="mt-1 text-xs">
-                  Estudiante
-                </Badge>
+              {/* Verification Icon */}
+              {(session?.user?.subscriptionStatus === "active" ||
+                session?.user?.subscriptionStatus === "trialing") && (
+                <HugeiconsIcon
+                  icon={CheckmarkBadge01Icon}
+                  className={`w-6 h-6 ${
+                    session?.user?.subscriptionTier === "PRO"
+                      ? "text-black dark:text-white"
+                      : "text-blue-500"
+                  }`}
+                  fill="currentColor"
+                />
               )}
             </div>
           </div>
