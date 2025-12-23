@@ -1,4 +1,3 @@
-import { openai } from "@ai-sdk/openai";
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
@@ -22,9 +21,9 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const result = streamText({
-    model: openai("gpt-4o-mini"),
-    messages: convertToModelMessages(messages),
+  const result = await streamText({
+    model: "openai/gpt-4o-mini",
+    messages: await convertToModelMessages(messages),
     system: `Eres Rocco, un entrenador personal de IA avanzado y motivador.
     Tu objetivo es ayudar a los usuarios a alcanzar sus metas de fitness, responder preguntas sobre ejercicios, nutrición y rutinas.
     Sé amable, directo y utiliza emojis para hacer la conversación más amena.

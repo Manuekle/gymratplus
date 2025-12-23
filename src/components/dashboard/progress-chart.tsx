@@ -36,7 +36,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardAction,
 } from "@/components/ui/card";
 import { NewProgress } from "../progress/new-progress";
 import ChartSkeleton from "../skeleton/charts-skeleton";
@@ -281,7 +280,7 @@ export default function ProgressChart({
         <CardDescription className="text-xs sm:text-xs">
           Gráfico de evolución física
         </CardDescription>
-        <CardAction>
+        <div>
           <Link
             href="/dashboard/health"
             className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -292,7 +291,7 @@ export default function ProgressChart({
               className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
             />
           </Link>
-        </CardAction>
+        </div>
       </CardHeader>
 
       <CardContent className="px-4 flex-1 flex flex-col">

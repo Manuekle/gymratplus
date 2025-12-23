@@ -11,7 +11,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardAction,
 } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -73,7 +72,7 @@ export default function GoalProgress() {
               Objetivos activos en progreso
             </CardDescription>
           </div>
-          <CardAction>
+          <div>
             <Link
               href="/dashboard/health"
               className="group inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
@@ -84,7 +83,7 @@ export default function GoalProgress() {
                 className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
               />
             </Link>
-          </CardAction>
+          </div>
         </div>
       </CardHeader>
 
