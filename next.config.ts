@@ -48,7 +48,7 @@ const nextConfig: NextConfig = {
     ],
   },
   typescript: {
-    ignoreBuildErrors: process.env.NODE_ENV === "production", // Asegura que errores de TypeScript detengan la compilación
+    ignoreBuildErrors: false, // Asegura que errores de TypeScript detengan la compilación
   },
   async rewrites() {
     return [

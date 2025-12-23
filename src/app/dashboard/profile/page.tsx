@@ -57,9 +57,9 @@ import {
   FireIcon,
   Dumbbell01Icon,
   Camera01Icon,
-  CheckmarkBadge01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader } from "@/components/ai-elements/loader";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -591,14 +591,14 @@ export default function ProfilePage() {
                   {/* Icono de Verificado para PRO/Instructor */}
                   {(session?.user?.subscriptionStatus === "active" ||
                     session?.user?.subscriptionStatus === "trialing") && (
-                    <HugeiconsIcon
-                      icon={CheckmarkBadge01Icon}
-                      className={`w-6 h-6 ${
+                    <VerifiedBadge
+                      variant={
                         session?.user?.subscriptionTier === "PRO"
-                          ? "text-black dark:text-white"
-                          : "text-blue-500"
-                      }`}
-                      fill="currentColor"
+                          ? "pro"
+                          : isInstructor
+                            ? "instructor"
+                            : "default"
+                      }
                     />
                   )}
                 </div>
