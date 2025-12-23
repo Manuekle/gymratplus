@@ -6,7 +6,7 @@ const SITE_CONFIG = {
   description:
     "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
   url: "https://gymratplus.com",
-  ogImage: "/og-image.png",
+  ogImage: "/og-image.webp",
   twitterHandle: "@gymratplus",
 } as const;
 
