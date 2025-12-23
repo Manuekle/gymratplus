@@ -594,8 +594,8 @@ export default function ProfilePage() {
                       <HugeiconsIcon
                         icon={CheckmarkBadge01Icon}
                         className={`w-6 h-6 ${session?.user?.subscriptionTier === "PRO"
-                          ? "text-black dark:text-white"
-                          : "text-blue-500"
+                            ? "text-black dark:text-white"
+                            : "text-blue-500"
                           }`}
                         fill="currentColor"
                       />
@@ -603,7 +603,6 @@ export default function ProfilePage() {
                 </div>
 
                 {/* Badge de Instructor o Alumno */}
-
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
@@ -927,7 +926,7 @@ export default function ProfilePage() {
                               >
                                 {isCanceling ? (
                                   <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    <Loader className="mr-2 h-4 w-4 animate-spin" />
                                     Cancelando...
                                   </>
                                 ) : (
