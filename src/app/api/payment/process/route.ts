@@ -105,7 +105,7 @@ export async function POST(req: Request) {
         paymentMethod: {
           payeePreferred: PayeePaymentMethodPreference.ImmediatePaymentRequired,
         },
-        returnUrl: `${baseUrl}/dashboard/profile/billing?success=true`,
+        returnUrl: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
         cancelUrl: `${baseUrl}/dashboard/profile/payment?canceled=true`,
       },
     };

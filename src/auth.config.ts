@@ -18,32 +18,6 @@ export const authConfig = {
 
       if (isOnDashboard) {
         if (!isLoggedIn) return false; // Redirect to login
-
-        // Role-based Access Control
-        const userTier = (auth?.user as any)?.subscriptionTier || "FREE";
-        const path = nextUrl.pathname;
-
-        // Instructor-only routes
-        if (
-          path.startsWith("/dashboard/students") &&
-          !hasAccess(userTier, SubscriptionTier.INSTRUCTOR)
-        ) {
-          return Response.redirect(
-            new URL("/dashboard/profile/billing?upgrade=instructor", nextUrl),
-          );
-        }
-
-        // Pro-only routes
-        if (
-          (path.startsWith("/dashboard/nutrition") ||
-            path.startsWith("/dashboard/chats")) &&
-          !hasAccess(userTier, SubscriptionTier.PRO)
-        ) {
-          return Response.redirect(
-            new URL("/dashboard/profile/billing?upgrade=pro", nextUrl),
-          );
-        }
-
         return true;
       }
 

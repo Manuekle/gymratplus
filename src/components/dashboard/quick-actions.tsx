@@ -12,9 +12,15 @@ import {
   File01Icon,
   ArrowDown01Icon,
   ArrowUp01Icon,
+  AiChat02Icon,
 } from "@hugeicons/core-free-icons";
 
 const quickActions = [
+  {
+    title: "Generar Plan",
+    href: "/dashboard/recommendations",
+    icon: AiChat02Icon,
+  },
   {
     title: "Nuevo Entrenamiento",
     href: "/dashboard/workout",

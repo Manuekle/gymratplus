@@ -1,90 +1,51 @@
-import { NextResponse, NextRequest } from "next/server";
-import { put } from "@vercel/blob";
-import { redis } from "@/lib/database/redis";
-import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../auth";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { NextResponse } from "next/server";
+import { auth } from "@auth";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request): Promise<NextResponse> {
+  const session = await auth();
+
+  if (!session || !session.user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = (await request.json()) as HandleUploadBody;
+
   try {
-    const session = await auth();
+    const jsonResponse = await handleUpload({
+      body,
+      request,
+      onBeforeGenerateToken: async (pathname) => {
+        // Generate a client token for the browser to upload the file
+        // ⚠️ Authenticate and authorize users before generating the token.
+        // Otherwise, you're allowing anonymous uploads.
 
-    if (!session || !session.user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+        return {
+          allowedContentTypes: [
+            "image/jpeg",
+            "image/png",
+            "image/gif",
+            "image/webp",
+          ],
+          tokenPayload: JSON.stringify({
+            userId: session.user?.id,
+          }),
+        };
+      },
+      onUploadCompleted: async ({ blob, tokenPayload }) => {
+        // Get notified of client upload completion
+        // ⚠️ This will not work on `localhost` websites,
+        // Use ngrok or similar to test the full upload flow
 
-    const formData = await request.formData();
-    const file = formData.get("file") as File;
-
-    if (!file) {
-      return NextResponse.json({ error: "No file provided" }, { status: 400 });
-    }
-
-    // Validate file type
-    if (!file.type.startsWith("image/")) {
-      return NextResponse.json(
-        { error: "File must be an image" },
-        { status: 400 },
-      );
-    }
-
-    // Generate a unique filename with organized folder structure: profile/[userId]/
-    const userId = session.user.id;
-    const timestamp = Date.now();
-    const fileExtension = file.name.split(".").pop() || "jpg";
-    const filename = `profile/${userId}/${timestamp}.${fileExtension}`;
-
-    // Verificar que el token esté configurado
-    if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      return NextResponse.json(
-        { error: "Blob storage token not configured" },
-        { status: 500 },
-      );
-    }
-
-    // Upload to Vercel Blob
-    const blob = await put(filename, file, {
-      access: "public",
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-    });
-
-    // Actualizar la imagen en la base de datos
-    await prisma.user.update({
-      where: { id: userId },
-      data: { image: blob.url },
-    });
-
-    // Limpiar todas las cachés relacionadas con el usuario
-    const cacheKeys = [
-      `user:${userId}:data`,
-      `profile:${userId}`,
-      `session:${userId}`,
-    ];
-
-    // Eliminar todas las cachés
-    await Promise.all(cacheKeys.map((key) => redis.del(key)));
-
-    // Obtener el usuario actualizado
-    const updatedUser = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        name: true,
-        email: true,
-        experienceLevel: true,
-        image: true,
-        profile: true,
+        console.log("blob uploaded", blob.url);
       },
     });
 
-    return NextResponse.json({
-      success: true,
-      url: blob.url,
-      user: updatedUser,
-      message: "Imagen actualizada correctamente",
-    });
-  } catch {
+    return NextResponse.json(jsonResponse);
+  } catch (error) {
     return NextResponse.json(
-      { error: "Failed to upload file" },
-      { status: 500 },
+      { error: (error as Error).message },
+      { status: 400 },
     );
   }
 }

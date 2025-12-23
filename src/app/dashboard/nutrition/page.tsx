@@ -180,6 +180,13 @@ export default function NutritionPage() {
     // Si no hay usuario en la sesión, no hacemos nada
     if (!session?.user) return;
 
+    // Check if user has PRO subscription
+    const userTier = (session.user as any).subscriptionTier || "FREE";
+    if (userTier !== "PRO" && userTier !== "INSTRUCTOR") {
+      window.location.href = "/dashboard/profile/billing?upgrade=pro";
+      return;
+    }
+
     interface ExtendedSessionUser {
       profile: {
         id: string;

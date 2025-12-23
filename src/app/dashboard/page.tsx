@@ -8,6 +8,7 @@ import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
 import ConditioningRecommendation from "@/components/dashboard/conditioning-recommendation";
+import { QuickActions } from "@/components/dashboard/quick-actions";
 
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -93,7 +94,6 @@ export default function DashboardPage() {
         <ConditioningRecommendation />
 
         {/* Accesos Rápidos */}
-        {/* Accesos Rápidos - oculto temporalmente
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
@@ -101,7 +101,6 @@ export default function DashboardPage() {
         >
           <QuickActions />
         </motion.div>
-        */}
 
         {/* Progreso y Objetivos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

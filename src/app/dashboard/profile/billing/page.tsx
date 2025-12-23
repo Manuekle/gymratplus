@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import Link from "next/link";
 import {
   Card,
   CardContent,
@@ -73,9 +72,23 @@ export default function BillingPage() {
               duration: 5000,
             });
             await updateSession();
-            setTimeout(() => {
-              router.push("/dashboard");
-            }, 1000);
+
+            // Check if the subscription is for INSTRUCTOR plan
+            const planType = searchParams.get("plan_type");
+            if (
+              planType === "annual" ||
+              data.subscriptionTier === "INSTRUCTOR"
+            ) {
+              // Redirect to instructor registration
+              setTimeout(() => {
+                router.push("/dashboard/profile/billing/instructor-register");
+              }, 1000);
+            } else {
+              // Redirect to dashboard for other plans
+              setTimeout(() => {
+                router.push("/dashboard");
+              }, 1000);
+            }
           } else {
             throw new Error(data.error || "Error al activar la suscripción");
           }
@@ -100,11 +113,6 @@ export default function BillingPage() {
     if (!session?.user) {
       toast.error("Debes iniciar sesión");
       router.push("/auth/signin");
-      return;
-    }
-
-    if (planId === "instructor") {
-      router.push("/dashboard/profile/billing/instructor-register");
       return;
     }
 

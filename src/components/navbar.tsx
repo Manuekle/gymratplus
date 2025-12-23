@@ -65,13 +65,14 @@ export function Navbar() {
                 <WorkoutStreak userId={session.user.id} />
               </div>
             )}
-            <Link href="/dashboard/chat">
+            <Link href="/dashboard/recommendations">
               <Button
                 variant="ghost"
                 size="icon"
                 className="relative text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
               >
                 <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4" />
+                <span className="sr-only">Recomendaciones IA</span>
               </Button>
             </Link>
             <Link href="/dashboard/chats">
