@@ -5,7 +5,6 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Loader2, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import {
   Card,
@@ -24,7 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { BillingHistory } from "@/components/billing/billing-history";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, Loading02Icon } from "@hugeicons/core-free-icons";
 
 export default function BillingPage() {
   const { data: session, update: updateSession } = useSession();
@@ -299,11 +298,10 @@ export default function BillingPage() {
                       </span>
                     </div>
                     <Button
-                      className={`w-full ${
-                        isCurrentPlan
+                      className={`w-full ${isCurrentPlan
                           ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
                           : "bg-black dark:bg-black text-white hover:bg-zinc-900"
-                      }`}
+                        }`}
                       size="sm"
                       disabled={
                         isDisabled ||
@@ -320,7 +318,10 @@ export default function BillingPage() {
                     >
                       {loading === plan.id ? (
                         <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          <HugeiconsIcon
+                            icon={Loading02Icon}
+                            className="mr-2 h-4 w-4 animate-spin"
+                          />
                           Procesando...
                         </>
                       ) : isCurrentPlan ? (
@@ -421,7 +422,10 @@ export default function BillingPage() {
             >
               {loading === selectedPlan?.id ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <HugeiconsIcon
+                    icon={Loading02Icon}
+                    className="mr-2 h-4 w-4 animate-spin"
+                  />
                   Procesando...
                 </>
               ) : (
@@ -461,7 +465,10 @@ export default function BillingPage() {
             >
               {loading === "cancel" ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  <HugeiconsIcon
+                    icon={Loading02Icon}
+                    className="mr-2 h-4 w-4 animate-spin"
+                  />
                   Cancelando...
                 </>
               ) : (

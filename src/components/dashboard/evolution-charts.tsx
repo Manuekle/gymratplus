@@ -17,7 +17,8 @@ import {
   CardTitle,
   CardDescription,
 } from "@/components/ui/card";
-import { Loader2, TrendingUp } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Loading02Icon, TradeUpIcon } from "@hugeicons/core-free-icons";
 
 interface WeightData {
   date: string;
@@ -48,7 +49,10 @@ export default function EvolutionCharts() {
   if (loading) {
     return (
       <div className="h-64 flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        <HugeiconsIcon
+          icon={Loading02Icon}
+          className="h-8 w-8 animate-spin text-muted-foreground"
+        />
       </div>
     );
   }
@@ -57,7 +61,10 @@ export default function EvolutionCharts() {
     return (
       <Card>
         <CardContent className="h-64 flex flex-col items-center justify-center text-muted-foreground">
-          <TrendingUp className="h-10 w-10 mb-2 opacity-50" />
+          <HugeiconsIcon
+            icon={TradeUpIcon}
+            className="h-10 w-10 mb-2 opacity-50"
+          />
           <p>No hay suficientes datos para mostrar la gráfica.</p>
           <p className="text-sm">
             Registra tu peso en las fotos de progreso o en tu perfil.
@@ -71,7 +78,10 @@ export default function EvolutionCharts() {
     <Card className="col-span-1 md:col-span-2">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <TrendingUp className="h-5 w-5 text-indigo-500" />
+          <HugeiconsIcon
+            icon={TradeUpIcon}
+            className="h-5 w-5 text-indigo-500"
+          />
           Evolución de Peso
         </CardTitle>
         <CardDescription>

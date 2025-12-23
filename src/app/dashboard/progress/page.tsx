@@ -20,7 +20,14 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus, Upload, Calendar, Camera, Info } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  PlusSignIcon,
+  Upload01Icon,
+  Calendar01Icon,
+  Camera01Icon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -83,7 +90,7 @@ export default function ProgressPage() {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
             <Button className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/20">
-              <Camera className="mr-2 h-4 w-4" />
+              <HugeiconsIcon icon={Camera01Icon} className="mr-2 h-4 w-4" />
               Registrar Progreso
             </Button>
           </DialogTrigger>
@@ -149,7 +156,10 @@ export default function ProgressPage() {
                     </div>
                   ) : (
                     <>
-                      <Upload className="h-8 w-8 text-muted-foreground mb-2" />
+                      <HugeiconsIcon
+                        icon={Upload01Icon}
+                        className="h-8 w-8 text-muted-foreground mb-2"
+                      />
                       <p className="text-xs text-muted-foreground">
                         Click para seleccionar o arrastra aquí
                       </p>
@@ -187,7 +197,7 @@ export default function ProgressPage() {
             <Card className="bg-zinc-50/50 dark:bg-zinc-900/50 border-dashed">
               <CardContent className="flex flex-col items-center justify-center py-12 text-center text-muted-foreground">
                 <div className="mb-4 bg-zinc-100 dark:bg-zinc-800 p-4 rounded-full">
-                  <Calendar className="h-8 w-8" />
+                  <HugeiconsIcon icon={Calendar01Icon} className="h-8 w-8" />
                 </div>
                 <h3 className="font-medium text-lg mb-1">Tu Línea de Tiempo</h3>
                 <p className="text-sm max-w-xs mx-auto mb-4">
@@ -199,7 +209,8 @@ export default function ProgressPage() {
                   size="sm"
                   onClick={() => setIsOpen(true)}
                 >
-                  <Plus className="h-3 w-3 mr-1" /> Primer Registro
+                  <HugeiconsIcon icon={PlusSignIcon} className="h-3 w-3 mr-1" />{" "}
+                  Primer Registro
                 </Button>
               </CardContent>
             </Card>
@@ -207,7 +218,10 @@ export default function ProgressPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-lg flex items-center gap-2">
-                  <Info className="h-4 w-4 text-indigo-500" />
+                  <HugeiconsIcon
+                    icon={InformationCircleIcon}
+                    className="h-4 w-4 text-indigo-500"
+                  />
                   Consejos para tus fotos
                 </CardTitle>
               </CardHeader>

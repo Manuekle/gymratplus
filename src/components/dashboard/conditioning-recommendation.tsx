@@ -1,15 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Activity, ArrowRight, BatteryCharging } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  BatteryCharging01Icon,
+  ArrowRight01Icon,
+} from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -54,23 +52,32 @@ export default function ConditioningRecommendation() {
   };
 
   return (
-    <Card className="bg-gradient-to-r from-indigo-500 to-purple-600 text-white border-none shadow-lg mb-6">
-      <CardContent className="p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="space-y-2">
-          <h3 className="text-xl font-bold flex items-center gap-2">
-            <BatteryCharging className="h-6 w-6 text-yellow-300" />
-            {title}
-          </h3>
-          <p className="text-indigo-100 max-w-lg">{description}</p>
+    <Card>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded bg-muted">
+              <HugeiconsIcon
+                icon={BatteryCharging01Icon}
+                className="h-5 w-5"
+              />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold">{title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {description}
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={handleStart}
+            size="sm"
+            variant="default"
+          >
+            Iniciar
+            <HugeiconsIcon icon={ArrowRight01Icon} className="ml-1.5 h-3.5 w-3.5" />
+          </Button>
         </div>
-        <Button
-          onClick={handleStart}
-          variant="secondary"
-          className="bg-white text-indigo-600 hover:bg-indigo-50 font-semibold shrink-0"
-        >
-          Iniciar Acondicionamiento
-          <ArrowRight className="ml-2 h-4 w-4" />
-        </Button>
       </CardContent>
     </Card>
   );

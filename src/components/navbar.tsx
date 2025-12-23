@@ -17,9 +17,12 @@ import { NotificationBell } from "./notifications/notification-bell";
 import { useEffect, useState } from "react";
 import { WorkoutStreak } from "./workout/workout-streak";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Door01Icon, BubbleChatIcon } from "@hugeicons/core-free-icons";
+import {
+  Door01Icon,
+  BubbleChatIcon,
+  SparklesIcon,
+} from "@hugeicons/core-free-icons";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 import { useChatUnreadCount } from "@/hooks/use-chat-unread-count";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/utils";
@@ -43,11 +46,10 @@ export function Navbar() {
   return (
     <div
       className={`fixed top-0 left-0 right-0 z-50 transition-colors duration-300 ease-in-out border-b
-      ${
-        scrolled
+      ${scrolled
           ? "bg-background/90 backdrop-blur-lg border-border/50"
           : "bg-background/70 backdrop-blur-md border-transparent"
-      }`}
+        }`}
     >
       <div className="flex h-16 items-center px-4 container mx-auto">
         <div className="ml-auto flex w-full items-center justify-between space-x-4 ">
@@ -68,7 +70,7 @@ export function Navbar() {
                 size="icon"
                 className="relative text-indigo-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30"
               >
-                <Sparkles className="h-4 w-4" />
+                <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4" />
               </Button>
             </Link>
             <Link href="/dashboard/chats">
@@ -106,16 +108,16 @@ export function Navbar() {
                       </AvatarFallback>
                     </Avatar>
                   )) || (
-                    <Avatar className="h-8 w-8">
-                      <AvatarFallback className="text-xs">
-                        {session?.user?.name
-                          ?.split(" ")
-                          .map((word) => word[0])
-                          .join("")
-                          .toUpperCase()}
-                      </AvatarFallback>
-                    </Avatar>
-                  )}
+                      <Avatar className="h-8 w-8">
+                        <AvatarFallback className="text-xs">
+                          {session?.user?.name
+                            ?.split(" ")
+                            .map((word) => word[0])
+                            .join("")
+                            .toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent

@@ -4,14 +4,15 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowLeft,
-  PlayCircle,
-  Dumbbell,
-  Target,
-  BarChart,
-  Info,
-} from "lucide-react";
+  ArrowLeft02Icon,
+  PlayCircleIcon,
+  Dumbbell01Icon,
+  Target01Icon,
+  ChartBarLineIcon,
+  InformationCircleIcon,
+} from "@hugeicons/core-free-icons";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -48,7 +49,7 @@ export default async function ExerciseDetailPage({
           className="pl-0 hover:bg-transparent hover:text-indigo-600 dark:hover:text-indigo-400"
         >
           <Link href="/dashboard/exercises" className="flex items-center gap-2">
-            <ArrowLeft className="h-4 w-4" />
+            <HugeiconsIcon icon={ArrowLeft02Icon} className="h-4 w-4" />
             Volver a la biblioteca
           </Link>
         </Button>
@@ -81,12 +82,18 @@ export default async function ExerciseDetailPage({
                   className="object-cover"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <PlayCircle className="h-20 w-20 text-white/50" />
+                  <HugeiconsIcon
+                    icon={PlayCircleIcon}
+                    className="h-20 w-20 text-white/50"
+                  />
                 </div>
               </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-zinc-500">
-                <Dumbbell className="h-20 w-20 mb-4 opacity-50" />
+                <HugeiconsIcon
+                  icon={Dumbbell01Icon}
+                  className="h-20 w-20 mb-4 opacity-50"
+                />
                 <p>Sin video disponible</p>
               </div>
             )}
@@ -102,14 +109,20 @@ export default async function ExerciseDetailPage({
                 variant="outline"
                 className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
               >
-                <Target className="h-3.5 w-3.5 text-indigo-500" />
+                <HugeiconsIcon
+                  icon={Target01Icon}
+                  className="h-3.5 w-3.5 text-indigo-500"
+                />
                 {exercise.muscleGroup}
               </Badge>
               <Badge
                 variant="outline"
                 className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
               >
-                <Dumbbell className="h-3.5 w-3.5 text-indigo-500" />
+                <HugeiconsIcon
+                  icon={Dumbbell01Icon}
+                  className="h-3.5 w-3.5 text-indigo-500"
+                />
                 {exercise.equipment || "Sin equipo"}
               </Badge>
               <Badge
@@ -122,7 +135,10 @@ export default async function ExerciseDetailPage({
                 }
                 className="px-3 py-1 text-sm flex items-center gap-1.5 capitalize"
               >
-                <BarChart className="h-3.5 w-3.5" />
+                <HugeiconsIcon
+                  icon={ChartBarLineIcon}
+                  className="h-3.5 w-3.5"
+                />
                 {exercise.difficulty === "beginner"
                   ? "Principiante"
                   : exercise.difficulty === "intermediate"
@@ -135,7 +151,10 @@ export default async function ExerciseDetailPage({
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Info className="h-5 w-5 text-indigo-500" />
+                <HugeiconsIcon
+                  icon={InformationCircleIcon}
+                  className="h-5 w-5 text-indigo-500"
+                />
                 Instrucciones Técnica
               </CardTitle>
             </CardHeader>

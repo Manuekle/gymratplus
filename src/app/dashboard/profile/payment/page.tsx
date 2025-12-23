@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Tick02Icon } from "@hugeicons/core-free-icons";
+import { Tick02Icon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
 export default function PaymentPage() {
   const { data: session } = useSession();
@@ -136,7 +135,7 @@ export default function PaymentPage() {
       <div className="mb-8">
         <Button variant="outline" asChild className="w-full md:w-auto text-xs">
           <Link href="/dashboard/profile">
-            <ArrowLeft className="mr-2 h-4 w-4" />
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="mr-2 h-4 w-4" />
             Volver al perfil
           </Link>
         </Button>
@@ -160,11 +159,10 @@ export default function PaymentPage() {
               return (
                 <div
                   key={i}
-                  className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${
-                    plan.popular
-                      ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
-                      : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
-                  }`}
+                  className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
+                    ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                    : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
+                    }`}
                 >
                   {plan.popular && (
                     <Badge className="mb-4 bg-zinc-700 dark:bg-zinc-300 text-zinc-100 dark:text-zinc-900">
@@ -173,30 +171,27 @@ export default function PaymentPage() {
                   )}
                   <div className="mb-6">
                     <h3
-                      className={`text-2xl font-bold mb-2 ${
-                        plan.popular
-                          ? "text-zinc-100 dark:text-zinc-900"
-                          : "text-zinc-900 dark:text-zinc-100"
-                      }`}
+                      className={`text-2xl font-bold mb-2 ${plan.popular
+                        ? "text-zinc-100 dark:text-zinc-900"
+                        : "text-zinc-900 dark:text-zinc-100"
+                        }`}
                     >
                       {plan.name}
                     </h3>
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-4xl font-bold ${
-                          plan.popular
-                            ? "text-zinc-100 dark:text-zinc-900"
-                            : "text-zinc-900 dark:text-zinc-100"
-                        }`}
+                        className={`text-4xl font-bold ${plan.popular
+                          ? "text-zinc-100 dark:text-zinc-900"
+                          : "text-zinc-900 dark:text-zinc-100"
+                          }`}
                       >
                         {plan.price}
                       </span>
                       <span
-                        className={`text-sm ${
-                          plan.popular
-                            ? "text-zinc-400 dark:text-zinc-600"
-                            : "text-zinc-600 dark:text-zinc-400"
-                        }`}
+                        className={`text-sm ${plan.popular
+                          ? "text-zinc-400 dark:text-zinc-600"
+                          : "text-zinc-600 dark:text-zinc-400"
+                          }`}
                       >
                         {plan.period}
                       </span>
@@ -207,18 +202,16 @@ export default function PaymentPage() {
                       <li key={j} className="flex items-center gap-2">
                         <HugeiconsIcon
                           icon={Tick02Icon}
-                          className={`w-5 h-5 ${
-                            plan.popular
-                              ? "text-zinc-300 dark:text-zinc-700"
-                              : "text-zinc-600 dark:text-zinc-400"
-                          }`}
+                          className={`w-5 h-5 ${plan.popular
+                            ? "text-zinc-300 dark:text-zinc-700"
+                            : "text-zinc-600 dark:text-zinc-400"
+                            }`}
                         />
                         <span
-                          className={`text-xs tracking-[-0.02em] ${
-                            plan.popular
-                              ? "text-zinc-200 dark:text-zinc-800"
-                              : "text-zinc-700 dark:text-zinc-300"
-                          }`}
+                          className={`text-xs tracking-[-0.02em] ${plan.popular
+                            ? "text-zinc-200 dark:text-zinc-800"
+                            : "text-zinc-700 dark:text-zinc-300"
+                            }`}
                         >
                           {feature}
                         </span>
@@ -226,11 +219,10 @@ export default function PaymentPage() {
                     ))}
                   </ul>
                   <Button
-                    className={`w-full ${
-                      plan.popular
-                        ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                        : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
-                    }`}
+                    className={`w-full ${plan.popular
+                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                      }`}
                     disabled={isDisabled || loading !== null}
                     onClick={() => !isDisabled && handleSubscribe(plan.id)}
                   >

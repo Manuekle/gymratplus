@@ -8,7 +8,14 @@ import {
 } from "@/components/ui/input-otp";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Loader2, CheckCircle2, XCircle, Mail, Smartphone } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Loading02Icon,
+  CheckmarkCircle02Icon,
+  CancelCircleIcon,
+  Mail01Icon,
+  SmartPhone01Icon,
+} from "@hugeicons/core-free-icons";
 import { maskPhoneNumber } from "@/lib/utils/phone";
 
 interface VerificationFormProps {
@@ -133,9 +140,15 @@ export function VerificationForm({
     <div className={className}>
       <div className="flex items-center gap-2 mb-4">
         {type === "email" ? (
-          <Mail className="h-5 w-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={Mail01Icon}
+            className="h-5 w-5 text-muted-foreground"
+          />
         ) : (
-          <Smartphone className="h-5 w-5 text-muted-foreground" />
+          <HugeiconsIcon
+            icon={SmartPhone01Icon}
+            className="h-5 w-5 text-muted-foreground"
+          />
         )}
         <div>
           <p className="text-xs font-medium">
@@ -149,7 +162,10 @@ export function VerificationForm({
 
       {success ? (
         <Alert className="border-green-200 bg-green-50 dark:bg-green-950/20">
-          <CheckCircle2 className="h-4 w-4 text-green-600" />
+          <HugeiconsIcon
+            icon={CheckmarkCircle02Icon}
+            className="h-4 w-4 text-green-600"
+          />
           <AlertDescription className="text-green-800 dark:text-green-200">
             ¡Verificado exitosamente!
           </AlertDescription>
@@ -175,14 +191,17 @@ export function VerificationForm({
 
             {isVerifying && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <HugeiconsIcon
+                  icon={Loading02Icon}
+                  className="h-4 w-4 animate-spin"
+                />
                 Verificando...
               </div>
             )}
 
             {error && (
               <Alert variant="destructive" className="w-full">
-                <XCircle className="h-4 w-4" />
+                <HugeiconsIcon icon={CancelCircleIcon} className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
@@ -196,7 +215,10 @@ export function VerificationForm({
             >
               {isResending ? (
                 <>
-                  <Loader2 className="mr-2 h-3 w-3 animate-spin" />
+                  <HugeiconsIcon
+                    icon={Loading02Icon}
+                    className="mr-2 h-3 w-3 animate-spin"
+                  />
                   Reenviando...
                 </>
               ) : countdown > 0 ? (

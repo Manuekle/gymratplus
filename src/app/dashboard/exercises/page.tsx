@@ -18,7 +18,12 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Loader2, PlayCircle, Dumbbell, Filter } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Search01Icon,
+  PlayCircleIcon,
+  Dumbbell01Icon,
+} from "@hugeicons/core-free-icons";
 import { useDebounce } from "@/hooks/use-debounce";
 import Link from "next/link";
 import Image from "next/image";
@@ -99,7 +104,10 @@ export default function ExercisesPage() {
         {/* Filters */}
         <div className="flex flex-col md:flex-row gap-4 bg-zinc-50 dark:bg-zinc-900/50 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Search01Icon}
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+            />
             <Input
               placeholder="Buscar ejercicio..."
               className="pl-9 bg-white dark:bg-zinc-950"
@@ -150,7 +158,10 @@ export default function ExercisesPage() {
       ) : exercises.length === 0 ? (
         <div className="text-center py-20">
           <div className="bg-zinc-100 dark:bg-zinc-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Dumbbell className="h-8 w-8 text-muted-foreground" />
+            <HugeiconsIcon
+              icon={Dumbbell01Icon}
+              className="h-8 w-8 text-muted-foreground"
+            />
           </div>
           <h3 className="text-lg font-medium">No se encontraron ejercicios</h3>
           <p className="text-muted-foreground">
@@ -185,11 +196,17 @@ export default function ExercisesPage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   ) : (
-                    <Dumbbell className="h-12 w-12 text-zinc-300 dark:text-zinc-700" />
+                    <HugeiconsIcon
+                      icon={Dumbbell01Icon}
+                      className="h-12 w-12 text-zinc-300 dark:text-zinc-700"
+                    />
                   )}
                   <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 flex items-center justify-center">
                     <div className="bg-white/90 dark:bg-black/80 rounded-full p-3 opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">
-                      <PlayCircle className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+                      <HugeiconsIcon
+                        icon={PlayCircleIcon}
+                        className="h-6 w-6 text-indigo-600 dark:text-indigo-400"
+                      />
                     </div>
                   </div>
                   <Badge
