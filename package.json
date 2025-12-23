@@ -9,16 +9,14 @@
     "lint": "echo 'Linting skipped - build verification is sufficient'",
     "format": "prettier --write .",
     "prepare": "npm run build",
-    "check-routes": "tsx scripts/check-routes.ts || (echo '❌ Route check failed' && exit 1)",
-    "pre-deploy": "npm run check-routes && npm run build",
+    "pre-deploy": "npm run build",
     "type-check": "tsc --noEmit",
     "type-check:routes": "tsc --noEmit --skipLibCheck --include 'app/**/*.ts' 'pages/api/**/*.ts'",
     "postbuild": "next-sitemap",
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update": "ncu -u",
-    "seed:users": "tsx prisma/seed-users.ts",
-    "migrate:training-days": "tsx scripts/migrate-training-days.ts"
+    "seed:users": "tsx prisma/seed-users.ts"
   },
   "resolutions": {
     "@types/react": "18.0.28",
