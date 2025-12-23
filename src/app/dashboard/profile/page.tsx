@@ -57,6 +57,7 @@ import {
   FireIcon,
   Dumbbell01Icon,
   Camera01Icon,
+  CheckmarkBadge01Icon,
 } from "@hugeicons/core-free-icons";
 import { Loader } from "@/components/ai-elements/loader";
 
@@ -197,7 +198,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-            "",
+          "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -215,7 +216,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Load streak stats
       if (session.user.id) {
@@ -583,46 +584,26 @@ export default function ProfilePage() {
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
               <div>
                 {/* Name and role badge */}
-                <div className="flex flex-col items-center md:flex-row md:items-center gap-2 md:gap-3">
+                <div className="flex items-center justify-center md:justify-start gap-2">
                   <h2 className="text-2xl font-semibold tracking-heading">
                     {session?.user?.name}
                   </h2>
-                  {/* Badge de Instructor o Alumno */}
-                  {isInstructor ? (
-                    <Badge
-                      variant="outline"
-                      className="text-xs border-indigo-200 text-indigo-700 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800"
-                    >
-                      Instructor
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="text-xs text-muted-foreground"
-                    >
-                      Alumno
-                    </Badge>
-                  )}
-
-                  {/* Badge de Suscripción PRO/Activa */}
+                  {/* Icono de Verificado para PRO/Instructor */}
                   {(session?.user?.subscriptionStatus === "active" ||
                     session?.user?.subscriptionStatus === "trialing") && (
-                    <Badge
-                      variant="secondary"
-                      className="text-xs border-0 bg-black text-white hover:bg-zinc-800 dark:bg-white dark:text-black font-medium shadow-sm"
-                    >
-                      {session?.user?.subscriptionStatus === "trialing" ? (
-                        "Prueba Gratis"
-                      ) : (
-                        <span className="flex items-center gap-1">
-                          {session?.user?.subscriptionTier === "PRO"
-                            ? "Pro"
-                            : "Instructor"}
-                        </span>
-                      )}
-                    </Badge>
-                  )}
+                      <HugeiconsIcon
+                        icon={CheckmarkBadge01Icon}
+                        className={`w-6 h-6 ${session?.user?.subscriptionTier === "PRO"
+                          ? "text-black dark:text-white"
+                          : "text-blue-500"
+                          }`}
+                        fill="currentColor"
+                      />
+                    )}
                 </div>
+
+                {/* Badge de Instructor o Alumno */}
+
 
                 {/* Action buttons */}
                 <div className="flex flex-wrap justify-center md:justify-start gap-2 mt-3">
@@ -702,12 +683,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                            "es-ES",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
                         : "";
                     })()}
                   </span>
@@ -752,18 +733,26 @@ export default function ProfilePage() {
       </Card>
 
       <Tabs defaultValue="personal" className="w-full space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-          <TabsTrigger value="personal">Personal</TabsTrigger>
-          <TabsTrigger value="preferences">Preferencias</TabsTrigger>
-          <TabsTrigger value="activity">Actividad</TabsTrigger>
-          <TabsTrigger value="billing">Facturación</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 gap-1 md:grid-cols-4 h-auto p-1">
+          <TabsTrigger value="personal" className="text-xs sm:text-sm">
+            Personal
+          </TabsTrigger>
+          <TabsTrigger value="preferences" className="text-xs sm:text-sm">
+            Preferencias
+          </TabsTrigger>
+          <TabsTrigger value="activity" className="text-xs sm:text-sm">
+            Actividad
+          </TabsTrigger>
+          <TabsTrigger value="billing" className="text-xs sm:text-sm">
+            Facturación
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal" className="space-y-6">
           <Card>
             <CardHeader className="pb-3 flex flex-row flex-wrap items-center justify-between gap-4">
               <div>
-                <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+                <CardTitle className="text-2xl font-semibold tracking-heading">
                   Información de contacto
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">
@@ -1015,12 +1004,12 @@ export default function ProfilePage() {
                             )?.profile?.birthdate;
                             return birthdate
                               ? new Date(
-                                  birthdate as string,
-                                ).toLocaleDateString("es-ES", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                birthdate as string,
+                              ).toLocaleDateString("es-ES", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
                               : "Fecha no disponible";
                           })()}
                         </div>
@@ -1123,7 +1112,7 @@ export default function ProfilePage() {
         <TabsContent value="preferences" className="space-y-6">
           <Card>
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
                 Preferencias de entrenamiento
               </CardTitle>
               <CardDescription className="text-xs text-muted-foreground">
@@ -1408,7 +1397,7 @@ export default function ProfilePage() {
             {/* Estadísticas de Racha */}
             <Card>
               <CardHeader className="pb-3">
-                <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+                <CardTitle className="text-2xl font-semibold tracking-heading">
                   Estadísticas de Racha
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">
@@ -1582,9 +1571,8 @@ export default function ProfilePage() {
                                 } else if (daysDiff === 1) {
                                   return "Ayer";
                                 } else {
-                                  return `Hace ${daysDiff} ${
-                                    daysDiff === 1 ? "día" : "días"
-                                  }`;
+                                  return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
+                                    }`;
                                 }
                               })()}
                             </div>
@@ -1606,7 +1594,7 @@ export default function ProfilePage() {
             {/* Tus intereses */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+                <CardTitle className="text-2xl font-semibold tracking-heading">
                   Tus intereses
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">
@@ -1629,7 +1617,7 @@ export default function ProfilePage() {
         <TabsContent value="billing" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
                 Suscripción y Facturación
               </CardTitle>
               <CardDescription>

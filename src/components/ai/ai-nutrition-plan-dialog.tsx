@@ -124,7 +124,7 @@ export function AINutritionPlanDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <DialogTitle className="text-2xl font-semibold tracking-heading">
             Tu Plan Nutricional Personalizado
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">
@@ -179,7 +179,7 @@ export function AINutritionPlanDialog({
                       className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2 p-2 bg-muted/30 rounded-md"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm sm:text-xs font-medium truncate">
+                        <p className="text-sm font-medium font-medium truncate">
                           {entry.food.name}
                         </p>
                         <p className="text-xs text-muted-foreground">

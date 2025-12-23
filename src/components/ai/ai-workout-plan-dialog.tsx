@@ -94,7 +94,7 @@ export function AIWorkoutPlanDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-[95vw] sm:max-w-2xl max-h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+          <DialogTitle className="text-2xl font-semibold tracking-heading">
             {workoutPlan.name}
           </DialogTitle>
           <DialogDescription className="text-xs text-muted-foreground">

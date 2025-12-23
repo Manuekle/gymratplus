@@ -303,7 +303,7 @@ export default function InstructorRegistrationPage() {
 
         <Card className="w-full overflow-hidden">
           <CardHeader className="pb-4">
-            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               ¡Ya eres instructor!
             </CardTitle>
             <CardDescription className="text-muted-foreground text-xs">

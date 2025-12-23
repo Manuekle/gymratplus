@@ -153,7 +153,7 @@ export default function WorkouPage() {
       <div className="border rounded-lg p-4 sm:p-6 shadow-sm bg-card">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3 mb-4">
           <div className="flex flex-col gap-1.5 w-full">
-            <CardTitle className="text-xl sm:text-2xl font-semibold tracking-heading">
+            <CardTitle className="text-2xl font-semibold tracking-heading">
               {workout.name}
             </CardTitle>
             {workout.description && (
