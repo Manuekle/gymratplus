@@ -76,18 +76,15 @@ export default function BillingPage() {
             // Check if the subscription is for INSTRUCTOR plan
             const planType = searchParams.get("plan_type");
             if (
-              planType === "annual" ||
+              planType === "instructor" ||
               data.subscriptionTier === "INSTRUCTOR"
             ) {
-              // Redirect to instructor registration
-              setTimeout(() => {
-                router.push("/dashboard/profile/billing/instructor-register");
-              }, 1000);
+              // Hard reload to update session
+              window.location.href =
+                "/dashboard/profile/billing/instructor-register";
             } else {
-              // Redirect to dashboard for other plans
-              setTimeout(() => {
-                router.push("/dashboard");
-              }, 1000);
+              // Hard reload to update session
+              window.location.href = "/dashboard";
             }
           } else {
             throw new Error(data.error || "Error al activar la suscripción");
@@ -119,14 +116,10 @@ export default function BillingPage() {
     setLoading(planId);
 
     try {
-      const planTypeMap: Record<string, string> = {
-        pro: "monthly",
-        instructor: "annual",
-      };
+      // Send plan ID directly since both are monthly subscriptions
+      const planType = planId; // 'pro' or 'instructor'
 
-      const planType = planTypeMap[planId];
-
-      if (!planType) {
+      if (!planType || !["pro", "instructor"].includes(planType)) {
         toast.error("Plan inválido");
         return;
       }
@@ -194,6 +187,7 @@ export default function BillingPage() {
       }
 
       toast.success("Suscripción cancelada correctamente");
+      window.location.reload();
       await updateSession();
       setShowCancelDialog(false);
     } catch (error) {

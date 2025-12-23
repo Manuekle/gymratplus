@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       userEmail: session.user.email,
     });
 
-    if (!planType || !["monthly", "annual"].includes(planType)) {
+    if (!planType || !["pro", "instructor"].includes(planType)) {
       return NextResponse.json(
         { error: "Tipo de plan inválido" },
         { status: 400 },
@@ -57,12 +57,12 @@ export async function POST(req: Request) {
     const subscriptionsController = new SubscriptionsController(paypalClient);
     const baseUrl = getBaseUrl();
 
-    // Map plan types to real PayPal Plan IDs
+    // Map plan types to real PayPal Plan IDs (both are monthly subscriptions)
     // NOTE: These Plan IDs must exist in your PayPal Business account
     // To create plans, visit: https://www.paypal.com/billing/plans
     const PAYPAL_PLAN_IDS: Record<string, string> = {
-      monthly: process.env.PAYPAL_PLAN_ID_PRO || "P-3NC83718PK617725CNFENPCA",
-      annual:
+      pro: process.env.PAYPAL_PLAN_ID_PRO || "P-3NC83718PK617725CNFENPCA",
+      instructor:
         process.env.PAYPAL_PLAN_ID_INSTRUCTOR || "P-8D459588D1260134BNFENROI",
     };
 
@@ -81,7 +81,7 @@ export async function POST(req: Request) {
       planType,
       planId,
       isFromEnv:
-        planType === "monthly"
+        planType === "pro"
           ? !!process.env.PAYPAL_PLAN_ID_PRO
           : !!process.env.PAYPAL_PLAN_ID_INSTRUCTOR,
     });
@@ -106,7 +106,7 @@ export async function POST(req: Request) {
           payeePreferred: PayeePaymentMethodPreference.ImmediatePaymentRequired,
         },
         returnUrl: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
-        cancelUrl: `${baseUrl}/dashboard/profile/payment?canceled=true`,
+        cancelUrl: `${baseUrl}/dashboard/profile/billing?canceled=true`,
       },
     };
 
@@ -214,11 +214,8 @@ export async function POST(req: Request) {
     trialEndsAt.setDate(trialEndsAt.getDate() + 14);
 
     const currentPeriodEnd = new Date();
-    if (planType === "annual") {
-      currentPeriodEnd.setFullYear(currentPeriodEnd.getFullYear() + 1);
-    } else {
-      currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
-    }
+    // Both plans are monthly subscriptions
+    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
 
     // Actualizar usuario con información de la suscripción (estado pendiente hasta aprobación)
     await prisma.user.update({

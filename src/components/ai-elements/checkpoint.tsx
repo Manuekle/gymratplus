@@ -31,7 +31,10 @@ export const Checkpoint = ({
   </div>
 );
 
-export type CheckpointIconProps = ComponentProps<typeof HugeiconsIcon> & {
+export type CheckpointIconProps = Omit<
+  ComponentProps<typeof HugeiconsIcon>,
+  "icon"
+> & {
   children?: React.ReactNode;
 };
 
