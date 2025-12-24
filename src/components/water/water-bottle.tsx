@@ -31,26 +31,33 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
       role="img"
     >
       {/* Bottle neck */}
-      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-10 bg-blue-50 rounded-t-lg z-10" />
+      <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-16 h-10 bg-background/80 backdrop-blur-sm rounded-t-lg z-10 border border-border">
+        <div className="absolute inset-0 bg-gradient-to-b from-muted/20 to-transparent rounded-t-lg" />
+      </div>
 
       {/* Bottle body */}
-      <div className="absolute top-8 left-0 w-full h-56 bg-blue-50 rounded-b-3xl rounded-t-lg overflow-hidden">
-        {/* Water fill */}
+      <div className="absolute top-8 left-0 w-full h-56 bg-background/60 backdrop-blur-sm rounded-b-3xl rounded-t-lg overflow-hidden border border-border">
+        {/* Glass highlight - subtle */}
+        <div className="absolute top-0 left-2 w-8 h-full bg-gradient-to-r from-muted/10 to-transparent pointer-events-none" />
+
+        {/* Water fill - simple gradient */}
         <div
           ref={fillRef}
-          className="absolute bottom-0 left-0 w-full bg-blue-400 transition-height duration-500"
+          className="absolute bottom-0 left-0 w-full transition-height duration-500"
           style={{ height: `${fillPercentage}%` }}
         >
-          {/* Water surface effect */}
-          <div className="absolute top-0 left-0 w-full h-2 bg-blue-300 opacity-50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600" />
+
+          {/* Water surface - simple */}
+          <div className="absolute top-0 left-0 w-full h-1 bg-cyan-300/40 dark:bg-cyan-400/30" />
         </div>
 
         {/* Measurement lines */}
         <div className="absolute inset-0 flex flex-col justify-between py-4 pointer-events-none">
           {[0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((level, index) => (
             <div key={index} className="flex items-center">
-              <div className="w-4 h-px bg-zinc-300" />
-              <span className="text-xs text-zinc-300 ml-1">
+              <div className="w-3 h-px bg-zinc-200 dark:bg-white/50" />
+              <span className="text-[10px] text-zinc-200 dark:text-white/80 ml-1 font-medium">
                 {level.toFixed(1)}
               </span>
             </div>

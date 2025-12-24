@@ -168,7 +168,7 @@ const WaterHistoryChartComponent = ({
         />
         <ReferenceLine
           y={targetIntake}
-          stroke="red"
+          stroke={isDark ? "#ef4444" : "#dc2626"}
           strokeDasharray="3 3"
           label={{
             value: "Objetivo",
@@ -179,7 +179,7 @@ const WaterHistoryChartComponent = ({
         />
         <Bar
           dataKey="liters"
-          fill="oklch(0.707 0.165 254.624)"
+          fill={isDark ? "#06b6d4" : "#22d3ee"}
           radius={[4, 4, 0, 0]}
           name="Litros"
           isAnimationActive={true}

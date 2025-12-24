@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
@@ -18,8 +18,6 @@ export function useWaterIntake() {
   const [isHistoryLoading, setIsHistoryLoading] = useState<boolean>(true);
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  const [pendingHistoryUpdate, setPendingHistoryUpdate] = useState(false);
-  const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const fetchIntake = useCallback(
     async (date?: string) => {
@@ -129,12 +127,15 @@ export function useWaterIntake() {
         const previousIntake = intake;
         setIntake(newIntake);
 
-        // --- Actualiza el history en memoria para el día actual (optimista) ---
+        // Get today's date string
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, "0");
         const dd = String(today.getDate()).padStart(2, "0");
         const todayStr = `${yyyy}-${mm}-${dd}`;
+
+        // Optimistic history update
+        const previousHistory = history;
         setHistory((prev) => {
           const found = prev.find((h) => h.date === todayStr);
           if (found) {
@@ -145,7 +146,6 @@ export function useWaterIntake() {
             return [...prev, { date: todayStr, liters: newIntake }];
           }
         });
-        // ---------------------------------------------------------------
 
         setIsUpdating(true);
         const response = await fetch("/api/water-intake", {
@@ -159,25 +159,16 @@ export function useWaterIntake() {
         if (!response.ok) {
           // Revert on error
           setIntake(previousIntake);
-          // Revert history también
-          setHistory((prev) => {
-            const found = prev.find((h) => h.date === todayStr);
-            if (found) {
-              return prev.map((h) =>
-                h.date === todayStr ? { ...h, liters: previousIntake } : h,
-              );
-            } else {
-              return prev;
-            }
-          });
+          setHistory(previousHistory);
           const errorData = await response.json();
           throw new Error(
             errorData.error || "Error al actualizar el consumo de agua",
           );
         }
 
-        // En vez de fetchHistory inmediato, marcamos que hay actualización pendiente
-        setPendingHistoryUpdate(true);
+        // Fetch fresh history from server to ensure sync
+        // This happens in the background without blocking the UI
+        fetchHistory().catch(console.error);
 
         return true;
       } catch (err) {
@@ -192,7 +183,7 @@ export function useWaterIntake() {
         setIsUpdating(false);
       }
     },
-    [session, intake],
+    [session, intake, history, fetchHistory],
   );
 
   const addWater = useCallback(
@@ -222,19 +213,6 @@ export function useWaterIntake() {
       fetchTargetIntake();
     }
   }, [session, fetchIntake, fetchHistory, fetchTargetIntake]);
-
-  // Debounce para actualizar el historial solo después de 1s sin cambios
-  useEffect(() => {
-    if (!pendingHistoryUpdate) return;
-    if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-    debounceTimeout.current = setTimeout(() => {
-      fetchHistory().catch(console.error);
-      setPendingHistoryUpdate(false);
-    }, 1000);
-    return () => {
-      if (debounceTimeout.current) clearTimeout(debounceTimeout.current);
-    };
-  }, [pendingHistoryUpdate, fetchHistory]);
 
   return {
     intake,
