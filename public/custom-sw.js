@@ -121,3 +121,14 @@ self.addEventListener("activate", function (event) {
       }),
   );
 });
+
+// Fetch event - bypass chat API for iOS compatibility
+self.addEventListener("fetch", function (event) {
+  const url = new URL(event.request.url);
+
+  // Don't intercept chat API requests (streaming issues on iOS)
+  if (url.pathname.includes("/api/chat")) {
+    console.log("[SW] Bypassing chat API request for streaming compatibility");
+    return; // Let the request pass through without interception
+  }
+});

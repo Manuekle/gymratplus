@@ -82,8 +82,8 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
     console.log("🔍 API Chat - Starting streamText...");
 
     // Check for required environment variables
-    if (!process.env.AI_GATEWAY_API_KEY) {
-      console.error("❌ [API Chat] AI_GATEWAY_API_KEY not configured");
+    if (!process.env.OPENAI_API_KEY) {
+      console.error("❌ [API Chat] OPENAI_API_KEY not configured");
       return new Response(
         JSON.stringify({
           error: "AI service not configured",

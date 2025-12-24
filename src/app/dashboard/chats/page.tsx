@@ -47,6 +47,24 @@ export default function ChatPage() {
       id: "rocco-chat",
       transport: new DefaultChatTransport({
         api: "/api/chat",
+        // iOS Safari fix: custom fetch with proper headers
+        fetch: async (url, options) => {
+          const headers = new Headers(options?.headers);
+          headers.set("Accept", "text/event-stream");
+          headers.set("Cache-Control", "no-cache");
+
+          console.log("🔍 [Chat] Fetching:", url);
+          console.log(
+            "🔍 [Chat] Headers:",
+            Object.fromEntries(headers.entries()),
+          );
+
+          return fetch(url, {
+            ...options,
+            headers,
+            credentials: "same-origin",
+          });
+        },
       }),
       onError: (error) => {
         console.error("❌ [Chat Error]", error);
