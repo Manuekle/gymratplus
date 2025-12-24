@@ -129,6 +129,8 @@ self.addEventListener("fetch", function (event) {
   // Don't intercept chat API requests (streaming issues on iOS)
   if (url.pathname.includes("/api/chat")) {
     console.log("[SW] Bypassing chat API request for streaming compatibility");
-    return; // Let the request pass through without interception
+    console.log("[SW] Bypassing chat API request for streaming compatibility");
+    event.respondWith(fetch(event.request)); // Explicitly fetch from network
+    return;
   }
 });
