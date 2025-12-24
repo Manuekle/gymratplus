@@ -71,16 +71,19 @@ CONTEXTO ACTUAL DEL USUARIO:
 ${userContext}
 
 TUS SUPERPODERES (HERRAMIENTAS):
-Tienes acceso a herramientas para generar planes visuales. ÚSALAS cuando el usuario pida explícitamente un plan o cuando sea la mejor forma de ayudar.
+Tienes acceso a herramientas para generar planes visuales y tracking nutricional. ÚSALAS cuando el usuario pida explícitamente un plan o cuando sea la mejor forma de ayudar.
 - Si piden "dame una rutina" o "plan de entrenamiento", usa 'generateTrainingPlan'.
 - Si piden "dieta" o "plan de nutrición", usa 'generateNutritionPlan'.
+- Si preguntan "cuántas calorías tengo hoy" o similar, usa 'getTodayCalories'.
+- Si dicen "me comí [comida]" o "quiero guardar una comida", usa 'saveMealEntry'.
 - NO generes tablas de texto markdown largas para rutinas completas, usa la herramienta para mostrar la tarjeta visual.
 
 INSTRUCCIONES IMPORTANTES:
 1. Responde preguntas breves directamente.
 2. Para planes completos, invoca la herramienta correspondiente y da una breve introducción.
 3. Si el usuario te pide guardar el plan que acabas de generar, diles que pueden usar el botón "Guardar" en la tarjeta del plan.
-4. Siempre adapta el tono y la dificultad al nivel de experiencia del usuario.`,
+4. Siempre adapta el tono y la dificultad al nivel de experiencia del usuario.
+5. Para tracking de comidas, estima los macros basándote en tu conocimiento nutricional.`,
     tools: {
       generateTrainingPlan: {
         description:
@@ -147,6 +150,96 @@ INSTRUCCIONES IMPORTANTES:
           dietaryType: string;
         }) => {
           return generateNutritionPlan(user, params);
+        },
+      },
+      getTodayCalories: {
+        description:
+          "Obtiene el resumen de calorías y macros consumidos hoy comparado con los objetivos del usuario.",
+        inputSchema: z.object({}),
+        execute: async () => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          const tomorrow = new Date(today);
+          tomorrow.setDate(tomorrow.getDate() + 1);
+
+          // Get today's meal logs
+          const mealLogs = await prisma.mealLog.findMany({
+            where: {
+              userId: user.id,
+              consumedAt: {
+                gte: today,
+                lt: tomorrow,
+              },
+            },
+          });
+
+          // Calculate totals
+          const totals = mealLogs.reduce(
+            (acc, log) => ({
+              calories: acc.calories + log.calories,
+              protein: acc.protein + log.protein,
+              carbs: acc.carbs + log.carbs,
+              fat: acc.fat + log.fat,
+            }),
+            { calories: 0, protein: 0, carbs: 0, fat: 0 }
+          );
+
+          return {
+            consumed: totals,
+            targets: {
+              calories: user.profile?.dailyCalorieTarget || 2000,
+              protein: user.profile?.dailyProteinTarget || 150,
+              carbs: user.profile?.dailyCarbTarget || 200,
+              fat: user.profile?.dailyFatTarget || 60,
+            },
+            date: today.toISOString(),
+          };
+        },
+      },
+      saveMealEntry: {
+        description:
+          "Guarda una entrada de comida con estimación de calorías y macros. Usa esta herramienta cuando el usuario mencione que comió algo.",
+        inputSchema: z.object({
+          foodName: z.string().describe("Nombre de la comida"),
+          estimatedCalories: z
+            .number()
+            .describe("Calorías estimadas de la comida"),
+          estimatedProtein: z
+            .number()
+            .describe("Proteína estimada en gramos"),
+          estimatedCarbs: z
+            .number()
+            .describe("Carbohidratos estimados en gramos"),
+          estimatedFat: z.number().describe("Grasas estimadas en gramos"),
+          mealType: z
+            .enum(["desayuno", "almuerzo", "cena", "snack"])
+            .describe("Tipo de comida"),
+          quantity: z
+            .number()
+            .default(1)
+            .describe("Cantidad/porciones (default 1)"),
+        }),
+        execute: async (params: {
+          foodName: string;
+          estimatedCalories: number;
+          estimatedProtein: number;
+          estimatedCarbs: number;
+          estimatedFat: number;
+          mealType: "desayuno" | "almuerzo" | "cena" | "snack";
+          quantity: number;
+        }) => {
+          // Return the estimation for user to confirm/adjust
+          // The actual save will happen when user confirms via the UI
+          return {
+            foodName: params.foodName,
+            estimatedCalories: params.estimatedCalories,
+            estimatedProtein: params.estimatedProtein,
+            estimatedCarbs: params.estimatedCarbs,
+            estimatedFat: params.estimatedFat,
+            mealType: params.mealType,
+            quantity: params.quantity,
+            needsConfirmation: true,
+          };
         },
       },
     },

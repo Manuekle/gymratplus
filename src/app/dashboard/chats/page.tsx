@@ -19,7 +19,10 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { WorkoutPlanCard } from "@/components/chats/workout-plan-card";
 import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
+import { CaloriesSummaryCard } from "@/components/chats/calories-summary-card";
+import { MealEntryCard } from "@/components/chats/meal-entry-card";
 import { Card, CardAction } from "@/components/ui/card";
+import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
@@ -225,6 +228,28 @@ export default function ChatPage() {
                                     </div>
                                   );
                                 }
+
+                                if (
+                                  toolName === "getTodayCalories" &&
+                                  (state === "result" || state === "output-available")
+                                ) {
+                                  return (
+                                    <div key={toolInvocation.toolCallId} className="mt-4">
+                                      <CaloriesSummaryCard data={result} />
+                                    </div>
+                                  );
+                                }
+
+                                if (
+                                  toolName === "saveMealEntry" &&
+                                  (state === "result" || state === "output-available")
+                                ) {
+                                  return (
+                                    <div key={toolInvocation.toolCallId} className="mt-4">
+                                      <MealEntryCard data={result} />
+                                    </div>
+                                  );
+                                }
                               }
                               return null;
                             })}
@@ -251,26 +276,24 @@ export default function ChatPage() {
                 >
 
                   {/* aqui agrego botones que digan crear plan de entrenamiento y crear plan de nutricion */}
-                  <div className="flex gap-2">
-                    <Button
-                      onClick={() => {
-                        sendMessage({ text: "create workout plan" });
-                      }}
-                      variant="outline"
-                      type="button"
-                    >
-                      Crear plan de entrenamiento
-                    </Button>
-                    <Button
-                      onClick={() => {
-                        sendMessage({ text: "create nutrition plan" });
-                      }}
-                      variant="outline"
-                      type="button"
-                    >
-                      Crear plan de nutricion
-                    </Button>
-                  </div>
+                  <Suggestions>
+                    <Suggestion
+                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      suggestion="Crear plan de entrenamiento"
+                    />
+                    <Suggestion
+                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      suggestion="Crear plan de nutrición"
+                    />
+                    <Suggestion
+                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      suggestion="¿Cuántas calorías tengo hoy?"
+                    />
+                    <Suggestion
+                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      suggestion="Me comí una hamburguesa"
+                    />
+                  </Suggestions>
                   <div className="w-full flex-1 flex items-center gap-2 border rounded-full px-4 py-1.5 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 transition-colors focus-within:border-zinc-400 dark:focus-within:border-zinc-600">
                     <Input
                       placeholder="Escribe un mensaje..."
