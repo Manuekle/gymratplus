@@ -1,4 +1,4 @@
-import { convertToModelMessages, streamText } from "ai";
+import { convertToModelMessages, streamText, type UIMessage } from "ai";
 import { z } from "zod";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { messages } = await req.json();
+  const { messages }: { messages: UIMessage[] } = await req.json();
 
   // Fetch user with complete profile, goals, and recent metrics
   const user = (await prisma.user.findUnique({
