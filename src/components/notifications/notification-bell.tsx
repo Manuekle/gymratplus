@@ -120,15 +120,18 @@ export function NotificationBell() {
           <span className="sr-only">Notificaciones</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-0" align="end">
-        <div className="p-3 border-b flex items-center justify-between">
-          <h4 className="font-medium text-xs">Notificaciones</h4>
+      <PopoverContent
+        className="w-80 p-0 mt-2 backdrop-blur-xl bg-white/70 dark:bg-background/70 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-2xl overflow-hidden"
+        align="end"
+      >
+        <div className="p-3.5 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-between">
+          <h4 className="font-medium text-xs text-zinc-900 dark:text-zinc-100">Notificaciones</h4>
           {unreadCount > 0 && (
             <Button
               onClick={handleMarkAllAsRead}
               variant="ghost"
               size="default"
-              className="text-xs h-7"
+              className="text-xs h-7 px-2 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50"
             >
               Marcar todas
             </Button>
@@ -138,10 +141,10 @@ export function NotificationBell() {
         {isLoading ? (
           <NotificationsSkeleton />
         ) : notifications.length > 0 ? (
-          <div className="overflow-y-auto max-h-[320px]">
-            <div className="divide-y">
+          <div className="overflow-y-auto max-h-[320px] custom-scrollbar">
+            <div className="divide-y divide-zinc-200/30 dark:divide-zinc-800/30">
               <AnimatePresence mode="popLayout">
-                {notifications.slice(0, 4).map((notification) => (
+                {notifications.slice(0, 10).map((notification) => (
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
@@ -153,23 +156,23 @@ export function NotificationBell() {
             </div>
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center p-8">
+          <div className="flex flex-col items-center justify-center p-10">
             <HugeiconsIcon
               icon={Notification01Icon}
-              className="h-8 w-8 text-muted-foreground opacity-40 mb-2"
+              className="h-10 w-10 text-zinc-400 dark:text-zinc-600 opacity-40 mb-3"
             />
-            <p className="text-xs text-muted-foreground text-center">
+            <p className="text-xs text-zinc-500 dark:text-zinc-400 text-center">
               No tienes notificaciones
             </p>
           </div>
         )}
 
-        <div className="p-2 border-t">
+        <div className="p-2 border-t border-zinc-200/50 dark:border-zinc-800/50 bg-zinc-50/30 dark:bg-zinc-900/10">
           <Button
             variant="ghost"
             size="default"
             asChild
-            className="text-xs h-7 w-full"
+            className="text-xs h-8 w-full hover:bg-zinc-100/50 dark:hover:bg-zinc-800/50"
           >
             <Link href="/dashboard/notifications">Ver todas</Link>
           </Button>

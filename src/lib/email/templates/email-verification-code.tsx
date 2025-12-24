@@ -49,7 +49,7 @@ export function EmailVerificationCode({
                 alt="GymRat+"
                 className="mb-[16px] rounded-[12px]"
               />
-              <Heading className="text-[24px] tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
+              <Heading className="24px] tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>
               <Text className="text-xs text-zinc-500 m-0">

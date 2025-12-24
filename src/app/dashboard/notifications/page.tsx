@@ -35,9 +35,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
   FilterAddIcon,
-  Notification03Icon,
+  Notification01Icon,
 } from "@hugeicons/core-free-icons";
 import { PushNotificationManager } from "@/components/pwa/push-manager";
+import { Card } from "@/components/ui/card";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -111,94 +112,91 @@ export default function NotificationsPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <div className="w-full md:w-auto">
+        <div className="w-full md:w-auto flex items-center gap-2">
           <Button
             variant="outline"
             size="default"
             onClick={() => router.push("/dashboard")}
-            className="mb-2 text-xs w-full md:w-auto text-left"
+            className="text-xs w-full md:w-auto text-left"
           >
             <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
             Volver al dashboard
           </Button>
+
         </div>
       </div>
 
       <div className="space-y-4 mb-6">
-        <div className="flex flex-wrap justify-between items-center gap-4">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-heading">
-              Notificaciones
-            </h1>
-            <p className="text-xs text-muted-foreground">
-              Gestiona tus notificaciones y alertas
-            </p>
-          </div>
-          <PushNotificationManager />
-        </div>
 
-        <div className="flex flex-wrap items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button size="default" variant="outline" className="text-xs">
-                <HugeiconsIcon icon={FilterAddIcon} className="mr-2 h-4 w-4" />
-                Filtrar
-                {selectedTypes.length > 0 && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
-                    {selectedTypes.length}
-                  </span>
-                )}
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="start" className="w-48">
-              {notificationTypes.map((type) => (
-                <DropdownMenuCheckboxItem
-                  key={type}
-                  checked={selectedTypes.includes(type)}
-                  onCheckedChange={() => toggleType(type)}
-                  className="text-xs capitalize"
-                >
-                  <span className="flex items-center gap-2">
-                    <span>{notificationTypeLabels[type]?.emoji || "🔔"}</span>
-                    <span>
-                      {notificationTypeLabels[type]?.label ||
-                        type.charAt(0).toUpperCase() + type.slice(1)}
+
+        <div className="flex md:flex-row flex-col justify-between items-center gap-6">
+          <div className="flex items-center gap-2 w-full">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button size="default" variant="outline" className="text-xs">
+                  <HugeiconsIcon icon={FilterAddIcon} className="mr-2 h-4 w-4" />
+                  Filtrar
+                  {selectedTypes.length > 0 && (
+                    <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
+                      {selectedTypes.length}
                     </span>
-                  </span>
-                </DropdownMenuCheckboxItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48">
+                {notificationTypes.map((type) => (
+                  <DropdownMenuCheckboxItem
+                    key={type}
+                    checked={selectedTypes.includes(type)}
+                    onCheckedChange={() => toggleType(type)}
+                    className="text-xs capitalize"
+                  >
+                    <span className="flex items-center gap-2">
+                      <span>{notificationTypeLabels[type]?.emoji || "🔔"}</span>
+                      <span>
+                        {notificationTypeLabels[type]?.label ||
+                          type.charAt(0).toUpperCase() + type.slice(1)}
+                      </span>
+                    </span>
+                  </DropdownMenuCheckboxItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
 
-          {notifications.length > 0 && (
-            <>
-              {unreadCount > 0 && (
+            {notifications.length > 0 && (
+              <>
+                {unreadCount > 0 && (
+                  <Button
+                    variant="outline"
+                    size="default"
+                    onClick={async () => {
+                      const success = await markAsRead("all");
+                      if (success) {
+                        toast.success(
+                          "Todas las notificaciones marcadas como leídas",
+                        );
+                      }
+                    }}
+                    className="text-xs"
+                  >
+                    Marcar todas como leídas
+                  </Button>
+                )}
                 <Button
-                  variant="outline"
+                  variant="destructive"
                   size="default"
-                  onClick={async () => {
-                    const success = await markAsRead("all");
-                    if (success) {
-                      toast.success(
-                        "Todas las notificaciones marcadas como leídas",
-                      );
-                    }
-                  }}
+                  onClick={() => setIsDeleteAllDialogOpen(true)}
                   className="text-xs"
                 >
-                  Marcar todas como leídas
+                  Borrar todas
                 </Button>
-              )}
-              <Button
-                variant="destructive"
-                size="default"
-                onClick={() => setIsDeleteAllDialogOpen(true)}
-                className="text-xs"
-              >
-                Borrar todas
-              </Button>
-            </>
-          )}
+              </>
+            )}
+          </div>
+          <div className="flex justify-end md:w-auto w-full">
+            <PushNotificationManager className="w-full" />
+          </div>
+
         </div>
       </div>
 
@@ -261,35 +259,36 @@ export default function NotificationsPage() {
               description="No tienes notificaciones en este momento"
               icon={
                 <HugeiconsIcon
-                  icon={Notification03Icon}
+                  icon={Notification01Icon}
                   className="h-10 w-10 text-muted-foreground opacity-30"
                 />
               }
             />
           ) : (
-            <div className="border rounded-lg overflow-hidden">
+            <Card className="overflow-hidden p-0 gap-0">
               {Object.entries(groupedNotifications).map(
-                ([date, notifications]) => (
+                ([date, notifications], index) => (
                   <div key={date}>
-                    <div className="px-4 py-2 text-xs font-medium text-muted-foreground bg-muted/30 border-b">
+                    <div className={`px-4 py-2 text-xs font-medium text-muted-foreground border-b bg-muted/30 ${index > 0 ? 'border-t' : ''}`}>
                       {formatGroupDate(date)}
                     </div>
-                    <div className="divide-y">
+                    <div>
                       <AnimatePresence mode="popLayout">
-                        {notifications.map((notification) => (
-                          <NotificationItem
-                            key={notification.id}
-                            notification={notification}
-                            onMarkAsRead={markAsRead}
-                            onDelete={deleteNotification}
-                          />
+                        {notifications.map((notification, notifIndex) => (
+                          <div key={notification.id} className={notifIndex > 0 ? 'border-t' : ''}>
+                            <NotificationItem
+                              notification={notification}
+                              onMarkAsRead={markAsRead}
+                              onDelete={deleteNotification}
+                            />
+                          </div>
                         ))}
                       </AnimatePresence>
                     </div>
                   </div>
                 ),
               )}
-            </div>
+            </Card>
           )}
         </TabsContent>
 
@@ -302,7 +301,7 @@ export default function NotificationsPage() {
               description="Has leído todas tus notificaciones"
               icon={
                 <HugeiconsIcon
-                  icon={Notification03Icon}
+                  icon={Notification01Icon}
                   className="h-10 w-10 text-muted-foreground opacity-30"
                 />
               }

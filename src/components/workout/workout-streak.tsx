@@ -88,6 +88,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
   const { showStreakAlert, showStreakRiskAlert } = useStreakAlert();
   const previousStreak = useRef<number>(0);
   const hasShownRiskAlert = useRef<boolean>(false);
+  const isCheckingRef = useRef<boolean>(false);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -159,8 +160,6 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
     fetchStats();
 
     // Probar y resetear racha si es necesario
-    const isCheckingRef = useRef(false);
-
     const checkStreak = async () => {
       if (isCheckingRef.current) return;
 

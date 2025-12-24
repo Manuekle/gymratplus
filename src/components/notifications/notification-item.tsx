@@ -202,13 +202,15 @@ export function NotificationItem({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       className={cn(
-        "flex items-center gap-3 p-3 hover:bg-muted/50 cursor-pointer transition-colors group relative",
+        "flex items-center gap-4 p-3.5 hover:bg-zinc-100/40 dark:hover:bg-background/40 cursor-pointer transition-all duration-200 group relative",
         notification.read ? "opacity-60" : "",
         isMarking && "opacity-50",
         !showDeleteButton && "w-full",
       )}
     >
-      <div className="flex-shrink-0 text-xl">{getTypeIcon()}</div>
+      <div className="flex-shrink-0 text-lg flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100/50 dark:bg-zinc-800/50">
+        {getTypeIcon()}
+      </div>
       <div className="flex-grow min-w-0 overflow-hidden">
         <div className="flex items-center gap-2">
           <h4
