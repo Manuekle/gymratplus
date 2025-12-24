@@ -35,7 +35,10 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
-import { CheckIcon, XIcon } from "lucide-react";
+import {
+  CheckmarkCircle01Icon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 import { ThinkingMessage } from "@/components/chats/thinking-message";
 
 import { customChatFetch } from "@/lib/ai/chat-fetch";
@@ -400,11 +403,17 @@ export default function ChatPage() {
                                               </span>
                                             </ConfirmationRequest>
                                             <ConfirmationAccepted>
-                                              <CheckIcon className="size-4 text-green-600 dark:text-green-400" />
+                                              <HugeiconsIcon
+                                                icon={CheckmarkCircle01Icon}
+                                                className="size-4 text-green-600 dark:text-green-400"
+                                              />
                                               <span>Comida guardada</span>
                                             </ConfirmationAccepted>
                                             <ConfirmationRejected>
-                                              <XIcon className="size-4 text-destructive" />
+                                              <HugeiconsIcon
+                                                icon={Cancel01Icon}
+                                                className="size-4 text-destructive"
+                                              />
                                               <span>Guardado cancelado</span>
                                             </ConfirmationRejected>
                                           </ConfirmationTitle>
@@ -456,7 +465,10 @@ export default function ChatPage() {
                                       >
                                         <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
                                           <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                                            <CheckIcon className="size-5" />
+                                            <HugeiconsIcon
+                                              icon={CheckmarkCircle01Icon}
+                                              className="size-5"
+                                            />
                                             <p className="font-medium">
                                               {successMessage}
                                             </p>
@@ -475,7 +487,10 @@ export default function ChatPage() {
                                       >
                                         <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
                                           <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                                            <XIcon className="size-5" />
+                                            <HugeiconsIcon
+                                              icon={Cancel01Icon}
+                                              className="size-5"
+                                            />
                                             <p className="font-medium">
                                               Guardado cancelado
                                             </p>

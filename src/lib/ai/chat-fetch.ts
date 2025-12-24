@@ -11,8 +11,8 @@ export const customChatFetch = async (
   const response = await fetch(input, {
     ...init,
     headers,
-    // CRITICAL: Ensure cookies are sent in PWA/Standalone mode
-    credentials: "same-origin",
+    // CRITICAL for iOS PWA: 'include' ensures cookies are sent even if origin seems different
+    credentials: "include",
   });
 
   // Check if response is HTML (login page redirect) usually indicated by 200 OK but text/html content

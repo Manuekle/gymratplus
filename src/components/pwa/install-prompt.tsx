@@ -1,7 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Share, Plus, X } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Share08Icon,
+  PlusSignIcon,
+  Cancel01Icon,
+} from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -69,7 +74,7 @@ export function InstallPrompt() {
               className="h-6 w-6 text-gray-400 hover:text-white"
               onClick={handleDismiss}
             >
-              <X className="h-4 w-4" />
+              <HugeiconsIcon icon={Cancel01Icon} className="h-4 w-4" />
             </Button>
           </div>
 
@@ -80,7 +85,10 @@ export function InstallPrompt() {
               </span>
               <div className="flex items-center gap-2">
                 <span>Toca el botón compartir</span>
-                <Share className="h-5 w-5 text-blue-400" />
+                <HugeiconsIcon
+                  icon={Share08Icon}
+                  className="h-5 w-5 text-blue-400"
+                />
               </div>
             </div>
             <div className="h-px w-full bg-white/10" />
@@ -90,7 +98,10 @@ export function InstallPrompt() {
               </span>
               <div className="flex items-center gap-2">
                 <span>Selecciona "Agregar a Inicio"</span>
-                <Plus className="h-5 w-5 text-gray-300" />
+                <HugeiconsIcon
+                  icon={PlusSignIcon}
+                  className="h-5 w-5 text-gray-300"
+                />
               </div>
             </div>
           </div>

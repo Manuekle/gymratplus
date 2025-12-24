@@ -1,6 +1,7 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { SparklesIcon } from "@hugeicons/core-free-icons";
 
 export const ThinkingMessage = () => {
   return (
@@ -12,7 +13,7 @@ export const ThinkingMessage = () => {
       <div className="flex items-start justify-start gap-3">
         <div className="-mt-1 flex size-8 shrink-0 items-center justify-center rounded-full bg-background ring-1 ring-border">
           <div className="animate-pulse">
-            <Sparkles size={14} />
+            <HugeiconsIcon icon={SparklesIcon} className="w-3.5 h-3.5" />
           </div>
         </div>
 

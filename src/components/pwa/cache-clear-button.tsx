@@ -15,7 +15,12 @@ import {
   forceServiceWorkerUpdate,
   getCacheInfo,
 } from "@/lib/pwa/cache-management";
-import { Loader2, RefreshCw, Trash2 } from "lucide-react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import {
+  Loading02Icon,
+  RefreshIcon,
+  Delete02Icon,
+} from "@hugeicons/core-free-icons";
 
 export function CacheClearButton() {
   const [isClearing, setIsClearing] = useState(false);
@@ -92,7 +97,7 @@ export function CacheClearButton() {
             onClick={handleGetInfo}
             className="w-full justify-start"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            <HugeiconsIcon icon={RefreshIcon} className="mr-2 h-4 w-4" />
             Ver información de caché
           </Button>
 
@@ -123,9 +128,12 @@ export function CacheClearButton() {
             className="w-full justify-start"
           >
             {isUpdating ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <HugeiconsIcon
+                icon={Loading02Icon}
+                className="mr-2 h-4 w-4 animate-spin"
+              />
             ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <HugeiconsIcon icon={RefreshIcon} className="mr-2 h-4 w-4" />
             )}
             Forzar actualización de service worker
           </Button>
@@ -137,9 +145,12 @@ export function CacheClearButton() {
             className="w-full justify-start"
           >
             {isClearing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <HugeiconsIcon
+                icon={Loading02Icon}
+                className="mr-2 h-4 w-4 animate-spin"
+              />
             ) : (
-              <Trash2 className="mr-2 h-4 w-4" />
+              <HugeiconsIcon icon={Delete02Icon} className="mr-2 h-4 w-4" />
             )}
             Limpiar todo el caché y recargar
           </Button>
