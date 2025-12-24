@@ -1,4 +1,4 @@
-import { streamText } from "ai";
+import { convertToModelMessages, streamText } from "ai";
 import { z } from "zod";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
@@ -6,11 +6,6 @@ import {
   generateWorkoutPlan,
   generateNutritionPlan,
 } from "@/lib/ai/plan-generators";
-import { createOpenAI } from "@ai-sdk/openai";
-
-const openai = createOpenAI({
-  apiKey: process.env.AI_GATEWAY_API_KEY,
-});
 
 export const maxDuration = 30;
 
@@ -62,11 +57,8 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
   `.trim();
 
   const result = await streamText({
-    model: openai("gpt-4o-mini"),
-    messages: messages.map((m: any) => ({
-      role: m.role,
-      content: m.parts?.map((p: any) => p.text).join("\n") || m.content || "",
-    })),
+    model: "openai/gpt-4o-mini",
+    messages: await convertToModelMessages(messages),
     system: `Eres Rocco, un entrenador personal experto y motivador de GymRat+.
 
 TU PERSONALIDAD:
@@ -119,11 +111,11 @@ INSTRUCCIONES IMPORTANTES:
         }),
         execute: async (params: {
           focus:
-            | "fuerza"
-            | "hipertrofia"
-            | "resistencia"
-            | "perdida_peso"
-            | "flexibilidad";
+          | "fuerza"
+          | "hipertrofia"
+          | "resistencia"
+          | "perdida_peso"
+          | "flexibilidad";
           daysPerWeek: number;
           durationMinutes: number;
           difficulty: "principiante" | "intermedio" | "avanzado";
@@ -160,5 +152,8 @@ INSTRUCCIONES IMPORTANTES:
     },
   });
 
-  return result.toTextStreamResponse();
+  return result.toUIMessageStreamResponse({
+    sendSources: true,
+    sendReasoning: true,
+  });
 }

@@ -1,10 +1,5 @@
 import { generateText } from "ai";
 import { prisma } from "@/lib/database/prisma";
-import { createOpenAI } from "@ai-sdk/openai";
-
-const openai = createOpenAI({
-  apiKey: process.env.AI_GATEWAY_API_KEY,
-});
 
 export async function generateWorkoutPlan(user: any, params: any) {
   // Fetch exercises
@@ -31,7 +26,7 @@ ${exercises.map((e) => `- ${e.id}: ${e.name} (${e.muscleGroup})`).join("\n")}
   `.trim();
 
   const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
+    model: "openai/gpt-4o-mini",
     system: `Eres Rocco, un entrenador experto. Genera un plan de entrenamiento completo.
 INSTRUCCIONES:
 1. Crea un plan de ${params.daysPerWeek} días.
@@ -107,7 +102,7 @@ INFORMACIÓN DEL USUARIO:
   `.trim();
 
   const { text } = await generateText({
-    model: openai("gpt-4o-mini"),
+    model: "openai/gpt-4o-mini",
     system: `Eres Rocco, nutricionista. Genera dieta.
 INSTRUCCIONES:
 1. Ajusta cantidades para llegar a ${params.calories}kcal.
@@ -117,9 +112,9 @@ INSTRUCCIONES:
 ${userContext}
 ALIMENTOS:
 ${foods
-  .slice(0, 100)
-  .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
-  .join("\n")}
+        .slice(0, 100)
+        .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
+        .join("\n")}
 
 FORMATO JSON:
 {
