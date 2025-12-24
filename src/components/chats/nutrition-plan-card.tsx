@@ -1,31 +1,30 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowDown01Icon,
-  ArrowUp01Icon,
-  Restaurant02Icon,
-  FireIcon,
-  OrganicFoodIcon,
-  CheckmarkCircle02Icon,
-  FloppyDiskIcon,
-} from "@hugeicons/core-free-icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils/utils";
+
+interface FoodEntry {
+  foodId: string;
+  quantity: number;
+  food: {
+    id: string;
+    name: string;
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+    serving: number;
+    category: string;
+  };
+}
+
+interface MealData {
+  mealType: string;
+  entries: FoodEntry[];
+  calories: number;
+}
 
 interface NutritionPlanCardProps {
   plan: {
@@ -34,117 +33,172 @@ interface NutritionPlanCardProps {
     mealsPerDay: number;
     dietaryType: string;
     description?: string;
+    macros?: {
+      protein: string;
+      carbs: string;
+      fat: string;
+      description?: string;
+    };
+    meals?: {
+      breakfast?: MealData;
+      lunch?: MealData;
+      dinner?: MealData;
+      snacks?: MealData;
+      [key: string]: MealData | undefined;
+    };
   };
   onSave?: () => void;
   isSaved?: boolean;
 }
+
+const mealNames: { [key: string]: string } = {
+  breakfast: "Desayuno",
+  lunch: "Almuerzo",
+  dinner: "Cena",
+  snacks: "Snacks",
+};
 
 export function NutritionPlanCard({
   plan,
   onSave,
   isSaved,
 }: NutritionPlanCardProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  // Convertir el objeto meals a un array
+  const mealsArray = plan.meals
+    ? Object.entries(plan.meals)
+        .filter(([_, meal]) => meal !== undefined)
+        .map(([key, meal]) => ({
+          key,
+          name: mealNames[key] || key,
+          ...meal,
+        }))
+    : [];
 
   return (
-    <Card className="w-full max-w-md my-2 border-green-500/20 bg-card overflow-hidden">
-      <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 pb-2 bg-green-500/5">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-green-500/20 flex items-center justify-center">
-            <HugeiconsIcon
-              icon={Restaurant02Icon}
-              className="h-4 w-4 text-green-600 dark:text-green-400"
-            />
-          </div>
-          <div>
-            <CardTitle className="text-xs font-bold">
-              Plan Nutricional
-            </CardTitle>
-            <p className="text-xs text-muted-foreground capitalize">
-              {plan.dietaryType}
-            </p>
-          </div>
-        </div>
-        <Badge
-          variant="outline"
-          className="capitalize text-xs h-5 border-green-200 text-green-700 dark:text-green-400"
-        >
+    <div className="w-full space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-semibold tracking-[-0.04em]">
+          Plan Nutricional
+        </h3>
+        <Badge variant="outline" className="capitalize text-xs">
           {plan.goal.replace("_", " ")}
         </Badge>
-      </CardHeader>
+      </div>
 
-      <CardContent className="p-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-xs">
-            <HugeiconsIcon
-              icon={FireIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-            <span>{plan.calories} kcal/día</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <HugeiconsIcon
-              icon={OrganicFoodIcon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-            <span>{plan.mealsPerDay} comidas/día</span>
-          </div>
+      {/* Summary */}
+      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-4 rounded-lg">
+        <p className="text-sm font-medium capitalize mb-2">
+          {plan.dietaryType}
+        </p>
+        <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+          <span>{plan.calories} kcal/día</span>
+          <span>•</span>
+          <span>{plan.mealsPerDay} comidas/día</span>
         </div>
-
-        {plan.description && (
-          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="flex items-center justify-between mt-2">
-              <p className="text-xs font-medium text-muted-foreground">
-                Detalles del plan
-              </p>
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 rounded-full"
-                >
-                  <HugeiconsIcon
-                    icon={isOpen ? ArrowUp01Icon : ArrowDown01Icon}
-                    className="h-3 w-3"
-                  />
-                </Button>
-              </CollapsibleTrigger>
-            </div>
-            <CollapsibleContent className="mt-2 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md">
-              {plan.description}
-            </CollapsibleContent>
-          </Collapsible>
+        {plan.macros && (
+          <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 mt-2">
+            <span>P: {plan.macros.protein}</span>
+            <span>C: {plan.macros.carbs}</span>
+            <span>G: {plan.macros.fat}</span>
+          </div>
         )}
-      </CardContent>
+      </div>
 
-      <CardFooter className="p-3 bg-muted/20 flex justify-end gap-2">
+      {/* Meals Tabs */}
+      {mealsArray.length > 0 && (
+        <Tabs defaultValue={mealsArray[0].key} className="w-full">
+          <TabsList className="w-full grid grid-cols-4 h-auto">
+            {mealsArray.map((meal) => (
+              <TabsTrigger
+                key={meal.key}
+                value={meal.key}
+                className="text-xs py-2"
+              >
+                {meal.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+
+          {mealsArray.map((meal) => (
+            <TabsContent key={meal.key} value={meal.key}>
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <h5 className="text-xs font-semibold text-primary">
+                    {meal.name}
+                  </h5>
+                  <span className="text-xs text-zinc-500">
+                    {meal.calories} kcal
+                  </span>
+                </div>
+                <div className="space-y-1.5">
+                  {meal.entries?.map((entry, idx) => {
+                    const totalCals = Math.round(
+                      (entry.food.calories * entry.quantity) /
+                        entry.food.serving,
+                    );
+                    const totalProtein = Math.round(
+                      (entry.food.protein * entry.quantity) /
+                        entry.food.serving,
+                    );
+                    const totalCarbs = Math.round(
+                      (entry.food.carbs * entry.quantity) / entry.food.serving,
+                    );
+                    const totalFat = Math.round(
+                      (entry.food.fat * entry.quantity) / entry.food.serving,
+                    );
+
+                    return (
+                      <div
+                        key={idx}
+                        className="text-xs bg-white dark:bg-zinc-900 p-2 rounded"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <span className="font-medium flex-1">
+                            {entry.food.name} ({entry.quantity}g)
+                          </span>
+                          <span className="text-zinc-500 shrink-0 text-[11px]">
+                            {totalCals} kcal
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 mt-1">
+                          <span>P: {totalProtein}g</span>
+                          <span>•</span>
+                          <span>C: {totalCarbs}g</span>
+                          <span>•</span>
+                          <span>G: {totalFat}g</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
+
+      {/* Fallback */}
+      {mealsArray.length === 0 && plan.description && (
+        <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            {plan.description}
+          </p>
+        </div>
+      )}
+
+      {/* Save Button */}
+      <div className="flex justify-end py-4">
         <Button
-          variant={isSaved ? "outline" : "default"}
-          size="sm"
+          variant="default"
+          size="default"
           onClick={onSave}
           disabled={isSaved}
-          className={cn(
-            "text-xs h-8 gap-1.5",
-            isSaved &&
-              "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
-          )}
+          className={cn("text-xs", isSaved && "bg-green-800 text-white")}
         >
-          {isSaved ? (
-            <>
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                className="h-3.5 w-3.5"
-              />
-              Guardado
-            </>
-          ) : (
-            <>
-              <HugeiconsIcon icon={FloppyDiskIcon} className="h-3.5 w-3.5" />
-              Guardar Plan
-            </>
-          )}
+          {isSaved ? "Guardado" : "Guardar Plan"}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }

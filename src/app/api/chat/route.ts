@@ -18,6 +18,9 @@ export async function POST(req: Request) {
 
   const { messages }: { messages: UIMessage[] } = await req.json();
 
+  console.log("🔍 API Chat - Received messages:", messages.length);
+  console.log("🔍 API Chat - Last message:", messages[messages.length - 1]);
+
   // Fetch user with complete profile, goals, and recent metrics
   const user = (await prisma.user.findUnique({
     where: { email: session.user.email },
@@ -55,6 +58,9 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
 - Alergias/Restricciones: ${user.profile?.allergies ? user.profile.allergies.join(", ") : "Ninguna"}
 - Lesiones/Limitaciones: ${user.profile?.injuries ? user.profile.injuries.join(", ") : "Ninguna"}
   `.trim();
+
+  console.log("🔍 API Chat - User context prepared for:", user.name);
+  console.log("🔍 API Chat - Starting streamText...");
 
   const result = await streamText({
     model: "openai/gpt-4o-mini",
@@ -254,6 +260,8 @@ INSTRUCCIONES IMPORTANTES:
       },
     },
   });
+
+  console.log("🔍 API Chat - Stream created, returning response");
 
   return result.toUIMessageStreamResponse({
     sendSources: true,

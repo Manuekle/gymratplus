@@ -49,6 +49,11 @@ export default function ChatPage() {
     }),
   });
 
+  // Debug logs
+  console.log("🔍 Chat Debug - Messages:", messages);
+  console.log("🔍 Chat Debug - Status:", status);
+  console.log("🔍 Chat Debug - Messages count:", messages.length);
+
   const [input, setInput] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,7 +177,7 @@ export default function ChatPage() {
                 >
                   <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
                 </Button>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 h-14">
                   <p className="text-xs font-semibold">Rocco</p>
                   <span className="h-1.5 w-1.5 rounded-full bg-green-500"></span>
                 </div>
@@ -195,6 +200,14 @@ export default function ChatPage() {
 
                   {messages.map((message) => {
                     const isOwn = message.role === "user";
+                    console.log(
+                      "🔍 Rendering message:",
+                      message.id,
+                      "Role:",
+                      message.role,
+                      "Parts:",
+                      message.parts,
+                    );
                     return (
                       <div
                         key={message.id}
@@ -205,15 +218,24 @@ export default function ChatPage() {
                       >
                         <div
                           className={cn(
-                            "max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-3 text-xs leading-relaxed",
+                            "rounded-2xl px-4 py-3 text-xs leading-relaxed w-full",
                             isOwn
                               ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
-                              : "bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200",
+                              : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200",
                           )}
                         >
                           <div className="space-y-4">
                             {message.parts.map((part, i) => {
+                              console.log(
+                                "🔍 Rendering part:",
+                                i,
+                                "Type:",
+                                part.type,
+                                "Part:",
+                                part,
+                              );
                               if (part.type === "text") {
+                                console.log("📝 Text part content:", part.text);
                                 return (
                                   <p key={i} className="whitespace-pre-wrap">
                                     {part.text}
@@ -235,13 +257,24 @@ export default function ChatPage() {
                                   </Reasoning>
                                 );
                               }
-                              if (part.type === "tool-invocation") {
+
+                              // Handle tool invocations - new AI SDK uses specific tool types
+                              if (part.type.startsWith("tool-")) {
                                 const toolInvocation = part as any;
                                 const state = toolInvocation.state;
-                                const toolName = toolInvocation.toolName;
+                                const toolName = part.type.replace("tool-", "");
                                 const result =
                                   toolInvocation.result ??
                                   toolInvocation.output;
+
+                                console.log(
+                                  "🔧 Tool invocation detected:",
+                                  toolName,
+                                  "State:",
+                                  state,
+                                  "Result:",
+                                  result,
+                                );
 
                                 if (
                                   (toolName === "generateTrainingPlan" ||
@@ -252,7 +285,7 @@ export default function ChatPage() {
                                   return (
                                     <div
                                       key={toolInvocation.toolCallId}
-                                      className="mt-4 border rounded-lg bg-background overflow-hidden"
+                                      className="mt-4 overflow-hidden mb-1"
                                     >
                                       {toolName === "generateTrainingPlan" ? (
                                         <WorkoutPlanCard
@@ -459,7 +492,7 @@ export default function ChatPage() {
                   className="max-w-3xl mx-auto flex flex-col items-center gap-2"
                 >
                   {/* aqui agrego botones que digan crear plan de entrenamiento y crear plan de nutricion */}
-                  <Suggestions>
+                  <Suggestions className="py-4 overflow-hidden scroll-hidden y-scroll">
                     <Suggestion
                       onClick={(suggestion) =>
                         sendMessage({ text: suggestion })

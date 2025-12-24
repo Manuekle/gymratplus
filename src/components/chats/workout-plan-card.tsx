@@ -1,31 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowDown01Icon,
-  ArrowUp01Icon,
-  Dumbbell03Icon,
-  Time02Icon,
-  Calendar03Icon,
-  CheckmarkCircle02Icon,
-  FloppyDiskIcon,
-} from "@hugeicons/core-free-icons";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils/utils";
+
+interface Exercise {
+  id: string;
+  name: string;
+  sets: number;
+  reps: number;
+  restTime: number;
+  notes?: string;
+  muscleGroup: string;
+}
+
+interface WorkoutDay {
+  day: string;
+  exercises: Exercise[];
+}
 
 interface WorkoutPlanCardProps {
   plan: {
@@ -33,7 +26,8 @@ interface WorkoutPlanCardProps {
     daysPerWeek: number;
     durationMinutes: number;
     difficulty: string;
-    description?: string; // Optional detailed text if we want to show it
+    description?: string;
+    days?: WorkoutDay[];
   };
   onSave?: () => void;
   isSaved?: boolean;
@@ -44,104 +38,105 @@ export function WorkoutPlanCard({
   onSave,
   isSaved,
 }: WorkoutPlanCardProps) {
-  const [isOpen, setIsOpen] = useState(true);
-
   return (
-    <Card className="w-full max-w-md my-2 border-primary/20 bg-card overflow-hidden">
-      <CardHeader className="p-4 flex flex-row items-center justify-between space-y-0 pb-2 bg-primary/5">
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-            <HugeiconsIcon
-              icon={Dumbbell03Icon}
-              className="h-4 w-4 text-primary"
-            />
-          </div>
-          <div>
-            <CardTitle className="text-xs font-bold">
-              Plan de Entrenamiento
-            </CardTitle>
-            <p className="text-xs text-muted-foreground capitalize">
-              {plan.focus}
-            </p>
-          </div>
-        </div>
-        <Badge variant="outline" className="capitalize text-xs h-5">
+    <div className="w-full space-y-3">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-xl font-semibold tracking-[-0.04em]">
+          Plan de Entrenamiento
+        </h3>
+        <Badge variant="outline" className="capitalize text-xs">
           {plan.difficulty}
         </Badge>
-      </CardHeader>
+      </div>
 
-      <CardContent className="p-4 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
-          <div className="flex items-center gap-2 text-xs">
-            <HugeiconsIcon
-              icon={Calendar03Icon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-            <span>{plan.daysPerWeek} días/semana</span>
-          </div>
-          <div className="flex items-center gap-2 text-xs">
-            <HugeiconsIcon
-              icon={Time02Icon}
-              className="h-4 w-4 text-muted-foreground"
-            />
-            <span>{plan.durationMinutes} min/sesión</span>
-          </div>
+      {/* Summary */}
+      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-4 rounded-lg">
+        <p className="text-sm font-medium capitalize mb-2">{plan.focus}</p>
+        <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
+          <span>{plan.daysPerWeek} días/semana</span>
+          <span>•</span>
+          <span>{plan.durationMinutes} min/sesión</span>
         </div>
+      </div>
 
-        {plan.description && (
-          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="flex items-center justify-between mt-2">
-              <p className="text-xs font-medium text-muted-foreground">
-                Detalles del plan
-              </p>
-              <CollapsibleTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-6 w-6 p-0 rounded-full"
+      {/* Workout Days Tabs */}
+      {plan.days && plan.days.length > 0 && (
+        <Tabs defaultValue="0" className="w-full">
+          <TabsList className="w-full grid grid-cols-5 h-auto">
+            {plan.days.map((day, index) => {
+              // Extraer el grupo muscular del nombre del día (ej: "Día 1 - Piernas" -> "Piernas")
+              const muscleGroup = day.day.includes(" - ")
+                ? day.day.split(" - ")[1]
+                : day.day;
+
+              return (
+                <TabsTrigger
+                  key={index}
+                  value={index.toString()}
+                  className="text-xs py-2"
                 >
-                  <HugeiconsIcon
-                    icon={isOpen ? ArrowUp01Icon : ArrowDown01Icon}
-                    className="h-3 w-3"
-                  />
-                </Button>
-              </CollapsibleTrigger>
-            </div>
-            <CollapsibleContent className="mt-2 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md">
-              {plan.description}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-      </CardContent>
+                  {muscleGroup}
+                </TabsTrigger>
+              );
+            })}
+          </TabsList>
 
-      <CardFooter className="p-3 bg-muted/20 flex justify-end gap-2">
+          {plan.days.map((workoutDay, dayIndex) => (
+            <TabsContent key={dayIndex} value={dayIndex.toString()}>
+              <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
+                <h5 className="text-xs font-semibold text-primary mb-2">
+                  {workoutDay.day}
+                </h5>
+                <div className="space-y-1.5">
+                  {workoutDay.exercises.map((exercise, exIndex) => (
+                    <div
+                      key={exercise.id || exIndex}
+                      className="text-xs bg-white dark:bg-zinc-900 p-2 rounded"
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="font-medium flex-1">
+                          {exercise.name}
+                        </span>
+                        <span className="text-zinc-500 shrink-0">
+                          {exercise.sets}×{exercise.reps}
+                        </span>
+                      </div>
+                      {exercise.notes && (
+                        <p className="text-zinc-500 mt-0.5 text-[11px]">
+                          {exercise.notes}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </TabsContent>
+          ))}
+        </Tabs>
+      )}
+
+      {/* Fallback */}
+      {(!plan.days || plan.days.length === 0) && plan.description && (
+        <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
+          <p className="text-xs text-zinc-600 dark:text-zinc-400">
+            {plan.description}
+          </p>
+        </div>
+      )}
+
+      {/* Save Button */}
+      <div className="flex justify-end py-4">
         <Button
-          variant={isSaved ? "outline" : "default"}
-          size="sm"
+          variant="default"
+          size="default"
           onClick={onSave}
           disabled={isSaved}
-          className={cn(
-            "text-xs h-8 gap-1.5",
-            isSaved &&
-              "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
-          )}
+          className={cn("text-xs", isSaved && "bg-green-800 text-white")}
         >
-          {isSaved ? (
-            <>
-              <HugeiconsIcon
-                icon={CheckmarkCircle02Icon}
-                className="h-3.5 w-3.5"
-              />
-              Guardado
-            </>
-          ) : (
-            <>
-              <HugeiconsIcon icon={FloppyDiskIcon} className="h-3.5 w-3.5" />
-              Guardar Plan
-            </>
-          )}
+          {isSaved ? "Guardado" : "Guardar Plan"}
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
