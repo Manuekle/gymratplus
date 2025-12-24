@@ -14,47 +14,34 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
       const isOnAuth = nextUrl.pathname.startsWith("/auth");
+      const isOnVerifyEmail = nextUrl.pathname === "/auth/verify-email";
+      const emailVerified = (auth?.user as any)?.emailVerified;
+      const isVerified = !!emailVerified;
 
+      // 1. Handle Verify Email Page specific logic
+      // This must come BEFORE generic isOnAuth check to avoid loops
+      if (isOnVerifyEmail) {
+        if (!isLoggedIn) return false; // Redirect to signin
+        if (isVerified) return Response.redirect(new URL("/dashboard", nextUrl));
+        return true; // Allow stay if logged in and not verified
+      }
+
+      // 2. Handle Dashboard
       if (isOnDashboard) {
         if (!isLoggedIn) return false; // Redirect to login
-
-        // Enforce email verification
-        const emailVerified = (auth.user as any)?.emailVerified;
-        const isVerified = !!emailVerified;
-
-        // If user is logged in but not verified, redirect to verify-email
-        // BUT allow access to onboarding API endpoints or profile APIs if needed?
-        // Actually, just block dashboard access.
-        if (!isVerified) {
-          return Response.redirect(new URL("/auth/verify-email", nextUrl));
-        }
-
+        if (!isVerified) return Response.redirect(new URL("/auth/verify-email", nextUrl));
         return true;
       }
 
+      // 3. Handle other Auth pages (Signin/Signup)
       if (isOnAuth) {
         if (isLoggedIn) {
-          // Check verification status before redirecting to dashboard
-          const emailVerified = (auth.user as any)?.emailVerified;
-          if (!emailVerified) {
-            return Response.redirect(new URL("/auth/verify-email", nextUrl));
-          }
-          return Response.redirect(new URL("/dashboard", nextUrl));
+          // If already verified, go to dashboard
+          if (isVerified) return Response.redirect(new URL("/dashboard", nextUrl));
+          // If not verified, go to verify-email
+          return Response.redirect(new URL("/auth/verify-email", nextUrl));
         }
         return true;
-      }
-
-      // Handle verify-email page
-      const isOnVerifyEmail = nextUrl.pathname === "/auth/verify-email";
-      if (isOnVerifyEmail) {
-        if (!isLoggedIn) return Response.redirect(new URL("/auth/signin", nextUrl));
-
-        const emailVerified = (auth.user as any)?.emailVerified;
-        if (emailVerified) {
-          // Already verified, go to dashboard
-          return Response.redirect(new URL("/dashboard", nextUrl));
-        }
-        return true; // Allow access to verify page
       }
 
       return true;
