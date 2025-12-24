@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
 import { sendEmail } from "@/lib/email/resend";
-import { sendVerificationSMS } from "@/lib/sms/twilio";
+// import { sendVerificationSMS } from "@/lib/sms/twilio";
 
 // Configuración
 const VERIFICATION_CODE_EXPIRY = 10 * 60 * 1000; // 10 minutos

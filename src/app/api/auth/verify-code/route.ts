@@ -4,10 +4,12 @@ import { verifyCode } from "@/lib/auth/verification-service";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
+    console.log("[VERIFY-API] Received body:", JSON.stringify(body));
     const { userId, code, type } = body;
 
     // Validar parámetros requeridos
     if (!userId || !code || !type) {
+      console.log("[VERIFY-API] Missing parameters:", { userId, code, type });
       return NextResponse.json(
         {
           error: "Parámetros requeridos: userId, code, type",
