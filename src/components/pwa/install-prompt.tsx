@@ -1,102 +1,105 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { Share, Plus, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { MultiplicationSignIcon } from "@hugeicons/core-free-icons";
-
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: "accepted" | "dismissed" }>;
-}
 
 export function InstallPrompt() {
-  const [deferredPrompt, setDeferredPrompt] =
-    useState<BeforeInstallPromptEvent | null>(null);
   const [isIOS, setIsIOS] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
-  const [showInstallPrompt, setShowInstallPrompt] = useState(true);
+  const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    setIsIOS(
-      /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as unknown as { MSStream: unknown }).MSStream,
-    );
+    // Detect iOS
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
 
-    setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
+    // Detect Standalone
+    const isStandaloneMode =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone === true;
 
-    const handleBeforeInstallPrompt = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
+    setIsIOS(isIosDevice);
+    setIsStandalone(isStandaloneMode);
 
-    window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
-
-    return () => {
-      window.removeEventListener(
-        "beforeinstallprompt",
-        handleBeforeInstallPrompt,
-      );
-    };
+    // Show only on iOS and if not already installed
+    // And delay a bit to not be annoying immediately
+    if (isIosDevice && !isStandaloneMode) {
+      const timer = setTimeout(() => {
+        // Check if user has dismissed it before
+        const hasDismissed = localStorage.getItem("pwa-ios-prompt-dismissed");
+        if (!hasDismissed) {
+          setIsVisible(true);
+        }
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+    return undefined;
   }, []);
 
-  const handleInstallClick = async () => {
-    if (!deferredPrompt) return;
-
-    deferredPrompt.prompt();
-
-    const { outcome } = await deferredPrompt.userChoice;
-
-    if (outcome === "accepted") {
-      setDeferredPrompt(null);
-    }
-  };
-
   const handleDismiss = () => {
-    setShowInstallPrompt(false);
+    setIsVisible(false);
+    localStorage.setItem("pwa-ios-prompt-dismissed", "true");
   };
 
-  if (isStandalone) return null;
-
-  if (isIOS) {
-    return null;
-  }
-
-  if (!deferredPrompt || !showInstallPrompt) return null;
+  if (!isIOS || isStandalone) return null;
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 animate-in slide-in-from-bottom-2 md:bottom-6 md:right-6">
-      <div className="backdrop-blur-xl bg-white/90 dark:bg-black/90 border border-zinc-200/50 dark:border-zinc-800/50 rounded-xl shadow-lg p-3 md:p-4 flex items-center gap-3 max-w-[280px] md:max-w-sm">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-xs md:text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-0.5 truncate">
-            Instalar GymRat+
-          </h3>
-          <p className="text-xs md:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
-            Acceso rápido
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5">
-          <Button
-            size="default"
-            variant="ghost"
-            onClick={handleDismiss}
-            className="h-7 w-7 p-0 text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800"
-            aria-label="Cerrar"
-          >
-            <HugeiconsIcon
-              icon={MultiplicationSignIcon}
-              className="w-3.5 h-3.5"
-            />
-          </Button>
-          <Button
-            size="default"
-            onClick={handleInstallClick}
-            className="h-7 px-3 text-xs backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 border border-zinc-800/50 dark:border-zinc-200/50"
-          >
-            Instalar
-          </Button>
-        </div>
-      </div>
-    </div>
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: 100, opacity: 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed bottom-4 left-4 right-4 z-50 flex flex-col gap-4 rounded-xl border border-white/20 bg-black/60 p-4 text-white shadow-2xl backdrop-blur-md md:left-auto md:right-4 md:w-96"
+        >
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-1">
+              <h3 className="font-semibold text-lg">Instala la App</h3>
+              <p className="text-sm text-gray-200">
+                Instala GymRat+ en tu pantalla de inicio para una mejor
+                experiencia.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 text-gray-400 hover:text-white"
+              onClick={handleDismiss}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-lg bg-white/10 p-3 text-sm">
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                1
+              </span>
+              <div className="flex items-center gap-2">
+                <span>Toca el botón compartir</span>
+                <Share className="h-5 w-5 text-blue-400" />
+              </div>
+            </div>
+            <div className="h-px w-full bg-white/10" />
+            <div className="flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white/20">
+                2
+              </span>
+              <div className="flex items-center gap-2">
+                <span>Selecciona "Agregar a Inicio"</span>
+                <Plus className="h-5 w-5 text-gray-300" />
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-gray-400">
+            No ocupa espacio en tu dispositivo
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

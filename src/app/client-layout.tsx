@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StreakAlertProvider } from "@/providers/streak-alert-provider";
 import { NotificationsProvider } from "@/providers/notifications-provider";
 import { PWAInit } from "@/components/pwa/pwa-init";
+import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function ClientLayout({
   children,
@@ -23,6 +24,7 @@ export default function ClientLayout({
     >
       <AuthProvider>
         <PWAInit />
+        <InstallPrompt />
         <RedisInitializer />
         <StreakAlertProvider>
           <NotificationsProvider>

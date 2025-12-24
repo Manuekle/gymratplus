@@ -37,6 +37,8 @@ import {
 } from "@/components/ai-elements/confirmation";
 import { CheckIcon, XIcon } from "lucide-react";
 
+import { customChatFetch } from "@/lib/ai/chat-fetch";
+
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
@@ -47,40 +49,10 @@ export default function ChatPage() {
       id: "rocco-chat",
       transport: new DefaultChatTransport({
         api: "/api/chat",
-        // iOS Safari fix: custom fetch with proper headers
-        fetch: async (url, options) => {
-          const headers = new Headers(options?.headers);
-          headers.set("Accept", "text/event-stream");
-          headers.set("Cache-Control", "no-cache");
-
-          console.log("🔍 [Chat] Fetching:", url);
-          console.log(
-            "🔍 [Chat] Headers:",
-            Object.fromEntries(headers.entries()),
-          );
-
-          return fetch(url, {
-            ...options,
-            headers,
-            credentials: "same-origin",
-          });
-        },
+        fetch: customChatFetch,
       }),
       onError: (error) => {
         console.error("❌ [Chat Error]", error);
-        console.error("❌ [Chat Error] Message:", error.message);
-        console.error("❌ [Chat Error] Stack:", error.stack);
-
-        // Mobile-specific error logging
-        if (typeof navigator !== "undefined") {
-          console.log("📱 [Mobile Debug] User Agent:", navigator.userAgent);
-          console.log("📱 [Mobile Debug] Online:", navigator.onLine);
-          console.log(
-            "📱 [Mobile Debug] Connection:",
-            (navigator as any).connection?.effectiveType,
-          );
-        }
-
         toast.error("Error al comunicarse con Rocco", {
           description: error.message || "Intenta de nuevo",
         });
