@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { differenceInDays } from "date-fns";
 import { useSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -94,8 +94,8 @@ export function WorkoutReminderAlert({
             const sessions = await response.json();
             const completedSessions = Array.isArray(sessions)
               ? sessions.filter(
-                  (s: { completed?: boolean }) => s.completed === true,
-                )
+                (s: { completed?: boolean }) => s.completed === true,
+              )
               : [];
             setHasCompletedWorkouts(completedSessions.length > 0);
           }
@@ -144,15 +144,34 @@ export function WorkoutReminderAlert({
     setDaysSinceLastWorkout(Math.max(0, days)); // Asegurar que nunca sea negativo
   }, [lastWorkoutAt]);
 
+  const isCreatingRef = useRef(false);
+
   useEffect(() => {
-    // Crear notificación cuando se muestra la alerta (solo una vez por día)
+    // Crear notificación cuando se muestra la alerta (solo una vez por sesión/día)
     const createNotification = async () => {
-      if (!isVisible || !session?.user?.id || notificationCreated) return;
+      if (
+        !isVisible ||
+        !session?.user?.id ||
+        notificationCreated ||
+        isCreatingRef.current ||
+        !hasCompletedWorkouts // No enviar si no hay entrenamientos previos
+      ) {
+        return;
+      }
 
       const allowedRestDays = 7 - trainingFrequency;
       if (daysSinceLastWorkout <= allowedRestDays) return;
 
+      // Evitar duplicados por sesión además de por base de datos
+      const sessionKey = `workout_reminder_notified_${session.user.id}_${new Date().toDateString()}`;
+      if (sessionStorage.getItem(sessionKey)) {
+        setNotificationCreated(true);
+        return;
+      }
+
       try {
+        isCreatingRef.current = true;
+
         // Verificar si ya existe una notificación del mismo tipo hoy
         const today = new Date();
         today.setHours(0, 0, 0, 0);
@@ -178,7 +197,7 @@ export function WorkoutReminderAlert({
 
           if (todayNotifications.length > 0) {
             console.log(
-              "Ya existe una notificación de recordatorio de entrenamiento hoy, no se creará otra",
+              "Ya existe una notificación de recordatorio de entrenamiento hoy",
             );
             setNotificationCreated(true);
             return;
@@ -211,10 +230,13 @@ export function WorkoutReminderAlert({
 
         if (response.ok) {
           setNotificationCreated(true);
+          sessionStorage.setItem(sessionKey, "true");
           console.log("Notificación de recordatorio de entrenamiento creada");
         }
       } catch (error) {
         console.error("Error al crear notificación:", error);
+      } finally {
+        isCreatingRef.current = false;
       }
     };
 
@@ -225,6 +247,7 @@ export function WorkoutReminderAlert({
     trainingFrequency,
     session,
     notificationCreated,
+    hasCompletedWorkouts,
   ]);
 
   const handleDismiss = () => {
@@ -297,7 +320,7 @@ export function WorkoutReminderAlert({
       ];
       const randomMessage =
         motivationalMessages[
-          Math.floor(Math.random() * motivationalMessages.length)
+        Math.floor(Math.random() * motivationalMessages.length)
         ];
       return randomMessage;
     } else if (daysSinceLastWorkout === allowedRestDays + 2) {
@@ -337,7 +360,7 @@ export function WorkoutReminderAlert({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleDismiss}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100] flex items-center justify-center p-4 ring-0 outline-none"
           >
             {/* Modal Card */}
             <motion.div
@@ -391,11 +414,10 @@ export function WorkoutReminderAlert({
                     return (
                       <div
                         key={index}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${
-                          isActive
-                            ? `${streakColor.dayColor} text-white shadow-md`
-                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
-                        }`}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${isActive
+                          ? `${streakColor.dayColor} text-white shadow-md`
+                          : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
+                          }`}
                       >
                         {day}
                       </div>

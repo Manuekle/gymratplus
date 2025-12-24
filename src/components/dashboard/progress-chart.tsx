@@ -295,7 +295,7 @@ export default function ProgressChart({
       </CardHeader>
 
       <CardContent className="px-4 flex-1 flex flex-col">
-        <div className="flex flex-col gap-3 mb-6">
+        <div className="flex flex-col gap-2 md:gap-4 mb-6">
           <div className="flex flex-wrap gap-2 w-full">
             <Button
               size="default"
@@ -323,7 +323,7 @@ export default function ProgressChart({
             </Button>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto sm:ml-auto">
+          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
             <Select
               value={timePeriod}
               onValueChange={(value) => setTimePeriod(value as TimePeriod)}

@@ -158,9 +158,14 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
     fetchStats();
 
-    // Verificar y resetear racha si es necesario
+    // Probar y resetear racha si es necesario
+    const isCheckingRef = useRef(false);
+
     const checkStreak = async () => {
+      if (isCheckingRef.current) return;
+
       try {
+        isCheckingRef.current = true;
         // Primero obtener las estadísticas de la racha para verificar el día crítico
         const statsResponse = await fetch(
           `/api/workout-streak?userId=${userId}`,
@@ -196,7 +201,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
             hasShownRiskAlert.current = true;
           }
 
-          // Enviar notificación si es necesario
+          // Enviar notificación si es necesario (PUT)
           await fetch("/api/workout-streak/check-reset", {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
@@ -208,6 +213,8 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
         }
       } catch (error) {
         console.error("Error checking streak reset:", error);
+      } finally {
+        isCheckingRef.current = false;
       }
     };
 
@@ -217,7 +224,9 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
 
     // Enviar notificaciones críticas cada 2 horas si es necesario
     const sendCriticalNotifications = async () => {
+      if (isCheckingRef.current) return;
       try {
+        isCheckingRef.current = true;
         await fetch("/api/workout-streak/check-reset", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -225,11 +234,13 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
         });
       } catch (error) {
         console.error("Error sending critical notifications:", error);
+      } finally {
+        isCheckingRef.current = false;
       }
     };
 
-    // Enviar notificaciones críticas cada 2 horas
-    sendCriticalNotifications();
+    // No llamar inmediatamente sendCriticalNotifications ya que checkStreak ya lo maneja si es necesario
+    // sendCriticalNotifications(); 
     const notificationInterval = setInterval(
       sendCriticalNotifications,
       2 * 60 * 60 * 1000,
