@@ -179,7 +179,7 @@ export default function ChatPage() {
               </div>
 
               {/* Minimal Message List */}
-              <ScrollArea className="flex-1">
+              <ScrollArea className="flex-1 h-[calc(100vh-16rem)]">
                 <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
                   {messages.length === 0 && (
                     <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400">
@@ -376,7 +376,15 @@ export default function ChatPage() {
                                   }
 
                                   // Show result after approval
-                                  if (state === "output-available") {
+                                  if (
+                                    state === "output-available" ||
+                                    state === "result"
+                                  ) {
+                                    const successMessage =
+                                      result?.message || result?.success
+                                        ? `${toolInvocation.input.foodName} guardado correctamente`
+                                        : "Comida guardada correctamente";
+
                                     return (
                                       <div
                                         key={toolInvocation.toolCallId}
@@ -386,8 +394,7 @@ export default function ChatPage() {
                                           <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
                                             <CheckIcon className="size-5" />
                                             <p className="font-medium">
-                                              {result.message ||
-                                                "Comida guardada correctamente"}
+                                              {successMessage}
                                             </p>
                                           </div>
                                         </div>

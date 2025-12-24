@@ -215,7 +215,7 @@ export function MealLogCalendar({ onMealDeleted }: MealLogCalendarProps) {
                 hasMeal: {
                   backgroundColor: "hsl(var(--primary) / 0.1)",
                   fontWeight: "bold",
-                  color: "oklch(80.15% 0.17 73.59)",
+                  color: "hsl(var(--primary))",
                   borderRadius: "100%",
                   border: "1px solid hsl(var(--primary) / 0.5)",
                 },

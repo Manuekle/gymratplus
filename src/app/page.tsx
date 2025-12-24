@@ -15,6 +15,9 @@ import {
   BubbleChatIcon,
   FireIcon,
   ChartAverageIcon,
+  Robot01Icon,
+  ArtificialIntelligence02Icon,
+  CheckmarkBadge02Icon,
 } from "@hugeicons/core-free-icons";
 import { InstallPrompt } from "@/components/pwa/install-prompt";
 
@@ -197,6 +200,98 @@ export default function GymRatLanding() {
         </div>
       </section>
 
+      {/* Meet Rocco - AI Assistant Section */}
+      <section className="relative z-10 py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="backdrop-blur-2xl bg-gradient-to-br from-white/60 to-zinc-100/60 dark:from-black/60 dark:to-zinc-900/60 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl overflow-hidden">
+            <div className="grid md:grid-cols-2 gap-12 p-12">
+              {/* Left: Content */}
+              <div className="flex flex-col justify-center">
+                <Badge
+                  variant="outline"
+                  className="backdrop-blur-xl bg-white/40 dark:bg-black/40 border-zinc-300/50 dark:border-zinc-700/50 mb-4 w-fit"
+                >
+                  <HugeiconsIcon
+                    icon={ArtificialIntelligence02Icon}
+                    className="w-3 h-3 mr-1"
+                  />
+                  Inteligencia Artificial
+                </Badge>
+                <h2 className="text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-4">
+                  <span className="bg-gradient-to-br from-zinc-900 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+                    Conoce a Rocco
+                  </span>
+                </h2>
+                <p className="text-zinc-600 dark:text-zinc-400 text-sm tracking-[-0.02em] mb-6">
+                  Tu entrenador personal impulsado por IA. Rocco está disponible
+                  24/7 para ayudarte a alcanzar tus objetivos.
+                </p>
+                <ul className="space-y-3 mb-8">
+                  {[
+                    "Genera planes de entrenamiento personalizados",
+                    "Crea planes nutricionales adaptados a ti",
+                    "Estima calorías y macros automáticamente",
+                    "Responde tus preguntas en tiempo real",
+                  ].map((feature, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <div className="w-6 h-6 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <HugeiconsIcon
+                          icon={CheckmarkBadge02Icon}
+                          className="w-4 h-4 text-zinc-700 dark:text-zinc-300"
+                        />
+                      </div>
+                      <span className="text-sm tracking-[-0.02em] text-zinc-700 dark:text-zinc-300">
+                        {feature}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  size="default"
+                  className="backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200 shadow-xl w-fit"
+                  asChild
+                >
+                  <Link href="/auth/signup">Prueba Rocco gratis</Link>
+                </Button>
+              </div>
+
+              {/* Right: Visual */}
+              <div className="flex items-center justify-center">
+                <div className="relative">
+                  <div className="w-64 h-64 rounded-3xl backdrop-blur-xl bg-gradient-to-br from-white/80 to-zinc-100/80 dark:from-black/80 dark:to-zinc-900/80 border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl flex items-center justify-center">
+                    <HugeiconsIcon
+                      icon={Robot01Icon}
+                      className="w-32 h-32 text-zinc-700 dark:text-zinc-300"
+                    />
+                  </div>
+                  {/* Floating badges */}
+                  <div className="absolute -top-4 -right-4 backdrop-blur-xl bg-white/90 dark:bg-black/90 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-xl p-3">
+                    <div className="flex items-center gap-2">
+                      <HugeiconsIcon
+                        icon={FireIcon}
+                        className="w-5 h-5 text-orange-500"
+                      />
+                      <span className="text-xs font-semibold">IA Avanzada</span>
+                    </div>
+                  </div>
+                  <div className="absolute -bottom-4 -left-4 backdrop-blur-xl bg-white/90 dark:bg-black/90 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-xl p-3">
+                    <div className="flex items-center gap-2">
+                      <HugeiconsIcon
+                        icon={BubbleChatIcon}
+                        className="w-5 h-5 text-blue-500"
+                      />
+                      <span className="text-xs font-semibold">
+                        24/7 Disponible
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Features Grid - Clean & Simple */}
       <section id="features" className="relative z-10 py-20 px-6">
         <div className="max-w-6xl mx-auto">
@@ -221,34 +316,34 @@ export default function GymRatLanding() {
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
               {
-                icon: Target02Icon,
-                title: "Entrenamientos Personalizados",
-                desc: "Planes inteligentes que se adaptan a tus objetivos y progreso",
+                icon: Robot01Icon,
+                title: "Rocco - Tu Entrenador IA",
+                desc: "Asistente inteligente que genera planes y responde tus preguntas 24/7",
               },
               {
                 icon: Apple01Icon,
-                title: "Nutrición Inteligente",
-                desc: "Planes nutricionales con IA y seguimiento de macros",
+                title: "Nutrición con IA",
+                desc: "Tracking automático de calorías y macros con estimación inteligente",
+              },
+              {
+                icon: Target02Icon,
+                title: "Planes Personalizados",
+                desc: "Entrenamientos y dietas adaptados a tus objetivos específicos",
               },
               {
                 icon: ChartAverageIcon,
                 title: "Seguimiento Avanzado",
-                desc: "Analíticas detalladas con gráficos interactivos",
+                desc: "Analíticas detalladas con gráficos interactivos en tiempo real",
               },
               {
                 icon: UserGroupIcon,
-                title: "Entrenadores Expertos",
-                desc: "Conecta con profesionales certificados",
+                title: "Entrenadores Certificados",
+                desc: "Conecta con profesionales expertos para coaching personalizado",
               },
               {
                 icon: FireIcon,
                 title: "Sistema de Rachas",
-                desc: "Mantén tu motivación con seguimiento inteligente",
-              },
-              {
-                icon: BubbleChatIcon,
-                title: "Chat en Tiempo Real",
-                desc: "Comunicación directa con tu instructor",
+                desc: "Mantén tu motivación con seguimiento inteligente de progreso",
               },
             ].map((feature, i) => (
               <div
@@ -330,8 +425,9 @@ export default function GymRatLanding() {
                 price: "$9.99",
                 features: [
                   "Todo en Gratis",
-                  "Planes personalizados",
-                  "Nutrición IA",
+                  "Chat con Rocco IA",
+                  "Planes personalizados con IA",
+                  "Tracking nutricional IA",
                   "Chat con instructores",
                 ],
                 popular: true,
