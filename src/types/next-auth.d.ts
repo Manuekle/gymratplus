@@ -5,8 +5,12 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
       isInstructor: boolean;
       experienceLevel: string | null;
+      emailVerified: Date | null; // Add this
       profile?: {
         phone?: string;
         birthdate?: Date | string;
@@ -75,6 +79,7 @@ declare module "next-auth" {
     id: string;
     isInstructor?: boolean;
     experienceLevel?: string | null;
+    emailVerified?: Date | null;
     interests?: string[];
     profile?: {
       phone?: string;
@@ -96,6 +101,7 @@ declare module "next-auth/jwt" {
     id?: string;
     isInstructor?: boolean;
     experienceLevel?: string | null;
+    emailVerified?: Date | null;
     interests?: string[];
     profile?: {
       phone?: string;

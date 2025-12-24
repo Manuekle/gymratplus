@@ -41,7 +41,7 @@ export function EmailVerificationCode({
             {/* Header */}
             <Section className="mb-[24px]">
               <Img
-                src="https://gymratplus.com/favicon.ico"
+                src={`${process.env.NEXT_PUBLIC_APP_URL || "https://gymratplus.com"}/favicon.ico`}
                 width="48"
                 height="48"
                 alt="GymRat+"

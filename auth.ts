@@ -18,6 +18,7 @@ interface CustomUserForCredentials {
   name?: string | null;
   image?: string | null;
   isInstructor?: boolean;
+  emailVerified?: Date | null; // Add types
 }
 
 // --- NextAuth v5 Configuration ---
@@ -108,7 +109,9 @@ export const config = {
         token.sub = dbUser.id;
         token.name = dbUser.name ?? null;
         token.email = dbUser.email ?? null;
+        token.email = dbUser.email ?? null;
         token.picture = dbUser.image ?? null;
+        token.emailVerified = dbUser.emailVerified; // Add this
 
         // Update extended fields
         token.isInstructor = dbUser.isInstructor ?? false;
@@ -142,6 +145,7 @@ export const config = {
         name: token.name ?? session.user.name ?? null,
         email: token.email ?? session.user.email ?? null,
         image: token.picture ?? session.user.image ?? null,
+        emailVerified: token.emailVerified as Date | null, // Add this
         isInstructor: token.isInstructor as boolean,
         experienceLevel: token.experienceLevel as string | null,
         profile: token.profile as any,

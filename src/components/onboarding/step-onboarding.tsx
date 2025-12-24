@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react"; // Import useSession
 // import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -123,6 +124,7 @@ export default function StepOnboarding() {
     return initialFormData;
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { update } = useSession(); // Get update function from hook
   const router = useRouter();
 
   // Inicializar selectedDays desde formData.trainingDays si existe
@@ -300,6 +302,9 @@ export default function StepOnboarding() {
       toast.success("¡Perfil guardado correctamente!", {
         description: "La información de tu perfil ha sido actualizada.",
       });
+
+      // Force session update to clear "Incomplete Profile" state in global session
+      await update();
 
       // Redirigir a la dashboard después de guardar el perfil
       router.push("/dashboard");
