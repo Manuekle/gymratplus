@@ -1,4 +1,5 @@
 import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { createOpenAI } from "@ai-sdk/openai";
 import { z } from "zod";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
@@ -6,6 +7,11 @@ import {
   generateWorkoutPlan,
   generateNutritionPlan,
 } from "@/lib/ai/plan-generators";
+
+// Create OpenAI provider instance (configured for AI Gateway)
+const openai = createOpenAI({
+  apiKey: process.env.AI_GATEWAY_API_KEY || "",
+});
 
 export const maxDuration = 30;
 
@@ -119,8 +125,8 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
     console.log("🔍 API Chat - Starting streamText...");
 
     // Check for required environment variables
-    if (!process.env.OPENAI_API_KEY) {
-      console.error("❌ [API Chat] OPENAI_API_KEY not configured");
+    if (!process.env.AI_GATEWAY_API_KEY) {
+      console.error("❌ [API Chat] AI_GATEWAY_API_KEY not configured");
       return new Response(
         JSON.stringify({
           error: "AI service not configured",
@@ -134,7 +140,7 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
     }
 
     const result = await streamText({
-      model: "openai/gpt-4o-mini",
+      model: openai("gpt-4o-mini"),
       messages: await convertToModelMessages(messages),
       system: `Eres Rocco, un entrenador personal experto y motivador de GymRat+.
 
@@ -193,11 +199,11 @@ INSTRUCCIONES IMPORTANTES:
           }),
           execute: async (params: {
             focus:
-              | "fuerza"
-              | "hipertrofia"
-              | "resistencia"
-              | "perdida_peso"
-              | "flexibilidad";
+            | "fuerza"
+            | "hipertrofia"
+            | "resistencia"
+            | "perdida_peso"
+            | "flexibilidad";
             daysPerWeek: number;
             durationMinutes: number;
             difficulty: "principiante" | "intermedio" | "avanzado";
