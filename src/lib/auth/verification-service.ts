@@ -173,75 +173,11 @@ export async function sendEmailVerification(
   };
 }
 
-/**
- * Envía un código de verificación por SMS
- */
+/*
 export async function sendSMSVerification(userId: string, phone: string) {
-  // Verificar rate limit
-  const rateLimitCheck = await checkRateLimit(userId, "sms");
-  if (!rateLimitCheck.allowed) {
-    return { success: false, error: rateLimitCheck.message };
-  }
-
-  // Generar código
-  const code = generateVerificationCode();
-  const expiresAt = new Date(Date.now() + VERIFICATION_CODE_EXPIRY);
-
-  // Guardar en base de datos
-  await prisma.verificationCode.create({
-    data: {
-      userId,
-      type: "sms",
-      code,
-      destination: phone,
-      expiresAt,
-      attempts: 0,
-      verified: false,
-    },
-  });
-
-  // También guardar en Redis para acceso rápido
-  const redisKey = `verification:sms:${userId}`;
-  await redis.set(
-    redisKey,
-    JSON.stringify({
-      code,
-      phone,
-      expiresAt: expiresAt.getTime(),
-      attempts: 0,
-    }),
-    {
-      ex: Math.floor(VERIFICATION_CODE_EXPIRY / 1000),
-    },
-  );
-
-  // Enviar SMS
-  const smsResult = await sendVerificationSMS(phone, code);
-
-  if (!smsResult.success) {
-    console.error("Error enviando SMS de verificación:", smsResult.error);
-
-    // En desarrollo, devolver el código
-    if (process.env.NODE_ENV === "development") {
-      return {
-        success: true,
-        message: "Código generado (SMS falló en desarrollo)",
-        code,
-      };
-    }
-
-    return {
-      success: false,
-      error: "Error al enviar el SMS. Por favor, intenta más tarde.",
-    };
-  }
-
-  return {
-    success: true,
-    message: "Código de verificación enviado por SMS",
-    ...(process.env.NODE_ENV === "development" && { code }),
-  };
+  // ... (comentado por ahora)
 }
+*/
 
 /**
  * Verifica un código ingresado por el usuario
@@ -251,49 +187,75 @@ export async function verifyCode(
   code: string,
   type: VerificationType,
 ): Promise<{ success: boolean; verified: boolean; error?: string }> {
-  // Buscar código en Redis primero (más rápido)
-  const redisKey = `verification:${type}:${userId}`;
-  const redisData = await redis.get(redisKey);
-
   let storedCode: string | null = null;
   let expiresAt: number | null = null;
   let attempts = 0;
+  let redisData: string | null = null;
 
   console.log(`[VERIFY] Checking code for userId: ${userId}, type: ${type}`);
 
-  if (redisData) {
-    const parsed = JSON.parse(redisData as string);
-    storedCode = parsed.code;
-    expiresAt = parsed.expiresAt;
-    attempts = parsed.attempts || 0;
-    console.log(`[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : 'null'}`);
-  } else {
-    console.log(`[VERIFY] Not found in Redis, checking database...`);
-    // Si no está en Redis, buscar en base de datos
-    const dbCode = await prisma.verificationCode.findFirst({
-      where: {
-        userId,
-        type,
-        verified: false,
-      },
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+  // Try Redis first, but don't fail if it's unavailable or data is corrupt
+  try {
+    const redisKey = `verification:${type}:${userId}`;
+    const redisValue = await redis.get(redisKey);
 
-    if (dbCode) {
-      storedCode = dbCode.code;
-      expiresAt = dbCode.expiresAt.getTime();
-      attempts = dbCode.attempts;
-      console.log(`[VERIFY] Found in DB - attempts: ${attempts}, expires: ${new Date(expiresAt)}`);
+    if (redisValue) {
+      redisData = typeof redisValue === "string" ? redisValue : JSON.stringify(redisValue);
+      const parsed = JSON.parse(redisData);
+      storedCode = parsed.code;
+      expiresAt = parsed.expiresAt;
+      attempts = parsed.attempts || 0;
+      console.log(
+        `[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
+        }`,
+      );
     } else {
-      console.log(`[VERIFY] No code found in DB`);
+      console.log("[VERIFY] Not found in Redis, checking database...");
+    }
+  } catch (redisError) {
+    console.error("[VERIFY] Redis error (falling back to DB):", redisError);
+    redisData = null;
+    storedCode = null;
+  }
+
+  // Si no está en Redis o Redis falló, buscar en base de datos
+  if (!storedCode) {
+    try {
+      const dbCode = await prisma.verificationCode.findFirst({
+        where: {
+          userId,
+          type,
+          verified: false,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+
+      if (dbCode) {
+        storedCode = dbCode.code;
+        expiresAt = dbCode.expiresAt.getTime();
+        attempts = dbCode.attempts;
+        console.log(
+          `[VERIFY] Found in DB - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
+          }`,
+        );
+      } else {
+        console.log("[VERIFY] No code found in DB");
+      }
+    } catch (dbError) {
+      console.error("[VERIFY] Database error:", dbError);
+      return {
+        success: false,
+        verified: false,
+        error: "Error al verificar el código. Por favor, intenta más tarde.",
+      };
     }
   }
 
   // Verificar si existe el código
   if (!storedCode || !expiresAt) {
-    console.log(`[VERIFY] ERROR: No code found`);
+    console.log("[VERIFY] ERROR: No code found");
     return {
       success: false,
       verified: false,
@@ -303,7 +265,11 @@ export async function verifyCode(
 
   // Verificar si expiró
   if (Date.now() > expiresAt) {
-    console.log(`[VERIFY] ERROR: Code expired. Now: ${new Date()}, Expires: ${new Date(expiresAt)}`);
+    console.log(
+      `[VERIFY] ERROR: Code expired. Now: ${new Date()}, Expires: ${new Date(
+        expiresAt,
+      )}`,
+    );
     return {
       success: false,
       verified: false,
@@ -313,7 +279,9 @@ export async function verifyCode(
 
   // Verificar intentos máximos
   if (attempts >= MAX_VERIFICATION_ATTEMPTS) {
-    console.log(`[VERIFY] ERROR: Max attempts reached (${attempts}/${MAX_VERIFICATION_ATTEMPTS})`);
+    console.log(
+      `[VERIFY] ERROR: Max attempts reached (${attempts}/${MAX_VERIFICATION_ATTEMPTS})`,
+    );
     return {
       success: false,
       verified: false,
@@ -333,14 +301,13 @@ export async function verifyCode(
     if (redisData) {
       try {
         const redisKey = `verification:${type}:${userId}`;
-        const parsed = JSON.parse(redisData as string);
+        const parsed = JSON.parse(redisData);
         parsed.attempts = attempts;
         await redis.set(redisKey, JSON.stringify(parsed), {
           ex: Math.floor((expiresAt - Date.now()) / 1000),
         });
       } catch (redisError) {
-        console.error(`[VERIFY] Redis update error:`, redisError);
-        // Continue anyway - DB update is more important
+        console.error("[VERIFY] Redis update error:", redisError);
       }
     }
 
@@ -359,48 +326,57 @@ export async function verifyCode(
     return {
       success: false,
       verified: false,
-      error: `Código incorrecto. Te quedan ${MAX_VERIFICATION_ATTEMPTS - attempts} intentos.`,
+      error: `Código incorrecto. Te quedan ${MAX_VERIFICATION_ATTEMPTS - attempts
+        } intentos.`,
     };
   }
 
-  console.log(`[VERIFY] SUCCESS: Code matched!`);
+  console.log("[VERIFY] SUCCESS: Code matched!");
 
   // Código correcto - marcar como verificado
-  await prisma.verificationCode.updateMany({
-    where: {
-      userId,
-      type,
-      verified: false,
-    },
-    data: {
-      verified: true,
-    },
-  });
-
-  // Actualizar el usuario según el tipo de verificación
-  if (type === "email") {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { emailVerified: new Date() },
-    });
-  } else if (type === "sms") {
-    await prisma.user.update({
-      where: { id: userId },
-      data: { phoneVerified: new Date() },
-    });
-  }
-
-  // Eliminar de Redis
   try {
-    const redisKey = `verification:${type}:${userId}`;
-    await redis.del(redisKey);
-  } catch (redisError) {
-    console.error(`[VERIFY] Redis delete error:`, redisError);
-    // Not critical - code is already marked as verified in DB
-  }
+    await prisma.verificationCode.updateMany({
+      where: {
+        userId,
+        type,
+        verified: false,
+      },
+      data: {
+        verified: true,
+      },
+    });
 
-  return {
-    success: true,
-    verified: true,
-  };
+    // Actualizar el usuario según el tipo de verificación
+    if (type === "email") {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { emailVerified: new Date() },
+      });
+    } else if (type === "sms") {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { phoneVerified: new Date() },
+      });
+    }
+
+    // Eliminar de Redis
+    try {
+      const redisKey = `verification:${type}:${userId}`;
+      await redis.del(redisKey);
+    } catch (redisError) {
+      console.error("[VERIFY] Redis delete error:", redisError);
+    }
+
+    return {
+      success: true,
+      verified: true,
+    };
+  } catch (finalError) {
+    console.error("[VERIFY] Final update error:", finalError);
+    return {
+      success: false,
+      verified: false,
+      error: "Error al actualizar el estado de verificación.",
+    };
+  }
 }

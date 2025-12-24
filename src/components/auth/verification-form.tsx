@@ -14,7 +14,7 @@ import {
   CheckmarkCircle02Icon,
   CancelCircleIcon,
   Mail01Icon,
-  SmartPhone01Icon,
+  // SmartPhone01Icon,
 } from "@hugeicons/core-free-icons";
 import { maskPhoneNumber } from "@/lib/utils/phone";
 
@@ -139,20 +139,21 @@ export function VerificationForm({
   return (
     <div className={className}>
       <div className="flex items-center gap-2 mb-4">
-        {type === "email" ? (
-          <HugeiconsIcon
-            icon={Mail01Icon}
-            className="h-5 w-5 text-muted-foreground"
-          />
-        ) : (
+        {/* {type === "email" ? ( */}
+        <HugeiconsIcon
+          icon={Mail01Icon}
+          className="h-5 w-5 text-muted-foreground"
+        />
+        {/* ) : (
           <HugeiconsIcon
             icon={SmartPhone01Icon}
             className="h-5 w-5 text-muted-foreground"
           />
-        )}
+        )} */}
         <div>
           <p className="text-xs font-medium">
-            {type === "email" ? "Verificación de Email" : "Verificación de SMS"}
+            {/* {type === "email" ? "Verificación de Email" : "Verificación de SMS"} */}
+            Verificación de Email
           </p>
           <p className="text-xs text-muted-foreground">
             Código enviado a {maskedDestination}

@@ -17,10 +17,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar tipo
-    if (type !== "email" && type !== "sms") {
+    if (type !== "email") {
       return NextResponse.json(
         {
-          error: "Tipo inválido. Debe ser 'email' o 'sms'",
+          error: "Tipo inválido. Solo se soporta 'email' por ahora",
         },
         { status: 400 },
       );
@@ -40,6 +40,7 @@ export async function POST(request: NextRequest) {
     const result = await verifyCode(userId, code, type);
 
     if (!result.success) {
+      console.log(`[VERIFY] Verification failed for user ${userId}: ${result.error}`);
       return NextResponse.json(
         {
           success: false,
@@ -62,12 +63,13 @@ export async function POST(request: NextRequest) {
       { status: 200 },
     );
   } catch (error) {
-    console.error("Error en verify-code:", error);
+    console.error("FATAL ERROR in verify-code API:", error);
     return NextResponse.json(
       {
         success: false,
         verified: false,
         error: "Error al procesar la solicitud. Por favor, intenta más tarde.",
+        debug: process.env.NODE_ENV === "development" ? (error as any)?.message : undefined
       },
       { status: 500 },
     );

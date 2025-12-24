@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   sendEmailVerification,
-  sendSMSVerification,
+  // sendSMSVerification,
   checkEmailUniqueness,
-  checkPhoneUniqueness,
+  // checkPhoneUniqueness,
 } from "@/lib/auth/verification-service";
-import { validatePhoneNumber } from "@/lib/sms/twilio";
+// import { validatePhoneNumber } from "@/lib/sms/twilio";
 
 export async function POST(request: NextRequest) {
   try {
@@ -75,6 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    /* 
     // Verificación por SMS
     if (type === "sms") {
       const trimmedPhone = destination.trim();
@@ -115,6 +116,7 @@ export async function POST(request: NextRequest) {
         { status: 200 },
       );
     }
+    */
 
     return NextResponse.json(
       { error: "Tipo de verificación no soportado" },
