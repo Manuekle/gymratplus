@@ -232,8 +232,32 @@ export default function ChatPage() {
                     </div>
                   )}
 
-                  {messages.map((message) => {
+                  {messages.map((message, index) => {
                     const isOwn = message.role === "user";
+
+                    // Check if this is the last message, from assistant, and has no visible content yet
+                    const isLast = index === messages.length - 1;
+                    const isAssistant = message.role === "assistant";
+                    const hasContent = message.parts && message.parts.length > 0 && message.parts.some((part: any) => {
+                      if (part.type === "text") return part.text && part.text.trim() !== "";
+                      if (part.type === "reasoning") return true;
+                      if (part.type.startsWith("tool-")) {
+                        const toolName = part.type.replace("tool-", "");
+                        const state = (part as any).state;
+                        // For tools, only consider having content if we are actually rendering the result
+                        if (['generateTrainingPlan', 'generateNutritionPlan', 'getTodayCalories'].includes(toolName)) {
+                          return state === 'result' || state === 'output-available';
+                        }
+                        if (toolName === 'saveMealEntry') {
+                          return ['approval-requested', 'output-available', 'result', 'output-denied'].includes(state);
+                        }
+                        return false;
+                      }
+                      return true; // Other parts
+                    });
+
+                    if (isLast && isAssistant && !hasContent) return null;
+
                     console.log(
                       "🔍 Rendering message:",
                       message.id,
@@ -333,7 +357,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                              toolInvocation.toolCallId
+                                            toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -349,7 +373,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                              toolInvocation.toolCallId
+                                            toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -511,15 +535,34 @@ export default function ChatPage() {
 
                   {(() => {
                     const lastMessage = messages[messages.length - 1];
+
+                    const hasContent = lastMessage?.parts?.some((part: any) => {
+                      if (part.type === "text") return part.text && part.text.trim() !== "";
+                      if (part.type === "reasoning") return true;
+                      if (part.type.startsWith("tool-")) {
+                        const toolName = part.type.replace("tool-", "");
+                        const state = (part as any).state;
+                        // For tools, only consider having content if we are actually rendering the result
+                        if (['generateTrainingPlan', 'generateNutritionPlan', 'getTodayCalories'].includes(toolName)) {
+                          return state === 'result' || state === 'output-available';
+                        }
+                        if (toolName === 'saveMealEntry') {
+                          return ['approval-requested', 'output-available', 'result', 'output-denied'].includes(state);
+                        }
+                        return false;
+                      }
+                      return true;
+                    });
+
                     const isThinking =
-                      status === "submitted" &&
-                      !messages.some((msg) =>
-                        msg.parts?.some(
-                          (part) =>
-                            "state" in part &&
-                            (part as any).state === "approval-responded",
-                        ),
-                      );
+                      (status === "submitted" &&
+                        !messages.some((msg) =>
+                          msg.parts?.some(
+                            (part) =>
+                              "state" in part &&
+                              (part as any).state === "approval-responded",
+                          ),
+                        )) || (status === "streaming" && lastMessage?.role === "assistant" && !hasContent);
 
                     return (
                       <>

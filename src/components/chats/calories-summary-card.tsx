@@ -1,13 +1,13 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   SteakIcon,
   RiceBowl01Icon,
   FrenchFries02Icon,
 } from "@hugeicons/core-free-icons";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils/utils";
 
 interface CaloriesSummaryCardProps {
   data: {
@@ -35,141 +35,114 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
   const carbsPercentage = (consumed.carbs / targets.carbs) * 100;
   const fatPercentage = (consumed.fat / targets.fat) * 100;
 
-  const isOverCalories = caloriePercentage > 100;
   const remaining = targets.calories - consumed.calories;
 
   return (
-    <div className="w-full space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl tracking-[-0.04em] font-semibold">
-          Calorías de Hoy
-        </h3>
-        <span className="text-xs text-zinc-500">
-          {new Date(data.date).toLocaleDateString("es-ES", {
-            day: "numeric",
-            month: "short",
-          })}
-        </span>
-      </div>
+    <Card className="w-full min-w-[300px] overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold leading-none">Resumen Diario</h3>
+            <p className="text-xs text-muted-foreground mt-1">
+              {new Date(data.date).toLocaleDateString("es-ES", {
+                weekday: "long",
+                day: "numeric",
+                month: "short",
+              })}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] uppercase font-bold text-muted-foreground block tracking-wider">
+              Meta
+            </span>
+            <span className="text-sm font-bold tabular-nums">{targets.calories}</span>
+          </div>
+        </div>
+      </CardHeader>
 
-      {/* Main Calorie Display */}
-      <div className="bg-gradient-to-br from-green-50 to-white dark:from-green-900/20 dark:to-zinc-900/20 border border-zinc-200/50 dark:border-zinc-800/50 p-6 rounded-xl text-center">
-        <div className="text-3xl font-bold tracking-tight">
-          {consumed.calories}
+      <CardContent className="space-y-6">
+        {/* Main Rings/Stats */}
+        <div className="flex items-center gap-6">
+          <div className="flex-1 space-y-1">
+            <div className="text-4xl font-black tracking-tighter tabular-nums leading-none">
+              {consumed.calories}
+              <span className="text-sm font-medium text-muted-foreground ml-1">kcal</span>
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">
+              {remaining > 0
+                ? `${remaining} kcal restantes`
+                : `${Math.abs(remaining)} kcal extra`}
+            </p>
+          </div>
+          <div className="w-24 h-2 bg-primary/10 rounded-full overflow-hidden">
+            <div
+              className={cn(
+                "h-full transition-all duration-500 rounded-full",
+                remaining < 0 ? "bg-red-500" : "bg-primary"
+              )}
+              style={{ width: `${Math.min(caloriePercentage, 100)}%` }}
+            />
+          </div>
         </div>
-        <div className="text-xs text-zinc-500 mt-1">
-          de {targets.calories} kcal
-        </div>
-        <div
-          className={cn(
-            "text-sm font-medium mt-3",
-            isOverCalories
-              ? "text-red-600 dark:text-red-400"
-              : "text-green-600 dark:text-green-400",
-          )}
-        >
-          {isOverCalories
-            ? `+${Math.abs(remaining)} kcal sobre el objetivo`
-            : `${remaining} kcal restantes`}
-        </div>
-      </div>
 
-      {/* Macros Grid */}
-      <div>
-        <h4 className="text-xl tracking-[-0.04em] font-semibold mb-3">
-          Macronutrientes
-        </h4>
-        <div className="grid grid-cols-3 gap-3">
+        {/* Macros */}
+        <div className="grid grid-cols-3 gap-4 pt-2 border-t">
           {/* Protein */}
-          <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900/20 dark:to-zinc-900/20 border-zinc-200/50 dark:border-zinc-800/50">
-            <CardContent className="p-3">
-              <div className="flex flex-col items-center text-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
-                  <HugeiconsIcon
-                    icon={SteakIcon}
-                    className="h-5 w-5 text-blue-600 dark:text-blue-400"
-                  />
-                </div>
-                <div>
-                  <div className="text-xs text-zinc-500">Proteína</div>
-                  <div className="text-sm font-semibold">
-                    {consumed.protein.toFixed(0)}g
-                  </div>
-                  <div className="text-xs text-zinc-400">
-                    / {targets.protein}g
-                  </div>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-blue-500 transition-all duration-1000"
-                    style={{ width: `${Math.min(proteinPercentage, 100)}%` }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-blue-500">
+              <HugeiconsIcon icon={SteakIcon} className="h-4 w-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Prot</span>
+            </div>
+            <div className="h-1.5 w-full bg-blue-500/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 rounded-full transition-all"
+                style={{ width: `${Math.min(proteinPercentage, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold tabular-nums">{consumed.protein.toFixed(0)}g</span>
+              <span className="text-[10px] text-muted-foreground tabular-nums">/ {targets.protein}</span>
+            </div>
+          </div>
 
           {/* Carbs */}
-          <Card className="bg-gradient-to-br from-orange-50 to-white dark:from-orange-900/20 dark:to-zinc-900/20 border-zinc-200/50 dark:border-zinc-800/50">
-            <CardContent className="p-3">
-              <div className="flex flex-col items-center text-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center">
-                  <HugeiconsIcon
-                    icon={RiceBowl01Icon}
-                    className="h-5 w-5 text-orange-600 dark:text-orange-400"
-                  />
-                </div>
-                <div>
-                  <div className="text-xs text-zinc-500">Carbos</div>
-                  <div className="text-sm font-semibold">
-                    {consumed.carbs.toFixed(0)}g
-                  </div>
-                  <div className="text-xs text-zinc-400">
-                    / {targets.carbs}g
-                  </div>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-orange-500 transition-all duration-1000"
-                    style={{ width: `${Math.min(carbsPercentage, 100)}%` }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-orange-500">
+              <HugeiconsIcon icon={RiceBowl01Icon} className="h-4 w-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Carb</span>
+            </div>
+            <div className="h-1.5 w-full bg-orange-500/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-orange-500 rounded-full transition-all"
+                style={{ width: `${Math.min(carbsPercentage, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold tabular-nums">{consumed.carbs.toFixed(0)}g</span>
+              <span className="text-[10px] text-muted-foreground tabular-nums">/ {targets.carbs}</span>
+            </div>
+          </div>
 
           {/* Fat */}
-          <Card className="bg-gradient-to-br from-amber-50 to-white dark:from-amber-900/20 dark:to-zinc-900/20 border-zinc-200/50 dark:border-zinc-800/50">
-            <CardContent className="p-3">
-              <div className="flex flex-col items-center text-center gap-2">
-                <div className="h-10 w-10 rounded-full bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center">
-                  <HugeiconsIcon
-                    icon={FrenchFries02Icon}
-                    className="h-5 w-5 text-amber-600 dark:text-amber-400"
-                  />
-                </div>
-                <div>
-                  <div className="text-xs text-zinc-500">Grasas</div>
-                  <div className="text-sm font-semibold">
-                    {consumed.fat.toFixed(0)}g
-                  </div>
-                  <div className="text-xs text-zinc-400">/ {targets.fat}g</div>
-                </div>
-                {/* Progress bar */}
-                <div className="w-full h-1.5 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-amber-500 transition-all duration-1000"
-                    style={{ width: `${Math.min(fatPercentage, 100)}%` }}
-                  />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="space-y-2">
+            <div className="flex items-center gap-1.5 text-yellow-500">
+              <HugeiconsIcon icon={FrenchFries02Icon} className="h-4 w-4" />
+              <span className="text-[10px] font-bold uppercase tracking-wide">Grasa</span>
+            </div>
+            <div className="h-1.5 w-full bg-yellow-500/10 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-yellow-500 rounded-full transition-all"
+                style={{ width: `${Math.min(fatPercentage, 100)}%` }}
+              />
+            </div>
+            <div className="flex justify-between items-baseline">
+              <span className="text-xs font-bold tabular-nums">{consumed.fat.toFixed(0)}g</span>
+              <span className="text-[10px] text-muted-foreground tabular-nums">/ {targets.fat}</span>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
+      </CardContent>
+    </Card>
+
   );
 }

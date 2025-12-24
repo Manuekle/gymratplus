@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { cn } from "@/lib/utils/utils";
 
 interface FoodEntry {
@@ -66,139 +67,116 @@ export function NutritionPlanCard({
   // Convertir el objeto meals a un array
   const mealsArray = plan.meals
     ? Object.entries(plan.meals)
-        .filter(([_, meal]) => meal !== undefined)
-        .map(([key, meal]) => ({
-          key,
-          name: mealNames[key] || key,
-          ...meal,
-        }))
+      .filter(([_, meal]) => meal !== undefined)
+      .map(([key, meal]) => ({
+        key,
+        name: mealNames[key] || key,
+        ...meal,
+      }))
     : [];
 
   return (
-    <div className="w-full space-y-3">
+    <Card className="w-full min-w-[320px] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold tracking-[-0.04em]">
-          Plan Nutricional
-        </h3>
-        <Badge variant="outline" className="capitalize text-xs">
-          {plan.goal.replace("_", " ")}
-        </Badge>
-      </div>
-
-      {/* Summary */}
-      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-4 rounded-lg">
-        <p className="text-sm font-medium capitalize mb-2">
-          {plan.dietaryType}
-        </p>
-        <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-          <span>{plan.calories} kcal/día</span>
-          <span>•</span>
-          <span>{plan.mealsPerDay} comidas/día</span>
+      <CardHeader className="pb-3 border-b bg-muted/30">
+        <div className="flex items-start justify-between">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <h3 className="text-base font-bold leading-none">Plan Nutricional</h3>
+              <Badge variant="secondary" className="font-bold text-[10px] uppercase tracking-wider">
+                {plan.goal.replace("_", " ")}
+              </Badge>
+            </div>
+            <p className="text-xs text-muted-foreground font-medium capitalize">
+              {plan.dietaryType} • {plan.calories} kcal • {plan.mealsPerDay} comidas
+            </p>
+          </div>
         </div>
+
+        {/* Macros Summary - Compact & Transparent */}
         {plan.macros && (
-          <div className="flex items-center gap-3 text-xs text-zinc-600 dark:text-zinc-400 mt-2">
-            <span>P: {plan.macros.protein}</span>
-            <span>C: {plan.macros.carbs}</span>
-            <span>G: {plan.macros.fat}</span>
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            {[
+              { label: "Proteína", value: plan.macros.protein },
+              { label: "Carbos", value: plan.macros.carbs },
+              { label: "Grasas", value: plan.macros.fat },
+            ].map((macro, i) => (
+              <div key={i} className="flex flex-col p-2 rounded-md bg-background border shadow-sm">
+                <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider mb-0.5">{macro.label}</span>
+                <span className="text-sm font-bold tabular-nums">{macro.value}</span>
+              </div>
+            ))}
           </div>
         )}
-      </div>
+      </CardHeader>
 
-      {/* Meals Tabs */}
-      {mealsArray.length > 0 && (
-        <Tabs defaultValue={mealsArray[0].key} className="w-full">
-          <TabsList className="w-full grid grid-cols-4 h-auto">
-            {mealsArray.map((meal) => (
-              <TabsTrigger
-                key={meal.key}
-                value={meal.key}
-                className="text-xs py-2"
-              >
-                {meal.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-
-          {mealsArray.map((meal) => (
-            <TabsContent key={meal.key} value={meal.key}>
-              <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <h5 className="text-xs font-semibold text-primary">
+      <CardContent className="p-0">
+        {/* Meals Tabs */}
+        {mealsArray.length > 0 ? (
+          <Tabs defaultValue={mealsArray[0]?.key} className="w-full">
+            <div className="px-4 pt-3">
+              <TabsList className="w-full h-9 bg-muted/60 p-1 justify-start">
+                {mealsArray.map((meal) => (
+                  <TabsTrigger
+                    key={meal.key}
+                    value={meal.key}
+                    className="flex-1 text-xs data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  >
                     {meal.name}
-                  </h5>
-                  <span className="text-xs text-zinc-500">
-                    {meal.calories} kcal
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </div>
+
+
+            {mealsArray.map((meal) => (
+              <TabsContent key={meal.key} value={meal.key} className="mt-0 p-4 pt-4 animate-in fade-in-0">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-primary/50"></span>
+                    Detalle de comida
                   </span>
+                  <Badge variant="outline" className="tabular-nums font-mono text-xs">
+                    {meal.calories} kcal
+                  </Badge>
                 </div>
-                <div className="space-y-1.5">
-                  {meal.entries?.map((entry, idx) => {
-                    const totalCals = Math.round(
-                      (entry.food.calories * entry.quantity) /
-                        entry.food.serving,
-                    );
-                    const totalProtein = Math.round(
-                      (entry.food.protein * entry.quantity) /
-                        entry.food.serving,
-                    );
-                    const totalCarbs = Math.round(
-                      (entry.food.carbs * entry.quantity) / entry.food.serving,
-                    );
-                    const totalFat = Math.round(
-                      (entry.food.fat * entry.quantity) / entry.food.serving,
-                    );
-
-                    return (
-                      <div
-                        key={idx}
-                        className="text-xs bg-white dark:bg-zinc-900 p-2 rounded"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="font-medium flex-1">
-                            {entry.food.name} ({entry.quantity}g)
-                          </span>
-                          <span className="text-zinc-500 shrink-0 text-[11px]">
-                            {totalCals} kcal
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-[11px] text-zinc-500 mt-1">
-                          <span>P: {totalProtein}g</span>
-                          <span>•</span>
-                          <span>C: {totalCarbs}g</span>
-                          <span>•</span>
-                          <span>G: {totalFat}g</span>
-                        </div>
+                <div className="space-y-0 border rounded-lg overflow-hidden">
+                  {meal.entries?.map((entry, idx) => (
+                    <div key={idx} className="flex justify-between text-sm items-center p-3 bg-background border-b last:border-0 hover:bg-muted/30 transition-colors">
+                      <div className="flex flex-col">
+                        <span className="font-semibold">{entry.food.name}</span>
+                        <span className="text-xs text-muted-foreground">{entry.quantity}g</span>
                       </div>
-                    );
-                  })}
+                      <span className="text-muted-foreground tabular-nums font-medium text-xs bg-muted/50 px-2 py-1 rounded">
+                        {Math.round((entry.food.calories * entry.quantity) / entry.food.serving)} kcal
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
-      )}
-
-      {/* Fallback */}
-      {mealsArray.length === 0 && plan.description && (
-        <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            {plan.description}
-          </p>
-        </div>
-      )}
+              </TabsContent>
+            ))}
+          </Tabs>
+        ) : (
+          <div className="p-6 text-center">
+            {plan.description && (
+              <p className="text-sm text-muted-foreground italic">
+                {plan.description}
+              </p>
+            )}
+          </div>
+        )}
+      </CardContent>
 
       {/* Save Button */}
-      <div className="flex justify-end py-4">
+      <CardFooter className="bg-muted/20 p-3 border-t">
         <Button
-          variant="default"
-          size="default"
           onClick={onSave}
           disabled={isSaved}
-          className={cn("text-xs", isSaved && "bg-green-800 text-white")}
+          className={cn("w-full font-bold uppercase tracking-wide", isSaved && "bg-green-600 hover:bg-green-700")}
         >
-          {isSaved ? "Guardado" : "Guardar Plan"}
+          {isSaved ? "Plan Guardado" : "Guardar Plan"}
         </Button>
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }
