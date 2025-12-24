@@ -4,7 +4,7 @@ import { publishChatMessage } from "@/lib/database/chat-redis";
 import { publishNotification } from "@/lib/database/redis";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 const messageSchema = z
   .object({
@@ -257,7 +257,7 @@ export async function POST(
     }
 
     // Create message in database
-    const messageDataToCreate: Prisma.ChatMessageCreateInput = {
+    const messageDataToCreate: Prisma.ChatMessageUncheckedCreateInput = {
       chatId,
       senderId: userId,
       content: messageData.content || null,
@@ -298,7 +298,7 @@ export async function POST(
     await publishChatMessage(chatId, {
       id: message.id,
       senderId: message.senderId,
-      content: message.content,
+      content: message.content ?? "",
       createdAt: message.createdAt.toISOString(),
     });
 
@@ -351,11 +351,11 @@ export async function POST(
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
-      console.error("[SEND_MESSAGE_VALIDATION_ERROR]", error.errors);
+      console.error("[SEND_MESSAGE_VALIDATION_ERROR]", error.issues);
       return NextResponse.json(
         {
           error: "Invalid message content",
-          details: error.errors,
+          details: error.issues,
         },
         { status: 400 },
       );

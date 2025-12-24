@@ -8,7 +8,8 @@ export type NotificationType =
   | "weight"
   | "goal"
   | "system"
-  | "chat";
+  | "chat"
+  | "instructor_request";
 
 export interface CreateNotificationParams {
   userId: string;

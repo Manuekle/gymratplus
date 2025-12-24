@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 // Add a TTL constant
 const PROFILE_CACHE_TTL = 60 * 5; // 5 minutes

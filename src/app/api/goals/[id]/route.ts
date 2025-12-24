@@ -5,7 +5,7 @@ import {
   publishGoalNotification,
 } from "@/lib/notifications/goal-notifications";
 import { createNotification } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 // PUT /api/goals/[id] - Actualizar un objetivo específico
 export async function PUT(request: NextRequest) {

@@ -7,7 +7,7 @@ import {
 } from "@/lib/nutrition/nutrition-utils";
 
 export async function POST(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {

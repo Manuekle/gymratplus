@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 const instructorProfileUpdateSchema = z.object({
   bio: z.string().optional(),
@@ -80,7 +80,7 @@ export async function PUT(req: NextRequest) {
     });
 
     return NextResponse.json(updatedProfile, { status: 200 });
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

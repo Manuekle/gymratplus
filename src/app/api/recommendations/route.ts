@@ -171,7 +171,6 @@ export async function POST(req: Request): Promise<NextResponse> {
         profile.gender,
         trainingFrequency,
         workoutType,
-        [],
         "standard",
       );
 
@@ -307,23 +306,23 @@ export async function POST(req: Request): Promise<NextResponse> {
         /(\d+(?:\.\d+)?)/,
       );
       if (proteinMatch) {
-        proteinTarget = parseFloat(proteinMatch[1]);
+        proteinTarget = parseFloat(proteinMatch[1] || "0");
       }
     }
-    if (nutritionPlan.macros.carbs) {
+    if (nutritionPlan.macros?.carbs) {
       const carbsMatch = String(nutritionPlan.macros.carbs).match(
         /(\d+(?:\.\d+)?)/,
       );
       if (carbsMatch) {
-        carbsTarget = parseFloat(carbsMatch[1]);
+        carbsTarget = parseFloat(carbsMatch[1] || "0");
       }
     }
-    if (nutritionPlan.macros.fat) {
+    if (nutritionPlan.macros?.fat) {
       const fatMatch = String(nutritionPlan.macros.fat).match(
         /(\d+(?:\.\d+)?)/,
       );
       if (fatMatch) {
-        fatTarget = parseFloat(fatMatch[1]);
+        fatTarget = parseFloat(fatMatch[1] || "0");
       }
     }
 

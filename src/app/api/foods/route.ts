@@ -184,14 +184,24 @@ export async function PUT() {
         prisma.food.create({
           data: {
             ...food,
-            mealType:
-              food.category === "PROTEINA" || food.category === "CARBOHIDRATO"
-                ? ["desayuno", "almuerzo", "cena"]
-                : food.category === "FRUTA"
-                  ? ["desayuno", "snack"]
-                  : food.category === "VERDURA"
-                    ? ["almuerzo", "cena"]
-                    : ["desayuno", "almuerzo", "cena", "snack"],
+            mealType: [
+              "meat",
+              "fish",
+              "eggs",
+              "dairy",
+              "plant_protein",
+              "supplements",
+              "rice",
+              "pasta",
+              "cereals",
+              "legumes",
+            ].includes(food.category)
+              ? ["desayuno", "almuerzo", "cena"]
+              : food.category === "fruits"
+                ? ["desayuno", "snack"]
+                : food.category === "vegetables"
+                  ? ["almuerzo", "cena"]
+                  : ["desayuno", "almuerzo", "cena", "snack"],
           },
         }),
       ),

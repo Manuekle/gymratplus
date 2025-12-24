@@ -108,8 +108,8 @@ export async function GET() {
       chats.map(async (chat) => {
         const lastMessage = chat.messages[0] || null;
         const otherUser = instructorProfile
-          ? chat.studentInstructor.student
-          : chat.studentInstructor.instructor.user;
+          ? (chat as any).studentInstructor.student
+          : (chat as any).studentInstructor.instructor.user;
 
         // Count unread messages (get all unread messages, not just the last one)
         const unreadCount = await prisma.chatMessage.count({

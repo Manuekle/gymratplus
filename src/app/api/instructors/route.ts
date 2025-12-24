@@ -1,5 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { Prisma } from "@prisma/client";
 import { InstructorFilters } from "@/types/instructor";
 
 // Función para extraer etiquetas de un texto
@@ -38,16 +39,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Construir filtros básicos
-    const whereConditions: {
-      isInstructor: boolean;
-      instructorProfile?: {
-        isNot?: null;
-        country?: string;
-        isRemote?: boolean;
-        pricePerMonth?: { lte: number };
-      };
-      [key: string]: unknown;
-    } = {
+    const whereConditions: Prisma.UserWhereInput = {
       isInstructor: true,
     };
 

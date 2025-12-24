@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { put } from "@vercel/blob";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function POST(request: NextRequest) {
   try {

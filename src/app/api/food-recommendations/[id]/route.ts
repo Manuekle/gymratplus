@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { getFoodRecommendationUnified } from "@/lib/nutrition/food-recommendation-helpers";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {

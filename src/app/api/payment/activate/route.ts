@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../auth";
+import { auth } from "@auth";
 import { getPayPalClient } from "@/lib/paypal/client";
 import { SubscriptionsController } from "@paypal/paypal-server-sdk";
 import {

@@ -95,12 +95,12 @@ export async function POST(request: NextRequest) {
     const emailHtml = await renderPasswordResetCodeEmail({
       code: resetCode,
       userName: user.name ?? undefined,
-      userEmail: user.email,
+      userEmail: user.email ?? undefined,
       expiresIn: "10 minutos",
     });
 
     const emailResult = await sendEmail({
-      to: user.email,
+      to: user.email ?? "",
       subject: "Tu código de verificación - GymRat+",
       html: emailHtml,
     });

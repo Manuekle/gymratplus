@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { foodsToCreate } from "@/data/food";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 const prisma = new PrismaClient();
 
@@ -77,7 +77,7 @@ export async function PUT() {
       message: `Se cargaron ${foods.length} alimentos base correctamente`,
       count: foods.length,
     });
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       {
         error: "Error al cargar los alimentos",

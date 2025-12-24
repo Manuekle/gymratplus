@@ -4,7 +4,7 @@ import { auth } from "@auth";
 
 // DELETE /api/chats/[chatId]/messages - Delete all messages in a chat
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ chatId: string }> },
 ) {
   try {

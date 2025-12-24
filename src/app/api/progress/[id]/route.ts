@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 // GET /api/progress/[id] - Obtener un registro específico
 export async function GET(request: NextRequest) {

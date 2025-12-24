@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
 
 export async function GET() {

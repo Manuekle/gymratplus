@@ -67,7 +67,7 @@ export async function POST(
 
 // GET /api/chats/[chatId]/typing - Get typing status
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ chatId: string }> },
 ) {
   try {

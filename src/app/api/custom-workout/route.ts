@@ -127,7 +127,6 @@ export async function POST(request: NextRequest) {
       profile.gender,
       trainingFrequency,
       splitType,
-      [], // No workout history to consider
       methodology,
     );
 

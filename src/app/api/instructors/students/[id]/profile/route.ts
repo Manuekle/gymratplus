@@ -3,7 +3,7 @@ import { prisma } from "@/lib/database/prisma";
 import { auth } from "@auth";
 
 export async function GET(
-  request: NextRequest,
+  _request: NextRequest,
   { params }: { params: { id: string } },
 ) {
   try {

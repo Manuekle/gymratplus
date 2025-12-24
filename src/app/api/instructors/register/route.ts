@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
 import { createNotification } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 const instructorRegisterSchema = z.object({
   bio: z.string().optional(),
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
       user: updatedUser,
       message: "Perfil de instructor creado correctamente",
     });
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }

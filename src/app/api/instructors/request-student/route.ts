@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { z } from "zod";
 import { createNotification } from "@/lib/notifications/notification-service";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 // Esquema de validación para la solicitud del instructor a un estudiante
 const requestStudentSchema = z.object({
@@ -166,10 +166,10 @@ export async function POST(req: NextRequest) {
       },
       { status: 201 },
     );
-  } catch {
+  } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Datos inválidos", details: error.errors },
+        { error: "Datos inválidos", details: error },
         { status: 400 },
       );
     }

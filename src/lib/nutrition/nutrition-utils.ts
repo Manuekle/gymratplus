@@ -131,6 +131,7 @@ export interface MealLog {
 
 export interface NutritionPlan {
   userId: string;
+  date: Date;
   breakfast: MealLog;
   lunch: MealLog;
   dinner: MealLog;
@@ -348,6 +349,7 @@ export async function createNutritionPlan(
 
   return {
     userId,
+    date: new Date(),
     breakfast,
     lunch,
     dinner,

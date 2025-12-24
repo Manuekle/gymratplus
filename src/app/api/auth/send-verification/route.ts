@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: result.message,
+          message: "message" in result ? result.message : "Código enviado",
           ...("code" in result && result.code ? { code: result.code } : {}),
         },
         { status: 200 },
@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          message: result.message,
+          message: "message" in result ? result.message : "Código enviado",
           ...("code" in result && result.code ? { code: result.code } : {}),
         },
         { status: 200 },

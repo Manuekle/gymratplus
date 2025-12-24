@@ -1,6 +1,6 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "../../../../../auth.ts";
+import { auth } from "@auth";
 
 export async function PUT(req: NextRequest) {
   try {

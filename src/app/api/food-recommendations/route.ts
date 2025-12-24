@@ -59,19 +59,19 @@ export async function POST(req: NextRequest) {
     if (macros.protein) {
       const proteinMatch = String(macros.protein).match(/(\d+(?:\.\d+)?)/);
       if (proteinMatch) {
-        proteinTarget = parseFloat(proteinMatch[1]);
+        proteinTarget = parseFloat(proteinMatch[1] || "0");
       }
     }
     if (macros.carbs) {
       const carbsMatch = String(macros.carbs).match(/(\d+(?:\.\d+)?)/);
       if (carbsMatch) {
-        carbsTarget = parseFloat(carbsMatch[1]);
+        carbsTarget = parseFloat(carbsMatch[1] || "0");
       }
     }
     if (macros.fat) {
       const fatMatch = String(macros.fat).match(/(\d+(?:\.\d+)?)/);
       if (fatMatch) {
-        fatTarget = parseFloat(fatMatch[1]);
+        fatTarget = parseFloat(fatMatch[1] || "0");
       }
     }
 

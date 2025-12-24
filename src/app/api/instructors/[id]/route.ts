@@ -121,7 +121,7 @@ export async function GET(
     };
 
     return NextResponse.json(response, { status: 200 });
-  } catch {
+  } catch (error) {
     // Handle Prisma errors
     if (error instanceof Prisma.PrismaClientKnownRequestError) {
       switch (error.code) {

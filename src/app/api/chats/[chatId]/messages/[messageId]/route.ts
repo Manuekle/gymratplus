@@ -137,7 +137,7 @@ export async function PATCH(
 
 // DELETE /api/chats/[chatId]/messages/[messageId] - Delete a message
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ chatId: string; messageId: string }> },
 ) {
   try {
