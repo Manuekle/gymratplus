@@ -207,7 +207,7 @@ export function VerificationForm({
             )}
 
             <Button
-              variant="ghost"
+              variant="default"
               size="default"
               onClick={handleResend}
               disabled={countdown > 0 || isResending}

@@ -259,12 +259,16 @@ export async function verifyCode(
   let expiresAt: number | null = null;
   let attempts = 0;
 
+  console.log(`[VERIFY] Checking code for userId: ${userId}, type: ${type}`);
+
   if (redisData) {
     const parsed = JSON.parse(redisData as string);
     storedCode = parsed.code;
     expiresAt = parsed.expiresAt;
     attempts = parsed.attempts || 0;
+    console.log(`[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : 'null'}`);
   } else {
+    console.log(`[VERIFY] Not found in Redis, checking database...`);
     // Si no está en Redis, buscar en base de datos
     const dbCode = await prisma.verificationCode.findFirst({
       where: {
@@ -281,11 +285,15 @@ export async function verifyCode(
       storedCode = dbCode.code;
       expiresAt = dbCode.expiresAt.getTime();
       attempts = dbCode.attempts;
+      console.log(`[VERIFY] Found in DB - attempts: ${attempts}, expires: ${new Date(expiresAt)}`);
+    } else {
+      console.log(`[VERIFY] No code found in DB`);
     }
   }
 
   // Verificar si existe el código
   if (!storedCode || !expiresAt) {
+    console.log(`[VERIFY] ERROR: No code found`);
     return {
       success: false,
       verified: false,
@@ -295,6 +303,7 @@ export async function verifyCode(
 
   // Verificar si expiró
   if (Date.now() > expiresAt) {
+    console.log(`[VERIFY] ERROR: Code expired. Now: ${new Date()}, Expires: ${new Date(expiresAt)}`);
     return {
       success: false,
       verified: false,
@@ -304,6 +313,7 @@ export async function verifyCode(
 
   // Verificar intentos máximos
   if (attempts >= MAX_VERIFICATION_ATTEMPTS) {
+    console.log(`[VERIFY] ERROR: Max attempts reached (${attempts}/${MAX_VERIFICATION_ATTEMPTS})`);
     return {
       success: false,
       verified: false,
@@ -313,17 +323,25 @@ export async function verifyCode(
   }
 
   // Verificar el código
+  console.log(`[VERIFY] Comparing codes - Input: ${code}, Stored: ${storedCode}`);
   if (code !== storedCode) {
     // Incrementar contador de intentos
     attempts++;
+    console.log(`[VERIFY] ERROR: Code mismatch. Attempts now: ${attempts}`);
 
     // Actualizar en Redis
     if (redisData) {
-      const parsed = JSON.parse(redisData as string);
-      parsed.attempts = attempts;
-      await redis.set(redisKey, JSON.stringify(parsed), {
-        ex: Math.floor((expiresAt - Date.now()) / 1000),
-      });
+      try {
+        const redisKey = `verification:${type}:${userId}`;
+        const parsed = JSON.parse(redisData as string);
+        parsed.attempts = attempts;
+        await redis.set(redisKey, JSON.stringify(parsed), {
+          ex: Math.floor((expiresAt - Date.now()) / 1000),
+        });
+      } catch (redisError) {
+        console.error(`[VERIFY] Redis update error:`, redisError);
+        // Continue anyway - DB update is more important
+      }
     }
 
     // Actualizar en base de datos
@@ -344,6 +362,8 @@ export async function verifyCode(
       error: `Código incorrecto. Te quedan ${MAX_VERIFICATION_ATTEMPTS - attempts} intentos.`,
     };
   }
+
+  console.log(`[VERIFY] SUCCESS: Code matched!`);
 
   // Código correcto - marcar como verificado
   await prisma.verificationCode.updateMany({
@@ -371,7 +391,13 @@ export async function verifyCode(
   }
 
   // Eliminar de Redis
-  await redis.del(redisKey);
+  try {
+    const redisKey = `verification:${type}:${userId}`;
+    await redis.del(redisKey);
+  } catch (redisError) {
+    console.error(`[VERIFY] Redis delete error:`, redisError);
+    // Not critical - code is already marked as verified in DB
+  }
 
   return {
     success: true,
