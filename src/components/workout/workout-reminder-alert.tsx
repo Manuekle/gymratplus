@@ -94,8 +94,8 @@ export function WorkoutReminderAlert({
             const sessions = await response.json();
             const completedSessions = Array.isArray(sessions)
               ? sessions.filter(
-                (s: { completed?: boolean }) => s.completed === true,
-              )
+                  (s: { completed?: boolean }) => s.completed === true,
+                )
               : [];
             setHasCompletedWorkouts(completedSessions.length > 0);
           }
@@ -320,7 +320,7 @@ export function WorkoutReminderAlert({
       ];
       const randomMessage =
         motivationalMessages[
-        Math.floor(Math.random() * motivationalMessages.length)
+          Math.floor(Math.random() * motivationalMessages.length)
         ];
       return randomMessage;
     } else if (daysSinceLastWorkout === allowedRestDays + 2) {
@@ -414,10 +414,11 @@ export function WorkoutReminderAlert({
                     return (
                       <div
                         key={index}
-                        className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${isActive
-                          ? `${streakColor.dayColor} text-white shadow-md`
-                          : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
-                          }`}
+                        className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-sm ${
+                          isActive
+                            ? `${streakColor.dayColor} text-white shadow-md`
+                            : "bg-zinc-100 dark:bg-zinc-800 text-zinc-400 dark:text-zinc-500"
+                        }`}
                       >
                         {day}
                       </div>

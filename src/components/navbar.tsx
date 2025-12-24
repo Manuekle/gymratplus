@@ -98,7 +98,8 @@ export function Navbar() {
     isChat?: boolean;
   }[];
 
-  const currentPage = navItems.find((item) => item.active)?.label || "Dashboard";
+  const currentPage =
+    navItems.find((item) => item.active)?.label || "Dashboard";
 
   return (
     <div className="w-full border-b border-zinc-200/50 dark:border-zinc-800/50 bg-background h-14 relative z-50 transition-colors">
@@ -113,10 +114,7 @@ export function Navbar() {
                   size="icon"
                   className="h-9 w-9 text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-900 transition-colors"
                 >
-                  <HugeiconsIcon
-                    icon={Menu01Icon}
-                    className="h-5 w-5"
-                  />
+                  <HugeiconsIcon icon={Menu01Icon} className="h-5 w-5" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent
@@ -124,14 +122,18 @@ export function Navbar() {
                 className="w-56 mt-2 p-2 backdrop-blur-xl bg-white/70 dark:bg-zinc-950/70 border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl shadow-2xl overflow-hidden"
               >
                 {navItems.map(({ href, icon: Icon, label, active, isChat }) => (
-                  <DropdownMenuItem key={href} asChild className="p-0 mb-1 last:mb-0">
+                  <DropdownMenuItem
+                    key={href}
+                    asChild
+                    className="p-0 mb-1 last:mb-0"
+                  >
                     <Link
                       href={href}
                       className={cn(
                         "flex items-center gap-4 px-3.5 py-2.5 text-xs transition-all duration-200 rounded-xl",
                         active
                           ? "bg-zinc-200/60 dark:bg-zinc-800/60 text-zinc-900 dark:text-zinc-100 font-medium shadow-sm"
-                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/40 dark:hover:bg-zinc-800/40"
+                          : "text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100/40 dark:hover:bg-zinc-800/40",
                       )}
                     >
                       <HugeiconsIcon icon={Icon} className="h-4 w-4 shrink-0" />
@@ -199,7 +201,10 @@ export function Navbar() {
                   onSelect={() => signOut({ callbackUrl: "/auth/signin" })}
                   className="m-0.5 p-2 text-destructive focus:text-destructive focus:bg-destructive/5 transition-all duration-200 cursor-pointer rounded-lg flex items-center"
                 >
-                  <HugeiconsIcon icon={Door01Icon} className="mr-2 h-3.5 w-3.5" />
+                  <HugeiconsIcon
+                    icon={Door01Icon}
+                    className="mr-2 h-3.5 w-3.5"
+                  />
                   <span className="text-xs font-medium">Cerrar sesión</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

@@ -301,10 +301,11 @@ export default function BillingPage() {
                     </div>
                     <div className="flex flex-row gap-2 items-center justify-between ">
                       <Button
-                        className={`w-full dark:text-black ${isCurrentPlan
-                          ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
-                          : "bg-black dark:bg-white text-white hover:bg-zinc-900"
-                          }`}
+                        className={`w-full dark:text-black ${
+                          isCurrentPlan
+                            ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
+                            : "bg-black dark:bg-white text-white hover:bg-zinc-900"
+                        }`}
                         size="default"
                         disabled={
                           isDisabled ||
@@ -352,7 +353,6 @@ export default function BillingPage() {
                           </Button>
                         )}
                     </div>
-
 
                     {isCurrentPlan &&
                       session?.user?.subscriptionStatus === "canceled" && (

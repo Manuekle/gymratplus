@@ -136,9 +136,7 @@ export function AINutritionPlanDialog({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Cals</p>
-            <p className="text-xs sm:text-lg font-semibold">
-              {totalCalories}
-            </p>
+            <p className="text-xs sm:text-lg font-semibold">{totalCalories}</p>
           </div>
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Proteína</p>
@@ -190,7 +188,7 @@ export function AINutritionPlanDialog({
                         <p className="font-medium">
                           {Math.round(
                             (entry.food.calories * entry.quantity) /
-                            entry.food.serving,
+                              entry.food.serving,
                           )}{" "}
                           kcal
                         </p>
@@ -198,7 +196,7 @@ export function AINutritionPlanDialog({
                           P:{" "}
                           {Math.round(
                             (entry.food.protein * entry.quantity) /
-                            entry.food.serving,
+                              entry.food.serving,
                           )}
                           g
                         </p>

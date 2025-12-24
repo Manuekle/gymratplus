@@ -239,7 +239,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
     };
 
     // No llamar inmediatamente sendCriticalNotifications ya que checkStreak ya lo maneja si es necesario
-    // sendCriticalNotifications(); 
+    // sendCriticalNotifications();
     const notificationInterval = setInterval(
       sendCriticalNotifications,
       2 * 60 * 60 * 1000,

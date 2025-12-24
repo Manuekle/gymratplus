@@ -1,13 +1,12 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Robot01Icon,
-  RecordIcon,
   ArrowUp01Icon,
-  Add01Icon,
   ArrowLeft01Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
@@ -20,17 +19,34 @@ import { toast } from "sonner";
 import { WorkoutPlanCard } from "@/components/chats/workout-plan-card";
 import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
 import { CaloriesSummaryCard } from "@/components/chats/calories-summary-card";
-import { MealEntryCard } from "@/components/chats/meal-entry-card";
-import { Card, CardAction } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import {
+  Reasoning,
+  ReasoningContent,
+  ReasoningTrigger,
+} from "@/components/ai-elements/reasoning";
+import {
+  Confirmation,
+  ConfirmationAccepted,
+  ConfirmationAction,
+  ConfirmationActions,
+  ConfirmationRejected,
+  ConfirmationRequest,
+  ConfirmationTitle,
+} from "@/components/ai-elements/confirmation";
+import { CheckIcon, XIcon } from "lucide-react";
 
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
 
   // AI Chat configuration
-  const { messages, sendMessage, status } = useChat({
+  const { messages, sendMessage, status, addToolApprovalResponse } = useChat({
     id: "rocco-chat",
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+    }),
   });
 
   const [input, setInput] = useState("");
@@ -167,8 +183,13 @@ export default function ChatPage() {
                 <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
                   {messages.length === 0 && (
                     <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400">
-                      <HugeiconsIcon icon={Robot01Icon} className="h-8 w-8 mb-4" />
-                      <p className="text-3xl tracking-[-0.04em] font-medium">Inicia una charla con Rocco</p>
+                      <HugeiconsIcon
+                        icon={Robot01Icon}
+                        className="h-8 w-8 mb-4"
+                      />
+                      <p className="text-3xl tracking-[-0.04em] font-medium">
+                        Inicia una charla con Rocco
+                      </p>
                     </div>
                   )}
 
@@ -199,30 +220,71 @@ export default function ChatPage() {
                                   </p>
                                 );
                               }
+                              if (part.type === "reasoning") {
+                                const reasoningPart = part as any;
+                                return (
+                                  <Reasoning
+                                    key={i}
+                                    className="mb-4"
+                                    isStreaming={status === "streaming"}
+                                  >
+                                    <ReasoningTrigger />
+                                    <ReasoningContent>
+                                      {reasoningPart.text || "Pensando..."}
+                                    </ReasoningContent>
+                                  </Reasoning>
+                                );
+                              }
                               if (part.type === "tool-invocation") {
                                 const toolInvocation = part as any;
                                 const state = toolInvocation.state;
                                 const toolName = toolInvocation.toolName;
                                 const result =
-                                  toolInvocation.result ?? toolInvocation.output;
+                                  toolInvocation.result ??
+                                  toolInvocation.output;
 
                                 if (
-                                  (toolName === "generateTrainingPlan" || toolName === "generateNutritionPlan") &&
-                                  (state === "result" || state === "output-available")
+                                  (toolName === "generateTrainingPlan" ||
+                                    toolName === "generateNutritionPlan") &&
+                                  (state === "result" ||
+                                    state === "output-available")
                                 ) {
                                   return (
-                                    <div key={toolInvocation.toolCallId} className="mt-4 border rounded-lg bg-background overflow-hidden">
+                                    <div
+                                      key={toolInvocation.toolCallId}
+                                      className="mt-4 border rounded-lg bg-background overflow-hidden"
+                                    >
                                       {toolName === "generateTrainingPlan" ? (
                                         <WorkoutPlanCard
                                           plan={result}
-                                          onSave={() => handleSavePlan("workout", result, toolInvocation.toolCallId)}
-                                          isSaved={savedPlans[toolInvocation.toolCallId]}
+                                          onSave={() =>
+                                            handleSavePlan(
+                                              "workout",
+                                              result,
+                                              toolInvocation.toolCallId,
+                                            )
+                                          }
+                                          isSaved={
+                                            savedPlans[
+                                              toolInvocation.toolCallId
+                                            ]
+                                          }
                                         />
                                       ) : (
                                         <NutritionPlanCard
                                           plan={result}
-                                          onSave={() => handleSavePlan("nutrition", result, toolInvocation.toolCallId)}
-                                          isSaved={savedPlans[toolInvocation.toolCallId]}
+                                          onSave={() =>
+                                            handleSavePlan(
+                                              "nutrition",
+                                              result,
+                                              toolInvocation.toolCallId,
+                                            )
+                                          }
+                                          isSaved={
+                                            savedPlans[
+                                              toolInvocation.toolCallId
+                                            ]
+                                          }
                                         />
                                       )}
                                     </div>
@@ -231,24 +293,126 @@ export default function ChatPage() {
 
                                 if (
                                   toolName === "getTodayCalories" &&
-                                  (state === "result" || state === "output-available")
+                                  (state === "result" ||
+                                    state === "output-available")
                                 ) {
                                   return (
-                                    <div key={toolInvocation.toolCallId} className="mt-4">
+                                    <div
+                                      key={toolInvocation.toolCallId}
+                                      className="mt-4"
+                                    >
                                       <CaloriesSummaryCard data={result} />
                                     </div>
                                   );
                                 }
 
-                                if (
-                                  toolName === "saveMealEntry" &&
-                                  (state === "result" || state === "output-available")
-                                ) {
-                                  return (
-                                    <div key={toolInvocation.toolCallId} className="mt-4">
-                                      <MealEntryCard data={result} />
-                                    </div>
-                                  );
+                                if (toolName === "saveMealEntry") {
+                                  // Show confirmation when approval is requested
+                                  if (state === "approval-requested") {
+                                    const input = toolInvocation.input;
+                                    return (
+                                      <div
+                                        key={toolInvocation.toolCallId}
+                                        className="mt-4"
+                                      >
+                                        <Confirmation
+                                          approval={toolInvocation.approval}
+                                          state={state}
+                                        >
+                                          <ConfirmationTitle>
+                                            <ConfirmationRequest>
+                                              ¿Quieres guardar esta comida?
+                                              <br />
+                                              <strong>
+                                                {input.foodName}
+                                              </strong>{" "}
+                                              - {input.estimatedCalories} kcal
+                                              <br />
+                                              <span className="text-sm text-muted-foreground">
+                                                Proteínas:{" "}
+                                                {input.estimatedProtein}g |
+                                                Carbos: {input.estimatedCarbs}g
+                                                | Grasas: {input.estimatedFat}g
+                                              </span>
+                                            </ConfirmationRequest>
+                                            <ConfirmationAccepted>
+                                              <CheckIcon className="size-4 text-green-600 dark:text-green-400" />
+                                              <span>Comida guardada</span>
+                                            </ConfirmationAccepted>
+                                            <ConfirmationRejected>
+                                              <XIcon className="size-4 text-destructive" />
+                                              <span>Guardado cancelado</span>
+                                            </ConfirmationRejected>
+                                          </ConfirmationTitle>
+                                          <ConfirmationActions>
+                                            <ConfirmationAction
+                                              onClick={() =>
+                                                addToolApprovalResponse({
+                                                  id: toolInvocation.approval
+                                                    .id,
+                                                  approved: false,
+                                                })
+                                              }
+                                              variant="outline"
+                                            >
+                                              Rechazar
+                                            </ConfirmationAction>
+                                            <ConfirmationAction
+                                              onClick={() =>
+                                                addToolApprovalResponse({
+                                                  id: toolInvocation.approval
+                                                    .id,
+                                                  approved: true,
+                                                })
+                                              }
+                                              variant="default"
+                                            >
+                                              Guardar
+                                            </ConfirmationAction>
+                                          </ConfirmationActions>
+                                        </Confirmation>
+                                      </div>
+                                    );
+                                  }
+
+                                  // Show result after approval
+                                  if (state === "output-available") {
+                                    return (
+                                      <div
+                                        key={toolInvocation.toolCallId}
+                                        className="mt-4"
+                                      >
+                                        <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
+                                          <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                                            <CheckIcon className="size-5" />
+                                            <p className="font-medium">
+                                              {result.message ||
+                                                "Comida guardada correctamente"}
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  }
+
+                                  // Show rejection message
+                                  if (state === "output-denied") {
+                                    return (
+                                      <div
+                                        key={toolInvocation.toolCallId}
+                                        className="mt-4"
+                                      >
+                                        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
+                                          <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+                                            <XIcon className="size-5" />
+                                            <p className="font-medium">
+                                              Guardado cancelado
+                                            </p>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  }
                                 }
                               }
                               return null;
@@ -259,12 +423,25 @@ export default function ChatPage() {
                     );
                   })}
 
-                  {status === "streaming" && (
-                    <div className="flex gap-4 animate-pulse">
-                      <div className="h-8 w-8 rounded-sm bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800" />
-                      <div className="h-4 w-12 bg-zinc-100 dark:bg-zinc-900 rounded mt-2" />
-                    </div>
-                  )}
+                  {(() => {
+                    const lastMessage = messages[messages.length - 1];
+                    return (
+                      status === "streaming" &&
+                      messages.length > 0 &&
+                      lastMessage?.role === "user" && (
+                        <div className="flex justify-start">
+                          <div className="max-w-[85%] md:max-w-[70%]">
+                            <Reasoning isStreaming={true}>
+                              <ReasoningTrigger />
+                              <ReasoningContent>
+                                Rocco está pensando en tu pregunta...
+                              </ReasoningContent>
+                            </Reasoning>
+                          </div>
+                        </div>
+                      )
+                    );
+                  })()}
                 </div>
               </ScrollArea>
 
@@ -274,23 +451,30 @@ export default function ChatPage() {
                   onSubmit={handleSubmit}
                   className="max-w-3xl mx-auto flex flex-col items-center gap-2"
                 >
-
                   {/* aqui agrego botones que digan crear plan de entrenamiento y crear plan de nutricion */}
                   <Suggestions>
                     <Suggestion
-                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      onClick={(suggestion) =>
+                        sendMessage({ text: suggestion })
+                      }
                       suggestion="Crear plan de entrenamiento"
                     />
                     <Suggestion
-                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      onClick={(suggestion) =>
+                        sendMessage({ text: suggestion })
+                      }
                       suggestion="Crear plan de nutrición"
                     />
                     <Suggestion
-                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      onClick={(suggestion) =>
+                        sendMessage({ text: suggestion })
+                      }
                       suggestion="¿Cuántas calorías tengo hoy?"
                     />
                     <Suggestion
-                      onClick={(suggestion) => sendMessage({ text: suggestion })}
+                      onClick={(suggestion) =>
+                        sendMessage({ text: suggestion })
+                      }
                       suggestion="Me comí una hamburguesa"
                     />
                   </Suggestions>
@@ -311,12 +495,14 @@ export default function ChatPage() {
                         disabled={!input.trim() || status === "streaming"}
                         className="h-8 w-8 rounded-full bg-zinc-950 dark:bg-zinc-50 text-white dark:text-zinc-950 hover:bg-zinc-800 dark:hover:bg-zinc-200 shrink-0 transition-transform active:scale-95 shadow-sm"
                       >
-                        <HugeiconsIcon icon={ArrowUp01Icon} className="h-4 w-4" />
+                        <HugeiconsIcon
+                          icon={ArrowUp01Icon}
+                          className="h-4 w-4"
+                        />
                       </Button>
                     </div>
                   </div>
                 </form>
-
               </div>
             </div>
           ) : selectedChat ? (
@@ -328,7 +514,9 @@ export default function ChatPage() {
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-zinc-400 space-y-4">
               <HugeiconsIcon icon={Robot01Icon} className="h-10 w-10" />
-              <p className="text-3xl tracking-[-0.04em] font-medium">Selecciona un chat</p>
+              <p className="text-3xl tracking-[-0.04em] font-medium">
+                Selecciona un chat
+              </p>
             </div>
           )}
         </div>

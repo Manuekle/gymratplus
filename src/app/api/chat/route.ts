@@ -61,6 +61,8 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
     messages: await convertToModelMessages(messages),
     system: `Eres Rocco, un entrenador personal experto y motivador de GymRat+.
 
+IMPORTANTE: SIEMPRE responde en ESPAÑOL. Nunca uses inglés en tus respuestas.
+
 TU PERSONALIDAD:
 - Enérgico, profesional y directo.
 - Usas emojis ocasionalmente para dar calidez 🏋️‍♂️💪.
@@ -114,11 +116,11 @@ INSTRUCCIONES IMPORTANTES:
         }),
         execute: async (params: {
           focus:
-          | "fuerza"
-          | "hipertrofia"
-          | "resistencia"
-          | "perdida_peso"
-          | "flexibilidad";
+            | "fuerza"
+            | "hipertrofia"
+            | "resistencia"
+            | "perdida_peso"
+            | "flexibilidad";
           daysPerWeek: number;
           durationMinutes: number;
           difficulty: "principiante" | "intermedio" | "avanzado";
@@ -181,7 +183,7 @@ INSTRUCCIONES IMPORTANTES:
               carbs: acc.carbs + log.carbs,
               fat: acc.fat + log.fat,
             }),
-            { calories: 0, protein: 0, carbs: 0, fat: 0 }
+            { calories: 0, protein: 0, carbs: 0, fat: 0 },
           );
 
           return {
@@ -204,9 +206,7 @@ INSTRUCCIONES IMPORTANTES:
           estimatedCalories: z
             .number()
             .describe("Calorías estimadas de la comida"),
-          estimatedProtein: z
-            .number()
-            .describe("Proteína estimada en gramos"),
+          estimatedProtein: z.number().describe("Proteína estimada en gramos"),
           estimatedCarbs: z
             .number()
             .describe("Carbohidratos estimados en gramos"),
@@ -219,6 +219,7 @@ INSTRUCCIONES IMPORTANTES:
             .default(1)
             .describe("Cantidad/porciones (default 1)"),
         }),
+        requiresApproval: true,
         execute: async (params: {
           foodName: string;
           estimatedCalories: number;
@@ -228,17 +229,26 @@ INSTRUCCIONES IMPORTANTES:
           mealType: "desayuno" | "almuerzo" | "cena" | "snack";
           quantity: number;
         }) => {
-          // Return the estimation for user to confirm/adjust
-          // The actual save will happen when user confirms via the UI
+          // This executes only after user approval
+          const mealLog = await prisma.mealLog.create({
+            data: {
+              userId: user.id,
+              mealType: params.mealType,
+              consumedAt: new Date(),
+              foodId: null,
+              recipeId: null,
+              quantity: params.quantity,
+              calories: Math.round(params.estimatedCalories),
+              protein: Number.parseFloat(params.estimatedProtein.toFixed(2)),
+              carbs: Number.parseFloat(params.estimatedCarbs.toFixed(2)),
+              fat: Number.parseFloat(params.estimatedFat.toFixed(2)),
+            },
+          });
+
           return {
-            foodName: params.foodName,
-            estimatedCalories: params.estimatedCalories,
-            estimatedProtein: params.estimatedProtein,
-            estimatedCarbs: params.estimatedCarbs,
-            estimatedFat: params.estimatedFat,
-            mealType: params.mealType,
-            quantity: params.quantity,
-            needsConfirmation: true,
+            success: true,
+            message: `${params.foodName} guardado correctamente`,
+            mealLog,
           };
         },
       },

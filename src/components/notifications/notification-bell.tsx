@@ -125,7 +125,9 @@ export function NotificationBell() {
         align="end"
       >
         <div className="p-3.5 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-between">
-          <h4 className="font-medium text-xs text-zinc-900 dark:text-zinc-100">Notificaciones</h4>
+          <h4 className="font-medium text-xs text-zinc-900 dark:text-zinc-100">
+            Notificaciones
+          </h4>
           {unreadCount > 0 && (
             <Button
               onClick={handleMarkAllAsRead}

@@ -168,16 +168,16 @@ export default function QRCodePage() {
 
               {(session?.user?.subscriptionStatus === "active" ||
                 session?.user?.subscriptionStatus === "trialing") && (
-                  <VerifiedBadge
-                    variant={
-                      session?.user?.subscriptionTier === "PRO"
-                        ? "pro"
-                        : isInstructor
-                          ? "instructor"
-                          : "default"
-                    }
-                  />
-                )}
+                <VerifiedBadge
+                  variant={
+                    session?.user?.subscriptionTier === "PRO"
+                      ? "pro"
+                      : isInstructor
+                        ? "instructor"
+                        : "default"
+                  }
+                />
+              )}
             </div>
           </div>
 

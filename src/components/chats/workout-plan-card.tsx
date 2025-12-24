@@ -123,7 +123,7 @@ export function WorkoutPlanCard({
           className={cn(
             "text-xs h-8 gap-1.5",
             isSaved &&
-            "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
+              "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
           )}
         >
           {isSaved ? (

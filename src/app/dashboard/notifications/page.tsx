@@ -122,19 +122,19 @@ export default function NotificationsPage() {
             <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />{" "}
             Volver al dashboard
           </Button>
-
         </div>
       </div>
 
       <div className="space-y-4 mb-6">
-
-
         <div className="flex md:flex-row flex-col justify-between items-center gap-6">
           <div className="flex items-center gap-2 w-full">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button size="default" variant="outline" className="text-xs">
-                  <HugeiconsIcon icon={FilterAddIcon} className="mr-2 h-4 w-4" />
+                  <HugeiconsIcon
+                    icon={FilterAddIcon}
+                    className="mr-2 h-4 w-4"
+                  />
                   Filtrar
                   {selectedTypes.length > 0 && (
                     <span className="ml-1.5 px-1.5 py-0.5 text-xs bg-primary text-primary-foreground rounded-full">
@@ -196,7 +196,6 @@ export default function NotificationsPage() {
           <div className="flex justify-end md:w-auto w-full">
             <PushNotificationManager className="w-full" />
           </div>
-
         </div>
       </div>
 
@@ -269,13 +268,18 @@ export default function NotificationsPage() {
               {Object.entries(groupedNotifications).map(
                 ([date, notifications], index) => (
                   <div key={date}>
-                    <div className={`px-4 py-2 text-xs font-medium text-muted-foreground border-b bg-muted/30 ${index > 0 ? 'border-t' : ''}`}>
+                    <div
+                      className={`px-4 py-2 text-xs font-medium text-muted-foreground border-b bg-muted/30 ${index > 0 ? "border-t" : ""}`}
+                    >
                       {formatGroupDate(date)}
                     </div>
                     <div>
                       <AnimatePresence mode="popLayout">
                         {notifications.map((notification, notifIndex) => (
-                          <div key={notification.id} className={notifIndex > 0 ? 'border-t' : ''}>
+                          <div
+                            key={notification.id}
+                            className={notifIndex > 0 ? "border-t" : ""}
+                          >
                             <NotificationItem
                               notification={notification}
                               onMarkAsRead={markAsRead}

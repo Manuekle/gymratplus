@@ -112,9 +112,9 @@ INSTRUCCIONES:
 ${userContext}
 ALIMENTOS:
 ${foods
-        .slice(0, 100)
-        .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
-        .join("\n")}
+  .slice(0, 100)
+  .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
+  .join("\n")}
 
 FORMATO JSON:
 {

@@ -11,7 +11,7 @@ const NotificationSkeleton = ({ cantidad = 5 }) => {
       {Array.from({ length: cantidadNotificaciones }).map((_, index) => (
         <div
           key={index}
-          className={`flex items-center gap-4 p-3.5 ${index > 0 ? 'border-t' : ''}`}
+          className={`flex items-center gap-4 p-3.5 ${index > 0 ? "border-t" : ""}`}
         >
           <div className="flex-shrink-0">
             <Skeleton className="h-8 w-8 rounded-full" />
