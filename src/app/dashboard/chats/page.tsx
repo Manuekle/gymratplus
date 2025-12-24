@@ -247,23 +247,36 @@ export default function ChatPage() {
               <div className="p-4 md:p-6 bg-background sticky bottom-0 border-t md:border-t-0">
                 <form
                   onSubmit={handleSubmit}
-                  className="max-w-3xl mx-auto flex items-center gap-2"
+                  className="max-w-3xl mx-auto flex flex-col items-center gap-2"
                 >
-                  <div className="flex-1 flex items-center gap-2 border rounded-full px-4 py-1.5 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 transition-colors focus-within:border-zinc-400 dark:focus-within:border-zinc-600">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-full shrink-0 text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
-                    >
-                      <HugeiconsIcon icon={Add01Icon} className="h-5 w-5" />
-                    </Button>
 
+                  {/* aqui agrego botones que digan crear plan de entrenamiento y crear plan de nutricion */}
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => {
+                        sendMessage({ text: "create workout plan" });
+                      }}
+                      variant="outline"
+                      type="button"
+                    >
+                      Crear plan de entrenamiento
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        sendMessage({ text: "create nutrition plan" });
+                      }}
+                      variant="outline"
+                      type="button"
+                    >
+                      Crear plan de nutricion
+                    </Button>
+                  </div>
+                  <div className="w-full flex-1 flex items-center gap-2 border rounded-full px-4 py-1.5 bg-zinc-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 transition-colors focus-within:border-zinc-400 dark:focus-within:border-zinc-600">
                     <Input
                       placeholder="Escribe un mensaje..."
                       value={input}
                       onChange={handleInputChange}
-                      className="flex-1 border-0 focus-visible:ring-0 bg-zinc-50 dark:bg-zinc-900 h-10 text-xs placeholder:text-zinc-400 px-0"
+                      className="flex-1 border-0 focus-visible:ring-0 bg-zinc-50 dark:bg-zinc-900 h-10 text-xs placeholder:text-zinc-400 px-0 shadow-none"
                       disabled={status === "streaming"}
                       autoComplete="off"
                     />
