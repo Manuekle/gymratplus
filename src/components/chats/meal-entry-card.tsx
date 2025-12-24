@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,11 +12,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Loading03Icon, Tick02Icon, RiceBowl01Icon } from "@hugeicons/core-free-icons";
+import { Loading03Icon, Tick02Icon } from "@hugeicons/core-free-icons";
 
 interface MealEntryCardProps {
   data: {
@@ -71,131 +70,156 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
   };
 
   return (
-    <Card className="w-full min-w-[300px] overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-            <HugeiconsIcon icon={RiceBowl01Icon} className="w-4 h-4" />
-          </div>
-          <div className="space-y-0.5">
-            <h3 className="text-sm font-bold leading-none">{data.foodName}</h3>
-            <p className="text-[10px] text-muted-foreground uppercase font-medium tracking-wide">
-              {mealType}
+    <Card className="overflow-hidden border-zinc-200/50 dark:border-zinc-800/50 bg-gradient-to-br from-zinc-50/50 to-white dark:from-zinc-950/50 dark:to-zinc-900/50">
+      <div className="p-5 space-y-4">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div>
+            <h3 className="text-base font-semibold tracking-tight">
+              {data.foodName}
+            </h3>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Estimación de calorías y macros
             </p>
           </div>
+          {isSaved && (
+            <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
+              <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4" />
+              <span className="text-xs font-medium">Guardado</span>
+            </div>
+          )}
         </div>
 
-        {isSaved ? (
-          <Badge variant="outline" className="bg-green-500/10 text-green-600 border-green-500/20 gap-1 pr-2">
-            <HugeiconsIcon icon={Tick02Icon} className="w-3 h-3" />
-            GUARDADO
-          </Badge>
-        ) : (
-          <Badge variant="secondary" className="bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
-            EDITAR
-          </Badge>
-        )}
-      </CardHeader>
-
-      <CardContent className="space-y-4">
-        {/* Main Inputs */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Calorías</Label>
-            <div className="relative">
-              <Input
-                type="number"
-                value={calories}
-                onChange={(e) => setCalories(Number(e.target.value))}
-                disabled={isSaved}
-                className="h-9 pr-8 tabular-nums font-medium"
-                placeholder="0"
-              />
-              <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground pointer-events-none">kcal</span>
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase text-muted-foreground font-bold tracking-wider">Porciones</Label>
+        {/* Editable Fields */}
+        <div className="grid grid-cols-2 gap-3">
+          {/* Calories */}
+          <div className="space-y-1.5">
+            <Label htmlFor="calories" className="text-xs">
+              Calorías
+            </Label>
             <Input
+              id="calories"
               type="number"
-              step="0.5"
+              value={calories}
+              onChange={(e) => setCalories(Number(e.target.value))}
+              disabled={isSaved}
+              className="h-9 text-sm"
+            />
+          </div>
+
+          {/* Quantity */}
+          <div className="space-y-1.5">
+            <Label htmlFor="quantity" className="text-xs">
+              Cantidad
+            </Label>
+            <Input
+              id="quantity"
+              type="number"
+              step="0.1"
               value={quantity}
               onChange={(e) => setQuantity(Number(e.target.value))}
               disabled={isSaved}
-              className="h-9 tabular-nums font-medium"
+              className="h-9 text-sm"
             />
           </div>
-        </div>
 
-        {/* Macros */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase text-blue-500 font-bold tracking-wider">Prot (g)</Label>
+          {/* Protein */}
+          <div className="space-y-1.5">
+            <Label htmlFor="protein" className="text-xs">
+              Proteína (g)
+            </Label>
             <Input
+              id="protein"
               type="number"
+              step="0.1"
               value={protein}
               onChange={(e) => setProtein(Number(e.target.value))}
               disabled={isSaved}
-              className="h-8 text-xs tabular-nums bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800/30 focus-visible:ring-blue-500/30"
+              className="h-9 text-sm"
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase text-orange-500 font-bold tracking-wider">Carb (g)</Label>
+
+          {/* Carbs */}
+          <div className="space-y-1.5">
+            <Label htmlFor="carbs" className="text-xs">
+              Carbohidratos (g)
+            </Label>
             <Input
+              id="carbs"
               type="number"
+              step="0.1"
               value={carbs}
               onChange={(e) => setCarbs(Number(e.target.value))}
               disabled={isSaved}
-              className="h-8 text-xs tabular-nums bg-orange-50/50 dark:bg-orange-900/10 border-orange-200 dark:border-orange-800/30 focus-visible:ring-orange-500/30"
+              className="h-9 text-sm"
             />
           </div>
-          <div className="space-y-2">
-            <Label className="text-[10px] uppercase text-yellow-500 font-bold tracking-wider">Grasa (g)</Label>
+
+          {/* Fat */}
+          <div className="space-y-1.5">
+            <Label htmlFor="fat" className="text-xs">
+              Grasas (g)
+            </Label>
             <Input
+              id="fat"
               type="number"
+              step="0.1"
               value={fat}
               onChange={(e) => setFat(Number(e.target.value))}
               disabled={isSaved}
-              className="h-8 text-xs tabular-nums bg-yellow-50/50 dark:bg-yellow-900/10 border-yellow-200 dark:border-yellow-800/30 focus-visible:ring-yellow-500/30"
+              className="h-9 text-sm"
             />
           </div>
+
+          {/* Meal Type */}
+          <div className="space-y-1.5">
+            <Label htmlFor="mealType" className="text-xs">
+              Tipo de comida
+            </Label>
+            <Select
+              value={mealType}
+              onValueChange={(value: any) => setMealType(value)}
+              disabled={isSaved}
+            >
+              <SelectTrigger className="h-9 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desayuno">Desayuno</SelectItem>
+                <SelectItem value="almuerzo">Almuerzo</SelectItem>
+                <SelectItem value="cena">Cena</SelectItem>
+                <SelectItem value="snack">Snack</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
-      </CardContent>
 
-      <CardFooter className="pt-0 flex gap-3">
-        <Select
-          value={mealType}
-          onValueChange={(value: any) => setMealType(value)}
-          disabled={isSaved}
-        >
-          <SelectTrigger className="h-9 w-[130px] text-xs font-medium">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="desayuno">Desayuno</SelectItem>
-            <SelectItem value="almuerzo">Almuerzo</SelectItem>
-            <SelectItem value="cena">Cena</SelectItem>
-            <SelectItem value="snack">Snack</SelectItem>
-          </SelectContent>
-        </Select>
-
+        {/* Save Button */}
         {!isSaved && (
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="flex-1 h-9 text-xs font-bold uppercase tracking-wide"
+            className="w-full h-9 text-sm"
           >
             {isSaving ? (
-              <HugeiconsIcon
-                icon={Loading03Icon}
-                className="h-3 w-3 animate-spin mr-2"
-              />
+              <>
+                <HugeiconsIcon
+                  icon={Loading03Icon}
+                  className="h-4 w-4 mr-2 animate-spin"
+                />
+                Guardando...
+              </>
             ) : (
-              "Confirmar"
+              "Guardar comida"
             )}
           </Button>
         )}
-      </CardFooter>
+
+        {/* Info */}
+        <p className="text-xs text-zinc-500 text-center">
+          Puedes ajustar los valores antes de guardar
+        </p>
+      </div>
     </Card>
   );
 }

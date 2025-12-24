@@ -41,7 +41,7 @@ export const metadata: Metadata = {
       description:
         "Transforma tu cuerpo, transforma tu vida. Planes de entrenamiento personalizados y nutrición inteligente.",
     },
-    manifest: "/manifest.json",
+
   }),
   icons: {
     icon: [

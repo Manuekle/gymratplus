@@ -37,7 +37,7 @@ import {
   FilterAddIcon,
   Notification01Icon,
 } from "@hugeicons/core-free-icons";
-import { PushNotificationManager } from "@/components/pwa/push-manager";
+
 import { Card } from "@/components/ui/card";
 
 export default function NotificationsPage() {
@@ -193,9 +193,7 @@ export default function NotificationsPage() {
               </>
             )}
           </div>
-          <div className="flex justify-end md:w-auto w-full">
-            <PushNotificationManager className="w-full" />
-          </div>
+
         </div>
       </div>
 

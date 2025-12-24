@@ -168,7 +168,7 @@ export default function ChatPage() {
               <button
                 type="button"
                 className={cn(
-                  "w-full p-2.5 rounded-lg text-left flex items-center gap-3 transition-all",
+                  "p-2.5 rounded-lg text-left flex items-center gap-3 transition-all w-full",
                   selectedChatId === "rocco-ai"
                     ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white"
                     : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50",
@@ -554,6 +554,15 @@ export default function ChatPage() {
                       return true;
                     });
 
+                    const hasPendingTool = lastMessage?.parts?.some((part: any) => {
+                      if (part.type.startsWith("tool-")) {
+                        const state = part.state;
+                        // Consider 'call' state as pending
+                        return state === 'call' || state === 'uploading';
+                      }
+                      return false;
+                    });
+
                     const isThinking =
                       (status === "submitted" &&
                         !messages.some((msg) =>
@@ -562,7 +571,7 @@ export default function ChatPage() {
                               "state" in part &&
                               (part as any).state === "approval-responded",
                           ),
-                        )) || (status === "streaming" && lastMessage?.role === "assistant" && !hasContent);
+                        )) || (status === "streaming" && lastMessage?.role === "assistant" && !hasContent) || hasPendingTool;
 
                     return (
                       <>

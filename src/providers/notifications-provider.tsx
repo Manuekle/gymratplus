@@ -183,19 +183,7 @@ export function NotificationsProvider({
         if (newOnes.length > 0) {
           onNewNotificationsRef.current(newOnes);
 
-          // Mostrar notificaciones del navegador para nuevas notificaciones
-          if (typeof window !== "undefined" && "Notification" in window) {
-            if (Notification.permission === "granted") {
-              newOnes.forEach((notification) => {
-                new Notification(notification.title, {
-                  body: notification.message,
-                  icon: "/favicon.ico",
-                  badge: "/favicon.ico",
-                  tag: notification.id,
-                });
-              });
-            }
-          }
+
         }
       }
 

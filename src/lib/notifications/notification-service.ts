@@ -41,77 +41,7 @@ export async function createNotification({
     },
   });
 
-  // Send Push Notification
-  try {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore - PushSubscription is generated but not picked up by IDE sometimes
-    const subscriptions = await prisma.pushSubscription.findMany({
-      where: { userId },
-    });
 
-    console.log(
-      `[Push] Found ${subscriptions.length} subscriptions for user ${userId}`,
-    );
-
-    if (subscriptions.length > 0) {
-      // Import web-push dynamically to avoid issues in edge runtimes if applicable
-      // though this is a server action/lib, dynamic import is safer for optional deps
-      const webpushModule = await import("web-push");
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const webpush = webpushModule.default || webpushModule;
-
-      // Ensure VAPID keys are available
-      if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-        webpush.setVapidDetails(
-          process.env.VAPID_SUBJECT || "mailto:support@gymratplus.com",
-          process.env.VAPID_PUBLIC_KEY,
-          process.env.VAPID_PRIVATE_KEY,
-        );
-
-        const payload = JSON.stringify({
-          title,
-          body: message,
-          url: "/dashboard/notifications", // Default URL, could be improved with type-specific URLs
-          tag: notification.id,
-        });
-
-        console.log(`[Push] Sending payload: ${payload}`);
-
-        const results = await Promise.allSettled(
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          subscriptions.map((sub: any) =>
-            webpush.sendNotification(
-              {
-                endpoint: sub.endpoint,
-                keys: {
-                  p256dh: sub.p256dh,
-                  auth: sub.auth,
-                },
-              },
-              payload,
-            ),
-          ),
-        );
-
-        results.forEach((result, index) => {
-          if (result.status === "rejected") {
-            console.error(
-              `[Push] Failed to send to subscription ${index}:`,
-              result.reason,
-            );
-          } else {
-            console.log(`[Push] Successfully sent to subscription ${index}`);
-          }
-        });
-      } else {
-        console.warn("[Push] VAPID keys not configured");
-      }
-    }
-  } catch (error) {
-    console.error("Error sending push notification:", error);
-    // Don't fail the notification creation if push fails
-  }
 
   return notification;
 }
