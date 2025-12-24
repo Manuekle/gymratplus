@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cn } from "@/lib/utils/utils";
 
 interface WaterBottleProps {
@@ -11,6 +11,8 @@ interface WaterBottleProps {
 export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
   const bottleRef = useRef<HTMLDivElement>(null);
   const fillRef = useRef<HTMLDivElement>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const previousPercentage = useRef(fillPercentage);
 
   useEffect(() => {
     if (fillRef.current) {
@@ -20,6 +22,13 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
         100,
         Math.max(0, fillPercentage),
       )}%`;
+
+      // Trigger wave animation if percentage changed
+      if (previousPercentage.current !== fillPercentage && fillPercentage > 0) {
+        setIsAnimating(true);
+        setTimeout(() => setIsAnimating(false), 1000);
+      }
+      previousPercentage.current = fillPercentage;
     }
   }, [fillPercentage]);
 
@@ -49,7 +58,7 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
           <div className="absolute inset-0 bg-gradient-to-b from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600" />
 
           {/* Water surface - simple */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-cyan-300/40 dark:bg-cyan-400/30" />
+          <div className={`absolute top-0 left-0 w-full h-1 bg-cyan-300/40 dark:bg-cyan-400/30 ${isAnimating ? 'animate-water-wave' : ''}`} />
         </div>
 
         {/* Measurement lines */}
