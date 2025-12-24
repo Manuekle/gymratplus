@@ -26,7 +26,38 @@ export async function POST(req: Request) {
 
     console.log("✅ [API Chat] Session found:", session.user.email);
 
-    const { messages }: { messages: UIMessage[] } = await req.json();
+    // Log all headers for debugging
+    console.log("🔍 [API Chat] Request Headers:", Object.fromEntries(req.headers));
+
+    // Try to read body as text first to debug empty/malformed bodies
+    let bodyText = "";
+    try {
+      bodyText = await req.text();
+      console.log("🔍 [API Chat] Raw Body Length:", bodyText.length);
+      console.log("🔍 [API Chat] Raw Body Preview:", bodyText.substring(0, 100));
+    } catch (e) {
+      console.error("❌ [API Chat] Error reading body:", e);
+    }
+
+    if (!bodyText) {
+      console.error("❌ [API Chat] Empty body received");
+      return new Response(
+        JSON.stringify({ error: "Empty request body", code: "EMPTY_BODY" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
+    let messages: UIMessage[];
+    try {
+      const json = JSON.parse(bodyText);
+      messages = json.messages;
+    } catch (e) {
+      console.error("❌ [API Chat] JSON parse error:", e);
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON", code: "INVALID_JSON" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     console.log("🔍 API Chat - Received messages:", messages.length);
     console.log("🔍 API Chat - Last message:", messages[messages.length - 1]);
@@ -156,11 +187,11 @@ INSTRUCCIONES IMPORTANTES:
           }),
           execute: async (params: {
             focus:
-              | "fuerza"
-              | "hipertrofia"
-              | "resistencia"
-              | "perdida_peso"
-              | "flexibilidad";
+            | "fuerza"
+            | "hipertrofia"
+            | "resistencia"
+            | "perdida_peso"
+            | "flexibilidad";
             daysPerWeek: number;
             durationMinutes: number;
             difficulty: "principiante" | "intermedio" | "avanzado";
