@@ -26,8 +26,6 @@ export function EmailVerificationCode({
   userEmail,
   expiresIn = "10 minutos",
 }: EmailVerificationCodeProps) {
-  const baseUrl = process.env.NEXTAUTH_URL || "https://gymratplus.com";
-
   return (
     <Html lang="es" dir="ltr">
       <Head />
@@ -43,7 +41,7 @@ export function EmailVerificationCode({
             {/* Header */}
             <Section className="mb-[24px]">
               <Img
-                src={`${baseUrl}/icons/logo-light.png`}
+                src="https://gymratplus.com/favicon.ico"
                 width="48"
                 height="48"
                 alt="GymRat+"

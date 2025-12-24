@@ -34,7 +34,7 @@ export const CancellationEmail = ({
       <Container style={container}>
         <div style={header}>
           <Img
-            src={`https://gymratplus.com/logo.png`} // Replace with actual logo URL if available or use text
+            src="https://gymratplus.com/favicon.ico"
             width="40"
             height="40"
             alt="GymRat+"
