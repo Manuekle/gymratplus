@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Message01Icon } from "@hugeicons/core-free-icons";
+import { BubbleChatIcon } from "@hugeicons/core-free-icons";
 import { toast } from "sonner";
 
 interface StartChatButtonProps {
@@ -57,7 +57,7 @@ export function StartChatButton({
       size={size}
       className={className}
     >
-      <HugeiconsIcon icon={Message01Icon} className="h-4 w-4" />
+      <HugeiconsIcon icon={BubbleChatIcon} className="h-4 w-4" />
       {size !== "sm" && <span className="ml-2">Mensaje</span>}
     </Button>
   );

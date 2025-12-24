@@ -198,7 +198,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-            "",
+          "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -216,7 +216,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Load streak stats
       if (session.user.id) {
@@ -591,16 +591,16 @@ export default function ProfilePage() {
                   {/* Icono de Verificado para PRO/Instructor */}
                   {(session?.user?.subscriptionStatus === "active" ||
                     session?.user?.subscriptionStatus === "trialing") && (
-                    <VerifiedBadge
-                      variant={
-                        session?.user?.subscriptionTier === "PRO"
-                          ? "pro"
-                          : isInstructor
-                            ? "instructor"
-                            : "default"
-                      }
-                    />
-                  )}
+                      <VerifiedBadge
+                        variant={
+                          session?.user?.subscriptionTier === "PRO"
+                            ? "pro"
+                            : isInstructor
+                              ? "instructor"
+                              : "default"
+                        }
+                      />
+                    )}
                 </div>
 
                 {/* Badge de Instructor o Alumno */}
@@ -683,12 +683,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                            "es-ES",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
                         : "";
                     })()}
                   </span>
@@ -734,16 +734,16 @@ export default function ProfilePage() {
 
       <Tabs defaultValue="personal" className="w-full space-y-6">
         <TabsList className="grid w-full grid-cols-2 gap-1 md:grid-cols-4 h-auto p-1">
-          <TabsTrigger value="personal" className="text-xs sm:text-sm">
+          <TabsTrigger value="personal" className="text-xs sm:text-xs">
             Personal
           </TabsTrigger>
-          <TabsTrigger value="preferences" className="text-xs sm:text-sm">
+          <TabsTrigger value="preferences" className="text-xs sm:text-xs">
             Preferencias
           </TabsTrigger>
-          <TabsTrigger value="activity" className="text-xs sm:text-sm">
+          <TabsTrigger value="activity" className="text-xs sm:text-xs">
             Actividad
           </TabsTrigger>
-          <TabsTrigger value="billing" className="text-xs sm:text-sm">
+          <TabsTrigger value="billing" className="text-xs sm:text-xs">
             Facturación
           </TabsTrigger>
         </TabsList>
@@ -1004,12 +1004,12 @@ export default function ProfilePage() {
                             )?.profile?.birthdate;
                             return birthdate
                               ? new Date(
-                                  birthdate as string,
-                                ).toLocaleDateString("es-ES", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                birthdate as string,
+                              ).toLocaleDateString("es-ES", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
                               : "Fecha no disponible";
                           })()}
                         </div>
@@ -1571,9 +1571,8 @@ export default function ProfilePage() {
                                 } else if (daysDiff === 1) {
                                   return "Ayer";
                                 } else {
-                                  return `Hace ${daysDiff} ${
-                                    daysDiff === 1 ? "día" : "días"
-                                  }`;
+                                  return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
+                                    }`;
                                 }
                               })()}
                             </div>

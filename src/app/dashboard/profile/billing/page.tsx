@@ -281,7 +281,7 @@ export default function BillingPage() {
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div>
-                        <CardTitle className="text-base font-medium">
+                        <CardTitle className="text-2xl tracking-heading font-semibold">
                           {plan.name}
                         </CardTitle>
                         <CardDescription className="text-xs mt-1">
@@ -299,62 +299,64 @@ export default function BillingPage() {
                         /mes
                       </span>
                     </div>
-                    <Button
-                      className={`w-full ${
-                        isCurrentPlan
+                    <div className="flex flex-row gap-2 items-center justify-between ">
+                      <Button
+                        className={`w-full dark:text-black ${isCurrentPlan
                           ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
-                          : "bg-black dark:bg-black text-white hover:bg-zinc-900"
-                      }`}
-                      size="default"
-                      disabled={
-                        isDisabled ||
-                        loading !== null ||
-                        (isCurrentPlan &&
-                          session?.user?.subscriptionStatus === "canceled")
-                      }
-                      onClick={() => {
-                        if (!isDisabled) {
-                          setSelectedPlan(plan);
-                          setShowConfirmDialog(true);
+                          : "bg-black dark:bg-white text-white hover:bg-zinc-900"
+                          }`}
+                        size="default"
+                        disabled={
+                          isDisabled ||
+                          loading !== null ||
+                          (isCurrentPlan &&
+                            session?.user?.subscriptionStatus === "canceled")
                         }
-                      }}
-                    >
-                      {loading === plan.id ? (
-                        <>
-                          <HugeiconsIcon
-                            icon={Loading02Icon}
-                            className="mr-2 h-4 w-4 animate-spin"
-                          />
-                          Procesando...
-                        </>
-                      ) : isCurrentPlan ? (
-                        session?.user?.subscriptionStatus === "canceled" ? (
-                          "Cancelación Pendiente"
+                        onClick={() => {
+                          if (!isDisabled) {
+                            setSelectedPlan(plan);
+                            setShowConfirmDialog(true);
+                          }
+                        }}
+                      >
+                        {loading === plan.id ? (
+                          <>
+                            <HugeiconsIcon
+                              icon={Loading02Icon}
+                              className="mr-2 h-4 w-4 animate-spin"
+                            />
+                            Procesando...
+                          </>
+                        ) : isCurrentPlan ? (
+                          session?.user?.subscriptionStatus === "canceled" ? (
+                            "Cancelación Pendiente"
+                          ) : (
+                            "Plan Actual"
+                          )
                         ) : (
-                          "Plan Actual"
-                        )
-                      ) : (
-                        "Cambiar Plan"
-                      )}
-                    </Button>
+                          "Cambiar Plan"
+                        )}
+                      </Button>
 
-                    {isCurrentPlan &&
-                      plan.id !== "free" &&
-                      session?.user?.subscriptionStatus !== "canceled" && (
-                        <Button
-                          variant="destructive"
-                          size="default"
-                          className="w-full text-xs h-8 mt-2"
-                          onClick={() => setShowCancelDialog(true)}
-                          disabled={loading !== null}
-                        >
-                          Cancelar Suscripción
-                        </Button>
-                      )}
+                      {isCurrentPlan &&
+                        plan.id !== "free" &&
+                        session?.user?.subscriptionStatus !== "canceled" && (
+                          <Button
+                            variant="destructive"
+                            size="default"
+                            className="w-full text-xs"
+                            onClick={() => setShowCancelDialog(true)}
+                            disabled={loading !== null}
+                          >
+                            Cancelar Suscripción
+                          </Button>
+                        )}
+                    </div>
+
 
                     {isCurrentPlan &&
                       session?.user?.subscriptionStatus === "canceled" && (
-                        <p className="text-[10px] text-center text-muted-foreground mt-2">
+                        <p className="text-xs text-center text-muted-foreground mt-2">
                           Tu acceso finalizará al terminar el periodo actual.
                         </p>
                       )}

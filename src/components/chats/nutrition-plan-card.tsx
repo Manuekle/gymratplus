@@ -57,7 +57,7 @@ export function NutritionPlanCard({
             />
           </div>
           <div>
-            <CardTitle className="text-sm font-bold">
+            <CardTitle className="text-xs font-bold">
               Plan Nutricional
             </CardTitle>
             <p className="text-xs text-muted-foreground capitalize">
@@ -67,7 +67,7 @@ export function NutritionPlanCard({
         </div>
         <Badge
           variant="outline"
-          className="capitalize text-[10px] h-5 border-green-200 text-green-700 dark:text-green-400"
+          className="capitalize text-xs h-5 border-green-200 text-green-700 dark:text-green-400"
         >
           {plan.goal.replace("_", " ")}
         </Badge>
@@ -126,7 +126,7 @@ export function NutritionPlanCard({
           className={cn(
             "text-xs h-8 gap-1.5",
             isSaved &&
-              "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
+            "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
           )}
         >
           {isSaved ? (

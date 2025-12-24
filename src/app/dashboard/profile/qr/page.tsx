@@ -17,6 +17,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import { toast } from "sonner";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 export default function QRCodePage() {
   const { data: session, status } = useSession();
@@ -164,18 +165,19 @@ export default function QRCodePage() {
                 {session.user.name || "Usuario"}
               </h3>
               {/* Verification Icon */}
+
               {(session?.user?.subscriptionStatus === "active" ||
                 session?.user?.subscriptionStatus === "trialing") && (
-                <HugeiconsIcon
-                  icon={CheckmarkBadge01Icon}
-                  className={`w-6 h-6 ${
-                    session?.user?.subscriptionTier === "PRO"
-                      ? "text-black dark:text-white"
-                      : "text-blue-500"
-                  }`}
-                  fill="currentColor"
-                />
-              )}
+                  <VerifiedBadge
+                    variant={
+                      session?.user?.subscriptionTier === "PRO"
+                        ? "pro"
+                        : isInstructor
+                          ? "instructor"
+                          : "default"
+                    }
+                  />
+                )}
             </div>
           </div>
 

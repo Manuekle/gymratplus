@@ -113,7 +113,7 @@ export function NotificationBell() {
         <Button variant="ghost" size="icon" className="relative">
           <HugeiconsIcon icon={Notification01Icon} className="h-5 w-5" />
           {unreadCount > 0 && (
-            <Badge className="absolute -top-1 -right-1 px-1 py-0 text-[8px] min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold">
+            <Badge className="absolute -top-1 -right-1 px-1 py-0 text-xs min-w-[18px] min-h-[18px] flex items-center justify-center font-semibold">
               {unreadCount > 9 ? "+9" : unreadCount}
             </Badge>
           )}

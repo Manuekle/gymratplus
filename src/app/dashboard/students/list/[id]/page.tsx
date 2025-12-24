@@ -447,7 +447,7 @@ export default function StudentDetailPage() {
                       : student.status === "pending"
                         ? "Pendiente"
                         : student.status.charAt(0).toUpperCase() +
-                          student.status.slice(1)}
+                        student.status.slice(1)}
                   </Badge>
                   {student.agreedPrice && (
                     <Badge variant="outline" className="text-xs px-2 py-0">
@@ -487,25 +487,25 @@ export default function StudentDetailPage() {
                   <span className="font-semibold text-xs">
                     {student.lastWorkoutAt
                       ? (() => {
-                          const lastWorkoutDate = new Date(
-                            student.lastWorkoutAt,
-                          );
-                          lastWorkoutDate.setHours(0, 0, 0, 0);
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          const daysDiff = differenceInDays(
-                            today,
-                            lastWorkoutDate,
-                          );
+                        const lastWorkoutDate = new Date(
+                          student.lastWorkoutAt,
+                        );
+                        lastWorkoutDate.setHours(0, 0, 0, 0);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        const daysDiff = differenceInDays(
+                          today,
+                          lastWorkoutDate,
+                        );
 
-                          if (daysDiff === 0) {
-                            return "Hoy";
-                          } else if (daysDiff === 1) {
-                            return "Ayer";
-                          } else {
-                            return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
-                          }
-                        })()
+                        if (daysDiff === 0) {
+                          return "Hoy";
+                        } else if (daysDiff === 1) {
+                          return "Ayer";
+                        } else {
+                          return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+                        }
+                      })()
                       : "N/A"}
                   </span>
                 </div>
@@ -760,12 +760,12 @@ export default function StudentDetailPage() {
                               <span className="truncate">
                                 {plan.createdAt
                                   ? format(
-                                      new Date(plan.createdAt as string),
-                                      "d MMM yyyy",
-                                      {
-                                        locale: es,
-                                      },
-                                    )
+                                    new Date(plan.createdAt as string),
+                                    "d MMM yyyy",
+                                    {
+                                      locale: es,
+                                    },
+                                  )
                                   : "N/A"}
                               </span>
                             </div>
@@ -932,11 +932,10 @@ export default function StudentDetailPage() {
                       return (
                         <Card
                           key={session.id}
-                          className={`overflow-hidden transition-all duration-300 ${
-                            isExpanded
+                          className={`overflow-hidden transition-all duration-300 ${isExpanded
                               ? "col-span-1 sm:col-span-2 lg:col-span-3 row-span-2"
                               : ""
-                          }`}
+                            }`}
                         >
                           <CardHeader className="pb-2">
                             <div className="flex justify-between items-center">
@@ -1159,11 +1158,10 @@ export default function StudentDetailPage() {
                         <button
                           key={day}
                           onClick={() => setSelectedDay(day)}
-                          className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${
-                            selectedDay === day
+                          className={`flex-shrink-0 px-2 py-1 text-xs rounded-full border transition-all ${selectedDay === day
                               ? "bg-primary/80 dark:bg-primary/20 border-primary/20 text-white dark:text-white font-medium"
                               : "border-border/50 text-black dark:text-white hover:bg-muted/50"
-                          }`}
+                            }`}
                         >
                           {day}
                         </button>
@@ -1179,7 +1177,7 @@ export default function StudentDetailPage() {
                             className="flex flex-col border-b py-2 last:border-0"
                           >
                             <div className="flex items-center justify-between gap-2">
-                              <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
+                              <h4 className="font-medium text-xs flex-1 truncate pr-2">
                                 {ex.exercise?.name || ex.name}
                               </h4>
                               <div className="flex items-center gap-3 text-xs flex-shrink-0">

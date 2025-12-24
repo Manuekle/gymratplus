@@ -20,7 +20,7 @@ export function InstallPrompt() {
   useEffect(() => {
     setIsIOS(
       /iPad|iPhone|iPod/.test(navigator.userAgent) &&
-        !(window as unknown as { MSStream: unknown }).MSStream,
+      !(window as unknown as { MSStream: unknown }).MSStream,
     );
 
     setIsStandalone(window.matchMedia("(display-mode: standalone)").matches);
@@ -71,7 +71,7 @@ export function InstallPrompt() {
           <h3 className="text-xs md:text-xs font-semibold text-zinc-900 dark:text-zinc-100 mb-0.5 truncate">
             Instalar GymRat+
           </h3>
-          <p className="text-[10px] md:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
+          <p className="text-xs md:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-1">
             Acceso rápido
           </p>
         </div>

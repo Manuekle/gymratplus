@@ -127,7 +127,7 @@ export function AIWorkoutPlanDialog({
                       className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2 p-3 sm:p-4 border rounded-lg bg-muted/50"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm sm:text-xs truncate">
+                        <p className="font-medium text-xs sm:text-xs truncate">
                           {exercise.name}
                         </p>
                         {exercise.muscleGroup && (

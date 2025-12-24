@@ -136,25 +136,25 @@ export function AINutritionPlanDialog({
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 p-4 bg-muted/50 rounded-lg">
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Cals</p>
-            <p className="text-base sm:text-lg font-semibold">
+            <p className="text-xs sm:text-lg font-semibold">
               {totalCalories}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Proteína</p>
-            <p className="text-base sm:text-lg font-semibold">
+            <p className="text-xs sm:text-lg font-semibold">
               {nutritionPlan.macros.protein}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Carbos</p>
-            <p className="text-base sm:text-lg font-semibold">
+            <p className="text-xs sm:text-lg font-semibold">
               {nutritionPlan.macros.carbs}
             </p>
           </div>
           <div className="text-center">
             <p className="text-xs text-muted-foreground">Grasas</p>
-            <p className="text-base sm:text-lg font-semibold">
+            <p className="text-xs sm:text-lg font-semibold">
               {nutritionPlan.macros.fat}
             </p>
           </div>
@@ -179,7 +179,7 @@ export function AINutritionPlanDialog({
                       className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2 p-2 bg-muted/30 rounded-md"
                     >
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium font-medium truncate">
+                        <p className="text-xs font-medium font-medium truncate">
                           {entry.food.name}
                         </p>
                         <p className="text-xs text-muted-foreground">
@@ -190,7 +190,7 @@ export function AINutritionPlanDialog({
                         <p className="font-medium">
                           {Math.round(
                             (entry.food.calories * entry.quantity) /
-                              entry.food.serving,
+                            entry.food.serving,
                           )}{" "}
                           kcal
                         </p>
@@ -198,7 +198,7 @@ export function AINutritionPlanDialog({
                           P:{" "}
                           {Math.round(
                             (entry.food.protein * entry.quantity) /
-                              entry.food.serving,
+                            entry.food.serving,
                           )}
                           g
                         </p>

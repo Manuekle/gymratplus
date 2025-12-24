@@ -102,7 +102,7 @@ export function StepResults({ workout }: StepResultsProps) {
                       className="flex flex-col border-b py-2 last:border-0"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className="font-medium text-[13px] flex-1 truncate pr-2">
+                        <h4 className="font-medium text-xs flex-1 truncate pr-2">
                           {exercise.name}
                         </h4>
                         <div className="flex items-center gap-3 text-xs flex-shrink-0">

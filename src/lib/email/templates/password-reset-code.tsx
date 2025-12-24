@@ -52,17 +52,17 @@ export function PasswordResetCodeEmail({
               <Heading className="text-[24px] tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
                 GymRat+
               </Heading>
-              <Text className="text-[13px] text-zinc-500 m-0">
+              <Text className="text-xs text-zinc-500 m-0">
                 Código de verificación
               </Text>
             </Section>
 
             {/* Greeting - Compacto */}
             <Section className="mb-[20px]">
-              <Text className="text-[15px] text-zinc-900 mb-[12px] leading-[22px] m-0">
+              <Text className="text-xs text-zinc-900 mb-[12px] leading-[22px] m-0">
                 {userName ? `Hola ${userName},` : "Hola,"}
               </Text>
-              <Text className="text-[15px] text-zinc-700 mb-0 leading-[22px] m-0">
+              <Text className="text-xs text-zinc-700 mb-0 leading-[22px] m-0">
                 Usa este código para restablecer tu contraseña
                 {userEmail && ` de ${userEmail}`}:
               </Text>
@@ -91,14 +91,14 @@ export function PasswordResetCodeEmail({
 
             {/* Expiry Notice - Compacto */}
             <Section className="mb-[20px]">
-              <Text className="text-[13px] text-zinc-600 mb-0 leading-[18px] text-center m-0">
+              <Text className="text-xs text-zinc-600 mb-0 leading-[18px] text-center m-0">
                 Válido por {expiresIn}
               </Text>
             </Section>
 
             {/* Security Notice - Minimalista */}
             <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
-              <Text className="text-[12px] text-zinc-600 mb-0 leading-[18px] m-0">
+              <Text className="text-xs text-zinc-600 mb-0 leading-[18px] m-0">
                 <strong>Seguridad:</strong> Si no solicitaste este cambio,
                 ignora este email. Nunca compartas este código con nadie.
               </Text>

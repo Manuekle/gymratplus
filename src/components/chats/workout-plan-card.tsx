@@ -57,7 +57,7 @@ export function WorkoutPlanCard({
             />
           </div>
           <div>
-            <CardTitle className="text-sm font-bold">
+            <CardTitle className="text-xs font-bold">
               Plan de Entrenamiento
             </CardTitle>
             <p className="text-xs text-muted-foreground capitalize">
@@ -65,7 +65,7 @@ export function WorkoutPlanCard({
             </p>
           </div>
         </div>
-        <Badge variant="outline" className="capitalize text-[10px] h-5">
+        <Badge variant="outline" className="capitalize text-xs h-5">
           {plan.difficulty}
         </Badge>
       </CardHeader>
@@ -123,7 +123,7 @@ export function WorkoutPlanCard({
           className={cn(
             "text-xs h-8 gap-1.5",
             isSaved &&
-              "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
+            "border-green-500 text-green-600 hover:text-green-700 bg-green-50 dark:bg-green-950/20",
           )}
         >
           {isSaved ? (
