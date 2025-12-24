@@ -42,17 +42,49 @@ export default function ChatPage() {
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
 
   // AI Chat configuration
-  const { messages, sendMessage, status, addToolApprovalResponse } = useChat({
-    id: "rocco-chat",
-    transport: new DefaultChatTransport({
-      api: "/api/chat",
-    }),
-  });
+  const { messages, sendMessage, status, addToolApprovalResponse, error } =
+    useChat({
+      id: "rocco-chat",
+      transport: new DefaultChatTransport({
+        api: "/api/chat",
+      }),
+      onError: (error) => {
+        console.error("❌ [Chat Error]", error);
+        console.error("❌ [Chat Error] Message:", error.message);
+        console.error("❌ [Chat Error] Stack:", error.stack);
+
+        // Mobile-specific error logging
+        if (typeof navigator !== "undefined") {
+          console.log("📱 [Mobile Debug] User Agent:", navigator.userAgent);
+          console.log("📱 [Mobile Debug] Online:", navigator.onLine);
+          console.log(
+            "📱 [Mobile Debug] Connection:",
+            (navigator as any).connection?.effectiveType,
+          );
+        }
+
+        toast.error("Error al comunicarse con Rocco", {
+          description: error.message || "Intenta de nuevo",
+        });
+      },
+      onFinish: (message) => {
+        console.log("✅ [Chat] Message finished:", message);
+      },
+    });
 
   // Debug logs
-  console.log("🔍 Chat Debug - Messages:", messages);
-  console.log("🔍 Chat Debug - Status:", status);
-  console.log("🔍 Chat Debug - Messages count:", messages.length);
+  console.log("🔍 [Chat Debug] Messages:", messages);
+  console.log("🔍 [Chat Debug] Status:", status);
+  console.log("🔍 [Chat Debug] Messages count:", messages.length);
+  console.log("🔍 [Chat Debug] Error:", error);
+
+  // Mobile detection
+  const isMobile =
+    typeof window !== "undefined" &&
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    );
+  console.log("📱 [Mobile Debug] Is Mobile:", isMobile);
 
   const [input, setInput] = useState("");
 
@@ -64,8 +96,16 @@ export default function ChatPage() {
     e?.preventDefault();
     if (!input.trim() || status === "streaming") return;
 
-    sendMessage({ text: input });
-    setInput("");
+    console.log("📤 [Chat] Sending message:", input);
+    console.log("📤 [Chat] Current status:", status);
+
+    try {
+      sendMessage({ text: input });
+      setInput("");
+    } catch (error) {
+      console.error("❌ [Chat] Error sending message:", error);
+      toast.error("Error al enviar mensaje");
+    }
   };
 
   // Mock chats data
@@ -486,13 +526,13 @@ export default function ChatPage() {
               </ScrollArea>
 
               {/* Pill-Shaped Minimalist Input */}
-              <div className="p-4 md:p-6 bg-background sticky bottom-0 border-t md:border-t-0">
+              <div className="p-2 bg-background/80 backdrop-blur-sm sticky bottom-0 border-t md:border-t-0">
                 <form
                   onSubmit={handleSubmit}
                   className="max-w-3xl mx-auto flex flex-col items-center gap-2"
                 >
                   {/* aqui agrego botones que digan crear plan de entrenamiento y crear plan de nutricion */}
-                  <Suggestions className="py-4 overflow-hidden scroll-hidden y-scroll">
+                  <Suggestions className="overflow-hidden scroll-hidden y-scroll">
                     <Suggestion
                       onClick={(suggestion) =>
                         sendMessage({ text: suggestion })

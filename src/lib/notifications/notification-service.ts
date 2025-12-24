@@ -132,14 +132,12 @@ export async function createNotificationByEmail({
     throw new Error(`Usuario con email ${userEmail} no encontrado`);
   }
 
-  return prisma.notification.create({
-    data: {
-      userId: user.id,
-      title,
-      message,
-      type,
-      read: false,
-    },
+  // Usar createNotification para que también envíe push notifications
+  return createNotification({
+    userId: user.id,
+    title,
+    message,
+    type,
   });
 }
 

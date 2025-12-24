@@ -58,7 +58,9 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
           <div className="absolute inset-0 bg-gradient-to-b from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600" />
 
           {/* Water surface - simple */}
-          <div className={`absolute top-0 left-0 w-full h-1 bg-cyan-300/40 dark:bg-cyan-400/30 ${isAnimating ? 'animate-water-wave' : ''}`} />
+          <div
+            className={`absolute top-0 left-0 w-full h-1 bg-cyan-300/40 dark:bg-cyan-400/30 ${isAnimating ? "animate-water-wave" : ""}`}
+          />
         </div>
 
         {/* Measurement lines */}

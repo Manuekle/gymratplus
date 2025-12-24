@@ -22,6 +22,7 @@
       "purpose": "any maskable"
     }
   ],
+  "notification_icon": "/icons/favicon-192x192.png",
   "screenshots": [
     {
       "src": "/images/phone_dark.png",
