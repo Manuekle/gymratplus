@@ -25,7 +25,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.1",
-    "@ai-sdk/react": "^3.0.1",
+    "@ai-sdk/react": "^3.0.3",
     "@auth/prisma-adapter": "2.11.1",
     "@ducanh2912/next-pwa": "10.2.9",
     "@hookform/resolvers": "5.2.2",

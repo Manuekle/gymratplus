@@ -1,4 +1,4 @@
-import { auth } from "../../../auth.ts";
+import { auth } from "@auth";
 import {
   canAccessFeature,
   FEATURES,

@@ -1,403 +1,360 @@
 "use client";
 
-import { useChat, type UIMessage } from "@ai-sdk/react";
+import { useChat } from "@ai-sdk/react";
 
 import { Card } from "@/components/ui/card";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  AiChat02Icon,
-  SentIcon,
-  AiInnovation03Icon,
-  Restaurant02Icon,
-} from "@hugeicons/core-free-icons";
-import { useEffect, useState, useMemo } from "react";
-import { cn } from "@/lib/utils/utils";
-import { useSession } from "next-auth/react";
-import { useChats } from "@/hooks/use-chats";
-import { ChatList } from "@/components/chats/chat-list";
-import { ChatWindow } from "@/components/chats/chat-window";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Input } from "@/components/ui/input";
+import { AiChat02Icon, SentIcon } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
-import { AIWorkoutPlanDialog } from "@/components/ai/ai-workout-plan-dialog";
-import { AINutritionPlanDialog } from "@/components/ai/ai-nutrition-plan-dialog";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ChatWindow } from "@/components/chats/chat-window";
+import { cn } from "@/lib/utils/utils";
+import { useState } from "react";
 import { toast } from "sonner";
-
-// Definir interfaz para el usuario de la sesión
-interface CustomUser {
-  id?: string;
-  name?: string | null;
-  subscriptionTier?: string;
-}
-
-// Helper function to extract text content from UIMessage
-function getMessageText(message: UIMessage): string {
-  // Check if message has parts (new API)
-  if ("parts" in message && Array.isArray(message.parts)) {
-    return message.parts
-      .filter((part: any) => part.type === "text")
-      .map((part: any) => part.text)
-      .join("");
-  }
-  // Fallback to content property if it exists (legacy)
-  if ("content" in message && typeof message.content === "string") {
-    return message.content;
-  }
-  return "";
-}
-
-// Helper to get images from message
+import { WorkoutPlanCard } from "@/components/chats/workout-plan-card";
+import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
 
 export default function ChatPage() {
-  const { data: session } = useSession();
-  const user = session?.user as CustomUser;
+  const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
+  const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
 
-  // Using standard useChat configuration. 'api' defaults to '/api/chat'.
-  const { messages, sendMessage, status } = useChat();
+  // Configuración del chat AI
+  const { messages, sendMessage, status } = useChat({
+    id: "rocco-chat",
+    initialMessages: [],
+  });
 
-  // Local input state for Rocco chat
-  const [localInput, setLocalInput] = useState("");
+  const [input, setInput] = useState("");
 
-  // AI Plan generation states
-  const [generatingWorkout, setGeneratingWorkout] = useState(false);
-  const [generatingNutrition, setGeneratingNutrition] = useState(false);
-  const [workoutPlan, setWorkoutPlan] = useState<any>(null);
-  const [nutritionPlan, setNutritionPlan] = useState<any>(null);
-  const [showWorkoutDialog, setShowWorkoutDialog] = useState(false);
-  const [showNutritionDialog, setShowNutritionDialog] = useState(false);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  };
 
-  // Instructor chats state
-  const { chats, isLoading: chatsLoading } = useChats();
-  const [selectedChatId, setSelectedChatId] = useState<string | null>(
-    "rocco-ai",
-  );
+  const handleSubmit = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+    if (!input.trim()) return;
 
-  const [isTyping, setIsTyping] = useState(false);
+    sendMessage({ text: input });
+    setInput("");
+  };
 
-  const selectedChat = chats.find((chat) => chat.id === selectedChatId) || null;
+  // Mock chats data for list
+  const chats: any[] = []; // Chat list would come from server
 
-  // Check PRO access only when selecting Rocco AI
-  useEffect(() => {
-    if (user && selectedChatId === "rocco-ai") {
-      const userTier = user.subscriptionTier || "FREE";
-      if (userTier !== "PRO" && userTier !== "INSTRUCTOR") {
-        // Redirect to upgrade page
-        window.location.href = "/dashboard/profile/billing?upgrade=pro";
-      }
-    }
-  }, [user, selectedChatId]);
-
-  // Memorizar el objeto Rocco para evitar re-renders innecesarios
-  const roccoChat = useMemo(() => {
-    const lastMessage =
-      messages.length > 0 ? messages[messages.length - 1] : null;
-
-    return {
-      id: "rocco-ai",
-      studentInstructorId: "rocco-ai",
-      otherUser: {
-        id: "rocco-ai",
-        name: "Rocco - Entrenador IA",
-        image: null,
-        email: null,
+  const roccoChat = {
+    id: "rocco-ai",
+    studentInstructor: {
+      instructor: {
+        user: {
+          name: "Rocco",
+          image: null,
+        },
       },
-      lastMessage: lastMessage
-        ? {
-            id: lastMessage.id,
-            content: getMessageText(lastMessage),
-            senderId: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-            sender: {
-              id: lastMessage.role === "user" ? user?.id || "" : "rocco-ai",
-              name: lastMessage.role === "user" ? user?.name || "Tú" : "Rocco",
-              image: null,
-              email: null,
-            },
-            type: "text",
-            read: true,
-            createdAt: new Date().toISOString(),
-          }
-        : null,
-      unreadCount: 0,
-      updatedAt: new Date().toISOString(),
-    };
-  }, [messages, user]);
-
-  // AI Plan generation handlers
-  const handleGenerateWorkout = async () => {
-    setGeneratingWorkout(true);
-    try {
-      const response = await fetch("/api/ai/generate-workout-plan", {
-        method: "POST",
-      });
-      if (!response.ok) throw new Error("Error generando plan");
-      const plan = await response.json();
-      setWorkoutPlan(plan);
-      setShowWorkoutDialog(true);
-    } catch (error) {
-      console.error("Error generating workout:", error);
-      toast.error("Error al generar el plan de entrenamiento");
-    } finally {
-      setGeneratingWorkout(false);
-    }
+    },
+    messages: [],
+    updatedAt: new Date().toISOString(),
   };
 
-  const handleGenerateNutrition = async () => {
-    setGeneratingNutrition(true);
+  const selectedChat =
+    selectedChatId === "rocco-ai"
+      ? roccoChat
+      : chats.find((c) => c.id === selectedChatId) || null;
+
+  const handleSavePlan = async (
+    type: "workout" | "nutrition",
+    plan: any,
+    toolCallId: string,
+  ) => {
     try {
-      const response = await fetch("/api/ai/generate-nutrition-plan", {
+      const response = await fetch("/api/ai/save-plan", {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type, plan }),
       });
-      if (!response.ok) throw new Error("Error generando plan");
-      const plan = await response.json();
-      setNutritionPlan(plan);
-      setShowNutritionDialog(true);
+
+      if (!response.ok) throw new Error("Error guardando el plan");
+
+      setSavedPlans((prev) => ({ ...prev, [toolCallId]: true }));
+      toast.success(
+        type === "workout"
+          ? "Plan de entrenamiento guardado"
+          : "Plan nutricional guardado",
+      );
     } catch (error) {
-      console.error("Error generating nutrition:", error);
-      toast.error("Error al generar el plan nutricional");
-    } finally {
-      setGeneratingNutrition(false);
+      toast.error("Hubo un error al guardar el plan");
+      console.error(error);
     }
   };
-
-  const allChats = useMemo(() => [roccoChat, ...chats], [roccoChat, chats]);
 
   return (
-    <div className="h-[calc(100vh-12rem)] flex flex-col">
-      {/* Header */}
-      <div className="flex-none mb-4">
-        <h1 className="text-3xl font-bold tracking-tight">Chats</h1>
-        <p className="text-xs text-muted-foreground mt-1">
-          Comunícate con tu instructor o consulta con Rocco IA
-        </p>
-      </div>
-
+    <div className="h-[calc(100vh-4rem)] md:h-[calc(100vh-6rem)] flex flex-col -m-4 md:m-0">
       <div className="grid md:grid-cols-[350px_1fr] gap-4 h-full overflow-hidden">
-        {/* Chat List */}
-        <Card className="flex flex-col overflow-hidden p-0">
-          {chatsLoading ? (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-xs text-muted-foreground">Cargando chats...</p>
-            </div>
-          ) : (
-            <ChatList
-              chats={allChats}
-              selectedChatId={selectedChatId}
-              onSelectChat={setSelectedChatId}
-              isTyping={isTyping}
-            />
+        {/* Chat List - Hidden on mobile if chat selected */}
+        <Card
+          className={cn(
+            "flex flex-col overflow-hidden p-0 border-0 md:border",
+            selectedChatId ? "hidden md:flex" : "flex h-full",
           )}
+        >
+          <div className="p-4 border-b">
+            <h2 className="font-semibold">Mensajes</h2>
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="p-2 space-y-2">
+              <div
+                className={cn(
+                  "p-3 rounded-lg cursor-pointer flex items-center gap-3 transition-colors",
+                  selectedChatId === "rocco-ai"
+                    ? "bg-accent"
+                    : "hover:bg-muted",
+                )}
+                onClick={() => setSelectedChatId("rocco-ai")}
+              >
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <HugeiconsIcon
+                    icon={AiChat02Icon}
+                    className="h-5 w-5 text-primary"
+                  />
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  <div className="flex justify-between items-start">
+                    <p className="font-medium text-sm">Rocco</p>
+                    <span className="text-[10px] text-muted-foreground">
+                      Ahora
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">
+                    Entrenador IA
+                  </p>
+                </div>
+              </div>
+            </div>
+          </ScrollArea>
         </Card>
 
-        {/* Chat Window */}
-        <Card className="flex flex-col overflow-hidden p-0">
+        {/* Chat Window - Full screen on mobile */}
+        <Card
+          className={cn(
+            "flex-col overflow-hidden p-0 border-0 md:border h-full",
+            !selectedChatId ? "hidden md:flex" : "flex",
+          )}
+        >
           {selectedChatId === "rocco-ai" ? (
-            <div className="flex-1 flex flex-col h-full bg-muted/20 dark:bg-muted/10 min-h-0">
+            <div className="flex-1 flex flex-col h-full bg-background min-h-0">
               {/* Header */}
-              <div className="border-b bg-background dark:bg-background flex items-center justify-between px-4 py-3 flex-shrink-0">
+              <div className="border-b flex items-center justify-between px-4 py-3 flex-shrink-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                 <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="md:hidden -ml-2"
+                    onClick={() => setSelectedChatId(null)}
+                  >
                     <HugeiconsIcon
                       icon={AiChat02Icon}
-                      className="h-4 w-4 text-primary"
+                      className="h-5 w-5 rotate-180"
                     />
-                  </div>
-                  <div className="flex flex-col">
-                    <p className="text-xs font-medium">Rocco - Entrenador IA</p>
-                    {status === "streaming" && (
-                      <p className="text-xs text-muted-foreground italic">
-                        escribiendo...
+                  </Button>
+                  <div className="flex items-center gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                      <HugeiconsIcon
+                        icon={AiChat02Icon}
+                        className="h-4 w-4 text-primary"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium">Rocco</p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {status === "streaming"
+                          ? "escribiendo..."
+                          : "Entrenador IA"}
                       </p>
-                    )}
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={handleGenerateWorkout}
-                    disabled={generatingWorkout}
-                    className="text-xs gap-1.5"
-                  >
-                    <HugeiconsIcon
-                      icon={AiInnovation03Icon}
-                      className="h-3.5 w-3.5"
-                    />
-                    {generatingWorkout
-                      ? "Generando..."
-                      : "Plan de Entrenamiento"}
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="default"
-                    onClick={handleGenerateNutrition}
-                    disabled={generatingNutrition}
-                    className="text-xs gap-1.5"
-                  >
-                    <HugeiconsIcon
-                      icon={Restaurant02Icon}
-                      className="h-3.5 w-3.5"
-                    />
-                    {generatingNutrition ? "Generando..." : "Plan Nutricional"}
-                  </Button>
                 </div>
               </div>
 
               {/* Messages Area */}
               <ScrollArea className="flex-1 min-h-0">
-                <div className="p-4 space-y-3">
-                  {messages.length === 0 && (
-                    <div className="flex flex-col items-center justify-center h-full py-12 text-center">
-                      <div className="bg-primary/10 p-6 rounded-full mb-4">
-                        <HugeiconsIcon
-                          icon={AiChat02Icon}
-                          className="h-12 w-12 text-primary"
-                        />
-                      </div>
-                      <h3 className="text-lg font-semibold mb-2">
-                        ¡Hola! Soy Rocco
-                      </h3>
-                      <p className="text-xs text-muted-foreground max-w-sm">
-                        Pregúntame sobre entrenamiento, nutrición o técnicas de
-                        ejercicio
-                      </p>
-                    </div>
-                  )}
+                <div className="p-4 space-y-4">
                   {messages.map((message) => {
                     const isOwn = message.role === "user";
-                    const textContent = getMessageText(message);
-
                     return (
                       <div
                         key={message.id}
                         className={cn(
-                          "flex gap-2.5",
+                          "flex gap-3",
                           isOwn && "flex-row-reverse",
                         )}
                       >
-                        {!isOwn && (
-                          <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <div
+                          className={cn(
+                            "h-8 w-8 rounded-full flex items-center justify-center flex-shrink-0",
+                            isOwn
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-primary/10",
+                          )}
+                        >
+                          {isOwn ? (
+                            <span className="text-xs font-bold">Yo</span>
+                          ) : (
                             <HugeiconsIcon
                               icon={AiChat02Icon}
                               className="h-4 w-4 text-primary"
                             />
-                          </div>
-                        )}
+                          )}
+                        </div>
                         <div
                           className={cn(
-                            "flex flex-col max-w-[75%] sm:max-w-[65%]",
-                            isOwn && "items-end",
+                            "rounded-lg p-3 max-w-[85%] text-sm",
+                            isOwn
+                              ? "bg-primary text-primary-foreground"
+                              : "bg-muted",
                           )}
                         >
-                          {!isOwn && (
-                            <p className="text-xs font-medium text-foreground mb-1 px-1">
-                              Rocco
-                            </p>
-                          )}
-                          <div
-                            className={cn(
-                              "rounded-2xl px-4 py-2.5 text-xs break-words whitespace-pre-wrap",
-                              isOwn
-                                ? "bg-primary text-primary-foreground"
-                                : "bg-background dark:bg-background border border-border/50 dark:border-border/30",
-                            )}
-                          >
-                            {textContent}
-                          </div>
+                          {message.parts.map((part, i) => {
+                            if (part.type === "text") {
+                              return (
+                                <p
+                                  key={i}
+                                  className="text-sm leading-relaxed whitespace-pre-wrap"
+                                >
+                                  {part.text}
+                                </p>
+                              );
+                            }
+                            if (part.type === "tool-invocation") {
+                              const toolInvocation = part as any;
+                              const state = toolInvocation.state;
+                              const toolName = toolInvocation.toolName;
+                              const result =
+                                toolInvocation.result ?? toolInvocation.output;
+
+                              if (
+                                toolName === "generateTrainingPlan" &&
+                                (state === "result" ||
+                                  state === "output-available")
+                              ) {
+                                return (
+                                  <div
+                                    key={toolInvocation.toolCallId}
+                                    className="mt-4"
+                                  >
+                                    <WorkoutPlanCard
+                                      plan={result}
+                                      onSave={() =>
+                                        handleSavePlan(
+                                          "workout",
+                                          result,
+                                          toolInvocation.toolCallId,
+                                        )
+                                      }
+                                      isSaved={
+                                        savedPlans[toolInvocation.toolCallId]
+                                      }
+                                    />
+                                  </div>
+                                );
+                              }
+                              if (
+                                toolName === "generateNutritionPlan" &&
+                                (state === "result" ||
+                                  state === "output-available")
+                              ) {
+                                return (
+                                  <div
+                                    key={toolInvocation.toolCallId}
+                                    className="mt-4"
+                                  >
+                                    <NutritionPlanCard
+                                      plan={result}
+                                      onSave={() =>
+                                        handleSavePlan(
+                                          "nutrition",
+                                          result,
+                                          toolInvocation.toolCallId,
+                                        )
+                                      }
+                                      isSaved={
+                                        savedPlans[toolInvocation.toolCallId]
+                                      }
+                                    />
+                                  </div>
+                                );
+                              }
+                            }
+                            return null;
+                          })}
                         </div>
                       </div>
                     );
                   })}
-                  {status === "submitted" && (
-                    <div className="flex gap-2.5">
-                      <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <HugeiconsIcon
-                          icon={AiChat02Icon}
-                          className="h-4 w-4 text-primary"
-                        />
-                      </div>
-                      <div className="flex items-center gap-1 px-4 py-2.5 rounded-2xl bg-background dark:bg-background border border-border/50">
-                        <div className="flex space-x-1">
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:-0.3s]"></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
-                          <div className="w-2 h-2 bg-primary/60 rounded-full animate-bounce"></div>
+
+                  {(status === "submitted" || status === "streaming") &&
+                    messages[messages.length - 1]?.role === "user" && (
+                      <div className="flex gap-3">
+                        <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <HugeiconsIcon
+                            icon={AiChat02Icon}
+                            className="h-4 w-4 text-primary"
+                          />
+                        </div>
+                        <div className="bg-muted rounded-lg p-3">
+                          <div className="flex gap-1">
+                            <div className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce"></div>
+                            <div className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce delay-75"></div>
+                            <div className="w-1.5 h-1.5 bg-primary/60 rounded-full animate-bounce delay-150"></div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
               </ScrollArea>
 
               {/* Input Area */}
-              <div className="border-t bg-background dark:bg-background p-3 flex-shrink-0">
-                <div className="flex items-end gap-2">
-                  <div className="flex-1 relative bg-muted/50 dark:bg-muted/30 rounded-2xl border border-border/50 dark:border-border/30 focus-within:bg-background dark:focus-within:bg-background focus-within:border-primary/50 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-                    <Input
-                      type="text"
-                      value={localInput}
-                      onChange={(e) => setLocalInput(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" && !e.shiftKey) {
-                          e.preventDefault();
-                          if (localInput.trim()) {
-                            sendMessage({
-                              parts: [{ type: "text", text: localInput }],
-                            } as any);
-                            setLocalInput("");
-                          }
-                        }
-                      }}
-                      placeholder="Escribe un mensaje..."
-                      className="h-11 text-xs px-4 pr-12 border-0 focus-visible:ring-0 bg-transparent placeholder:text-muted-foreground/60"
-                      disabled={status === "streaming"}
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      if (localInput.trim()) {
-                        sendMessage({
-                          parts: [{ type: "text", text: localInput }],
-                        } as any);
-                        setLocalInput("");
-                      }
-                    }}
-                    disabled={!localInput.trim() || status === "streaming"}
-                    size="icon"
-                    className="h-11 w-11 flex-shrink-0 rounded-full bg-primary text-primary-foreground shadow-sm hover:shadow transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    <HugeiconsIcon icon={SentIcon} className="h-5 w-5" />
-                  </Button>
-                </div>
-              </div>
+              <form
+                onSubmit={handleSubmit}
+                className="p-4 border-t bg-card/50 backdrop-blur-sm flex items-center gap-2"
+              >
+                <Input
+                  placeholder="Pregúntale a Rocco..."
+                  value={input}
+                  onChange={handleInputChange}
+                  className="flex-1 bg-muted/50 border-0 focus-visible:ring-1 focus-visible:ring-primary min-h-[44px]"
+                  disabled={status === "submitted" || status === "streaming"}
+                  autoComplete="off"
+                />
+                <Button
+                  size="icon"
+                  type="submit"
+                  disabled={
+                    !input.trim() ||
+                    status === "submitted" ||
+                    status === "streaming"
+                  }
+                  className="h-10 w-10 shrink-0 rounded-full shadow-sm"
+                >
+                  <HugeiconsIcon icon={SentIcon} className="h-5 w-5" />
+                </Button>
+              </form>
             </div>
           ) : selectedChat ? (
             <ChatWindow
               chatId={selectedChatId!}
-              chat={selectedChat}
-              onTypingChange={setIsTyping}
+              chat={selectedChat as any} // Cast to any because mock chat might not match exact type
+              onBack={() => setSelectedChatId(null)}
             />
           ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-xs text-muted-foreground">
-                Selecciona un chat para comenzar
-              </p>
+            <div className="hidden md:flex flex-col items-center justify-center h-full text-center p-8 text-muted-foreground">
+              <div className="bg-muted/50 p-4 rounded-full mb-4">
+                <HugeiconsIcon icon={AiChat02Icon} className="h-8 w-8" />
+              </div>
+              <p>Selecciona un chat para comenzar</p>
             </div>
           )}
         </Card>
       </div>
-
-      {/* AI Plan Dialogs */}
-      <AIWorkoutPlanDialog
-        open={showWorkoutDialog}
-        onOpenChange={setShowWorkoutDialog}
-        workoutPlan={workoutPlan}
-      />
-      <AINutritionPlanDialog
-        open={showNutritionDialog}
-        onOpenChange={setShowNutritionDialog}
-        nutritionPlan={nutritionPlan}
-      />
     </div>
   );
 }

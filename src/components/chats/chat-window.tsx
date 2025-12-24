@@ -29,6 +29,7 @@ import {
   SentIcon,
   Cancel01Icon,
   MoreHorizontalIcon,
+  ArrowLeft02Icon,
 } from "@hugeicons/core-free-icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils/utils";
@@ -42,9 +43,15 @@ interface ChatWindowProps {
   chatId: string;
   chat: Chat | null;
   onTypingChange?: (isTyping: boolean) => void;
+  onBack?: () => void;
 }
 
-export function ChatWindow({ chatId, chat, onTypingChange }: ChatWindowProps) {
+export function ChatWindow({
+  chatId,
+  chat,
+  onTypingChange,
+  onBack,
+}: ChatWindowProps) {
   const { data: session } = useSession();
   const {
     messages,
@@ -340,6 +347,16 @@ export function ChatWindow({ chatId, chat, onTypingChange }: ChatWindowProps) {
       {chat && (
         <div className="border-b bg-background dark:bg-background flex items-center justify-between px-4 py-3 flex-shrink-0">
           <div className="flex items-center gap-3">
+            {onBack && (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="md:hidden -ml-2"
+                onClick={onBack}
+              >
+                <HugeiconsIcon icon={ArrowLeft02Icon} className="h-5 w-5" />
+              </Button>
+            )}
             <Avatar className="h-8 w-8">
               <AvatarImage
                 src={chat.otherUser.image || undefined}

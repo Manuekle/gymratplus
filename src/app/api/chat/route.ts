@@ -1,6 +1,16 @@
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { streamText } from "ai";
+import { z } from "zod";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
+import {
+  generateWorkoutPlan,
+  generateNutritionPlan,
+} from "@/lib/ai/plan-generators";
+import { createOpenAI } from "@ai-sdk/openai";
+
+const openai = createOpenAI({
+  apiKey: process.env.AI_GATEWAY_API_KEY,
+});
 
 export const maxDuration = 30;
 
@@ -11,74 +21,144 @@ export async function POST(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages } = await req.json();
 
-  // Fetch user with complete profile and goals
-  const user = await prisma.user.findUnique({
+  // Fetch user with complete profile, goals, and recent metrics
+  const user = (await prisma.user.findUnique({
     where: { email: session.user.email },
     include: {
       profile: true,
       Goal: {
         where: { status: "active" },
-        take: 5,
-        orderBy: { createdAt: "desc" },
+        take: 3,
+      },
+    },
+  })) as any;
+
+  if (!user) {
+    return new Response("User not found", { status: 404 });
+  }
+
+  // Build context string from user data
+  const userContext = `
+PERFIL DEL USUARIO:
+- Nombre: ${user.name || "Usuario"}
+- Nivel: ${user.experienceLevel || "No especificado"}
+- Edad: ${user.profile?.age ? `${user.profile.age} años` : "No especificada"}
+- Género: ${user.profile?.gender || "No especificado"}
+- Altura: ${user.profile?.height ? `${user.profile.height}cm` : "No especificada"}
+- Peso: ${user.profile?.weight ? `${user.profile.weight}kg` : "No especificado"}
+- Objetivo: ${user.profile?.goal || "No especificado"}
+- Actividad: ${user.profile?.activityLevel || "No especificada"}
+- Preferencia Dietética: ${user.profile?.dietaryPreference || "Ninguna"}
+- Frecuencia Entrenamiento: ${user.profile?.trainingFrequency ? `${user.profile.trainingFrequency} días/semana` : "No especificada"}
+- Horario Preferido: ${user.profile?.preferredWorkoutTime || "No especificado"}
+
+OBJETIVOS ACTIVOS:
+${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.description || g.type}`).join("\n") : "Ninguno definido"}
+- Preferencia dietética: ${user.profile?.dietaryPreference || "Ninguna"}
+- Alergias/Restricciones: ${user.profile?.allergies ? user.profile.allergies.join(", ") : "Ninguna"}
+- Lesiones/Limitaciones: ${user.profile?.injuries ? user.profile.injuries.join(", ") : "Ninguna"}
+  `.trim();
+
+  const result = await streamText({
+    model: openai("gpt-4o-mini"),
+    messages: messages.map((m: any) => ({
+      role: m.role,
+      content: m.parts?.map((p: any) => p.text).join("\n") || m.content || "",
+    })),
+    system: `Eres Rocco, un entrenador personal experto y motivador de GymRat+.
+
+TU PERSONALIDAD:
+- Enérgico, profesional y directo.
+- Usas emojis ocasionalmente para dar calidez 🏋️‍♂️💪.
+- Te enfocas en la ciencia del deporte y la nutrición basada en evidencia.
+- Priorizas la seguridad y la técnica correcta.
+
+CONTEXTO ACTUAL DEL USUARIO:
+${userContext}
+
+TUS SUPERPODERES (HERRAMIENTAS):
+Tienes acceso a herramientas para generar planes visuales. ÚSALAS cuando el usuario pida explícitamente un plan o cuando sea la mejor forma de ayudar.
+- Si piden "dame una rutina" o "plan de entrenamiento", usa 'generateTrainingPlan'.
+- Si piden "dieta" o "plan de nutrición", usa 'generateNutritionPlan'.
+- NO generes tablas de texto markdown largas para rutinas completas, usa la herramienta para mostrar la tarjeta visual.
+
+INSTRUCCIONES IMPORTANTES:
+1. Responde preguntas breves directamente.
+2. Para planes completos, invoca la herramienta correspondiente y da una breve introducción.
+3. Si el usuario te pide guardar el plan que acabas de generar, diles que pueden usar el botón "Guardar" en la tarjeta del plan.
+4. Siempre adapta el tono y la dificultad al nivel de experiencia del usuario.`,
+    tools: {
+      generateTrainingPlan: {
+        description:
+          "Genera un plan de entrenamiento completo y visual basado en el perfil del usuario.",
+        inputSchema: z.object({
+          focus: z
+            .enum([
+              "fuerza",
+              "hipertrofia",
+              "resistencia",
+              "perdida_peso",
+              "flexibilidad",
+            ])
+            .describe("El enfoque principal del entrenamiento"),
+          daysPerWeek: z
+            .number()
+            .min(1)
+            .max(7)
+            .describe("Días de entrenamiento por semana"),
+          durationMinutes: z
+            .number()
+            .min(15)
+            .max(120)
+            .describe("Duración aproximada por sesión en minutos"),
+          difficulty: z
+            .enum(["principiante", "intermedio", "avanzado"])
+            .describe("Nivel de dificultad"),
+        }),
+        execute: async (params: {
+          focus:
+            | "fuerza"
+            | "hipertrofia"
+            | "resistencia"
+            | "perdida_peso"
+            | "flexibilidad";
+          daysPerWeek: number;
+          durationMinutes: number;
+          difficulty: "principiante" | "intermedio" | "avanzado";
+        }) => {
+          return generateWorkoutPlan(user, params);
+        },
+      },
+      generateNutritionPlan: {
+        description:
+          "Genera un plan nutricional detallado y visual con comidas y macros.",
+        inputSchema: z.object({
+          calories: z.number().describe("Meta calórica diaria aproximada"),
+          goal: z
+            .enum(["perder_grasa", "mantener", "ganar_musculo"])
+            .describe("Objetivo nutricional"),
+          mealsPerDay: z
+            .number()
+            .min(3)
+            .max(6)
+            .describe("Número de comidas por día"),
+          dietaryType: z
+            .string()
+            .describe("Tipo de dieta (ej. vegana, paleo, omnívora)"),
+        }),
+        execute: async (params: {
+          calories: number;
+          goal: "perder_grasa" | "mantener" | "ganar_musculo";
+          mealsPerDay: number;
+          dietaryType: string;
+        }) => {
+          return generateNutritionPlan(user, params);
+        },
       },
     },
   });
 
-  if (!user) {
-    return new Response("Unauthorized", { status: 401 });
-  }
-
-  // Build personalized context
-  const userContext = `
-CONTEXTO DEL USUARIO:
-- Nombre: ${user.name || "Usuario"}
-- Nivel de experiencia: ${user.experienceLevel || "Principiante"}
-- Edad: ${(user as any).profile?.birthdate ? new Date().getFullYear() - new Date((user as any).profile.birthdate).getFullYear() : "No especificada"} años
-- Género: ${(user as any).profile?.gender || "No especificado"}
-- Altura: ${(user as any).profile?.height || "No especificada"} cm
-- Peso actual: ${(user as any).profile?.currentWeight || "No especificado"} kg
-- Peso objetivo: ${(user as any).profile?.targetWeight || "No especificado"} kg
-- Objetivo principal: ${(user as any).profile?.goal || "Estar en forma"}
-- Nivel de actividad: ${(user as any).profile?.activityLevel || "Moderado"}
-- Preferencia dietética: ${(user as any).profile?.dietaryPreference || "Ninguna"}
-- Frecuencia de entrenamiento: ${(user as any).profile?.trainingFrequency || "No especificada"} días/semana
-- Horario preferido: ${(user as any).profile?.preferredWorkoutTime || "Flexible"}
-${(user as any).Goal && (user as any).Goal.length > 0 ? `- Objetivos activos: ${(user as any).Goal.map((g: any) => g.title).join(", ")}` : ""}
-  `.trim();
-
-  const result = await streamText({
-    model: "openai/gpt-4o-mini",
-    messages: await convertToModelMessages(messages),
-    system: `Eres Rocco, un entrenador personal de IA avanzado y motivador.
-
-TU PERSONALIDAD:
-- Eres enérgico, motivador y directo, como un verdadero entrenador profesional
-- Usas emojis ocasionalmente para hacer la conversación más amigable
-- Eres cercano pero profesional, llamas al usuario por su nombre cuando es relevante
-- Adaptas tu lenguaje al nivel de experiencia del usuario
-
-TUS FUNCIONES:
-1. Responder dudas sobre entrenamiento, técnica de ejercicios y rutinas
-2. Dar consejos básicos de nutrición (siempre recordando que no eres médico ni nutricionista)
-3. Motivar al usuario cuando se sienta desanimado
-4. Proporcionar información basada en ciencia del ejercicio
-5. Ayudar a establecer y hacer seguimiento de objetivos realistas
-
-${userContext}
-
-INSTRUCCIONES:
-- Usa esta información para personalizar tus consejos y respuestas
-- Sé específico y práctico en tus recomendaciones
-- Si el usuario pregunta algo que no sea de fitness, redirige la conversación amablemente
-- Prioriza siempre la seguridad del usuario
-- Si no sabes algo o requiere atención médica, admítelo y recomienda consultar a un profesional
-- Sé conciso pero informativo (máximo 3-4 párrafos por respuesta)`,
-  });
-
-  return result.toUIMessageStreamResponse({
-    sendSources: true,
-    sendReasoning: true,
-  });
+  return result.toTextStreamResponse();
 }
