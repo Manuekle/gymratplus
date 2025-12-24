@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StreakAlertProvider } from "@/providers/streak-alert-provider";
 import { NotificationsProvider } from "@/providers/notifications-provider";
 
-
 export default function ClientLayout({
   children,
 }: {
@@ -22,7 +21,6 @@ export default function ClientLayout({
       disableTransitionOnChange
     >
       <AuthProvider>
-
         <RedisInitializer />
         <StreakAlertProvider>
           <NotificationsProvider>

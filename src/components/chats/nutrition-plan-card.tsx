@@ -66,12 +66,12 @@ export function NutritionPlanCard({
   // Convertir el objeto meals a un array
   const mealsArray = plan.meals
     ? Object.entries(plan.meals)
-      .filter(([_, meal]) => meal !== undefined)
-      .map(([key, meal]) => ({
-        key,
-        name: mealNames[key] || key,
-        ...meal,
-      }))
+        .filter(([_, meal]) => meal !== undefined)
+        .map(([key, meal]) => ({
+          key,
+          name: mealNames[key] || key,
+          ...meal,
+        }))
     : [];
 
   return (
@@ -135,11 +135,11 @@ export function NutritionPlanCard({
                   {meal.entries?.map((entry, idx) => {
                     const totalCals = Math.round(
                       (entry.food.calories * entry.quantity) /
-                      entry.food.serving,
+                        entry.food.serving,
                     );
                     const totalProtein = Math.round(
                       (entry.food.protein * entry.quantity) /
-                      entry.food.serving,
+                        entry.food.serving,
                     );
                     const totalCarbs = Math.round(
                       (entry.food.carbs * entry.quantity) / entry.food.serving,

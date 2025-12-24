@@ -41,8 +41,6 @@ export async function createNotification({
     },
   });
 
-
-
   return notification;
 }
 

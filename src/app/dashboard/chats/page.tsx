@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { DefaultChatTransport } from "ai";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
@@ -40,9 +39,6 @@ import {
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
 
-
-import { customChatFetch } from "@/lib/ai/chat-fetch";
-
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
@@ -51,10 +47,6 @@ export default function ChatPage() {
   const { messages, sendMessage, status, addToolApprovalResponse, error } =
     useChat({
       id: "rocco-chat",
-      transport: new DefaultChatTransport({
-        api: "/api/chat",
-        fetch: customChatFetch,
-      }),
       onError: (error) => {
         console.error("❌ [Chat Error]", error);
         toast.error("Error al comunicarse con Rocco", {
@@ -238,23 +230,40 @@ export default function ChatPage() {
                     // Check if this is the last message, from assistant, and has no visible content yet
                     const isLast = index === messages.length - 1;
                     const isAssistant = message.role === "assistant";
-                    const hasContent = message.parts && message.parts.length > 0 && message.parts.some((part: any) => {
-                      if (part.type === "text") return part.text && part.text.trim() !== "";
-                      if (part.type === "reasoning") return true;
-                      if (part.type.startsWith("tool-")) {
-                        const toolName = part.type.replace("tool-", "");
-                        const state = (part as any).state;
-                        // For tools, only consider having content if we are actually rendering the result
-                        if (['generateTrainingPlan', 'generateNutritionPlan', 'getTodayCalories'].includes(toolName)) {
-                          return state === 'result' || state === 'output-available';
+                    const hasContent =
+                      message.parts &&
+                      message.parts.length > 0 &&
+                      message.parts.some((part: any) => {
+                        if (part.type === "text")
+                          return part.text && part.text.trim() !== "";
+                        if (part.type === "reasoning") return true;
+                        if (part.type.startsWith("tool-")) {
+                          const toolName = part.type.replace("tool-", "");
+                          const state = (part as any).state;
+                          // For tools, only consider having content if we are actually rendering the result
+                          if (
+                            [
+                              "generateTrainingPlan",
+                              "generateNutritionPlan",
+                              "getTodayCalories",
+                            ].includes(toolName)
+                          ) {
+                            return (
+                              state === "result" || state === "output-available"
+                            );
+                          }
+                          if (toolName === "saveMealEntry") {
+                            return [
+                              "approval-requested",
+                              "output-available",
+                              "result",
+                              "output-denied",
+                            ].includes(state);
+                          }
+                          return false;
                         }
-                        if (toolName === 'saveMealEntry') {
-                          return ['approval-requested', 'output-available', 'result', 'output-denied'].includes(state);
-                        }
-                        return false;
-                      }
-                      return true; // Other parts
-                    });
+                        return true; // Other parts
+                      });
 
                     if (isLast && isAssistant && !hasContent) return null;
 
@@ -357,7 +366,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                            toolInvocation.toolCallId
+                                              toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -373,7 +382,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                            toolInvocation.toolCallId
+                                              toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -537,31 +546,47 @@ export default function ChatPage() {
                     const lastMessage = messages[messages.length - 1];
 
                     const hasContent = lastMessage?.parts?.some((part: any) => {
-                      if (part.type === "text") return part.text && part.text.trim() !== "";
+                      if (part.type === "text")
+                        return part.text && part.text.trim() !== "";
                       if (part.type === "reasoning") return true;
                       if (part.type.startsWith("tool-")) {
                         const toolName = part.type.replace("tool-", "");
                         const state = (part as any).state;
                         // For tools, only consider having content if we are actually rendering the result
-                        if (['generateTrainingPlan', 'generateNutritionPlan', 'getTodayCalories'].includes(toolName)) {
-                          return state === 'result' || state === 'output-available';
+                        if (
+                          [
+                            "generateTrainingPlan",
+                            "generateNutritionPlan",
+                            "getTodayCalories",
+                          ].includes(toolName)
+                        ) {
+                          return (
+                            state === "result" || state === "output-available"
+                          );
                         }
-                        if (toolName === 'saveMealEntry') {
-                          return ['approval-requested', 'output-available', 'result', 'output-denied'].includes(state);
+                        if (toolName === "saveMealEntry") {
+                          return [
+                            "approval-requested",
+                            "output-available",
+                            "result",
+                            "output-denied",
+                          ].includes(state);
                         }
                         return false;
                       }
                       return true;
                     });
 
-                    const hasPendingTool = lastMessage?.parts?.some((part: any) => {
-                      if (part.type.startsWith("tool-")) {
-                        const state = part.state;
-                        // Consider 'call' state as pending
-                        return state === 'call' || state === 'uploading';
-                      }
-                      return false;
-                    });
+                    const hasPendingTool = lastMessage?.parts?.some(
+                      (part: any) => {
+                        if (part.type.startsWith("tool-")) {
+                          const state = part.state;
+                          // Consider 'call' state as pending
+                          return state === "call" || state === "uploading";
+                        }
+                        return false;
+                      },
+                    );
 
                     const isThinking =
                       (status === "submitted" &&
@@ -571,7 +596,11 @@ export default function ChatPage() {
                               "state" in part &&
                               (part as any).state === "approval-responded",
                           ),
-                        )) || (status === "streaming" && lastMessage?.role === "assistant" && !hasContent) || hasPendingTool;
+                        )) ||
+                      (status === "streaming" &&
+                        lastMessage?.role === "assistant" &&
+                        !hasContent) ||
+                      hasPendingTool;
 
                     return (
                       <>

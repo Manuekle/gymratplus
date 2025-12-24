@@ -193,7 +193,6 @@ export default function NotificationsPage() {
               </>
             )}
           </div>
-
         </div>
       </div>
 

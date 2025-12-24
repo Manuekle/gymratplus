@@ -182,8 +182,6 @@ export function NotificationsProvider({
         );
         if (newOnes.length > 0) {
           onNewNotificationsRef.current(newOnes);
-
-
         }
       }
 

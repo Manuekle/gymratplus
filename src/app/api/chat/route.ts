@@ -122,11 +122,11 @@ INSTRUCCIONES IMPORTANTES:
         }),
         execute: async (params: {
           focus:
-          | "fuerza"
-          | "hipertrofia"
-          | "resistencia"
-          | "perdida_peso"
-          | "flexibilidad";
+            | "fuerza"
+            | "hipertrofia"
+            | "resistencia"
+            | "perdida_peso"
+            | "flexibilidad";
           daysPerWeek: number;
           durationMinutes: number;
           difficulty: "principiante" | "intermedio" | "avanzado";
@@ -263,8 +263,7 @@ INSTRUCCIONES IMPORTANTES:
 
   console.log("🔍 API Chat - Stream created, returning response");
 
-  return result.toUIMessageStreamResponse({
-    sendSources: true,
+  return (result as any).toDataStreamResponse({
     sendReasoning: true,
   });
 }
