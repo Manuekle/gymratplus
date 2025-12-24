@@ -39,7 +39,7 @@ import {
   CheckmarkCircle01Icon,
   Cancel01Icon,
 } from "@hugeicons/core-free-icons";
-import { ThinkingMessage } from "@/components/chats/thinking-message";
+
 
 import { customChatFetch } from "@/lib/ai/chat-fetch";
 
@@ -576,8 +576,13 @@ export default function ChatPage() {
                     return (
                       <>
                         {isThinking && (
-                          <div className="flex justify-start">
-                            <ThinkingMessage />
+                          <div className="flex justify-start w-full max-w-[85%] md:max-w-[70%] mb-4">
+                            <Reasoning isStreaming={true}>
+                              <ReasoningTrigger />
+                              <ReasoningContent>
+                                Generando tu plan personalizado...
+                              </ReasoningContent>
+                            </Reasoning>
                           </div>
                         )}
                         {status === "streaming" &&
