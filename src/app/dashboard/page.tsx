@@ -11,7 +11,6 @@ import WorkoutSummary from "@/components/dashboard/workout-summary";
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -86,7 +85,6 @@ export default function DashboardPage() {
 
   return (
     <AnimatedLayout>
-      <InstallPrompt />
       <div className="space-y-4 sm:space-y-6 px-2 sm:px-0">
         {/* Progreso y Objetivos */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">

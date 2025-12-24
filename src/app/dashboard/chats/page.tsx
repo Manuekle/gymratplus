@@ -36,6 +36,7 @@ import {
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
 import { CheckIcon, XIcon } from "lucide-react";
+import { ThinkingMessage } from "@/components/chats/thinking-message";
 
 import { customChatFetch } from "@/lib/ai/chat-fetch";
 
@@ -495,21 +496,38 @@ export default function ChatPage() {
 
                   {(() => {
                     const lastMessage = messages[messages.length - 1];
+                    const isThinking =
+                      status === "submitted" &&
+                      !messages.some((msg) =>
+                        msg.parts?.some(
+                          (part) =>
+                            "state" in part &&
+                            (part as any).state === "approval-responded",
+                        ),
+                      );
+
                     return (
-                      status === "streaming" &&
-                      messages.length > 0 &&
-                      lastMessage?.role === "user" && (
-                        <div className="flex justify-start">
-                          <div className="max-w-[85%] md:max-w-[70%]">
-                            <Reasoning isStreaming={true}>
-                              <ReasoningTrigger />
-                              <ReasoningContent>
-                                Rocco está pensando en tu pregunta...
-                              </ReasoningContent>
-                            </Reasoning>
+                      <>
+                        {isThinking && (
+                          <div className="flex justify-start">
+                            <ThinkingMessage />
                           </div>
-                        </div>
-                      )
+                        )}
+                        {status === "streaming" &&
+                          messages.length > 0 &&
+                          lastMessage?.role === "user" && (
+                            <div className="flex justify-start">
+                              <div className="max-w-[85%] md:max-w-[70%]">
+                                <Reasoning isStreaming={true}>
+                                  <ReasoningTrigger />
+                                  <ReasoningContent>
+                                    Rocco está pensando en tu pregunta...
+                                  </ReasoningContent>
+                                </Reasoning>
+                              </div>
+                            </div>
+                          )}
+                      </>
                     );
                   })()}
                 </div>

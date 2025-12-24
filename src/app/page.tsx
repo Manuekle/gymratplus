@@ -19,7 +19,6 @@ import {
   ArtificialIntelligence02Icon,
   CheckmarkBadge02Icon,
 } from "@hugeicons/core-free-icons";
-import { InstallPrompt } from "@/components/pwa/install-prompt";
 
 export default function GymRatLanding() {
   const { resolvedTheme, systemTheme } = useTheme();
@@ -65,8 +64,6 @@ export default function GymRatLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-black dark:to-zinc-900 text-zinc-900 dark:text-zinc-50 relative overflow-hidden">
-      <InstallPrompt />
-
       {/* Animated Liquid Glass Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 -left-40 w-96 h-96 bg-gradient-to-br from-zinc-200/40 to-zinc-300/20 dark:from-zinc-800/40 dark:to-zinc-700/20 rounded-full blur-3xl animate-blob" />
