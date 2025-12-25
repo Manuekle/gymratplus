@@ -56,7 +56,7 @@ export function InstructorProfileForm({
   onSuccess,
 }: InstructorProfileFormProps) {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [isCancelDialogOpen, setIsCancelDialogOpen] = useState(false);
@@ -167,8 +167,17 @@ export function InstructorProfileForm({
         userDataCache.delete(session.user.email);
       }
 
-      // 4. Force session refresh
-      await fetch("/api/auth/session?update=true");
+
+      // 4. Force session refresh using NextAuth update
+      if (session?.user) {
+        await update({
+          ...session,
+          user: {
+            ...session.user,
+            isInstructor: false,
+          },
+        });
+      }
 
       // 5. Redirect to profile and refresh
       router.push("/dashboard/profile");
