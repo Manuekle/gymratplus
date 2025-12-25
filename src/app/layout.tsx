@@ -6,7 +6,6 @@ import "./globals.css";
 import { generateMetadata as generateSEOMetadata } from "@/lib/seo/seo";
 import ClientLayout from "./client-layout";
 import { JsonLd } from "@/components/seo/json-ld";
-import CookieConsentBanner from "@/components/privacy/cookie-consent";
 
 // Metadata SEO para la página principal y por defecto
 export const metadata: Metadata = {
@@ -146,7 +145,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         {/* End Google Tag Manager (noscript) */}
         <JsonLd />
         <ClientLayout>{children}</ClientLayout>
-        <CookieConsentBanner />
         <SpeedInsights />
       </body>
     </html>
