@@ -1,6 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
+import { DefaultChatTransport } from "ai";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   Robot01Icon,
@@ -52,13 +53,16 @@ export default function ChatPage() {
   // AI Chat configuration
   const { messages, sendMessage, status, addToolApprovalResponse, error } =
     useChat({
-      api: `/api/chat?id=${activeChatId}`,
       id: activeChatId,
-      onError: (error) => {
+      transport: new DefaultChatTransport({
+        api: `/api/chat?id=${activeChatId}`,
+      }),
+      onError: async (error) => {
         console.error("❌ [Chat Error]", error);
         toast.error("Error al comunicarse con Rocco", {
           description: error.message || "Intenta de nuevo",
         });
+        await sendErrorEmail(error instanceof Error ? error.message : "Unknown error");
       },
     });
 

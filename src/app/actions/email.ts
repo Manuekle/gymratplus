@@ -5,7 +5,7 @@ import { sendEmail } from "@/lib/email/resend";
 export async function sendErrorEmail(errorMessage: string) {
     try {
         const result = await sendEmail({
-            from: "Acme <onboarding@resend.dev>",
+            // Si no se especifica 'from', usa el default configurado en resend.ts
             to: "delivered@resend.dev",
             subject: "Error in Chat Application",
             html: `<p>An error occurred in the chat application:</p><pre>${errorMessage}</pre>`,
