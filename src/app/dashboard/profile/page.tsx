@@ -199,7 +199,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-            "",
+          "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -217,7 +217,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Load streak stats
       if (session.user.id) {
@@ -535,8 +535,8 @@ export default function ProfilePage() {
       <Card>
         <CardContent className="px-4 pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
-            <div className="flex flex-col items-center md:items-start relative">
-              <div className="relative group">
+            <div className="flex flex-col items-center md:items-start relative gap-2">
+              <div className="relative">
                 <Avatar className="h-24 w-24 border-4 border-background">
                   <AvatarImage
                     src={currentImage || session?.user?.image || undefined}
@@ -552,27 +552,30 @@ export default function ProfilePage() {
                       .toUpperCase()}
                   </AvatarFallback>
                 </Avatar>
-                {isEditing && (
-                  <div
-                    className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    onClick={() =>
-                      document.getElementById("profile-image-upload")?.click()
-                    }
-                  >
-                    <HugeiconsIcon
-                      icon={Camera01Icon}
-                      className="text-white w-6 h-6"
-                    />
-                    <input
-                      id="profile-image-upload"
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      onChange={handleImageUpload}
-                    />
-                  </div>
-                )}
+                <input
+                  id="profile-image-upload"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageUpload}
+                />
               </div>
+              {isEditing && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-xs"
+                  onClick={() =>
+                    document.getElementById("profile-image-upload")?.click()
+                  }
+                >
+                  <HugeiconsIcon
+                    icon={Camera01Icon}
+                    className="h-3 w-3 mr-1"
+                  />
+                  Editar imagen
+                </Button>
+              )}
             </div>
 
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
@@ -585,16 +588,16 @@ export default function ProfilePage() {
                   {/* Icono de Verificado para PRO/Instructor */}
                   {(session?.user?.subscriptionStatus === "active" ||
                     session?.user?.subscriptionStatus === "trialing") && (
-                    <VerifiedBadge
-                      variant={
-                        session?.user?.subscriptionTier === "PRO"
-                          ? "pro"
-                          : isInstructor
-                            ? "instructor"
-                            : "default"
-                      }
-                    />
-                  )}
+                      <VerifiedBadge
+                        variant={
+                          session?.user?.subscriptionTier === "PRO"
+                            ? "pro"
+                            : isInstructor
+                              ? "instructor"
+                              : "default"
+                        }
+                      />
+                    )}
                 </div>
 
                 {/* Badge de Instructor o Alumno */}
@@ -677,12 +680,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                            "es-ES",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
                         : "";
                     })()}
                   </span>
@@ -998,12 +1001,12 @@ export default function ProfilePage() {
                             )?.profile?.birthdate;
                             return birthdate
                               ? new Date(
-                                  birthdate as string,
-                                ).toLocaleDateString("es-ES", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                birthdate as string,
+                              ).toLocaleDateString("es-ES", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
                               : "Fecha no disponible";
                           })()}
                         </div>
@@ -1565,9 +1568,8 @@ export default function ProfilePage() {
                                 } else if (daysDiff === 1) {
                                   return "Ayer";
                                 } else {
-                                  return `Hace ${daysDiff} ${
-                                    daysDiff === 1 ? "día" : "días"
-                                  }`;
+                                  return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
+                                    }`;
                                 }
                               })()}
                             </div>
