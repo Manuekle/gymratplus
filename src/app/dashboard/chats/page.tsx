@@ -141,7 +141,7 @@ export default function ChatPage() {
         <div
           className={cn(
             "w-full md:w-[280px] border-r border-zinc-200/50 dark:border-zinc-800/50 flex flex-col bg-zinc-50/10 dark:bg-zinc-950/10",
-            selectedChatId ? "hidden md:flex" : "flex",
+            "hidden md:flex",
           )}
         >
           <div className="h-14 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center px-4">
@@ -180,7 +180,7 @@ export default function ChatPage() {
         <div
           className={cn(
             "flex-1 flex flex-col overflow-hidden bg-background",
-            !selectedChatId ? "hidden md:flex" : "flex",
+            "flex",
           )}
         >
           {selectedChatId === "rocco-ai" ? (
@@ -205,13 +205,13 @@ export default function ChatPage() {
               <ScrollArea className="flex-1 h-[calc(100vh-16rem)]">
                 <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
                   {messages.length === 0 && (
-                    <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400">
+                    <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400 animate-in fade-in zoom-in duration-500">
                       <HugeiconsIcon
                         icon={Robot01Icon}
                         className="h-8 w-8 mb-4"
                       />
                       <p className="text-3xl tracking-[-0.04em] font-medium">
-                        Inicia una charla con Rocco
+                        Hola, ¿en qué puedo ayudarte hoy?
                       </p>
                     </div>
                   )}
@@ -480,7 +480,7 @@ export default function ChatPage() {
                   onSubmit={handleSubmit}
                   className="max-w-3xl mx-auto flex flex-col items-center gap-2"
                 >
-                  <Suggestions className="overflow-hidden scroll-hidden y-scroll">
+                  <Suggestions className="p-2 scroll-hidden y-scroll animate-in fade-in slide-in-from-bottom-4 duration-500 delay-300">
                     <Suggestion
                       onClick={() =>
                         sendMessage({ text: "Crear plan de entrenamiento" })

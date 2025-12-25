@@ -15,10 +15,10 @@ import {
 import { saveChat, saveMessages, getChatById } from "@/lib/db/chat-queries";
 import { generateUUID } from "@/lib/ai/utils";
 
-// Force Node.js runtime for iOS Safari compatibility
+// Force Node.js runtime for iOS Safari compatibility and to avoid Edge WAF issues
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-export const maxDuration = 30;
+export const maxDuration = 60;
 
 export async function POST(req: Request) {
   try {
