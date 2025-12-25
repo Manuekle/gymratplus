@@ -169,76 +169,75 @@ export default function WorkoutTimerFloat({
       className="fixed bottom-4 right-4 z-50"
     >
       <div
-        className={`bg-foreground p-4 transition 
-          ${
-            isMinimized
-              ? "rounded-full flex items-center justify-center cursor-pointer"
-              : "w-64 rounded-lg"
+        className={`bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl p-4 transition-all duration-300
+          ${isMinimized
+            ? "rounded-full flex items-center justify-center cursor-pointer hover:scale-105"
+            : "w-64 rounded-2xl"
           }`}
         onClick={isMinimized ? () => setIsMinimized(false) : undefined}
       >
         {isMinimized ? (
-          <div className="text-xl text-white dark:text-black font-semibold  px-4 w-fit">
+          <div className="text-xl text-zinc-900 dark:text-zinc-100 font-semibold px-4 w-fit">
             {formatTime(elapsedTime)}
           </div>
         ) : (
-          // <span>hola</span>
           <div className="space-y-3">
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2">
                 <HugeiconsIcon
                   icon={Clock01Icon}
                   size={14}
-                  className="text-white dark:text-black"
+                  className="text-zinc-700 dark:text-zinc-300"
                 />
-                <span className="font-medium text-xs text-white dark:text-black">
+                <span className="font-medium text-xs text-zinc-700 dark:text-zinc-300">
                   Tiempo de entrenamiento
                 </span>
               </div>
               <Button
                 size="icon"
-                className="p-1 rounded-sm"
+                variant="ghost"
+                className="p-1 rounded-sm h-6 w-6 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
                 onClick={() => setIsMinimized(true)}
               >
                 <HugeiconsIcon
                   icon={ArrowExpandIcon}
                   size={14}
-                  className="text-white dark:text-black"
+                  className="text-zinc-700 dark:text-zinc-300"
                 />
               </Button>
             </div>
 
             <div className="text-center">
-              <div className="text-2xl font-semibold  text-white dark:text-black">
+              <div className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
                 {formatTime(elapsedTime)}
               </div>
             </div>
 
-            <div className="flex justify-between">
+            <div className="flex justify-between gap-2">
               <Button
                 size="default"
-                variant="default"
-                className="p-1"
+                variant="ghost"
+                className="p-2 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
                 onClick={togglePause}
               >
                 {isPaused ? (
                   <HugeiconsIcon
                     icon={PlayIcon}
                     size={16}
-                    className="text-white dark:text-black"
+                    className="text-zinc-700 dark:text-zinc-300"
                   />
                 ) : (
                   <HugeiconsIcon
                     icon={PauseIcon}
                     size={16}
-                    className="text-white dark:text-black"
+                    className="text-zinc-700 dark:text-zinc-300"
                   />
                 )}
               </Button>
 
               <Button
                 size="default"
-                className="text-xs px-4 bg-destructive dark:bg-[#BB020B] dark:text-white hover:bg-destructive/80"
+                className="text-xs px-4 bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
                 onClick={() => setShowConfirmDialog(true)}
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={16} />
