@@ -288,6 +288,7 @@ model MealLog {
   consumedAt      DateTime
   foodId          String?
   recipeId        String?
+  customName      String?           // For AI-logged meals without specific foodId
   quantity        Float
   calories        Int
   protein         Float

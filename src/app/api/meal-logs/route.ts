@@ -201,6 +201,7 @@ export async function POST(req: NextRequest) {
       const mealLogData: {
         mealType: string;
         consumedAt: Date;
+        customName?: string;
         quantity: number;
         calories: number;
         protein: number;
@@ -235,6 +236,11 @@ export async function POST(req: NextRequest) {
           },
         },
       };
+
+      // Add customName if provided (for AI-logged meals)
+      if (data.customName) {
+        mealLogData.customName = data.customName;
+      }
 
       // Conectar con food o recipe según corresponda
       if (data.foodId) {
