@@ -17,6 +17,7 @@ import {
   // SmartPhone01Icon,
 } from "@hugeicons/core-free-icons";
 import { maskPhoneNumber } from "@/lib/utils/phone";
+import { useSession } from "next-auth/react";
 
 interface VerificationFormProps {
   type: "email" | "sms";
@@ -33,6 +34,7 @@ export function VerificationForm({
   onVerified,
   className,
 }: VerificationFormProps) {
+  const { update } = useSession();
   const [code, setCode] = React.useState("");
   const [isVerifying, setIsVerifying] = React.useState(false);
   const [isResending, setIsResending] = React.useState(false);
@@ -43,8 +45,10 @@ export function VerificationForm({
   // Enmascarar destino para privacidad
   const maskedDestination = React.useMemo(() => {
     if (type === "email") {
-      const [local, domain] = destination.split("@");
-      if (!local || !domain) return destination;
+      const parts = destination.split("@");
+      if (parts.length !== 2) return destination;
+      const local = parts[0] || "";
+      const domain = parts[1] || "";
       return `${local.substring(0, 2)}***@${domain}`;
     }
     return maskPhoneNumber(destination);
@@ -92,6 +96,10 @@ export function VerificationForm({
       }
 
       setSuccess(true);
+
+      // Force session update to refresh JWT with new emailVerified status
+      await update();
+
       setTimeout(() => {
         onVerified?.();
       }, 1500);
