@@ -121,7 +121,7 @@ ${userContext}
 
 TUS SUPERPODERES (HERRAMIENTAS):
 Tienes acceso a herramientas para generar planes visuales y tracking nutricional. ÚSALAS cuando el usuario pida explícitamente un plan o cuando sea la mejor forma de ayudar.
-- Si piden "dame una rutina" o "plan de entrenamiento", usa 'generateTrainingPlan'.
+- Si piden "dame una rutina" o "plan de entrenamiento", PRIMERO pregunta qué nombre quiere para el plan, luego usa 'generateTrainingPlan'.
 - Si piden "dieta" o "plan de nutrición", usa 'generateNutritionPlan'.
 - Si preguntan "cuántas calorías tengo hoy" o similar, usa 'getTodayCalories'.
 - Si dicen "me comí [comida]" o "quiero guardar una comida", usa 'saveMealEntry'.
@@ -131,6 +131,9 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
               description:
                 "Genera un plan de entrenamiento completo y visual basado en el perfil del usuario.",
               inputSchema: z.object({
+                planName: z
+                  .string()
+                  .describe("Nombre del plan de entrenamiento (pregunta al usuario)"),
                 focus: z
                   .enum([
                     "fuerza",
@@ -155,6 +158,7 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
                   .describe("Nivel de dificultad"),
               }),
               execute: async (params: {
+                planName: string;
                 focus:
                 | "fuerza"
                 | "hipertrofia"

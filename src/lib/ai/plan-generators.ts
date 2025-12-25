@@ -31,13 +31,15 @@ ${exercises.map((e) => `- ${e.id}: ${e.name} (${e.muscleGroup})`).join("\n")}
 INSTRUCCIONES:
 1. Crea un plan de ${params.daysPerWeek} días.
 2. Usa SOLO ejercicios de la lista (IDs exactos).
-3. Responde SOLO con un JSON válido.`,
+3. Para el campo "day", usa el NOMBRE DEL GRUPO MUSCULAR principal (ej: "Pecho", "Espalda", "Piernas", "Hombros", "Brazos", "Full Body").
+4. Para "notes", usa solo la palabra "Día" sin números.
+5. Responde SOLO con un JSON válido.`,
     prompt: `Genera un plan de entrenamiento con este contexto:
 ${userContext}
 
 FORMATO JSON:
 {
-  "name": "Nombre del plan",
+  "name": "${params.planName}",
   "description": "Descripción corta",
   "focus": "${params.focus}",
   "daysPerWeek": ${params.daysPerWeek},
@@ -45,9 +47,9 @@ FORMATO JSON:
   "difficulty": "${params.difficulty}",
   "days": [
     {
-      "day": "Día 1 - ...",
+      "day": "Pecho",
       "exercises": [
-        { "id": "ID_EXACTO", "sets": 3, "reps": 12, "restTime": 60, "notes": "..." }
+        { "id": "ID_EXACTO", "sets": 3, "reps": 12, "restTime": 60, "notes": "Día" }
       ]
     }
   ]
@@ -112,9 +114,9 @@ INSTRUCCIONES:
 ${userContext}
 ALIMENTOS:
 ${foods
-  .slice(0, 100)
-  .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
-  .join("\n")}
+        .slice(0, 100)
+        .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
+        .join("\n")}
 
 FORMATO JSON:
 {
