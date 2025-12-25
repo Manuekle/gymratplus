@@ -20,11 +20,13 @@ import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
 import { CaloriesSummaryCard } from "@/components/chats/calories-summary-card";
 import { Card } from "@/components/ui/card";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
+import { Loader } from "@/components/ai-elements/loader";
 import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
+import { Streamdown } from "streamdown";
 import {
   Confirmation,
   ConfirmationAccepted,
@@ -34,7 +36,6 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
-import { Loader } from "@/components/ai-elements/loader";
 import { CheckIcon, XIcon } from "lucide-react";
 import { sendErrorEmail } from "@/app/actions/email";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
@@ -262,9 +263,12 @@ export default function ChatPage() {
                               {message.parts.map((part, i) => {
                                 if (part.type === "text") {
                                   return (
-                                    <p key={i} className="whitespace-pre-wrap">
+                                    <Streamdown
+                                      key={i}
+                                      className="prose prose-sm dark:prose-invert max-w-none [&>*:first-child]:mt-0 [&>*:last-child]:mb-0"
+                                    >
                                       {part.text}
-                                    </p>
+                                    </Streamdown>
                                   );
                                 }
                                 if (part.type === "reasoning") {
@@ -477,9 +481,15 @@ export default function ChatPage() {
                     })}
 
                     {/* Thinking state indicator */}
-                    {(status === "streaming" || status === "submitted") &&
-                      messages.length > 0 &&
-                      messages[messages.length - 1]?.role === "user" && (
+                    {(status === "streaming" || status === "submitted" ||
+                      (messages.length > 0 &&
+                        messages[messages.length - 1]?.role === "assistant" &&
+                        messages[messages.length - 1]?.parts.some(
+                          (part: any) =>
+                            part.type?.startsWith("tool-") &&
+                            (part.state === "call" || part.state === "partial-call")
+                        ))) &&
+                      messages.length > 0 && (
                         <div className="flex justify-start animate-in fade-in duration-300">
                           <div className="rounded-2xl px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
                             <div className="flex items-center gap-2">
