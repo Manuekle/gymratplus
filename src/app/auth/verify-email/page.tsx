@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { VerificationForm } from "@/components/auth/verification-form";
-import { useRouter } from "next/navigation";
+// import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
     Card,
@@ -16,21 +16,12 @@ import { signOut } from "next-auth/react";
 import { ThemeToggle } from "@/components/layout/theme/theme-toggle";
 
 export default function VerifyEmailPage() {
-    const { data: session, update } = useSession();
-    const router = useRouter();
+    const { data: session } = useSession();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
-
-    useEffect(() => {
-        // If user is verified, redirect
-        // Use type assertion or check properties if types are not updated yet
-        if (session?.user && (session.user as any).emailVerified) {
-            router.push("/onboarding");
-        }
-    }, [session, router]);
 
     if (!mounted || !session?.user) {
         return null; // or loading spinner
@@ -61,9 +52,8 @@ export default function VerifyEmailPage() {
                             destination={(session.user as any).email || ""}
                             userId={session.user.id}
                             onVerified={async () => {
-                                await update(); // Force session update to get new emailVerified Date
-                                // The useEffect will redirect automatically
-                                router.refresh();
+                                // Forced reload ensures the session cookie is updated and seen by middleware
+                                window.location.href = "/onboarding";
                             }}
                             className="w-full"
                         />

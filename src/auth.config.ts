@@ -12,35 +12,55 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith("/dashboard");
-      const isOnAuth = nextUrl.pathname.startsWith("/auth");
-      const isOnVerifyEmail = nextUrl.pathname === "/auth/verify-email";
-      const emailVerified = (auth?.user as any)?.emailVerified;
-      const isVerified = !!emailVerified;
+      const pathname = nextUrl.pathname;
 
-      // 1. Handle Verify Email Page specific logic
-      // This must come BEFORE generic isOnAuth check to avoid loops
-      if (isOnVerifyEmail) {
-        if (!isLoggedIn) return false; // Redirect to signin
-        if (isVerified) return Response.redirect(new URL("/dashboard", nextUrl));
-        return true; // Allow stay if logged in and not verified
-      }
+      const isOnAuth = pathname.startsWith("/auth");
+      const isOnVerifyEmail = pathname === "/auth/verify-email";
+      const isOnOnboarding = pathname === "/onboarding";
+      const isOnPublic = pathname === "/" || pathname === "/about" || pathname === "/privacy"; // Add public pages if any
 
-      // 2. Handle Dashboard
-      if (isOnDashboard) {
-        if (!isLoggedIn) return false; // Redirect to login
-        if (!isVerified) return Response.redirect(new URL("/auth/verify-email", nextUrl));
-        return true;
-      }
+      const isVerified = !!(auth?.user as any)?.emailVerified;
+      const hasProfile = !!(auth?.user as any)?.profile;
 
-      // 3. Handle other Auth pages (Signin/Signup)
-      if (isOnAuth) {
-        if (isLoggedIn) {
-          // If already verified, go to dashboard
-          if (isVerified) return Response.redirect(new URL("/dashboard", nextUrl));
-          // If not verified, go to verify-email
-          return Response.redirect(new URL("/auth/verify-email", nextUrl));
+      console.log(`[AUTH-MW] Path: ${pathname}, LoggedIn: ${isLoggedIn}, Verified: ${isVerified}, Profile: ${hasProfile}`);
+
+      // 1. If not logged in
+      if (!isLoggedIn) {
+        // Allow public pages and auth pages (except verify-email which needs login)
+        if (isOnPublic || (isOnAuth && !isOnVerifyEmail)) {
+          return true;
         }
+        return false; // Redirect to sign-in
+      }
+
+      // 2. If logged in but not verified
+      if (!isVerified) {
+        // Allow verify-email page
+        if (isOnVerifyEmail) return true;
+        // Redirect everything else (except maybe logout/api if not caught) to verify-email
+        return Response.redirect(new URL("/auth/verify-email", nextUrl));
+      }
+
+      // 3. If logged in and verified
+      if (isVerified) {
+        // If on verify page or other auth pages, move forward
+        if (isOnVerifyEmail || isOnAuth) {
+          if (!hasProfile) return Response.redirect(new URL("/onboarding", nextUrl));
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
+
+        // Handle Onboarding state
+        if (!hasProfile) {
+          if (isOnOnboarding) return true;
+          // Protect dashboard and others if no profile
+          return Response.redirect(new URL("/onboarding", nextUrl));
+        }
+
+        // Has profile - should not be on onboarding
+        if (isOnOnboarding) {
+          return Response.redirect(new URL("/dashboard", nextUrl));
+        }
+
         return true;
       }
 
