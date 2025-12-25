@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/collapsible";
 import { cn } from "@/lib/utils/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { AiNetworkIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
+import { SparklesIcon, ArrowDown01Icon } from "@hugeicons/core-free-icons";
 import type { ComponentProps, ReactNode } from "react";
 import { createContext, memo, useContext, useEffect, useState } from "react";
 import { Streamdown } from "streamdown";
@@ -123,9 +123,9 @@ const defaultGetThinkingMessage = (isStreaming: boolean, duration?: number) => {
     return <Shimmer duration={1}>Pensando...</Shimmer>;
   }
   if (duration === undefined) {
-    return <p>Pensando por unos segundos</p>;
+    return <p>Pensado</p>;
   }
-  return <p>Pensando por {duration} segundos</p>;
+  return <p>Pensado en {duration}s</p>;
 };
 
 export const ReasoningTrigger = memo(
@@ -147,7 +147,7 @@ export const ReasoningTrigger = memo(
       >
         {children ?? (
           <>
-            <HugeiconsIcon icon={AiNetworkIcon} className="size-4" />
+            <HugeiconsIcon icon={SparklesIcon} className="size-3.5" />
             {getThinkingMessage(isStreaming, duration)}
             <HugeiconsIcon
               icon={ArrowDown01Icon}

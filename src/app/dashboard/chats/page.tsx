@@ -366,7 +366,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                              toolInvocation.toolCallId
+                                            toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -382,7 +382,7 @@ export default function ChatPage() {
                                           }
                                           isSaved={
                                             savedPlans[
-                                              toolInvocation.toolCallId
+                                            toolInvocation.toolCallId
                                             ]
                                           }
                                         />
@@ -577,30 +577,25 @@ export default function ChatPage() {
                       return true;
                     });
 
-                    const hasPendingTool = lastMessage?.parts?.some(
-                      (part: any) => {
-                        if (part.type.startsWith("tool-")) {
-                          const state = part.state;
-                          // Consider 'call' state as pending
-                          return state === "call" || state === "uploading";
-                        }
-                        return false;
-                      },
-                    );
 
-                    const isThinking =
-                      (status === "submitted" &&
-                        !messages.some((msg) =>
-                          msg.parts?.some(
-                            (part) =>
-                              "state" in part &&
-                              (part as any).state === "approval-responded",
-                          ),
-                        )) ||
-                      (status === "streaming" &&
-                        lastMessage?.role === "assistant" &&
-                        !hasContent) ||
-                      hasPendingTool;
+                    // Advanced thinking detection
+                    const isWaitingForFirstToken = status === "submitted" && messages.length > 0 && lastMessage?.role === "user";
+                    const isStreamingAssistant = status === "streaming" && lastMessage?.role === "assistant" && !hasContent;
+
+                    // Identify specific tool being called
+                    const pendingToolCall = lastMessage?.parts?.find((part: any) =>
+                      part.type.startsWith("tool-") && (part.state === "call" || part.state === "uploading")
+                    ) as any;
+
+                    const toolName = pendingToolCall?.type?.replace("tool-", "");
+
+                    let thinkingText = "Rocco está pensando...";
+                    if (toolName === "generateTrainingPlan") thinkingText = "Generando tu plan de entrenamiento...";
+                    if (toolName === "generateNutritionPlan") thinkingText = "Generando tu plan de nutrición...";
+                    if (toolName === "getTodayCalories") thinkingText = "Consultando tus calorías...";
+                    if (isWaitingForFirstToken) thinkingText = "Rocco está procesando tu solicitud...";
+
+                    const isThinking = isWaitingForFirstToken || isStreamingAssistant || !!pendingToolCall;
 
                     return (
                       <>
@@ -609,25 +604,11 @@ export default function ChatPage() {
                             <Reasoning isStreaming={true}>
                               <ReasoningTrigger />
                               <ReasoningContent>
-                                Generando tu plan personalizado...
+                                {thinkingText}
                               </ReasoningContent>
                             </Reasoning>
                           </div>
                         )}
-                        {status === "streaming" &&
-                          messages.length > 0 &&
-                          lastMessage?.role === "user" && (
-                            <div className="flex justify-start">
-                              <div className="max-w-[85%] md:max-w-[70%]">
-                                <Reasoning isStreaming={true}>
-                                  <ReasoningTrigger />
-                                  <ReasoningContent>
-                                    Rocco está pensando en tu pregunta...
-                                  </ReasoningContent>
-                                </Reasoning>
-                              </div>
-                            </div>
-                          )}
                       </>
                     );
                   })()}
