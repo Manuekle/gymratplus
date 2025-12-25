@@ -90,7 +90,11 @@ export function VerificationForm({
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        setError(data.debug ? `${data.error} (${data.debug})` : (data.error || "Código inválido"));
+        setError(
+          data.debug
+            ? `${data.error} (${data.debug})`
+            : data.error || "Código inválido",
+        );
         setCode("");
         return;
       }

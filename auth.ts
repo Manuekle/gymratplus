@@ -109,7 +109,9 @@ export const config = {
         });
 
         if (dbUser) {
-          console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${updatedToken.isOAuth}, Image: ${dbUser.image}`);
+          console.log(
+            `[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${updatedToken.isOAuth}, Image: ${dbUser.image}`,
+          );
           updatedToken.picture = dbUser.image;
           updatedToken.name = dbUser.name;
           updatedToken.email = dbUser.email;
@@ -119,8 +121,10 @@ export const config = {
           updatedToken.interests = (dbUser.interests as string[]) ?? [];
           updatedToken.profile = dbUser.profile;
           updatedToken.instructorProfile = dbUser.instructorProfile;
-          updatedToken.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
-          updatedToken.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
+          updatedToken.subscriptionTier =
+            (dbUser as any).subscriptionTier ?? "FREE";
+          updatedToken.subscriptionStatus =
+            (dbUser as any).subscriptionStatus ?? null;
         }
       } catch (error) {
         console.error("[AUTH-JWT] Database error:", error);
@@ -133,12 +137,15 @@ export const config = {
       const updatedSession = await authConfig.callbacks.session!(params);
       const { token } = params;
 
-      console.log(`[AUTH-SESSION] Verified: ${(updatedSession.user as any).emailVerified}, isOAuth: ${(updatedSession.user as any).isOAuth}`);
+      console.log(
+        `[AUTH-SESSION] Verified: ${(updatedSession.user as any).emailVerified}, isOAuth: ${(updatedSession.user as any).isOAuth}`,
+      );
 
       // Ensure specific fields are present for consistency (Node only enrichments)
       (updatedSession.user as any).instructorProfile = token.instructorProfile;
       (updatedSession.user as any).experienceLevel = token.experienceLevel;
-      (updatedSession.user as any).subscriptionStatus = token.subscriptionStatus;
+      (updatedSession.user as any).subscriptionStatus =
+        token.subscriptionStatus;
 
       return updatedSession;
     },

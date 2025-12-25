@@ -43,9 +43,7 @@ export const metadata: Metadata = {
     },
   }),
   icons: {
-    icon: [
-      { url: "/favicon.ico" },
-    ],
+    icon: [{ url: "/favicon.ico" }],
   },
 };
 

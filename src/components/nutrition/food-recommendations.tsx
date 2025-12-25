@@ -72,7 +72,9 @@ export default function FoodRecommendations() {
               setSelectedRecommendation(fullPlan);
             } else {
               setSelectedRecommendation(mostRecent);
-              setError("No se pudieron cargar los detalles del plan. Mostrando información básica.");
+              setError(
+                "No se pudieron cargar los detalles del plan. Mostrando información básica.",
+              );
             }
           } catch (error) {
             console.error("Error loading full plan:", error);
@@ -85,7 +87,9 @@ export default function FoodRecommendations() {
         fetchFoods();
       } catch (error) {
         console.error("Error fetching recommendations:", error);
-        setError("Error al cargar las recomendaciones. Por favor intenta refrescar la página.");
+        setError(
+          "Error al cargar las recomendaciones. Por favor intenta refrescar la página.",
+        );
         toast("Error", {
           description: "Failed to load food recommendations",
         });
@@ -508,8 +512,13 @@ export default function FoodRecommendations() {
     <div>
       {error && (
         <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
-          <p className="font-medium text-sm flex items-center gap-2">
-            <HugeiconsIcon icon={ArrowLeft01Icon /* Using available icon as warning placeholder or import Alert icon handled separately */} className="w-5 h-5" />
+          <p className="font-medium text-xs flex items-center gap-2">
+            <HugeiconsIcon
+              icon={
+                ArrowLeft01Icon /* Using available icon as warning placeholder or import Alert icon handled separately */
+              }
+              className="w-5 h-5"
+            />
             {error}
           </p>
         </div>
@@ -691,13 +700,16 @@ export default function FoodRecommendations() {
             </Card>
           </div>
 
-
-
           {Object.keys(meals).length === 0 ? (
             <div className="w-full p-8 text-center text-muted-foreground border rounded-lg bg-muted/20 my-4">
-              <HugeiconsIcon icon={NoodlesIcon} className="w-10 h-10 mx-auto mb-2 opacity-50" />
+              <HugeiconsIcon
+                icon={NoodlesIcon}
+                className="w-10 h-10 mx-auto mb-2 opacity-50"
+              />
               <p>No se encontraron detalles de las comidas para este plan.</p>
-              <p className="text-xs mt-1">Intenta regenerar el plan si el problema persiste.</p>
+              <p className="text-xs mt-1">
+                Intenta regenerar el plan si el problema persiste.
+              </p>
             </div>
           ) : (
             <Tabs defaultValue="breakfast" className="space-y-4 w-full">
@@ -773,10 +785,16 @@ export default function FoodRecommendations() {
                       </div>
                       <CardDescription className="text-xs">
                         {mealTotals.totalCalories > 0 && (
-                          <>Calorías: {Math.round(mealTotals.totalCalories)} | </>
+                          <>
+                            Calorías: {Math.round(mealTotals.totalCalories)}{" "}
+                            |{" "}
+                          </>
                         )}
                         {mealTotals.totalProtein > 0 && (
-                          <>Proteínas: {mealTotals.totalProtein.toFixed(1)}g | </>
+                          <>
+                            Proteínas: {mealTotals.totalProtein.toFixed(1)}g
+                            |{" "}
+                          </>
                         )}
                         {mealTotals.totalCarbs > 0 && (
                           <>
@@ -792,7 +810,9 @@ export default function FoodRecommendations() {
                         <Table>
                           <TableHeader>
                             <TableRow>
-                              <TableHead className="text-xs">Alimento</TableHead>
+                              <TableHead className="text-xs">
+                                Alimento
+                              </TableHead>
                               <TableHead className="text-xs text-center">
                                 Cantidad
                               </TableHead>
@@ -875,7 +895,8 @@ export default function FoodRecommendations() {
                                         <TableCell className="text-center">
                                           {(() => {
                                             const fat =
-                                              (entry.food.fat || 0) * multiplier;
+                                              (entry.food.fat || 0) *
+                                              multiplier;
                                             return fat < 1
                                               ? fat.toFixed(2)
                                               : fat < 10
@@ -903,7 +924,10 @@ export default function FoodRecommendations() {
                                         </div>
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {Math.round((entry.quantity || 0) * 100)}g
+                                        {Math.round(
+                                          (entry.quantity || 0) * 100,
+                                        )}
+                                        g
                                       </TableCell>
                                       <TableCell className="text-center">
                                         -
@@ -971,7 +995,8 @@ export default function FoodRecommendations() {
                                     </TableCell>
                                     <TableCell className="text-center">
                                       {(() => {
-                                        const fat = (food.fat || 0) * multiplier;
+                                        const fat =
+                                          (food.fat || 0) * multiplier;
                                         return fat < 1
                                           ? fat.toFixed(2)
                                           : fat < 10
@@ -1012,6 +1037,6 @@ export default function FoodRecommendations() {
           )}
         </CardContent>
       </Card>
-    </div >
+    </div>
   );
 }

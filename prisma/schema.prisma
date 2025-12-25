@@ -83,6 +83,7 @@ model User {
   foodPlans            FoodPlan[]
   studentRelationships StudentInstructor[]  @relation("StudentToInstructor")
   chatMessages         ChatMessage[]        @relation("ChatMessageSender")
+  chats                Chat[]               @relation("UserChats")
   pushSubscriptions    PushSubscription[]
   verificationCodes    VerificationCode[]   @relation("UserVerificationCodes")
   invoices             Invoice[]            @relation("UserInvoices")
@@ -595,23 +596,30 @@ model StudentInstructor {
 }
 
 model Chat {
-  id                  String            @id @default(cuid())
-  studentInstructorId String
-  studentInstructor   StudentInstructor @relation("StudentInstructorChat", fields: [studentInstructorId], references: [id], onDelete: Cascade)
+  id                  String             @id @default(cuid())
+  studentInstructorId String?
+  studentInstructor   StudentInstructor? @relation("StudentInstructorChat", fields: [studentInstructorId], references: [id], onDelete: Cascade)
+  userId              String?
+  user                User?              @relation("UserChats", fields: [userId], references: [id], onDelete: Cascade)
+  title               String             @default("New Chat")
+  type                String             @default("ai") // "ai" | "human"
   messages            ChatMessage[]
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 
   @@unique([studentInstructorId])
   @@index([studentInstructorId])
+  @@index([userId])
 }
 
 model ChatMessage {
   id        String       @id @default(cuid())
   chatId    String
   chat      Chat         @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  senderId  String
-  sender    User         @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  senderId  String?
+  sender    User?        @relation("ChatMessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  role      String       @default("user") // "user", "assistant", "system"
+  toolInvocations Json?
   content   String?      @db.Text
   type      String       @default("text") // text, image, audio, video, file
   fileUrl   String?

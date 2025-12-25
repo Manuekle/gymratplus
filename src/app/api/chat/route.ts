@@ -12,6 +12,8 @@ import {
   generateWorkoutPlan,
   generateNutritionPlan,
 } from "@/lib/ai/plan-generators";
+import { saveChat, saveMessages, getChatById } from "@/lib/db/chat-queries";
+import { generateUUID } from "@/lib/ai/utils";
 
 // Force Node.js runtime for iOS Safari compatibility
 export const runtime = "nodejs";
@@ -22,13 +24,52 @@ export async function POST(req: Request) {
   try {
     const session = await auth();
 
-    if (!session?.user?.email) {
+    if (!session?.user?.email || !session?.user?.id) {
       return new Response("Unauthorized", { status: 401 });
     }
 
-    const { messages }: { messages: UIMessage[] } = await req.json();
+    const json = await req.json();
+    const { messages, id } = json as { messages: UIMessage[]; id?: string };
 
-    console.log("🔍 API Chat - Received messages:", messages.length);
+    const { searchParams } = new URL(req.url);
+    const chatId = id || searchParams.get("id") || generateUUID();
+
+    console.log(
+      `🔍 API Chat - Received ${messages.length} messages for chat ${chatId}`,
+    );
+
+    // Persist chat if it doesn't exist
+    // Check if valid first
+    if (messages.length > 0) {
+      const lastMessage = messages[messages.length - 1] as any;
+
+      // Save chat skeleton if new
+      const existingChat = await getChatById({ id: chatId });
+      if (!existingChat && lastMessage.role === "user") {
+        await saveChat({
+          id: chatId,
+          userId: session.user.id,
+          title: (lastMessage.content || "").slice(0, 50) || "New Chat",
+        });
+      }
+
+      // Save the user message (last one)
+      if (lastMessage.role === "user") {
+        await saveMessages({
+          messages: [
+            {
+              id: lastMessage.id,
+              chatId: chatId,
+              role: "user",
+              content: lastMessage.content || "",
+              createdAt: new Date(),
+              senderId: session.user.id,
+              toolInvocations: lastMessage.toolInvocations,
+            },
+          ],
+        });
+      }
+    }
 
     // Fetch user with complete profile, goals, and recent metrics
     const user = (await prisma.user.findUnique({
@@ -74,16 +115,8 @@ ${user.Goal && user.Goal.length > 0 ? user.Goal.map((g: any) => `- ${g.descripti
           model: "openai/gpt-4o-mini",
           messages: await convertToModelMessages(messages),
           system: `Eres Rocco, un entrenador personal experto y motivador de GymRat+.
-
-IMPORTANTE: SIEMPRE responde en ESPAÑOL. Nunca uses inglés en tus respuestas.
-
-TU PERSONALIDAD:
-- Enérgico, profesional y directo.
-- Usas emojis ocasionalmente para dar calidez 🏋️‍♂️💪.
-- Te enfocas en la ciencia del deporte y la nutrición basada en evidencia.
-- Priorizas la seguridad y la técnica correcta.
-
-CONTEXTO ACTUAL DEL USUARIO:
+          
+IMPORTANTE: SIEMPRE responde en ESPAÑOL.
 ${userContext}
 
 TUS SUPERPODERES (HERRAMIENTAS):
@@ -92,14 +125,7 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
 - Si piden "dieta" o "plan de nutrición", usa 'generateNutritionPlan'.
 - Si preguntan "cuántas calorías tengo hoy" o similar, usa 'getTodayCalories'.
 - Si dicen "me comí [comida]" o "quiero guardar una comida", usa 'saveMealEntry'.
-- NO generes tablas de texto markdown largas para rutinas completas, usa la herramienta para mostrar la tarjeta visual.
-
-INSTRUCCIONES IMPORTANTES:
-1. Responde preguntas breves directamente.
-2. Para planes completos, invoca la herramienta correspondiente y da una breve introducción.
-3. Si el usuario te pide guardar el plan que acabas de generar, diles que pueden usar el botón "Guardar" en la tarjeta del plan.
-4. Siempre adapta el tono y la dificultad al nivel de experiencia del usuario.
-5. Para tracking de comidas, estima los macros basándote en tu conocimiento nutricional.`,
+`,
           tools: {
             generateTrainingPlan: {
               description:
@@ -146,7 +172,9 @@ INSTRUCCIONES IMPORTANTES:
               description:
                 "Genera un plan nutricional detallado y visual con comidas y macros.",
               inputSchema: z.object({
-                calories: z.number().describe("Meta calórica diaria aproximada"),
+                calories: z
+                  .number()
+                  .describe("Meta calórica diaria aproximada"),
                 goal: z
                   .enum(["perder_grasa", "mantener", "ganar_musculo"])
                   .describe("Objetivo nutricional"),
@@ -220,7 +248,9 @@ INSTRUCCIONES IMPORTANTES:
                 estimatedCalories: z
                   .number()
                   .describe("Calorías estimadas de la comida"),
-                estimatedProtein: z.number().describe("Proteína estimada en gramos"),
+                estimatedProtein: z
+                  .number()
+                  .describe("Proteína estimada en gramos"),
                 estimatedCarbs: z
                   .number()
                   .describe("Carbohidratos estimados en gramos"),
@@ -253,7 +283,9 @@ INSTRUCCIONES IMPORTANTES:
                     recipeId: null,
                     quantity: params.quantity,
                     calories: Math.round(params.estimatedCalories),
-                    protein: Number.parseFloat(params.estimatedProtein.toFixed(2)),
+                    protein: Number.parseFloat(
+                      params.estimatedProtein.toFixed(2),
+                    ),
                     carbs: Number.parseFloat(params.estimatedCarbs.toFixed(2)),
                     fat: Number.parseFloat(params.estimatedFat.toFixed(2)),
                   },
@@ -267,15 +299,31 @@ INSTRUCCIONES IMPORTANTES:
               },
             },
           },
-        });
+        }); // End streamText
 
         result.consumeStream();
 
         dataStream.merge(
           result.toUIMessageStream({
             sendReasoning: true,
-          })
+          }),
         );
+      },
+      onFinish: async ({ messages: finishedMessages }) => {
+        // Persist generated messages (assistant)
+        if (finishedMessages && finishedMessages.length > 0) {
+          await saveMessages({
+            messages: finishedMessages.map((msg: any) => ({
+              id: msg.id,
+              chatId: chatId,
+              role: msg.role,
+              content: msg.content ?? "",
+              createdAt: new Date(),
+              toolInvocations: msg.toolInvocations,
+              // No senderId for assistant/system
+            })),
+          }).catch((e) => console.error("Error saving assistant messages:", e));
+        }
       },
       onError: () => {
         return "Oops, an error occurred!";
@@ -287,7 +335,7 @@ INSTRUCCIONES IMPORTANTES:
       headers: {
         "Content-Type": "text/event-stream; charset=utf-8",
         "Cache-Control": "no-cache, no-transform",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
         "X-Accel-Buffering": "no",
       },
     });

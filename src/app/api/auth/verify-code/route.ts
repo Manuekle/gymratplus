@@ -42,7 +42,9 @@ export async function POST(request: NextRequest) {
     const result = await verifyCode(userId, code, type);
 
     if (!result.success) {
-      console.log(`[VERIFY] Verification failed for user ${userId}: ${result.error}`);
+      console.log(
+        `[VERIFY] Verification failed for user ${userId}: ${result.error}`,
+      );
       return NextResponse.json(
         {
           success: false,
@@ -71,7 +73,10 @@ export async function POST(request: NextRequest) {
         success: false,
         verified: false,
         error: "Error al procesar la solicitud. Por favor, intenta más tarde.",
-        debug: process.env.NODE_ENV === "development" ? (error as any)?.message : undefined
+        debug:
+          process.env.NODE_ENV === "development"
+            ? (error as any)?.message
+            : undefined,
       },
       { status: 500 },
     );

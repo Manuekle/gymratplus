@@ -71,7 +71,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
     <div className="w-full space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">{data.foodName}</h3>
+        <h3 className="text-xs font-semibold">{data.foodName}</h3>
         {isSaved && (
           <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
             <HugeiconsIcon icon={Tick02Icon} className="h-3 w-3" />

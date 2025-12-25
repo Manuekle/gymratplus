@@ -35,7 +35,7 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
     <div className="w-full space-y-3">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Calorías de Hoy</h3>
+        <h3 className="text-xs font-semibold">Calorías de Hoy</h3>
         <span className="text-xs text-zinc-500">
           {new Date(data.date).toLocaleDateString("es-ES", {
             day: "numeric",
@@ -53,7 +53,7 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
             "text-xs font-medium",
             isOverCalories
               ? "text-red-600 dark:text-red-400"
-              : "text-green-600 dark:text-green-400"
+              : "text-green-600 dark:text-green-400",
           )}
         >
           {isOverCalories

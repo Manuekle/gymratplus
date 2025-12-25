@@ -40,7 +40,7 @@ export function WorkoutPlanCard({
     <div className="w-full space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold">Plan de Entrenamiento</h3>
+        <h3 className="text-xs font-semibold">Plan de Entrenamiento</h3>
         <span className="text-xs text-zinc-500 capitalize">
           {plan.difficulty}
         </span>
@@ -63,7 +63,9 @@ export function WorkoutPlanCard({
               <tr className="text-left text-zinc-500">
                 <th className="font-medium py-1 px-1">Día</th>
                 <th className="font-medium py-1 px-1">Ejercicio</th>
-                <th className="font-medium py-1 px-1 text-right">Series×Reps</th>
+                <th className="font-medium py-1 px-1 text-right">
+                  Series×Reps
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -94,7 +96,7 @@ export function WorkoutPlanCard({
                       </td>
                     </tr>
                   );
-                })
+                }),
               )}
             </tbody>
           </table>

@@ -76,7 +76,8 @@ async function checkRateLimit(
       await redis.expire(rateLimitKey, Math.floor(RATE_LIMIT_WINDOW / 1000));
     }
 
-    if (attempts > 10) { // Incremented threshold slightly for production robustness
+    if (attempts > 10) {
+      // Incremented threshold slightly for production robustness
       return {
         allowed: false,
         message:
@@ -86,7 +87,10 @@ async function checkRateLimit(
 
     return { allowed: true };
   } catch (error) {
-    console.warn(`[VERIFY-SERVICE] Redis rate limit failed for ${userId}:`, error);
+    console.warn(
+      `[VERIFY-SERVICE] Redis rate limit failed for ${userId}:`,
+      error,
+    );
     // Silent fail - allow verification if Redis is down
     return { allowed: true };
   }
@@ -210,13 +214,17 @@ export async function verifyCode(
     const redisValue = await redis.get(redisKey);
 
     if (redisValue) {
-      redisData = typeof redisValue === "string" ? redisValue : JSON.stringify(redisValue);
+      redisData =
+        typeof redisValue === "string"
+          ? redisValue
+          : JSON.stringify(redisValue);
       const parsed = JSON.parse(redisData);
       storedCode = parsed.code;
       expiresAt = parsed.expiresAt;
       attempts = parsed.attempts || 0;
       console.log(
-        `[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
+        `[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${
+          expiresAt ? new Date(expiresAt) : "null"
         }`,
       );
     } else {
@@ -247,7 +255,8 @@ export async function verifyCode(
         expiresAt = dbCode.expiresAt.getTime();
         attempts = dbCode.attempts;
         console.log(
-          `[VERIFY] Found in DB - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
+          `[VERIFY] Found in DB - attempts: ${attempts}, expires: ${
+            expiresAt ? new Date(expiresAt) : "null"
           }`,
         );
       } else {
@@ -301,7 +310,9 @@ export async function verifyCode(
   }
 
   // Verificar el código
-  console.log(`[VERIFY] Comparing codes - Input: ${code}, Stored: ${storedCode}`);
+  console.log(
+    `[VERIFY] Comparing codes - Input: ${code}, Stored: ${storedCode}`,
+  );
   if (code !== storedCode) {
     // Incrementar contador de intentos
     attempts++;
@@ -336,8 +347,9 @@ export async function verifyCode(
     return {
       success: false,
       verified: false,
-      error: `Código incorrecto. Te quedan ${MAX_VERIFICATION_ATTEMPTS - attempts
-        } intentos.`,
+      error: `Código incorrecto. Te quedan ${
+        MAX_VERIFICATION_ATTEMPTS - attempts
+      } intentos.`,
     };
   }
 

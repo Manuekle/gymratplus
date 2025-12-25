@@ -46,14 +46,17 @@ export const authConfig = {
       const isOnAuth = pathname.startsWith("/auth");
       const isOnVerifyEmail = pathname === "/auth/verify-email";
       const isOnOnboarding = pathname === "/onboarding";
-      const isOnPublic = pathname === "/" || pathname === "/about" || pathname === "/privacy";
+      const isOnPublic =
+        pathname === "/" || pathname === "/about" || pathname === "/privacy";
 
       const rawVerified = (auth?.user as any)?.emailVerified;
       const isOAuth = !!(auth?.user as any)?.isOAuth;
       const isVerified = !!rawVerified || isOAuth;
       const hasProfile = !!(auth?.user as any)?.profile;
 
-      console.log(`[AUTH-MW] Path: ${pathname}, LoggedIn: ${isLoggedIn}, VerifiedVal: ${rawVerified}, isOAuth: ${isOAuth}, isVerified: ${isVerified}, Profile: ${hasProfile}`);
+      console.log(
+        `[AUTH-MW] Path: ${pathname}, LoggedIn: ${isLoggedIn}, VerifiedVal: ${rawVerified}, isOAuth: ${isOAuth}, isVerified: ${isVerified}, Profile: ${hasProfile}`,
+      );
 
       // 1. If not logged in
       if (!isLoggedIn) {
@@ -70,7 +73,8 @@ export const authConfig = {
       // 3. If logged in and verified
       // If on verify page or other auth pages, move forward
       if (isOnVerifyEmail || (isOnAuth && pathname !== "/auth/error")) {
-        if (!hasProfile) return Response.redirect(new URL("/onboarding", nextUrl));
+        if (!hasProfile)
+          return Response.redirect(new URL("/onboarding", nextUrl));
         return Response.redirect(new URL("/dashboard", nextUrl));
       }
 
