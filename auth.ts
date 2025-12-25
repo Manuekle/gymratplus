@@ -109,7 +109,10 @@ export const config = {
         });
 
         if (dbUser) {
-          console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${updatedToken.isOAuth}`);
+          console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${updatedToken.isOAuth}, Image: ${dbUser.image}`);
+          updatedToken.picture = dbUser.image;
+          updatedToken.name = dbUser.name;
+          updatedToken.email = dbUser.email;
           updatedToken.emailVerified = dbUser.emailVerified;
           updatedToken.isInstructor = dbUser.isInstructor ?? false;
           updatedToken.experienceLevel = dbUser.experienceLevel ?? null;
