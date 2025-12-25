@@ -1,10 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -60,9 +58,9 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
       if (!response.ok) throw new Error("Error saving meal");
 
       setIsSaved(true);
-      toast.success(`${data.foodName} guardado correctamente`);
+      toast.success(`${data.foodName} guardado`);
     } catch (error) {
-      toast.error("Hubo un error al guardar la comida");
+      toast.error("Error al guardar");
       console.error(error);
     } finally {
       setIsSaving(false);
@@ -70,156 +68,117 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
   };
 
   return (
-    <Card className="overflow-hidden border-zinc-200/50 dark:border-zinc-800/50 bg-gradient-to-br from-zinc-50/50 to-white dark:from-zinc-950/50 dark:to-zinc-900/50">
-      <div className="p-5 space-y-4">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="text-base font-semibold tracking-tight">
-              {data.foodName}
-            </h3>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Estimación de calorías y macros
-            </p>
+    <div className="w-full space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold">{data.foodName}</h3>
+        {isSaved && (
+          <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+            <HugeiconsIcon icon={Tick02Icon} className="h-3 w-3" />
+            <span className="text-[11px]">Guardado</span>
           </div>
-          {isSaved && (
-            <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
-              <HugeiconsIcon icon={Tick02Icon} className="h-4 w-4" />
-              <span className="text-xs font-medium">Guardado</span>
-            </div>
-          )}
+        )}
+      </div>
+
+      {/* Compact Grid */}
+      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+        <div>
+          <span className="text-[10px] text-zinc-500 block">kcal</span>
+          <Input
+            type="number"
+            value={calories}
+            onChange={(e) => setCalories(Number(e.target.value))}
+            disabled={isSaved}
+            className="h-7 text-xs px-2"
+          />
         </div>
-
-        {/* Editable Fields */}
-        <div className="grid grid-cols-2 gap-3">
-          {/* Calories */}
-          <div className="space-y-1.5">
-            <Label htmlFor="calories" className="text-xs">
-              Calorías
-            </Label>
-            <Input
-              id="calories"
-              type="number"
-              value={calories}
-              onChange={(e) => setCalories(Number(e.target.value))}
-              disabled={isSaved}
-              className="h-9 text-sm"
-            />
-          </div>
-
-          {/* Quantity */}
-          <div className="space-y-1.5">
-            <Label htmlFor="quantity" className="text-xs">
-              Cantidad
-            </Label>
-            <Input
-              id="quantity"
-              type="number"
-              step="0.1"
-              value={quantity}
-              onChange={(e) => setQuantity(Number(e.target.value))}
-              disabled={isSaved}
-              className="h-9 text-sm"
-            />
-          </div>
-
-          {/* Protein */}
-          <div className="space-y-1.5">
-            <Label htmlFor="protein" className="text-xs">
-              Proteína (g)
-            </Label>
-            <Input
-              id="protein"
-              type="number"
-              step="0.1"
-              value={protein}
-              onChange={(e) => setProtein(Number(e.target.value))}
-              disabled={isSaved}
-              className="h-9 text-sm"
-            />
-          </div>
-
-          {/* Carbs */}
-          <div className="space-y-1.5">
-            <Label htmlFor="carbs" className="text-xs">
-              Carbohidratos (g)
-            </Label>
-            <Input
-              id="carbs"
-              type="number"
-              step="0.1"
-              value={carbs}
-              onChange={(e) => setCarbs(Number(e.target.value))}
-              disabled={isSaved}
-              className="h-9 text-sm"
-            />
-          </div>
-
-          {/* Fat */}
-          <div className="space-y-1.5">
-            <Label htmlFor="fat" className="text-xs">
-              Grasas (g)
-            </Label>
-            <Input
-              id="fat"
-              type="number"
-              step="0.1"
-              value={fat}
-              onChange={(e) => setFat(Number(e.target.value))}
-              disabled={isSaved}
-              className="h-9 text-sm"
-            />
-          </div>
-
-          {/* Meal Type */}
-          <div className="space-y-1.5">
-            <Label htmlFor="mealType" className="text-xs">
-              Tipo de comida
-            </Label>
-            <Select
-              value={mealType}
-              onValueChange={(value: any) => setMealType(value)}
-              disabled={isSaved}
-            >
-              <SelectTrigger className="h-9 text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desayuno">Desayuno</SelectItem>
-                <SelectItem value="almuerzo">Almuerzo</SelectItem>
-                <SelectItem value="cena">Cena</SelectItem>
-                <SelectItem value="snack">Snack</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        <div>
+          <span className="text-[10px] text-zinc-500 block">Cant.</span>
+          <Input
+            type="number"
+            step="0.1"
+            value={quantity}
+            onChange={(e) => setQuantity(Number(e.target.value))}
+            disabled={isSaved}
+            className="h-7 text-xs px-2"
+          />
         </div>
+        <div>
+          <span className="text-[10px] text-zinc-500 block">P (g)</span>
+          <Input
+            type="number"
+            step="0.1"
+            value={protein}
+            onChange={(e) => setProtein(Number(e.target.value))}
+            disabled={isSaved}
+            className="h-7 text-xs px-2"
+          />
+        </div>
+        <div>
+          <span className="text-[10px] text-zinc-500 block">C (g)</span>
+          <Input
+            type="number"
+            step="0.1"
+            value={carbs}
+            onChange={(e) => setCarbs(Number(e.target.value))}
+            disabled={isSaved}
+            className="h-7 text-xs px-2"
+          />
+        </div>
+        <div>
+          <span className="text-[10px] text-zinc-500 block">G (g)</span>
+          <Input
+            type="number"
+            step="0.1"
+            value={fat}
+            onChange={(e) => setFat(Number(e.target.value))}
+            disabled={isSaved}
+            className="h-7 text-xs px-2"
+          />
+        </div>
+        <div>
+          <span className="text-[10px] text-zinc-500 block">Tipo</span>
+          <Select
+            value={mealType}
+            onValueChange={(value: any) => setMealType(value)}
+            disabled={isSaved}
+          >
+            <SelectTrigger className="h-7 text-xs px-2">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desayuno">Desayuno</SelectItem>
+              <SelectItem value="almuerzo">Almuerzo</SelectItem>
+              <SelectItem value="cena">Cena</SelectItem>
+              <SelectItem value="snack">Snack</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
 
-        {/* Save Button */}
-        {!isSaved && (
+      {/* Save Button */}
+      {!isSaved && (
+        <div className="flex justify-end">
           <Button
             onClick={handleSave}
             disabled={isSaving}
-            className="w-full h-9 text-sm"
+            size="sm"
+            className="h-7 text-xs"
           >
             {isSaving ? (
               <>
                 <HugeiconsIcon
                   icon={Loading03Icon}
-                  className="h-4 w-4 mr-2 animate-spin"
+                  className="h-3 w-3 mr-1 animate-spin"
                 />
-                Guardando...
+                Guardando
               </>
             ) : (
-              "Guardar comida"
+              "Guardar"
             )}
           </Button>
-        )}
-
-        {/* Info */}
-        <p className="text-xs text-zinc-500 text-center">
-          Puedes ajustar los valores antes de guardar
-        </p>
-      </div>
-    </Card>
+        </div>
+      )}
+    </div>
   );
 }

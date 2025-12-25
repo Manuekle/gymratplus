@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils/utils";
 
 interface Exercise {
@@ -39,102 +37,85 @@ export function WorkoutPlanCard({
   isSaved,
 }: WorkoutPlanCardProps) {
   return (
-    <div className="w-full space-y-3">
+    <div className="w-full space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl font-semibold tracking-[-0.04em]">
-          Plan de Entrenamiento
-        </h3>
-        <Badge variant="outline" className="capitalize text-xs">
+        <h3 className="text-sm font-semibold">Plan de Entrenamiento</h3>
+        <span className="text-[11px] text-zinc-500 capitalize">
           {plan.difficulty}
-        </Badge>
+        </span>
       </div>
 
-      {/* Summary */}
-      <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-4 rounded-lg">
-        <p className="text-sm font-medium capitalize mb-2">{plan.focus}</p>
-        <div className="flex items-center gap-4 text-xs text-zinc-600 dark:text-zinc-400">
-          <span>{plan.daysPerWeek} días/semana</span>
-          <span>•</span>
-          <span>{plan.durationMinutes} min/sesión</span>
-        </div>
+      {/* Summary - Inline */}
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-600 dark:text-zinc-400">
+        <span className="capitalize">{plan.focus}</span>
+        <span>•</span>
+        <span>{plan.daysPerWeek} días/semana</span>
+        <span>•</span>
+        <span>{plan.durationMinutes} min</span>
       </div>
 
-      {/* Workout Days Tabs */}
+      {/* Exercises - Responsive Table */}
       {plan.days && plan.days.length > 0 && (
-        <Tabs defaultValue="0" className="w-full">
-          <TabsList className="w-full grid grid-cols-5 h-auto">
-            {plan.days.map((day, index) => {
-              // Extraer el grupo muscular del nombre del día (ej: "Día 1 - Piernas" -> "Piernas")
-              const muscleGroup = day.day.includes(" - ")
-                ? day.day.split(" - ")[1]
-                : day.day;
+        <div className="overflow-x-auto -mx-1">
+          <table className="w-full text-[11px] min-w-[280px]">
+            <thead>
+              <tr className="text-left text-zinc-500">
+                <th className="font-medium py-1 px-1">Día</th>
+                <th className="font-medium py-1 px-1">Ejercicio</th>
+                <th className="font-medium py-1 px-1 text-right">Series×Reps</th>
+              </tr>
+            </thead>
+            <tbody>
+              {plan.days.map((workoutDay, dayIndex) =>
+                workoutDay.exercises.map((exercise, exIndex) => {
+                  const dayLabel = workoutDay.day.includes(" - ")
+                    ? workoutDay.day.split(" - ")[1]
+                    : workoutDay.day;
 
-              return (
-                <TabsTrigger
-                  key={index}
-                  value={index.toString()}
-                  className="text-xs py-2"
-                >
-                  {muscleGroup}
-                </TabsTrigger>
-              );
-            })}
-          </TabsList>
-
-          {plan.days.map((workoutDay, dayIndex) => (
-            <TabsContent key={dayIndex} value={dayIndex.toString()}>
-              <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
-                <h5 className="text-xs font-semibold text-primary mb-2">
-                  {workoutDay.day}
-                </h5>
-                <div className="space-y-1.5">
-                  {workoutDay.exercises.map((exercise, exIndex) => (
-                    <div
-                      key={exercise.id || exIndex}
-                      className="text-xs bg-white dark:bg-zinc-900 p-2 rounded"
+                  return (
+                    <tr
+                      key={`${dayIndex}-${exIndex}`}
+                      className="border-t border-zinc-100 dark:border-zinc-800/50"
                     >
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="font-medium flex-1">
-                          {exercise.name}
-                        </span>
-                        <span className="text-zinc-500 shrink-0">
-                          {exercise.sets}×{exercise.reps}
-                        </span>
-                      </div>
-                      {exercise.notes && (
-                        <p className="text-zinc-500 mt-0.5 text-[11px]">
-                          {exercise.notes}
-                        </p>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </TabsContent>
-          ))}
-        </Tabs>
+                      <td className="py-1 px-1 text-zinc-500 align-top">
+                        {exIndex === 0 ? dayLabel : ""}
+                      </td>
+                      <td className="py-1 px-1">
+                        {exercise.name}
+                        {exercise.notes && (
+                          <span className="text-zinc-400 ml-1 text-[10px]">
+                            ({exercise.notes})
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-1 px-1 text-right whitespace-nowrap">
+                        {exercise.sets}×{exercise.reps}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Fallback */}
       {(!plan.days || plan.days.length === 0) && plan.description && (
-        <div className="bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50 p-3 rounded-lg">
-          <p className="text-xs text-zinc-600 dark:text-zinc-400">
-            {plan.description}
-          </p>
-        </div>
+        <p className="text-[11px] text-zinc-500">{plan.description}</p>
       )}
 
       {/* Save Button */}
-      <div className="flex justify-end py-4">
+      <div className="flex justify-end pt-2">
         <Button
           variant="default"
-          size="default"
+          size="sm"
           onClick={onSave}
           disabled={isSaved}
-          className={cn("text-xs", isSaved && "bg-green-800 text-white")}
+          className={cn("text-xs h-7", isSaved && "bg-green-800 text-white")}
         >
-          {isSaved ? "Guardado" : "Guardar Plan"}
+          {isSaved ? "Guardado" : "Guardar"}
         </Button>
       </div>
     </div>
