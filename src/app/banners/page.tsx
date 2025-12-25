@@ -1,12 +1,7 @@
-import { Metadata } from "next";
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-export const metadata: Metadata = {
-    title: "OG Banners Preview | GymRat+",
-    description: "Vista previa de los banners OpenGraph y Twitter de GymRat+",
-    robots: "noindex, nofollow",
-};
 
 const banners = [
     {
