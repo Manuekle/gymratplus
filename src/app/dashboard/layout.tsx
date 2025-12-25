@@ -2,6 +2,7 @@ import { Navbar } from "@/components/navbar";
 import { CustomSonner } from "@/components/custom-sonner";
 import ProfileCheck from "@/components/shared/alerts/profile-check";
 import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import WorkoutDockbarWrapper from "@/components/workout/workout-dockbar-wrapper";
 
 export const metadata = {
   title: "GymRat+",
@@ -28,6 +29,7 @@ export default function DashboardLayout({
           <DashboardHeader />
           <div className="mt-6">{children}</div>
         </main>
+        <WorkoutDockbarWrapper />
       </div>
     </div>
   );
