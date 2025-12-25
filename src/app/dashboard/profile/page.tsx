@@ -297,7 +297,14 @@ export default function ProfilePage() {
 
       const url = newBlob.url;
 
-      // Actualizar la imagen local inmediatamente para que se vea el cambio
+      // 1. Guardar en la base de datos
+      await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: url }),
+      });
+
+      // 2. Actualizar la imagen local inmediatamente para que se vea el cambio
       setCurrentImage(url);
       setImageKey((prev) => prev + 1);
 
@@ -357,7 +364,7 @@ export default function ProfilePage() {
         !dailyActivity ||
         !goal ||
         !dietaryPreference ||
-        monthsTraining <= 0
+        monthsTraining < 0
       ) {
         toast.error("Error", {
           description: "Todos los campos son requeridos.",
@@ -406,13 +413,6 @@ export default function ProfilePage() {
           name,
           experienceLevel,
           profile: data.profile,
-          _localStorage: {
-            name,
-            email: session?.user?.email || "",
-            experienceLevel,
-            image: session?.user?.image || "",
-            profile: data.profile,
-          },
         },
       });
 
