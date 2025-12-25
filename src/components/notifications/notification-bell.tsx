@@ -46,6 +46,7 @@ export function NotificationBell() {
   // Detectar nuevas notificaciones y mostrar toasts
   const previousUnreadRef = useRef<number>(0);
   const previousNotificationIdsRef = useRef<Set<string>>(new Set());
+  const shownToastIdsRef = useRef<Set<string>>(new Set()); // Track which notifications have shown toasts
   const hasShownInitialRef = useRef(false);
 
   useEffect(() => {
@@ -54,6 +55,8 @@ export function NotificationBell() {
       const currentIds = new Set(notifications.map((n) => n.id));
       previousNotificationIdsRef.current = currentIds;
       previousUnreadRef.current = unreadCount;
+      // Mark all initial notifications as "shown" to prevent toasts on first load
+      notifications.forEach((n) => shownToastIdsRef.current.add(n.id));
       hasShownInitialRef.current = true;
       return;
     }
@@ -68,13 +71,16 @@ export function NotificationBell() {
       );
 
       if (newNotifications.length > 0) {
-        // Mostrar toasts para nuevas notificaciones
+        // Mostrar toasts para nuevas notificaciones (solo si no se han mostrado antes)
         newNotifications.slice(0, 3).forEach((notification) => {
-          toast.info(notification.title, {
-            description: notification.message,
-            duration: 5000,
-            icon: getNotificationEmoji(notification.type),
-          });
+          if (!shownToastIdsRef.current.has(notification.id)) {
+            toast.info(notification.title, {
+              description: notification.message,
+              duration: 5000,
+              icon: getNotificationEmoji(notification.type),
+            });
+            shownToastIdsRef.current.add(notification.id);
+          }
         });
       }
     }
