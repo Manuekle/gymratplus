@@ -13,6 +13,9 @@ import {
   generateNutritionPlan,
 } from "@/lib/ai/plan-generators";
 
+// Force Node.js runtime for iOS Safari compatibility
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
@@ -279,7 +282,15 @@ INSTRUCCIONES IMPORTANTES:
       },
     });
 
-    return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
+    // SSE headers required for iOS Safari compatibility
+    return new Response(stream.pipeThrough(new JsonToSseTransformStream()), {
+      headers: {
+        "Content-Type": "text/event-stream; charset=utf-8",
+        "Cache-Control": "no-cache, no-transform",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no",
+      },
+    });
   } catch (error) {
     console.error("Error in chat API:", error);
     return new Response("Internal Server Error", { status: 500 });
