@@ -10,6 +10,33 @@ export const authConfig = {
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
+    async jwt({ token, user, account, trigger, session }) {
+      // Basic mapping on first sign in
+      if (user) {
+        token.sub = user.id;
+      }
+      if (account) {
+        token.isOAuth = account.provider !== "credentials";
+      }
+
+      // Handle update trigger from client-side update()
+      if (trigger === "update" && session?.user) {
+        return { ...token, ...session.user };
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.sub || session.user.id;
+        (session.user as any).emailVerified = token.emailVerified as any;
+        (session.user as any).isOAuth = !!token.isOAuth;
+        (session.user as any).profile = token.profile as any;
+        (session.user as any).isInstructor = token.isInstructor as any;
+        (session.user as any).subscriptionTier = token.subscriptionTier as any;
+      }
+      return session;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const pathname = nextUrl.pathname;
@@ -17,7 +44,7 @@ export const authConfig = {
       const isOnAuth = pathname.startsWith("/auth");
       const isOnVerifyEmail = pathname === "/auth/verify-email";
       const isOnOnboarding = pathname === "/onboarding";
-      const isOnPublic = pathname === "/" || pathname === "/about" || pathname === "/privacy"; // Add public pages if any
+      const isOnPublic = pathname === "/" || pathname === "/about" || pathname === "/privacy";
 
       const rawVerified = (auth?.user as any)?.emailVerified;
       const isOAuth = !!(auth?.user as any)?.isOAuth;
@@ -28,42 +55,32 @@ export const authConfig = {
 
       // 1. If not logged in
       if (!isLoggedIn) {
-        // Allow public pages and auth pages (except verify-email which needs login)
-        if (isOnPublic || (isOnAuth && !isOnVerifyEmail)) {
-          return true;
-        }
-        return false; // Redirect to sign-in
+        if (isOnPublic || (isOnAuth && !isOnVerifyEmail)) return true;
+        return false;
       }
 
       // 2. If logged in but not verified
       if (!isVerified) {
-        // Allow verify-email page
         if (isOnVerifyEmail) return true;
-        // Redirect everything else (except maybe logout/api if not caught) to verify-email
         return Response.redirect(new URL("/auth/verify-email", nextUrl));
       }
 
       // 3. If logged in and verified
-      if (isVerified) {
-        // If on verify page or other auth pages, move forward
-        if (isOnVerifyEmail || isOnAuth) {
-          if (!hasProfile) return Response.redirect(new URL("/onboarding", nextUrl));
-          return Response.redirect(new URL("/dashboard", nextUrl));
-        }
+      // If on verify page or other auth pages, move forward
+      if (isOnVerifyEmail || (isOnAuth && pathname !== "/auth/error")) {
+        if (!hasProfile) return Response.redirect(new URL("/onboarding", nextUrl));
+        return Response.redirect(new URL("/dashboard", nextUrl));
+      }
 
-        // Handle Onboarding state
-        if (!hasProfile) {
-          if (isOnOnboarding) return true;
-          // Protect dashboard and others if no profile
-          return Response.redirect(new URL("/onboarding", nextUrl));
-        }
+      // Handle Onboarding state
+      if (!hasProfile) {
+        if (isOnOnboarding) return true;
+        return Response.redirect(new URL("/onboarding", nextUrl));
+      }
 
-        // Has profile - should not be on onboarding
-        if (isOnOnboarding) {
-          return Response.redirect(new URL("/dashboard", nextUrl));
-        }
-
-        return true;
+      // Has profile - should not be on onboarding
+      if (isOnOnboarding) {
+        return Response.redirect(new URL("/dashboard", nextUrl));
       }
 
       return true;

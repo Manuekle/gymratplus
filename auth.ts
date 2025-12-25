@@ -9,7 +9,7 @@ import type { NextAuthConfig } from "next-auth";
 
 // --- Type Definitions ---
 
-import type { Profile, InstructorProfile } from "@prisma/client";
+// import type { Profile, InstructorProfile } from "@prisma/client";
 
 interface CustomUserForCredentials {
   id: string;
@@ -90,93 +90,54 @@ export const config = {
     // If we want to extend it, we could.
     // But 'jwt' and 'session' are the critical Node-side callbacks.
 
-    async jwt({ token, user, account, trigger, session }) {
-      // 1. Save data from account on first sign in
-      if (account) {
-        token.isOAuth = !!account.provider && account.provider !== "credentials";
+    async jwt(params) {
+      // Run base mapping logic from authConfig (Edge compatible parts)
+      let updatedToken = await authConfig.callbacks.jwt!(params);
+      const { user } = params;
+
+      const userId = user?.id || updatedToken.sub;
+      if (!userId) return updatedToken;
+
+      try {
+        // Fetch fresh data from database (Node only)
+        const dbUser = await prisma.user.findUnique({
+          where: { id: userId },
+          include: {
+            profile: true,
+            instructorProfile: true,
+          },
+        });
+
+        if (dbUser) {
+          console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${updatedToken.isOAuth}`);
+          updatedToken.emailVerified = dbUser.emailVerified;
+          updatedToken.isInstructor = dbUser.isInstructor ?? false;
+          updatedToken.experienceLevel = dbUser.experienceLevel ?? null;
+          updatedToken.interests = (dbUser.interests as string[]) ?? [];
+          updatedToken.profile = dbUser.profile;
+          updatedToken.instructorProfile = dbUser.instructorProfile;
+          updatedToken.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
+          updatedToken.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
+        }
+      } catch (error) {
+        console.error("[AUTH-JWT] Database error:", error);
       }
 
-      const userId = user?.id || token.sub;
-
-      if (!userId) return token;
-
-      // Always get fresh data from database
-      const dbUser = await prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-          profile: true,
-          instructorProfile: true,
-        },
-      });
-
-      if (dbUser) {
-        console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${token.isOAuth}`);
-        // Update basic fields
-        token.sub = dbUser.id;
-        token.name = dbUser.name ?? null;
-        token.email = dbUser.email ?? null;
-        token.picture = dbUser.image ?? null;
-        token.emailVerified = dbUser.emailVerified;
-
-        // If it's an OAuth user and emailVerified is null in DB, we should technically trust them
-        // but Prisma Adapter usually sets it.
-
-        // Update extended fields
-        token.isInstructor = dbUser.isInstructor ?? false;
-        token.experienceLevel = dbUser.experienceLevel ?? null;
-        token.interests = (dbUser.interests as string[]) ?? [];
-        token.profile = dbUser.profile as Profile | null as any;
-        token.instructorProfile =
-          dbUser.instructorProfile as InstructorProfile | null as any;
-        token.subscriptionTier = (dbUser as any).subscriptionTier ?? "FREE";
-        token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
-      }
-
-      // Handle 'update' trigger
-      if (trigger === "update" && session?.user) {
-        console.log("[AUTH-JWT] Update trigger detected");
-        if (session.user.image !== undefined) token.picture = session.user.image;
-        if (session.user.isInstructor !== undefined) token.isInstructor = session.user.isInstructor;
-      }
-
-      return token;
+      return updatedToken;
     },
-    async session({ session, token }) {
-      if (!session.user || !token.sub) return session;
+    async session(params) {
+      // Run base mapping from authConfig
+      const updatedSession = await authConfig.callbacks.session!(params);
+      const { token } = params;
 
-      console.log(`[AUTH-SESSION] Verified: ${token.emailVerified}, isOAuth: ${token.isOAuth}`);
+      console.log(`[AUTH-SESSION] Verified: ${(updatedSession.user as any).emailVerified}, isOAuth: ${(updatedSession.user as any).isOAuth}`);
 
-      const sessionUser = {
-        ...session.user,
-        id: token.sub,
-        name: token.name ?? session.user.name ?? null,
-        email: token.email ?? session.user.email ?? null,
-        image: token.picture ?? session.user.image ?? null,
-        emailVerified: (token.emailVerified as Date | null) || (token.isOAuth ? new Date() : null),
-        isOAuth: !!token.isOAuth,
-        isInstructor: token.isInstructor as boolean,
-        experienceLevel: token.experienceLevel as string | null,
-        profile: token.profile as any,
-        instructorProfile: token.instructorProfile as any,
-        subscriptionTier: token.subscriptionTier as string,
-        subscriptionStatus: token.subscriptionStatus as string | null,
-      };
+      // Ensure specific fields are present for consistency (Node only enrichments)
+      (updatedSession.user as any).instructorProfile = token.instructorProfile;
+      (updatedSession.user as any).experienceLevel = token.experienceLevel;
+      (updatedSession.user as any).subscriptionStatus = token.subscriptionStatus;
 
-      const localStorageData = {
-        ...sessionUser,
-        profile: token.profile as any,
-        instructorProfile: token.instructorProfile as any,
-        subscriptionTier: token.subscriptionTier as string,
-        subscriptionStatus: token.subscriptionStatus as string | null,
-      };
-
-      return {
-        ...session,
-        user: {
-          ...sessionUser,
-          _localStorage: localStorageData,
-        },
-      };
+      return updatedSession;
     },
     // We removed 'redirect' here because it's in auth.config.ts?
     // Wait, auth.config.ts has a simple logic. The previous redirect logic was quite specific.
