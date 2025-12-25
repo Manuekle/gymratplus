@@ -20,10 +20,11 @@ export const authConfig = {
       const isOnPublic = pathname === "/" || pathname === "/about" || pathname === "/privacy"; // Add public pages if any
 
       const rawVerified = (auth?.user as any)?.emailVerified;
-      const isVerified = !!rawVerified;
+      const isOAuth = !!(auth?.user as any)?.isOAuth;
+      const isVerified = !!rawVerified || isOAuth;
       const hasProfile = !!(auth?.user as any)?.profile;
 
-      console.log(`[AUTH-MW] Path: ${pathname}, LoggedIn: ${isLoggedIn}, VerifiedVal: ${rawVerified}, isVerified: ${isVerified}, Profile: ${hasProfile}`);
+      console.log(`[AUTH-MW] Path: ${pathname}, LoggedIn: ${isLoggedIn}, VerifiedVal: ${rawVerified}, isOAuth: ${isOAuth}, isVerified: ${isVerified}, Profile: ${hasProfile}`);
 
       // 1. If not logged in
       if (!isLoggedIn) {

@@ -90,12 +90,17 @@ export const config = {
     // If we want to extend it, we could.
     // But 'jwt' and 'session' are the critical Node-side callbacks.
 
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user, account, trigger, session }) {
+      // 1. Save data from account on first sign in
+      if (account) {
+        token.isOAuth = !!account.provider && account.provider !== "credentials";
+      }
+
       const userId = user?.id || token.sub;
 
       if (!userId) return token;
 
-      // Always get fresh data from database to ensure subscription status is up to date
+      // Always get fresh data from database
       const dbUser = await prisma.user.findUnique({
         where: { id: userId },
         include: {
@@ -105,13 +110,16 @@ export const config = {
       });
 
       if (dbUser) {
-        console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}`);
+        console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}, isOAuth: ${token.isOAuth}`);
         // Update basic fields
         token.sub = dbUser.id;
         token.name = dbUser.name ?? null;
         token.email = dbUser.email ?? null;
         token.picture = dbUser.image ?? null;
-        token.emailVerified = dbUser.emailVerified; // Add this
+        token.emailVerified = dbUser.emailVerified;
+
+        // If it's an OAuth user and emailVerified is null in DB, we should technically trust them
+        // but Prisma Adapter usually sets it.
 
         // Update extended fields
         token.isInstructor = dbUser.isInstructor ?? false;
@@ -127,12 +135,8 @@ export const config = {
       // Handle 'update' trigger
       if (trigger === "update" && session?.user) {
         console.log("[AUTH-JWT] Update trigger detected");
-        if (session.user.image !== undefined) {
-          token.picture = session.user.image;
-        }
-        if (session.user.isInstructor !== undefined) {
-          token.isInstructor = session.user.isInstructor;
-        }
+        if (session.user.image !== undefined) token.picture = session.user.image;
+        if (session.user.isInstructor !== undefined) token.isInstructor = session.user.isInstructor;
       }
 
       return token;
@@ -140,7 +144,7 @@ export const config = {
     async session({ session, token }) {
       if (!session.user || !token.sub) return session;
 
-      console.log(`[AUTH-SESSION] Token Verified: ${token.emailVerified}`);
+      console.log(`[AUTH-SESSION] Verified: ${token.emailVerified}, isOAuth: ${token.isOAuth}`);
 
       const sessionUser = {
         ...session.user,
@@ -148,7 +152,8 @@ export const config = {
         name: token.name ?? session.user.name ?? null,
         email: token.email ?? session.user.email ?? null,
         image: token.picture ?? session.user.image ?? null,
-        emailVerified: token.emailVerified as Date | null, // Add this
+        emailVerified: (token.emailVerified as Date | null) || (token.isOAuth ? new Date() : null),
+        isOAuth: !!token.isOAuth,
         isInstructor: token.isInstructor as boolean,
         experienceLevel: token.experienceLevel as string | null,
         profile: token.profile as any,
