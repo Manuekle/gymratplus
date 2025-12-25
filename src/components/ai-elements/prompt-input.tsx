@@ -38,7 +38,7 @@ import { cn } from "@/lib/utils/utils";
 import type { ChatStatus, FileUIPart } from "ai";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  ArrowTurnDownLeftIcon,
+  ArrowDown01Icon,
   Image01Icon,
   Mic01Icon,
   Attachment02Icon,
@@ -1031,7 +1031,7 @@ export const PromptInputSubmit = ({
   children,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icon = <HugeiconsIcon icon={ArrowTurnDownLeftIcon} className="size-4" />;
+  let Icon = <HugeiconsIcon icon={ArrowDown01Icon} className="size-4" />;
 
   if (status === "submitted") {
     Icon = <Icons.spinner className="h-4 w-4 animate-spin" />;

@@ -11,10 +11,10 @@ import {
 import { cn } from "@/lib/utils/utils";
 import type { FileUIPart, UIMessage } from "ai";
 import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PaperclipIcon,
-  XIcon,
+  ArrowLeft01Icon,
+  ArrowRight01Icon,
+  Attachment02Icon,
+  Cancel01Icon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
@@ -252,7 +252,7 @@ export const MessageBranchPrevious = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <HugeiconsIcon icon={ChevronLeftIcon} size={14} />}
+      {children ?? <HugeiconsIcon icon={ArrowLeft01Icon} size={14} />}
     </Button>
   );
 };
@@ -276,7 +276,7 @@ export const MessageBranchNext = ({
       variant="ghost"
       {...props}
     >
-      {children ?? <HugeiconsIcon icon={ChevronRightIcon} size={14} />}
+      {children ?? <HugeiconsIcon icon={ArrowRight01Icon} size={14} />}
     </Button>
   );
 };
@@ -365,7 +365,7 @@ export function MessageAttachment({
               type="button"
               variant="ghost"
             >
-              <HugeiconsIcon icon={XIcon} />
+              <HugeiconsIcon icon={Cancel01Icon} />
               <span className="sr-only">Remove</span>
             </Button>
           )}
@@ -375,7 +375,7 @@ export function MessageAttachment({
           <Tooltip>
             <TooltipTrigger asChild>
               <div className="flex size-full shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-                <HugeiconsIcon icon={PaperclipIcon} className="size-4" />
+                <HugeiconsIcon icon={Attachment02Icon} className="size-3" />
               </div>
             </TooltipTrigger>
             <TooltipContent>
