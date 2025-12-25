@@ -426,4 +426,17 @@ body {
   .animate-water-wave {
     animation: water-wave 0.8s ease-in-out;
   }
+
+  /* Fade in animation for chat cards */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }

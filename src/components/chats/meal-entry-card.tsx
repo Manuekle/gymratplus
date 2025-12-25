@@ -68,82 +68,94 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
   };
 
   return (
-    <div className="w-full space-y-2">
+    <div className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold">{data.foodName}</h3>
+        <h3 className="text-xs font-semibold truncate pr-2">{data.foodName}</h3>
         {isSaved && (
-          <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+          <div className="flex items-center gap-1 text-green-600 dark:text-green-400 animate-in zoom-in duration-300">
             <HugeiconsIcon icon={Tick02Icon} className="h-3 w-3" />
-            <span className="text-xs">Guardado</span>
+            <span className="text-xs whitespace-nowrap">Guardado</span>
           </div>
         )}
       </div>
 
-      {/* Compact Grid */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
-        <div>
-          <span className="text-xs text-zinc-500 block">kcal</span>
+      {/* Responsive Grid - 2 cols on mobile, 3 on tablet, 6 on desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 animate-in slide-in-from-bottom-3 duration-500 delay-100">
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Calorías
+          </label>
           <Input
             type="number"
             value={calories}
             onChange={(e) => setCalories(Number(e.target.value))}
             disabled={isSaved}
-            className="h-7 text-xs px-2"
+            className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]"
           />
         </div>
-        <div>
-          <span className="text-xs text-zinc-500 block">Cant.</span>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Cantidad (g)
+          </label>
           <Input
             type="number"
             step="0.1"
             value={quantity}
             onChange={(e) => setQuantity(Number(e.target.value))}
             disabled={isSaved}
-            className="h-7 text-xs px-2"
+            className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]"
           />
         </div>
-        <div>
-          <span className="text-xs text-zinc-500 block">P (g)</span>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Proteína (g)
+          </label>
           <Input
             type="number"
             step="0.1"
             value={protein}
             onChange={(e) => setProtein(Number(e.target.value))}
             disabled={isSaved}
-            className="h-7 text-xs px-2"
+            className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]"
           />
         </div>
-        <div>
-          <span className="text-xs text-zinc-500 block">C (g)</span>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Carbos (g)
+          </label>
           <Input
             type="number"
             step="0.1"
             value={carbs}
             onChange={(e) => setCarbs(Number(e.target.value))}
             disabled={isSaved}
-            className="h-7 text-xs px-2"
+            className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]"
           />
         </div>
-        <div>
-          <span className="text-xs text-zinc-500 block">G (g)</span>
+        <div className="space-y-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Grasas (g)
+          </label>
           <Input
             type="number"
             step="0.1"
             value={fat}
             onChange={(e) => setFat(Number(e.target.value))}
             disabled={isSaved}
-            className="h-7 text-xs px-2"
+            className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]"
           />
         </div>
-        <div>
-          <span className="text-xs text-zinc-500 block">Tipo</span>
+        <div className="space-y-1 col-span-2 md:col-span-1">
+          <label className="text-xs text-zinc-500 dark:text-zinc-400 block">
+            Tipo
+          </label>
           <Select
             value={mealType}
             onValueChange={(value: any) => setMealType(value)}
             disabled={isSaved}
           >
-            <SelectTrigger className="h-7 text-xs px-2">
+            <SelectTrigger className="h-8 text-xs px-2 transition-all duration-200 focus:scale-[1.02]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -158,18 +170,18 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
 
       {/* Save Button */}
       {!isSaved && (
-        <div className="flex justify-end">
+        <div className="flex justify-end animate-in slide-in-from-bottom-4 duration-500 delay-200">
           <Button
             onClick={handleSave}
             disabled={isSaving}
             size="sm"
-            className="h-7 text-xs"
+            className="h-8 text-xs transition-all duration-200 hover:scale-105 active:scale-95"
           >
             {isSaving ? (
               <>
                 <HugeiconsIcon
                   icon={Loading03Icon}
-                  className="h-3 w-3 mr-1 animate-spin"
+                  className="h-3 w-3 mr-1.5 animate-spin"
                 />
                 Guardando
               </>

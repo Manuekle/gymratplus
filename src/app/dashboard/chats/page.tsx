@@ -7,13 +7,13 @@ import {
   Robot01Icon,
   ArrowUp01Icon,
   ArrowLeft01Icon,
+  ArrowDown01Icon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatWindow } from "@/components/chats/chat-window";
 import { cn } from "@/lib/utils/utils";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { WorkoutPlanCard } from "@/components/chats/workout-plan-card";
 import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
@@ -34,12 +34,17 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
+import { Loader } from "@/components/ai-elements/loader";
 import { CheckIcon, XIcon } from "lucide-react";
 import { sendErrorEmail } from "@/app/actions/email";
+import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 
 export default function ChatPage() {
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
+
+  // Auto-scroll functionality
+  const { containerRef, endRef, isAtBottom, scrollToBottom } = useScrollToBottom<HTMLDivElement>();
 
   // Ensure we have a persistent ID for the current session if not selecting a history chat
   const [currentSessionId] = useState(() =>
@@ -51,11 +56,17 @@ export default function ChatPage() {
       : selectedChatId;
 
   // AI Chat configuration
-  const { messages, sendMessage, status, addToolApprovalResponse, error } =
+  const { messages, sendMessage, status, addToolApprovalResponse } =
     useChat({
       id: activeChatId,
       transport: new DefaultChatTransport({
-        api: `/api/chat?id=${activeChatId}`,
+        api: "/api/chat",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: {
+          id: activeChatId,
+        },
       }),
       onError: async (error) => {
         console.error("❌ [Chat Error]", error);
@@ -68,6 +79,13 @@ export default function ChatPage() {
 
   const [input, setInput] = useState("");
 
+  // Auto-scroll when messages change or status changes
+  useEffect(() => {
+    if (status === "streaming" || status === "submitted") {
+      scrollToBottom("smooth");
+    }
+  }, [messages, status, scrollToBottom]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInput(e.target.value);
   };
@@ -79,6 +97,8 @@ export default function ChatPage() {
     try {
       sendMessage({ text: input });
       setInput("");
+      // Scroll to bottom when user sends message
+      setTimeout(() => scrollToBottom("smooth"), 100);
     } catch (error) {
       console.error("❌ [Chat] Error sending message:", error);
       toast.error("Error al enviar mensaje");
@@ -137,7 +157,7 @@ export default function ChatPage() {
   return (
     <div className="h-[calc(100dvh-3.5rem)] md:h-[calc(100vh-4rem)] flex flex-col">
       <Card className="flex-1 flex flex-col md:flex-row overflow-hidden p-0 gap-0 border-zinc-200/50 dark:border-zinc-800/50 bg-background shadow-none">
-        {/* Chat List - Sidebar */}
+        {/* Chat Listedge - Sidebar */}
         <div
           className={cn(
             "w-full md:w-[280px] border-r border-zinc-200/50 dark:border-zinc-800/50 flex flex-col bg-zinc-50/10 dark:bg-zinc-950/10",
@@ -147,7 +167,7 @@ export default function ChatPage() {
           <div className="h-14 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center px-4">
             <h2 className="font-medium text-xl tracking-[-0.04em]">Chats</h2>
           </div>
-          <ScrollArea className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             <div className="p-2 space-y-1">
               <button
                 type="button"
@@ -173,7 +193,7 @@ export default function ChatPage() {
                 </div>
               </button>
             </div>
-          </ScrollArea>
+          </div>
         </div>
 
         {/* Chat Area */}
@@ -202,277 +222,300 @@ export default function ChatPage() {
               </div>
 
               {/* Minimal Message List */}
-              <ScrollArea className="flex-1 h-[calc(100vh-16rem)]">
-                <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
-                  {messages.length === 0 && (
-                    <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400 animate-in fade-in zoom-in duration-500">
-                      <HugeiconsIcon
-                        icon={Robot01Icon}
-                        className="h-8 w-8 mb-4"
-                      />
-                      <p className="text-3xl tracking-[-0.04em] font-medium">
-                        Hola, ¿en qué puedo ayudarte hoy?
-                      </p>
-                    </div>
-                  )}
+              <div className="relative flex-1 min-h-0">
+                <div
+                  ref={containerRef}
+                  className="absolute inset-0 overflow-y-auto touch-pan-y"
+                >
+                  <div className="max-w-3xl mx-auto p-4 md:p-8 space-y-8">
+                    {messages.length === 0 && (
+                      <div className="h-[40vh] flex flex-col items-center justify-center text-center text-zinc-400 animate-in fade-in zoom-in duration-500">
+                        <HugeiconsIcon
+                          icon={Robot01Icon}
+                          className="h-8 w-8 mb-4"
+                        />
+                        <p className="text-3xl tracking-[-0.04em] font-medium">
+                          Hola, ¿en qué puedo ayudarte hoy?
+                        </p>
+                      </div>
+                    )}
 
-                  {messages.map((message) => {
-                    const isOwn = message.role === "user";
-                    return (
-                      <div
-                        key={message.id}
-                        className={cn(
-                          "flex w-full",
-                          isOwn ? "justify-end" : "justify-start",
-                        )}
-                      >
+                    {messages.map((message) => {
+                      const isOwn = message.role === "user";
+                      return (
                         <div
+                          key={message.id}
                           className={cn(
-                            "rounded-2xl px-4 py-3 text-xs leading-relaxed w-full",
-                            isOwn
-                              ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
-                              : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200",
+                            "flex w-full",
+                            isOwn ? "justify-end" : "justify-start",
                           )}
                         >
-                          <div className="space-y-4">
-                            {message.parts.map((part, i) => {
-                              if (part.type === "text") {
-                                return (
-                                  <p key={i} className="whitespace-pre-wrap">
-                                    {part.text}
-                                  </p>
-                                );
-                              }
-                              if (part.type === "reasoning") {
-                                const reasoningPart = part as any;
-                                return (
-                                  <Reasoning
-                                    key={i}
-                                    className="mb-4"
-                                    isStreaming={status === "streaming"}
-                                  >
-                                    <ReasoningTrigger />
-                                    <ReasoningContent>
-                                      {reasoningPart.text || "Pensando..."}
-                                    </ReasoningContent>
-                                  </Reasoning>
-                                );
-                              }
-
-                              // Handle tool invocations
-                              if (part.type.startsWith("tool-")) {
-                                const toolInvocation = part as any;
-                                const state = toolInvocation.state;
-                                const toolName = part.type.replace("tool-", "");
-                                const result =
-                                  toolInvocation.result ??
-                                  toolInvocation.output;
-
-                                if (
-                                  (toolName === "generateTrainingPlan" ||
-                                    toolName === "generateNutritionPlan") &&
-                                  (state === "result" ||
-                                    state === "output-available")
-                                ) {
+                          <div
+                            className={cn(
+                              "rounded-2xl px-4 py-3 text-xs leading-relaxed w-full",
+                              isOwn
+                                ? "bg-zinc-950 text-white dark:bg-white dark:text-zinc-950"
+                                : "bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200",
+                            )}
+                          >
+                            <div className="space-y-4">
+                              {message.parts.map((part, i) => {
+                                if (part.type === "text") {
                                   return (
-                                    <div
-                                      key={toolInvocation.toolCallId}
-                                      className="mt-4 overflow-hidden mb-1"
+                                    <p key={i} className="whitespace-pre-wrap">
+                                      {part.text}
+                                    </p>
+                                  );
+                                }
+                                if (part.type === "reasoning") {
+                                  const reasoningPart = part as any;
+                                  return (
+                                    <Reasoning
+                                      key={i}
+                                      className="mb-4"
+                                      isStreaming={status === "streaming"}
                                     >
-                                      {toolName === "generateTrainingPlan" ? (
-                                        <WorkoutPlanCard
-                                          plan={result}
-                                          onSave={() =>
-                                            handleSavePlan(
-                                              "workout",
-                                              result,
-                                              toolInvocation.toolCallId,
-                                            )
-                                          }
-                                          isSaved={
-                                            savedPlans[
-                                            toolInvocation.toolCallId
-                                            ]
-                                          }
-                                        />
-                                      ) : (
-                                        <NutritionPlanCard
-                                          plan={result}
-                                          onSave={() =>
-                                            handleSavePlan(
-                                              "nutrition",
-                                              result,
-                                              toolInvocation.toolCallId,
-                                            )
-                                          }
-                                          isSaved={
-                                            savedPlans[
-                                            toolInvocation.toolCallId
-                                            ]
-                                          }
-                                        />
-                                      )}
-                                    </div>
+                                      <ReasoningTrigger />
+                                      <ReasoningContent>
+                                        {reasoningPart.text || "Pensando..."}
+                                      </ReasoningContent>
+                                    </Reasoning>
                                   );
                                 }
 
-                                if (
-                                  toolName === "getTodayCalories" &&
-                                  (state === "result" ||
-                                    state === "output-available")
-                                ) {
-                                  return (
-                                    <div
-                                      key={toolInvocation.toolCallId}
-                                      className="mt-4"
-                                    >
-                                      <CaloriesSummaryCard data={result} />
-                                    </div>
-                                  );
-                                }
+                                // Handle tool invocations
+                                if (part.type.startsWith("tool-")) {
+                                  const toolInvocation = part as any;
+                                  const state = toolInvocation.state;
+                                  const toolName = part.type.replace("tool-", "");
+                                  const result =
+                                    toolInvocation.result ??
+                                    toolInvocation.output;
 
-                                if (toolName === "saveMealEntry") {
-                                  if (state === "approval-requested") {
-                                    const input = toolInvocation.input;
+                                  if (
+                                    (toolName === "generateTrainingPlan" ||
+                                      toolName === "generateNutritionPlan") &&
+                                    (state === "result" ||
+                                      state === "output-available")
+                                  ) {
                                     return (
                                       <div
                                         key={toolInvocation.toolCallId}
-                                        className="mt-4"
+                                        className="mt-4 overflow-hidden mb-1"
                                       >
-                                        <Confirmation
-                                          approval={toolInvocation.approval}
-                                          state={state}
-                                        >
-                                          <ConfirmationTitle>
-                                            <ConfirmationRequest>
-                                              ¿Quieres guardar esta comida?
-                                              <br />
-                                              <strong>
-                                                {input.foodName}
-                                              </strong>{" "}
-                                              - {input.estimatedCalories} kcal
-                                              <br />
-                                              <span className="text-xs text-muted-foreground">
-                                                Proteínas:{" "}
-                                                {input.estimatedProtein}g |
-                                                Carbos: {input.estimatedCarbs}g
-                                                | Grasas: {input.estimatedFat}g
-                                              </span>
-                                            </ConfirmationRequest>
-                                            <ConfirmationAccepted>
-                                              <CheckIcon className="size-4 text-green-600 dark:text-green-400" />
-                                              <span>Comida guardada</span>
-                                            </ConfirmationAccepted>
-                                            <ConfirmationRejected>
-                                              <XIcon className="size-4 text-destructive" />
-                                              <span>Guardado cancelado</span>
-                                            </ConfirmationRejected>
-                                          </ConfirmationTitle>
-                                          <ConfirmationActions>
-                                            <ConfirmationAction
-                                              onClick={() =>
-                                                addToolApprovalResponse({
-                                                  id: toolInvocation.approval
-                                                    .id,
-                                                  approved: false,
-                                                })
-                                              }
-                                              variant="outline"
-                                            >
-                                              Rechazar
-                                            </ConfirmationAction>
-                                            <ConfirmationAction
-                                              onClick={() =>
-                                                addToolApprovalResponse({
-                                                  id: toolInvocation.approval
-                                                    .id,
-                                                  approved: true,
-                                                })
-                                              }
-                                              variant="default"
-                                            >
-                                              Guardar
-                                            </ConfirmationAction>
-                                          </ConfirmationActions>
-                                        </Confirmation>
+                                        {toolName === "generateTrainingPlan" ? (
+                                          <WorkoutPlanCard
+                                            plan={result}
+                                            onSave={() =>
+                                              handleSavePlan(
+                                                "workout",
+                                                result,
+                                                toolInvocation.toolCallId,
+                                              )
+                                            }
+                                            isSaved={
+                                              savedPlans[
+                                              toolInvocation.toolCallId
+                                              ]
+                                            }
+                                          />
+                                        ) : (
+                                          <NutritionPlanCard
+                                            plan={result}
+                                            onSave={() =>
+                                              handleSavePlan(
+                                                "nutrition",
+                                                result,
+                                                toolInvocation.toolCallId,
+                                              )
+                                            }
+                                            isSaved={
+                                              savedPlans[
+                                              toolInvocation.toolCallId
+                                              ]
+                                            }
+                                          />
+                                        )}
                                       </div>
                                     );
                                   }
 
                                   if (
-                                    state === "output-available" ||
-                                    state === "result"
+                                    toolName === "getTodayCalories" &&
+                                    (state === "result" ||
+                                      state === "output-available")
                                   ) {
-                                    const successMessage =
-                                      result?.message || result?.success
-                                        ? `${toolInvocation.input.foodName} guardado correctamente`
-                                        : "Comida guardada correctamente";
-
                                     return (
                                       <div
                                         key={toolInvocation.toolCallId}
                                         className="mt-4"
                                       >
-                                        <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
-                                          <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                                            <CheckIcon className="size-5" />
-                                            <p className="font-medium">
-                                              {successMessage}
-                                            </p>
-                                          </div>
-                                        </div>
+                                        <CaloriesSummaryCard data={result} />
                                       </div>
                                     );
                                   }
 
-                                  if (state === "output-denied") {
-                                    return (
-                                      <div
-                                        key={toolInvocation.toolCallId}
-                                        className="mt-4"
-                                      >
-                                        <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
-                                          <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                                            <XIcon className="size-5" />
-                                            <p className="font-medium">
-                                              Guardado cancelado
-                                            </p>
+                                  if (toolName === "saveMealEntry") {
+                                    if (state === "approval-requested") {
+                                      const input = toolInvocation.input;
+                                      return (
+                                        <div
+                                          key={toolInvocation.toolCallId}
+                                          className="mt-4"
+                                        >
+                                          <Confirmation
+                                            approval={toolInvocation.approval}
+                                            state={state}
+                                          >
+                                            <ConfirmationTitle>
+                                              <ConfirmationRequest>
+                                                ¿Quieres guardar esta comida?
+                                                <br />
+                                                <strong>
+                                                  {input.foodName}
+                                                </strong>{" "}
+                                                - {input.estimatedCalories} kcal
+                                                <br />
+                                                <span className="text-xs text-muted-foreground">
+                                                  Proteínas:{" "}
+                                                  {input.estimatedProtein}g |
+                                                  Carbos: {input.estimatedCarbs}g
+                                                  | Grasas: {input.estimatedFat}g
+                                                </span>
+                                              </ConfirmationRequest>
+                                              <ConfirmationAccepted>
+                                                <CheckIcon className="size-4 text-green-600 dark:text-green-400" />
+                                                <span>Comida guardada</span>
+                                              </ConfirmationAccepted>
+                                              <ConfirmationRejected>
+                                                <XIcon className="size-4 text-destructive" />
+                                                <span>Guardado cancelado</span>
+                                              </ConfirmationRejected>
+                                            </ConfirmationTitle>
+                                            <ConfirmationActions>
+                                              <ConfirmationAction
+                                                onClick={() =>
+                                                  addToolApprovalResponse({
+                                                    id: toolInvocation.approval
+                                                      .id,
+                                                    approved: false,
+                                                  })
+                                                }
+                                                variant="outline"
+                                              >
+                                                Rechazar
+                                              </ConfirmationAction>
+                                              <ConfirmationAction
+                                                onClick={() =>
+                                                  addToolApprovalResponse({
+                                                    id: toolInvocation.approval
+                                                      .id,
+                                                    approved: true,
+                                                  })
+                                                }
+                                                variant="default"
+                                              >
+                                                Guardar
+                                              </ConfirmationAction>
+                                            </ConfirmationActions>
+                                          </Confirmation>
+                                        </div>
+                                      );
+                                    }
+
+                                    if (
+                                      state === "output-available" ||
+                                      state === "result"
+                                    ) {
+                                      const successMessage =
+                                        result?.message || result?.success
+                                          ? `${toolInvocation.input.foodName} guardado correctamente`
+                                          : "Comida guardada correctamente";
+
+                                      return (
+                                        <div
+                                          key={toolInvocation.toolCallId}
+                                          className="mt-4"
+                                        >
+                                          <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
+                                            <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
+                                              <CheckIcon className="size-5" />
+                                              <p className="font-medium">
+                                                {successMessage}
+                                              </p>
+                                            </div>
                                           </div>
                                         </div>
-                                      </div>
-                                    );
+                                      );
+                                    }
+
+                                    if (state === "output-denied") {
+                                      return (
+                                        <div
+                                          key={toolInvocation.toolCallId}
+                                          className="mt-4"
+                                        >
+                                          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
+                                            <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
+                                              <XIcon className="size-5" />
+                                              <p className="font-medium">
+                                                Guardado cancelado
+                                              </p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      );
+                                    }
                                   }
                                 }
-                              }
-                              return null;
-                            })}
+                                return null;
+                              })}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
 
-                  {(() => {
-                    const lastMessage = messages[messages.length - 1];
-                    return (
-                      status === "streaming" &&
+                    {/* Thinking state indicator */}
+                    {(status === "streaming" || status === "submitted") &&
                       messages.length > 0 &&
-                      lastMessage?.role === "user" && (
-                        <div className="flex justify-start">
-                          <div className="max-w-[85%] md:max-w-[70%]">
-                            <Reasoning isStreaming={true}>
-                              <ReasoningTrigger />
-                              <ReasoningContent>
-                                Rocco está pensando en tu pregunta...
-                              </ReasoningContent>
-                            </Reasoning>
+                      messages[messages.length - 1]?.role === "user" && (
+                        <div className="flex justify-start animate-in fade-in duration-300">
+                          <div className="rounded-2xl px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
+                            <div className="flex items-center gap-2">
+                              <Loader size={14} className="text-zinc-400" />
+                              <span className="text-xs text-zinc-500 dark:text-zinc-400">
+                                Rocco está pensando
+                              </span>
+                              <span className="inline-flex text-xs text-zinc-500 dark:text-zinc-400">
+                                <span className="animate-bounce [animation-delay:0ms]">.</span>
+                                <span className="animate-bounce [animation-delay:150ms]">.</span>
+                                <span className="animate-bounce [animation-delay:300ms]">.</span>
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      )
-                    );
-                  })()}
+                      )}
+
+                    <div ref={endRef} className="min-h-[24px] min-w-[24px] shrink-0" />
+                  </div>
                 </div>
-              </ScrollArea>
+
+                {/* Scroll to bottom button */}
+                <button
+                  aria-label="Scroll to bottom"
+                  className={cn(
+                    "absolute bottom-24 left-1/2 -translate-x-1/2 z-10 rounded-full border bg-background p-2 shadow-lg transition-all hover:bg-muted",
+                    isAtBottom
+                      ? "pointer-events-none scale-0 opacity-0"
+                      : "pointer-events-auto scale-100 opacity-100"
+                  )}
+                  onClick={() => scrollToBottom("smooth")}
+                  type="button"
+                >
+                  <HugeiconsIcon icon={ArrowDown01Icon} className="h-4 w-4" />
+                </button>
+              </div>
 
               {/* Pill-Shaped Minimalist Input */}
               <div className="p-2 bg-background/80 backdrop-blur-sm sticky bottom-0 border-t md:border-t-0">
@@ -554,10 +597,10 @@ export default function ChatPage() {
                   />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-zinc-900 dark:text-white">
+                  <h3 className="text-2xl tracking-[-0.04em] font-semibold text-zinc-900 dark:text-white">
                     Selecciona un chat
                   </h3>
-                  <p className="text-zinc-500 dark:text-zinc-400 mt-2">
+                  <p className="text-zinc-500 text-xs tracking-[-0.02em] dark:text-zinc-400 mt-2">
                     Elige a Rocco para empezar tu entrenamiento personalizado o
                     revisa tu historial de conversaciones.
                   </p>

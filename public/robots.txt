@@ -1,6 +1,11 @@
 # *
 User-agent: *
 Allow: /
+Disallow: /dashboard
+Disallow: /auth
+Disallow: /onboarding
+Disallow: /api
+Disallow: /profile
 
 # Host
 Host: https://gymratplus.com
