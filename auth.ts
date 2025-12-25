@@ -105,10 +105,10 @@ export const config = {
       });
 
       if (dbUser) {
+        console.log(`[AUTH-JWT] User: ${dbUser.email}, DB Verified: ${dbUser.emailVerified}`);
         // Update basic fields
         token.sub = dbUser.id;
         token.name = dbUser.name ?? null;
-        token.email = dbUser.email ?? null;
         token.email = dbUser.email ?? null;
         token.picture = dbUser.image ?? null;
         token.emailVerified = dbUser.emailVerified; // Add this
@@ -124,8 +124,9 @@ export const config = {
         token.subscriptionStatus = (dbUser as any).subscriptionStatus ?? null;
       }
 
-      // Handle 'update' trigger - Allows manual overrides if necessary (e.g. optimistic updates or additional payload)
+      // Handle 'update' trigger
       if (trigger === "update" && session?.user) {
+        console.log("[AUTH-JWT] Update trigger detected");
         if (session.user.image !== undefined) {
           token.picture = session.user.image;
         }
@@ -138,6 +139,8 @@ export const config = {
     },
     async session({ session, token }) {
       if (!session.user || !token.sub) return session;
+
+      console.log(`[AUTH-SESSION] Token Verified: ${token.emailVerified}`);
 
       const sessionUser = {
         ...session.user,
