@@ -56,10 +56,10 @@ export function VerificationForm({
 
   // Countdown para reenvío
   React.useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
+    if (countdown <= 0) return;
+
+    const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    return () => clearTimeout(timer);
   }, [countdown]);
 
   // Auto-submit cuando se completan 6 dígitos
