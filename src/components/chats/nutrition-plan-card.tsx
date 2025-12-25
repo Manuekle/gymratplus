@@ -76,13 +76,13 @@ export function NutritionPlanCard({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Plan Nutricional</h3>
-        <span className="text-[11px] text-zinc-500 capitalize">
+        <span className="text-xs text-zinc-500 capitalize">
           {plan.goal.replace("_", " ")}
         </span>
       </div>
 
       {/* Summary - Inline */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-600 dark:text-zinc-400">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-600 dark:text-zinc-400">
         <span className="capitalize">{plan.dietaryType}</span>
         <span>•</span>
         <span>{plan.calories} kcal/día</span>
@@ -99,7 +99,7 @@ export function NutritionPlanCard({
       {/* Meals - Responsive Table */}
       {mealsArray.length > 0 && (
         <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-[11px] min-w-[300px]">
+          <table className="w-full text-xs min-w-[300px]">
             <thead>
               <tr className="text-left text-zinc-500">
                 <th className="font-medium py-1 px-1">Comida</th>
@@ -151,7 +151,7 @@ export function NutritionPlanCard({
 
       {/* Fallback */}
       {mealsArray.length === 0 && plan.description && (
-        <p className="text-[11px] text-zinc-500">{plan.description}</p>
+        <p className="text-xs text-zinc-500">{plan.description}</p>
       )}
 
       {/* Save Button */}

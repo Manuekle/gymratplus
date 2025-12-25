@@ -41,13 +41,13 @@ export function WorkoutPlanCard({
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Plan de Entrenamiento</h3>
-        <span className="text-[11px] text-zinc-500 capitalize">
+        <span className="text-xs text-zinc-500 capitalize">
           {plan.difficulty}
         </span>
       </div>
 
       {/* Summary - Inline */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-zinc-600 dark:text-zinc-400">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-zinc-600 dark:text-zinc-400">
         <span className="capitalize">{plan.focus}</span>
         <span>•</span>
         <span>{plan.daysPerWeek} días/semana</span>
@@ -58,7 +58,7 @@ export function WorkoutPlanCard({
       {/* Exercises - Responsive Table */}
       {plan.days && plan.days.length > 0 && (
         <div className="overflow-x-auto -mx-1">
-          <table className="w-full text-[11px] min-w-[280px]">
+          <table className="w-full text-xs min-w-[280px]">
             <thead>
               <tr className="text-left text-zinc-500">
                 <th className="font-medium py-1 px-1">Día</th>
@@ -84,7 +84,7 @@ export function WorkoutPlanCard({
                       <td className="py-1 px-1">
                         {exercise.name}
                         {exercise.notes && (
-                          <span className="text-zinc-400 ml-1 text-[10px]">
+                          <span className="text-zinc-400 ml-1 text-xs">
                             ({exercise.notes})
                           </span>
                         )}
@@ -103,7 +103,7 @@ export function WorkoutPlanCard({
 
       {/* Fallback */}
       {(!plan.days || plan.days.length === 0) && plan.description && (
-        <p className="text-[11px] text-zinc-500">{plan.description}</p>
+        <p className="text-xs text-zinc-500">{plan.description}</p>
       )}
 
       {/* Save Button */}

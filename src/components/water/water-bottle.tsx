@@ -68,7 +68,7 @@ export function WaterBottle({ fillPercentage, className }: WaterBottleProps) {
           {[0.8, 0.7, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1].map((level, index) => (
             <div key={index} className="flex items-center">
               <div className="w-3 h-px bg-zinc-200 dark:bg-white/50" />
-              <span className="text-[10px] text-zinc-200 dark:text-white/80 ml-1 font-medium">
+              <span className="text-xs text-zinc-200 dark:text-white/80 ml-1 font-medium">
                 {level.toFixed(1)}
               </span>
             </div>

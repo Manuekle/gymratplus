@@ -36,7 +36,7 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
       {/* Header */}
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">Calorías de Hoy</h3>
-        <span className="text-[11px] text-zinc-500">
+        <span className="text-xs text-zinc-500">
           {new Date(data.date).toLocaleDateString("es-ES", {
             day: "numeric",
             month: "short",
@@ -47,7 +47,7 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
       {/* Main Calorie Display */}
       <div className="text-center space-y-0.5">
         <div className="text-2xl font-bold">{consumed.calories}</div>
-        <div className="text-[11px] text-zinc-500">de {targets.calories} kcal</div>
+        <div className="text-xs text-zinc-500">de {targets.calories} kcal</div>
         <div
           className={cn(
             "text-xs font-medium",
@@ -63,7 +63,7 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
       </div>
 
       {/* Macros - Compact Inline */}
-      <div className="flex items-center justify-between text-[11px]">
+      <div className="flex items-center justify-between text-xs">
         <div className="flex items-center gap-1">
           <span className="text-zinc-500">P:</span>
           <span className="font-medium">{consumed.protein.toFixed(0)}g</span>

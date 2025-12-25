@@ -75,7 +75,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
         {isSaved && (
           <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
             <HugeiconsIcon icon={Tick02Icon} className="h-3 w-3" />
-            <span className="text-[11px]">Guardado</span>
+            <span className="text-xs">Guardado</span>
           </div>
         )}
       </div>
@@ -83,7 +83,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
       {/* Compact Grid */}
       <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
         <div>
-          <span className="text-[10px] text-zinc-500 block">kcal</span>
+          <span className="text-xs text-zinc-500 block">kcal</span>
           <Input
             type="number"
             value={calories}
@@ -93,7 +93,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
           />
         </div>
         <div>
-          <span className="text-[10px] text-zinc-500 block">Cant.</span>
+          <span className="text-xs text-zinc-500 block">Cant.</span>
           <Input
             type="number"
             step="0.1"
@@ -104,7 +104,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
           />
         </div>
         <div>
-          <span className="text-[10px] text-zinc-500 block">P (g)</span>
+          <span className="text-xs text-zinc-500 block">P (g)</span>
           <Input
             type="number"
             step="0.1"
@@ -115,7 +115,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
           />
         </div>
         <div>
-          <span className="text-[10px] text-zinc-500 block">C (g)</span>
+          <span className="text-xs text-zinc-500 block">C (g)</span>
           <Input
             type="number"
             step="0.1"
@@ -126,7 +126,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
           />
         </div>
         <div>
-          <span className="text-[10px] text-zinc-500 block">G (g)</span>
+          <span className="text-xs text-zinc-500 block">G (g)</span>
           <Input
             type="number"
             step="0.1"
@@ -137,7 +137,7 @@ export function MealEntryCard({ data }: MealEntryCardProps) {
           />
         </div>
         <div>
-          <span className="text-[10px] text-zinc-500 block">Tipo</span>
+          <span className="text-xs text-zinc-500 block">Tipo</span>
           <Select
             value={mealType}
             onValueChange={(value: any) => setMealType(value)}
