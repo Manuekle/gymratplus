@@ -924,7 +924,7 @@ export default function ProfilePage() {
                               >
                                 {isCanceling ? (
                                   <>
-                                    <Loader className="mr-2 h-4 w-4 animate-spin" />
+                                    <Icons.spinner className="h-4 w-4 animate-spin mr-2" />
                                     Cancelando...
                                   </>
                                 ) : (

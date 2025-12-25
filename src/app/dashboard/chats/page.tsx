@@ -20,7 +20,7 @@ import { NutritionPlanCard } from "@/components/chats/nutrition-plan-card";
 import { CaloriesSummaryCard } from "@/components/chats/calories-summary-card";
 import { Card } from "@/components/ui/card";
 import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
-import { Loader } from "@/components/ai-elements/loader";
+import { Icons } from "@/components/icons";
 import {
   Reasoning,
   ReasoningContent,
@@ -36,7 +36,7 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckmarkCircle02Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
 import { sendErrorEmail } from "@/app/actions/email";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 
@@ -388,11 +388,11 @@ export default function ChatPage() {
                                                 </span>
                                               </ConfirmationRequest>
                                               <ConfirmationAccepted>
-                                                <CheckIcon className="size-4 text-green-600 dark:text-green-400" />
+                                                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-green-600 dark:text-green-400" />
                                                 <span>Comida guardada</span>
                                               </ConfirmationAccepted>
                                               <ConfirmationRejected>
-                                                <XIcon className="size-4 text-destructive" />
+                                                <HugeiconsIcon icon={Cancel01Icon} className="size-4 text-red-600 dark:text-red-400" />
                                                 <span>Guardado cancelado</span>
                                               </ConfirmationRejected>
                                             </ConfirmationTitle>
@@ -443,7 +443,7 @@ export default function ChatPage() {
                                         >
                                           <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
                                             <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                                              <CheckIcon className="size-5" />
+                                              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-5" />
                                               <p className="font-medium">
                                                 {successMessage}
                                               </p>
@@ -461,7 +461,7 @@ export default function ChatPage() {
                                         >
                                           <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
                                             <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                                              <XIcon className="size-5" />
+                                              <HugeiconsIcon icon={Cancel01Icon} className="size-5" />
                                               <p className="font-medium">
                                                 Guardado cancelado
                                               </p>
@@ -493,7 +493,7 @@ export default function ChatPage() {
                         <div className="flex justify-start animate-in fade-in duration-300">
                           <div className="rounded-2xl px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
                             <div className="flex items-center gap-2">
-                              <Loader size={14} className="text-zinc-400" />
+                              <Icons.spinner className="h-4 w-4 animate-spin text-zinc-400" />
                               <span className="text-xs text-zinc-500 dark:text-zinc-400">
                                 Rocco está pensando
                               </span>

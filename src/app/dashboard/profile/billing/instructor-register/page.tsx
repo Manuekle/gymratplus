@@ -21,7 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { TagSelector } from "@/components/ui/tag-selector";
 import { SPECIALTIES } from "@/data/specialties";
-import { Loader } from "@/components/ai-elements/loader";
+import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 
@@ -283,7 +283,7 @@ export default function InstructorRegistrationPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader className="h-8 w-8 animate-spin text-primary" />
+        <Icons.spinner className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -649,7 +649,7 @@ export default function InstructorRegistrationPage() {
               >
                 {isSubmitting ? (
                   <>
-                    <Loader className="h-4 w-4 animate-spin" />
+                    <Icons.spinner className="h-4 w-4 animate-spin mr-2" />
                     Registrando...
                   </>
                 ) : (
