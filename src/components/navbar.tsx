@@ -157,9 +157,7 @@ export function Navbar() {
           {/* Right Utils (Compact Toolset) */}
           <div className="flex items-center justify-end gap-2 ml-auto">
             {session?.user?.id && (
-              <div className="hidden sm:block">
-                <WorkoutStreak userId={session.user.id} />
-              </div>
+              <WorkoutStreak userId={session.user.id} />
             )}
             <NotificationBell />
             <ThemeToggle />
