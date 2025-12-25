@@ -74,9 +74,9 @@ export async function POST(req: Request) {
         data: {
           dailyCalorieTarget: parseInt(
             plan.calories ||
-              plan.macros?.calories ||
-              plan.macros?.totalCalories ||
-              "2000",
+            plan.macros?.calories ||
+            plan.macros?.totalCalories ||
+            "2000",
           ),
           dailyProteinTarget: parseInt(
             (plan.macros?.protein || "0").toString().replace("g", ""),
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
           proteinTarget: parseInt(
             (plan.macros?.protein || "0").toString().replace("g", ""),
           ),
-          carbTarget: parseInt(
+          carbsTarget: parseInt(
             (plan.macros?.carbs || "0").toString().replace("g", ""),
           ),
           fatTarget: parseInt(
@@ -120,14 +120,25 @@ export async function POST(req: Request) {
           ) {
             const entries = mealData.entries as any[];
 
-            if (Array.isArray(entries)) {
-              for (const entry of entries) {
-                await prisma.foodRecommendationEntry.create({
+            if (Array.isArray(entries) && entries.length > 0) {
+              // Create MealPlanMeal first
+              const mealPlanMeal = await prisma.mealPlanMeal.create({
+                data: {
+                  foodRecommendationId: foodRecommendation.id,
+                  mealType: mealType,
+                  order: 0,
+                },
+              });
+
+              // Then create entries for this meal
+              for (let i = 0; i < entries.length; i++) {
+                const entry = entries[i];
+                await prisma.mealPlanEntry.create({
                   data: {
-                    recommendationId: foodRecommendation.id,
+                    mealPlanMealId: mealPlanMeal.id,
                     foodId: entry.foodId || entry.food?.id,
-                    mealType: mealType,
                     quantity: entry.quantity || 100,
+                    order: i,
                   },
                 });
               }
@@ -145,6 +156,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (error) {
     console.error("Error saving plan:", error);
-    return NextResponse.json({ error: "Error saving plan" }, { status: 500 });
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
+    return NextResponse.json(
+      {
+        error: "Error saving plan",
+        details: error instanceof Error ? error.message : String(error),
+      },
+      { status: 500 },
+    );
   }
 }

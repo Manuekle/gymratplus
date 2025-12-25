@@ -57,7 +57,7 @@ export function WorkoutPlanCard({
     <div className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xs font-semibold">Plan de Entrenamiento</h3>
+        <h3 className="text-xl tracking-[-0.04em] font-semibold">Plan de Entrenamiento</h3>
         <span className="text-xs text-zinc-500 dark:text-zinc-400 capitalize px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-full">
           {plan.difficulty}
         </span>
@@ -146,11 +146,11 @@ export function WorkoutPlanCard({
           onClick={onSave}
           disabled={isSaved}
           className={cn(
-            "text-xs h-8 transition-all duration-200 hover:scale-105 active:scale-95",
-            isSaved && "bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800",
+            "text-xs",
+            isSaved && "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800",
           )}
         >
-          {isSaved ? "✓ Guardado" : "Guardar Plan"}
+          {isSaved ? "Guardado" : "Guardar Plan"}
         </Button>
       </div>
     </div>

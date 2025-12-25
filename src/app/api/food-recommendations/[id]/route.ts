@@ -46,6 +46,7 @@ export async function GET(
     const unifiedPlan = await getFoodRecommendationUnified(foodPlanId);
 
     if (!unifiedPlan) {
+      console.error(`Failed to get unified plan for ID: ${foodPlanId}`);
       return NextResponse.json(
         { error: "Error al procesar el plan de alimentación" },
         { status: 500 },
@@ -55,8 +56,9 @@ export async function GET(
     return NextResponse.json(unifiedPlan);
   } catch (error) {
     console.error("Error al obtener el plan de alimentación:", error);
+    console.error("Stack trace:", error instanceof Error ? error.stack : "No stack trace");
     return NextResponse.json(
-      { error: "Error interno del servidor" },
+      { error: "Error interno del servidor", details: error instanceof Error ? error.message : String(error) },
       { status: 500 },
     );
   }
