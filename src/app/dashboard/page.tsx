@@ -7,10 +7,10 @@ import GoalProgress from "@/components/dashboard/goal-progress";
 import NutritionSummary from "@/components/dashboard/nutrition-summary";
 import ProgressChart from "@/components/dashboard/progress-chart";
 import WorkoutSummary from "@/components/dashboard/workout-summary";
-
 import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import AdBanner from "@/components/ads/ad-banner";
 
 export default function DashboardPage() {
   const { data: session, status } = useSession();
@@ -21,7 +21,6 @@ export default function DashboardPage() {
   };
 
   if (status === "loading" || !session) {
-    // ... (keep loading state)
     return (
       <AnimatedLayout>
         <div className="space-y-6">
@@ -108,6 +107,9 @@ export default function DashboardPage() {
             <GoalProgress />
           </motion.div>
         </div>
+
+        {/* AdSense Banner */}
+        <AdBanner dataAdSlot="1234567890" />
 
         {/* Resúmenes */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
