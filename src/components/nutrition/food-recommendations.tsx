@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -41,6 +40,7 @@ import { Icons } from "@/components/icons";
 // cambiar todo
 export default function FoodRecommendations() {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<any[]>([]);
   const [selectedRecommendation, setSelectedRecommendation] =
     useState<any>(null);
@@ -72,10 +72,12 @@ export default function FoodRecommendations() {
               setSelectedRecommendation(fullPlan);
             } else {
               setSelectedRecommendation(mostRecent);
+              setError("No se pudieron cargar los detalles del plan. Mostrando información básica.");
             }
           } catch (error) {
             console.error("Error loading full plan:", error);
             setSelectedRecommendation(mostRecent);
+            setError("Error de conexión al cargar el plan detallado.");
           }
         }
 
@@ -83,6 +85,7 @@ export default function FoodRecommendations() {
         fetchFoods();
       } catch (error) {
         console.error("Error fetching recommendations:", error);
+        setError("Error al cargar las recomendaciones. Por favor intenta refrescar la página.");
         toast("Error", {
           description: "Failed to load food recommendations",
         });
@@ -503,6 +506,14 @@ export default function FoodRecommendations() {
 
   return (
     <div>
+      {error && (
+        <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-600 dark:text-red-400">
+          <p className="font-medium text-sm flex items-center gap-2">
+            <HugeiconsIcon icon={ArrowLeft01Icon /* Using available icon as warning placeholder or import Alert icon handled separately */} className="w-5 h-5" />
+            {error}
+          </p>
+        </div>
+      )}
       <div className="mb-4 flex md:flex-row flex-col justify-between w-full items-center gap-2">
         <Button
           variant="outline"
@@ -680,317 +691,327 @@ export default function FoodRecommendations() {
             </Card>
           </div>
 
-          <Tabs defaultValue="breakfast" className="space-y-4 w-full">
-            <div className="w-full overflow-x-auto md:overflow-visible">
-              <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
-                <TabsTrigger value="breakfast" className="flex-shrink-0">
-                  {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
-                </TabsTrigger>
-                <TabsTrigger value="lunch" className="flex-shrink-0">
-                  {mealTypes.lunch.icon} {mealTypes.lunch.label}
-                </TabsTrigger>
-                <TabsTrigger value="dinner" className="flex-shrink-0">
-                  {mealTypes.dinner.icon} {mealTypes.dinner.label}
-                </TabsTrigger>
-                <TabsTrigger value="snack" className="flex-shrink-0">
-                  {mealTypes.snack.icon} {mealTypes.snack.label}
-                </TabsTrigger>
-              </TabsList>
+
+
+          {Object.keys(meals).length === 0 ? (
+            <div className="w-full p-8 text-center text-muted-foreground border rounded-lg bg-muted/20 my-4">
+              <HugeiconsIcon icon={NoodlesIcon} className="w-10 h-10 mx-auto mb-2 opacity-50" />
+              <p>No se encontraron detalles de las comidas para este plan.</p>
+              <p className="text-xs mt-1">Intenta regenerar el plan si el problema persiste.</p>
             </div>
+          ) : (
+            <Tabs defaultValue="breakfast" className="space-y-4 w-full">
+              <div className="w-full overflow-x-auto md:overflow-visible">
+                <TabsList className="inline-flex flex-wrap h-auto gap-1.5 sm:gap-2 p-1.5 w-full sm:w-auto min-w-0 mb-4">
+                  <TabsTrigger value="breakfast" className="flex-shrink-0">
+                    {mealTypes.breakfast.icon} {mealTypes.breakfast.label}
+                  </TabsTrigger>
+                  <TabsTrigger value="lunch" className="flex-shrink-0">
+                    {mealTypes.lunch.icon} {mealTypes.lunch.label}
+                  </TabsTrigger>
+                  <TabsTrigger value="dinner" className="flex-shrink-0">
+                    {mealTypes.dinner.icon} {mealTypes.dinner.label}
+                  </TabsTrigger>
+                  <TabsTrigger value="snack" className="flex-shrink-0">
+                    {mealTypes.snack.icon} {mealTypes.snack.label}
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-            {Object.entries(meals).map(([key, meal]: [string, any]) => {
-              // Map "snacks" to "snack" for tab value
-              const tabValue = key === "snacks" ? "snack" : key;
-              const mealTypeKey =
-                key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
+              {Object.entries(meals).map(([key, meal]: [string, any]) => {
+                // Map "snacks" to "snack" for tab value
+                const tabValue = key === "snacks" ? "snack" : key;
+                const mealTypeKey =
+                  key === "snacks" ? "snack" : (key as keyof typeof mealTypes);
 
-              // Ensure meal has entries array
-              const mealEntries = Array.isArray(meal.entries)
-                ? meal.entries
-                : [];
+                // Ensure meal has entries array
+                const mealEntries = Array.isArray(meal.entries)
+                  ? meal.entries
+                  : [];
 
-              // Calcular totales desde los entries
-              const calculateMealTotals = () => {
-                let totalCalories = 0;
-                let totalProtein = 0;
-                let totalCarbs = 0;
-                let totalFat = 0;
+                // Calcular totales desde los entries
+                const calculateMealTotals = () => {
+                  let totalCalories = 0;
+                  let totalProtein = 0;
+                  let totalCarbs = 0;
+                  let totalFat = 0;
 
-                mealEntries.forEach((entry: any) => {
-                  const food = foods[entry.foodId] || entry.food;
-                  if (!food) return;
+                  mealEntries.forEach((entry: any) => {
+                    const food = foods[entry.foodId] || entry.food;
+                    if (!food) return;
 
-                  // quantity está en gramos (estandarizado)
-                  const multiplier = (entry.quantity || 0) / 100;
-                  totalCalories += (food.calories || 0) * multiplier;
-                  totalProtein += (food.protein || 0) * multiplier;
-                  totalCarbs += (food.carbs || 0) * multiplier;
-                  totalFat += (food.fat || 0) * multiplier;
-                });
+                    // quantity está en gramos (estandarizado)
+                    const multiplier = (entry.quantity || 0) / 100;
+                    totalCalories += (food.calories || 0) * multiplier;
+                    totalProtein += (food.protein || 0) * multiplier;
+                    totalCarbs += (food.carbs || 0) * multiplier;
+                    totalFat += (food.fat || 0) * multiplier;
+                  });
 
-                return {
-                  totalCalories,
-                  totalProtein,
-                  totalCarbs,
-                  totalFat,
+                  return {
+                    totalCalories,
+                    totalProtein,
+                    totalCarbs,
+                    totalFat,
+                  };
                 };
-              };
 
-              const mealTotals = calculateMealTotals();
+                const mealTotals = calculateMealTotals();
 
-              return (
-                <TabsContent key={key} value={tabValue}>
-                  <div className="mt-4 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-xl tracking-heading font-semibold">
-                        {mealTypes[mealTypeKey].label}
-                      </CardTitle>
-                      {mealTotals.totalCalories > 0 && (
-                        <Badge variant="secondary" className="text-xs">
-                          {Math.round(mealTotals.totalCalories)} kcal
-                        </Badge>
-                      )}
-                    </div>
-                    <CardDescription className="text-xs">
-                      {mealTotals.totalCalories > 0 && (
-                        <>Calorías: {Math.round(mealTotals.totalCalories)} | </>
-                      )}
-                      {mealTotals.totalProtein > 0 && (
-                        <>Proteínas: {mealTotals.totalProtein.toFixed(1)}g | </>
-                      )}
-                      {mealTotals.totalCarbs > 0 && (
-                        <>
-                          Carbohidratos: {mealTotals.totalCarbs.toFixed(1)}g
-                          |{" "}
-                        </>
-                      )}
-                      {mealTotals.totalFat > 0 && (
-                        <>Grasas: {mealTotals.totalFat.toFixed(1)}g</>
-                      )}
-                    </CardDescription>
-                    <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead className="text-xs">Alimento</TableHead>
-                            <TableHead className="text-xs text-center">
-                              Cantidad
-                            </TableHead>
-                            <TableHead className="text-xs text-center">
-                              Calorías
-                            </TableHead>
-                            <TableHead className="text-xs text-center">
-                              Proteína
-                            </TableHead>
-                            <TableHead className="text-xs text-center">
-                              Carbs
-                            </TableHead>
-                            <TableHead className="text-xs text-center">
-                              Grasas
-                            </TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {mealEntries.length > 0 ? (
-                            mealEntries.map((entry: any, index: number) => {
-                              const food = foods[entry.foodId];
+                return (
+                  <TabsContent key={key} value={tabValue}>
+                    <div className="mt-4 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-xl tracking-heading font-semibold">
+                          {mealTypes[mealTypeKey].label}
+                        </CardTitle>
+                        {mealTotals.totalCalories > 0 && (
+                          <Badge variant="secondary" className="text-xs">
+                            {Math.round(mealTotals.totalCalories)} kcal
+                          </Badge>
+                        )}
+                      </div>
+                      <CardDescription className="text-xs">
+                        {mealTotals.totalCalories > 0 && (
+                          <>Calorías: {Math.round(mealTotals.totalCalories)} | </>
+                        )}
+                        {mealTotals.totalProtein > 0 && (
+                          <>Proteínas: {mealTotals.totalProtein.toFixed(1)}g | </>
+                        )}
+                        {mealTotals.totalCarbs > 0 && (
+                          <>
+                            Carbohidratos: {mealTotals.totalCarbs.toFixed(1)}g
+                            |{" "}
+                          </>
+                        )}
+                        {mealTotals.totalFat > 0 && (
+                          <>Grasas: {mealTotals.totalFat.toFixed(1)}g</>
+                        )}
+                      </CardDescription>
+                      <div className="rounded-md border overflow-x-auto md:overflow-visible [&::-webkit-scrollbar]:hidden md:[&::-webkit-scrollbar]:block [-ms-overflow-style:none] [scrollbar-width:none] md:[scrollbar-width:auto]">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs">Alimento</TableHead>
+                              <TableHead className="text-xs text-center">
+                                Cantidad
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Calorías
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Proteína
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Carbs
+                              </TableHead>
+                              <TableHead className="text-xs text-center">
+                                Grasas
+                              </TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {mealEntries.length > 0 ? (
+                              mealEntries.map((entry: any, index: number) => {
+                                const food = foods[entry.foodId];
 
-                              // Si no se encuentra el alimento, intentar cargarlo o mostrar mensaje apropiado
-                              if (!food) {
-                                // Si el entry tiene información del alimento directamente, usarla
-                                if (entry.food) {
-                                  // quantity está en gramos (estandarizado)
-                                  const multiplier =
-                                    (entry.quantity || 0) / 100;
+                                // Si no se encuentra el alimento, intentar cargarlo o mostrar mensaje apropiado
+                                if (!food) {
+                                  // Si el entry tiene información del alimento directamente, usarla
+                                  if (entry.food) {
+                                    // quantity está en gramos (estandarizado)
+                                    const multiplier =
+                                      (entry.quantity || 0) / 100;
 
+                                    return (
+                                      <TableRow key={index}>
+                                        <TableCell className="font-medium">
+                                          {entry.food.name ||
+                                            "Alimento no disponible"}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {Math.round(entry.quantity || 0)}{" "}
+                                          {entry.food.servingUnit || "g"}
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {(() => {
+                                            const calories =
+                                              (entry.food.calories || 0) *
+                                              multiplier;
+                                            return calories < 1
+                                              ? calories.toFixed(2)
+                                              : calories < 10
+                                                ? calories.toFixed(1)
+                                                : Math.round(calories);
+                                          })()}{" "}
+                                          kcal
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {(() => {
+                                            const protein =
+                                              (entry.food.protein || 0) *
+                                              multiplier;
+                                            return protein < 1
+                                              ? protein.toFixed(2)
+                                              : protein < 10
+                                                ? protein.toFixed(1)
+                                                : Math.round(protein);
+                                          })()}
+                                          g
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {(() => {
+                                            const carbs =
+                                              (entry.food.carbs || 0) *
+                                              multiplier;
+                                            return carbs < 1
+                                              ? carbs.toFixed(2)
+                                              : carbs < 10
+                                                ? carbs.toFixed(1)
+                                                : Math.round(carbs);
+                                          })()}
+                                          g
+                                        </TableCell>
+                                        <TableCell className="text-center">
+                                          {(() => {
+                                            const fat =
+                                              (entry.food.fat || 0) * multiplier;
+                                            return fat < 1
+                                              ? fat.toFixed(2)
+                                              : fat < 10
+                                                ? fat.toFixed(1)
+                                                : Math.round(fat);
+                                          })()}
+                                          g
+                                        </TableCell>
+                                      </TableRow>
+                                    );
+                                  }
+
+                                  // Si no hay información del alimento, mostrar mensaje
                                   return (
                                     <TableRow key={index}>
                                       <TableCell className="font-medium">
-                                        {entry.food.name ||
-                                          "Alimento no disponible"}
+                                        <div className="flex flex-col">
+                                          <span className="text-muted-foreground italic">
+                                            Alimento no encontrado
+                                          </span>
+                                          <span className="text-xs text-muted-foreground">
+                                            ID: {entry.foodId?.substring(0, 8)}
+                                            ...
+                                          </span>
+                                        </div>
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {Math.round(entry.quantity || 0)}{" "}
-                                        {entry.food.servingUnit || "g"}
+                                        {Math.round((entry.quantity || 0) * 100)}g
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {(() => {
-                                          const calories =
-                                            (entry.food.calories || 0) *
-                                            multiplier;
-                                          return calories < 1
-                                            ? calories.toFixed(2)
-                                            : calories < 10
-                                              ? calories.toFixed(1)
-                                              : Math.round(calories);
-                                        })()}{" "}
-                                        kcal
+                                        -
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {(() => {
-                                          const protein =
-                                            (entry.food.protein || 0) *
-                                            multiplier;
-                                          return protein < 1
-                                            ? protein.toFixed(2)
-                                            : protein < 10
-                                              ? protein.toFixed(1)
-                                              : Math.round(protein);
-                                        })()}
-                                        g
+                                        -
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {(() => {
-                                          const carbs =
-                                            (entry.food.carbs || 0) *
-                                            multiplier;
-                                          return carbs < 1
-                                            ? carbs.toFixed(2)
-                                            : carbs < 10
-                                              ? carbs.toFixed(1)
-                                              : Math.round(carbs);
-                                        })()}
-                                        g
+                                        -
                                       </TableCell>
                                       <TableCell className="text-center">
-                                        {(() => {
-                                          const fat =
-                                            (entry.food.fat || 0) * multiplier;
-                                          return fat < 1
-                                            ? fat.toFixed(2)
-                                            : fat < 10
-                                              ? fat.toFixed(1)
-                                              : Math.round(fat);
-                                        })()}
-                                        g
+                                        -
                                       </TableCell>
                                     </TableRow>
                                   );
                                 }
 
-                                // Si no hay información del alimento, mostrar mensaje
+                                // quantity está en gramos (estandarizado)
+                                const multiplier = (entry.quantity || 0) / 100;
+
                                 return (
                                   <TableRow key={index}>
                                     <TableCell className="font-medium">
-                                      <div className="flex flex-col">
-                                        <span className="text-muted-foreground italic">
-                                          Alimento no encontrado
-                                        </span>
-                                        <span className="text-xs text-muted-foreground">
-                                          ID: {entry.foodId?.substring(0, 8)}
-                                          ...
-                                        </span>
-                                      </div>
+                                      {food.name}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      {Math.round((entry.quantity || 0) * 100)}g
+                                      {Math.round(entry.quantity || 0)}{" "}
+                                      {food.servingUnit || "g"}
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      -
+                                      {(() => {
+                                        const calories =
+                                          (food.calories || 0) * multiplier;
+                                        return calories < 1
+                                          ? calories.toFixed(2)
+                                          : calories < 10
+                                            ? calories.toFixed(1)
+                                            : Math.round(calories);
+                                      })()}{" "}
+                                      kcal
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      -
+                                      {(() => {
+                                        const protein =
+                                          (food.protein || 0) * multiplier;
+                                        return protein < 1
+                                          ? protein.toFixed(2)
+                                          : protein < 10
+                                            ? protein.toFixed(1)
+                                            : Math.round(protein);
+                                      })()}
+                                      g
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      -
+                                      {(() => {
+                                        const carbs =
+                                          (food.carbs || 0) * multiplier;
+                                        return carbs < 1
+                                          ? carbs.toFixed(2)
+                                          : carbs < 10
+                                            ? carbs.toFixed(1)
+                                            : Math.round(carbs);
+                                      })()}
+                                      g
                                     </TableCell>
                                     <TableCell className="text-center">
-                                      -
+                                      {(() => {
+                                        const fat = (food.fat || 0) * multiplier;
+                                        return fat < 1
+                                          ? fat.toFixed(2)
+                                          : fat < 10
+                                            ? fat.toFixed(1)
+                                            : Math.round(fat);
+                                      })()}
+                                      g
                                     </TableCell>
                                   </TableRow>
                                 );
-                              }
-
-                              // quantity está en gramos (estandarizado)
-                              const multiplier = (entry.quantity || 0) / 100;
-
-                              return (
-                                <TableRow key={index}>
-                                  <TableCell className="font-medium">
-                                    {food.name}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {Math.round(entry.quantity || 0)}{" "}
-                                    {food.servingUnit || "g"}
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {(() => {
-                                      const calories =
-                                        (food.calories || 0) * multiplier;
-                                      return calories < 1
-                                        ? calories.toFixed(2)
-                                        : calories < 10
-                                          ? calories.toFixed(1)
-                                          : Math.round(calories);
-                                    })()}{" "}
-                                    kcal
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {(() => {
-                                      const protein =
-                                        (food.protein || 0) * multiplier;
-                                      return protein < 1
-                                        ? protein.toFixed(2)
-                                        : protein < 10
-                                          ? protein.toFixed(1)
-                                          : Math.round(protein);
-                                    })()}
-                                    g
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {(() => {
-                                      const carbs =
-                                        (food.carbs || 0) * multiplier;
-                                      return carbs < 1
-                                        ? carbs.toFixed(2)
-                                        : carbs < 10
-                                          ? carbs.toFixed(1)
-                                          : Math.round(carbs);
-                                    })()}
-                                    g
-                                  </TableCell>
-                                  <TableCell className="text-center">
-                                    {(() => {
-                                      const fat = (food.fat || 0) * multiplier;
-                                      return fat < 1
-                                        ? fat.toFixed(2)
-                                        : fat < 10
-                                          ? fat.toFixed(1)
-                                          : Math.round(fat);
-                                    })()}
-                                    g
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })
-                          ) : (
-                            <TableRow>
-                              <TableCell
-                                colSpan={6}
-                                className="h-24 text-center"
-                              >
-                                <div className="flex flex-col items-center justify-center py-4">
-                                  <h3 className="text-xs font-semibold mb-1">
-                                    No hay alimentos registrados
-                                  </h3>
-                                  <p className="text-xs text-muted-foreground">
-                                    No hay alimentos registrados para esta
-                                    comida.
-                                  </p>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </TableBody>
-                      </Table>
+                              })
+                            ) : (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={6}
+                                  className="h-24 text-center"
+                                >
+                                  <div className="flex flex-col items-center justify-center py-4">
+                                    <h3 className="text-xs font-semibold mb-1">
+                                      No hay alimentos registrados
+                                    </h3>
+                                    <p className="text-xs text-muted-foreground">
+                                      No hay alimentos registrados para esta
+                                      comida.
+                                    </p>
+                                  </div>
+                                </TableCell>
+                              </TableRow>
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
                     </div>
-                  </div>
-                </TabsContent>
-              );
-            })}
-          </Tabs>
+                  </TabsContent>
+                );
+              })}
+            </Tabs>
+          )}
         </CardContent>
       </Card>
-    </div>
+    </div >
   );
 }
