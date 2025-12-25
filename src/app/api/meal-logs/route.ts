@@ -278,7 +278,7 @@ export async function POST(req: NextRequest) {
         { status: 500 },
       );
     }
-  } catch {
+  } catch (error) {
     return NextResponse.json(
       {
         error: "Failed to create meal log",
