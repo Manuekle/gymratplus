@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/database/prisma";
 import {
   getMercadoPagoClient,
   getPreApprovalController,
@@ -36,7 +35,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { planType, ...instructorData } = body;
+    const { planType } = body;
 
     console.log("[Payment Process] Request received:", {
       planType,
@@ -59,7 +58,7 @@ export async function POST(req: Request) {
     const subscriptionRequest = {
       reason: `GymRat Plus - Plan ${planType.toUpperCase()}`,
       payer_email: session.user.email || undefined,
-      back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
+      back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}&subscription_id={{subscription_id}}`,
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
@@ -120,43 +119,16 @@ export async function POST(req: Request) {
       throw new Error("No se encontró el link de aprobación de Mercado Pago");
     }
 
-    // Calculate dates
-    const trialEndsAt = new Date();
-    trialEndsAt.setDate(trialEndsAt.getDate() + 14);
-
-    const currentPeriodEnd = new Date();
-    currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
-
-    // Update user with subscription information (pending until approval)
-    await prisma.user.update({
-      where: { id: session.user.id },
-      data: {
-        subscriptionStatus: "trialing",
-        subscriptionTier: planType === "pro" ? "PRO" : "INSTRUCTOR",
-        planType,
-        trialEndsAt,
-        currentPeriodEnd,
-        cancelAtPeriodEnd: false,
-      },
+    console.log("[Payment Process] Subscription created, redirecting to payment:", {
+      subscriptionId: result.id,
+      initPoint: result.init_point,
     });
-
-    // If there's instructor data, save it
-    if (instructorData && Object.keys(instructorData).length > 0) {
-      // This will be handled in the instructor registration endpoint
-      // For now just return the approval URL
-    }
 
     return NextResponse.json({
       success: true,
       message: "Redirigiendo a Mercado Pago para completar el pago",
       approvalUrl: result.init_point,
       subscriptionId: result.id,
-      subscription: {
-        status: "trialing",
-        planType,
-        trialEndsAt,
-        currentPeriodEnd,
-      },
     });
   } catch (error) {
     console.error("Error processing payment:", error);

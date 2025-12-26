@@ -30,7 +30,18 @@ export async function createNotification({
   title,
   message,
   type,
-}: CreateNotificationParams): Promise<Notification> {
+}: CreateNotificationParams): Promise<Notification | null> {
+  // Verify user exists before creating notification
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+
+  if (!userExists) {
+    console.warn(`[Notification] User ${userId} not found, skipping notification creation`);
+    return null;
+  }
+
   const notification = await prisma.notification.create({
     data: {
       userId,
@@ -49,7 +60,7 @@ export async function createNotificationByEmail({
   title,
   message,
   type,
-}: CreateNotificationByEmailParams): Promise<Notification> {
+}: CreateNotificationByEmailParams): Promise<Notification | null> {
   // Buscar el usuario por email
   const user = await prisma.user.findUnique({
     where: { email: userEmail },
@@ -57,7 +68,8 @@ export async function createNotificationByEmail({
   });
 
   if (!user) {
-    throw new Error(`Usuario con email ${userEmail} no encontrado`);
+    console.warn(`[Notification] User with email ${userEmail} not found`);
+    return null;
   }
 
   // Usar createNotification para que también envíe push notifications
