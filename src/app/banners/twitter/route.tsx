@@ -12,7 +12,7 @@ export const contentType = "image/png";
 export async function GET() {
     // Fetch Inter font
     const fontData = await fetch(
-        new URL("https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff", import.meta.url)
+        "https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff"
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
