@@ -47,7 +47,7 @@ export const authConfig = {
       const isOnVerifyEmail = pathname === "/auth/verify-email";
       const isOnOnboarding = pathname === "/onboarding";
       const isOnPublic =
-        pathname === "/" || pathname === "/about" || pathname === "/privacy";
+        pathname === "/" || pathname === "/about" || pathname === "/privacy" || pathname === "/terms" || pathname === "/terms-of-service";
 
       const rawVerified = (auth?.user as any)?.emailVerified;
       const isOAuth = !!(auth?.user as any)?.isOAuth;
