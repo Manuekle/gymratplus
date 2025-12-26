@@ -39,7 +39,7 @@ export default function BillingPage() {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
-  // Handle PayPal callback
+  // Handle Mercado Pago callback
   useEffect(() => {
     const success = searchParams.get("success");
     const subscriptionId = searchParams.get("subscription_id");
@@ -162,7 +162,7 @@ export default function BillingPage() {
       if (data.approvalUrl) {
         window.location.href = data.approvalUrl;
       } else {
-        toast.error("No se recibió URL de aprobación de PayPal");
+        toast.error("No se recibió URL de aprobación de Mercado Pago");
       }
     } catch (error) {
       console.error("Error processing payment:", error);

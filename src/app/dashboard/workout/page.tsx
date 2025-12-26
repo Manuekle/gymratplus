@@ -34,7 +34,18 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { Edit02Icon } from "@hugeicons/core-free-icons";
+import { Edit02Icon, Calendar01Icon } from "@hugeicons/core-free-icons";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+
+const daysOfWeek = [
+  { id: "mon", label: "L" },
+  { id: "tue", label: "M" },
+  { id: "wed", label: "X" },
+  { id: "thu", label: "J" },
+  { id: "fri", label: "V" },
+  { id: "sat", label: "S" },
+  { id: "sun", label: "D" },
+];
 
 interface UserProfile {
   id: string;
@@ -52,6 +63,7 @@ export default function WorkoutsPage() {
   const [user, setUser] = useState<UserProfile | null>(null);
   const [showTrainingDialog, setShowTrainingDialog] = useState(false);
   const [trainingFrequency, setTrainingFrequency] = useState(0);
+  const [trainingDays, setTrainingDays] = useState<string[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -80,6 +92,7 @@ export default function WorkoutsPage() {
       },
     });
     setTrainingFrequency(Number(profile.trainingFrequency) || 0);
+    setTrainingDays((profile.trainingDays as string[]) || []);
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
 
   const handleUpdateTrainingFrequency = async () => {
@@ -89,7 +102,10 @@ export default function WorkoutsPage() {
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ trainingFrequency }),
+        body: JSON.stringify({
+          trainingFrequency,
+          trainingDays,
+        }),
       });
 
       if (!response.ok) {
@@ -114,6 +130,7 @@ export default function WorkoutsPage() {
           activity: {
             ...user.activity,
             trainingFrequency,
+            trainingDays,
           },
         });
       }
@@ -231,6 +248,7 @@ export default function WorkoutsPage() {
                     className="h-6 w-6 p-0"
                     onClick={() => {
                       setTrainingFrequency(user?.activity.trainingFrequency || 0);
+                      setTrainingDays(user?.activity.trainingDays || []);
                       setShowTrainingDialog(true);
                     }}
                   >
@@ -294,20 +312,36 @@ export default function WorkoutsPage() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label className="text-xs">Días por semana</Label>
-              <div className="flex items-center gap-4">
-                <input
-                  type="range"
-                  min="1"
-                  max="7"
-                  value={trainingFrequency}
-                  onChange={(e) => setTrainingFrequency(Number(e.target.value))}
-                  className="flex-1"
-                />
-                <span className="text-2xl font-bold w-8 text-center">
-                  {trainingFrequency}
-                </span>
-              </div>
+              <Label className="text-xs font-medium flex items-center gap-2">
+                <HugeiconsIcon icon={Calendar01Icon} className="w-4 h-4" />
+                Días de entrenamiento por semana
+              </Label>
+              <ToggleGroup
+                type="multiple"
+                variant="outline"
+                value={trainingDays}
+                onValueChange={(value) => {
+                  setTrainingDays(value);
+                  setTrainingFrequency(value.length);
+                }}
+                className="justify-start"
+              >
+                {daysOfWeek.map((day) => (
+                  <ToggleGroupItem
+                    key={day.id}
+                    value={day.id}
+                    aria-label={day.label}
+                    className="w-10 h-10"
+                  >
+                    {day.label}
+                  </ToggleGroupItem>
+                ))}
+              </ToggleGroup>
+              {trainingFrequency > 0 && (
+                <p className="text-xs text-muted-foreground">
+                  {trainingFrequency} día{trainingFrequency !== 1 ? "s" : ""} seleccionado{trainingFrequency !== 1 ? "s" : ""}
+                </p>
+              )}
             </div>
           </div>
           <DialogFooter>
