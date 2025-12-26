@@ -71,7 +71,8 @@ export function WorkoutGenerator() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create workout");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || "Failed to create workout");
       }
 
       const result = await response.json();
@@ -79,8 +80,9 @@ export function WorkoutGenerator() {
       setStep(totalSteps + 1); // Move to results step
     } catch (error) {
       console.error("Error creating workout:", error);
+      const errorMessage = error instanceof Error ? error.message : "No se pudo crear el entrenamiento";
       toast.error("Error", {
-        description: "No se pudo crear el entrenamiento. Inténtalo de nuevo.",
+        description: errorMessage,
       });
     } finally {
       setIsSubmitting(false);
@@ -100,7 +102,7 @@ export function WorkoutGenerator() {
           formData.trainingFrequency >= 1 && formData.trainingFrequency <= 7
         );
       case 5:
-        return !!formData.name;
+        return !!formData.name && formData.name.trim().length > 0;
       default:
         return true;
     }
@@ -144,7 +146,7 @@ export function WorkoutGenerator() {
           />
         );
       case 6:
-        return <StepResults workout={workoutResult!} />;
+        return workoutResult ? <StepResults workout={workoutResult} /> : null;
       default:
         return null;
     }

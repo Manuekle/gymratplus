@@ -163,10 +163,10 @@ export function WorkoutPersonalize() {
       const config =
         workoutType === "custom"
           ? {
-              sets: customSets,
-              reps: customReps,
-              restTime: customRestTime,
-            }
+            sets: customSets,
+            reps: customReps,
+            restTime: customRestTime,
+          }
           : workoutConfigs[workoutType];
 
       setSelectedExercises([
@@ -228,9 +228,9 @@ export function WorkoutPersonalize() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = await response.json().catch(() => ({}));
         throw new Error(
-          errorData.details || "Failed to create personalized workout",
+          errorData.error || errorData.details || "Failed to create personalized workout",
         );
       }
 
@@ -248,7 +248,8 @@ export function WorkoutPersonalize() {
       setCustomRestTime(180);
     } catch (error) {
       console.error("Error creating personalized workout:", error);
-      toast.error("Error al crear el entrenamiento");
+      const errorMessage = error instanceof Error ? error.message : "Error al crear el entrenamiento";
+      toast.error(errorMessage);
     } finally {
       setSubmitting(false);
     }
@@ -413,11 +414,10 @@ export function WorkoutPersonalize() {
                     {days.map((day) => (
                       <div
                         key={day}
-                        className={`px-3 py-1 rounded-full text-xs flex items-center gap-1 ${
-                          currentDay === day
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-secondary"
-                        }`}
+                        className={`px-3 py-1 rounded-full text-xs flex items-center gap-1 ${currentDay === day
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-secondary"
+                          }`}
                       >
                         <span
                           onClick={() => setCurrentDay(day)}
@@ -443,7 +443,12 @@ export function WorkoutPersonalize() {
                 size="default"
                 variant="outline"
                 className="text-xs"
-                onClick={() => setStep(2)}
+                onClick={() => {
+                  if (days.length > 0 && !currentDay) {
+                    setCurrentDay(days[0] ?? "");
+                  }
+                  setStep(2);
+                }}
                 disabled={days.length === 0}
               >
                 Siguiente
@@ -533,10 +538,9 @@ export function WorkoutPersonalize() {
                                 transition-colors duration-200
                                 cursor-pointer
                                 border border-border
-                                ${
-                                  isExerciseSelected(exercise.id)
-                                    ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                                    : "bg-background hover:bg-secondary"
+                                ${isExerciseSelected(exercise.id)
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                  : "bg-background hover:bg-secondary"
                                 }
                               `}
                             >
@@ -583,7 +587,7 @@ export function WorkoutPersonalize() {
                 Resumen del entrenamiento
               </Label>
 
-              <Tabs defaultValue={days[0]} className="w-full">
+              <Tabs defaultValue={days[0] || ""} className="w-full">
                 <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:flex md:flex-wrap h-auto gap-2 sm:gap-4">
                   {days.map((day) => (
                     <TabsTrigger

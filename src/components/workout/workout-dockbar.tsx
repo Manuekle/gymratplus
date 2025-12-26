@@ -36,12 +36,6 @@ export default function WorkoutDockbar({
     const [isPaused, setIsPaused] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-
-    // Don't show on active workout page
-    if (pathname === "/dashboard/workout/active") {
-        return null;
-    }
-
     // Timer logic
     useEffect(() => {
         if (!isPaused) {
@@ -55,6 +49,11 @@ export default function WorkoutDockbar({
         }
         return undefined;
     }, [startTime, isPaused]);
+
+    // Don't show on active workout page (check AFTER all hooks)
+    if (pathname === "/dashboard/workout/active") {
+        return null;
+    }
 
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);

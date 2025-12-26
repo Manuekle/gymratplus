@@ -1,7 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
-import { createNotification } from "@/lib/notifications/notification-service";
 import { WorkoutStreakService } from "@/lib/workout/workout-streak-service";
 import { auth } from "@auth";
 
@@ -100,57 +98,8 @@ export async function PUT(req: NextRequest) {
     const streakService = new WorkoutStreakService();
     await streakService.updateStreak(session.user.id, true);
 
-    // Create notification for workout completion
-    try {
-      // Check if user has notifications enabled
-      const userProfile = await prisma.profile.findUnique({
-        where: { userId: session.user.id },
-        select: { notificationsActive: true },
-      });
-
-      if (userProfile?.notificationsActive !== false) {
-        // Default to true if not set
-        const workoutName = workoutSession.workout?.name || "Entrenamiento";
-        const workoutType = workoutSession.workout?.type;
-        const instructorName = workoutSession.workout?.instructor?.name;
-
-        // Si el entrenamiento fue asignado por un instructor, crear notificación especial
-        if (
-          workoutType === "assigned" &&
-          workoutSession.workout?.instructorId
-        ) {
-          // Crear notificación específica para entrenamientos asignados
-          await createNotification({
-            userId: session.user.id,
-            title: "Entrenamiento completado",
-            message: `¡Felicidades! Has completado el entrenamiento "${workoutName}" de hoy${instructorName ? ` asignado por ${instructorName}` : ""}.`,
-            type: "workout",
-          });
-
-          console.log(
-            `Assigned workout completion notification created for user ${session.user.id}`,
-          );
-        } else {
-          // Para entrenamientos personales, usar el sistema de notificaciones existente
-          await publishWorkoutNotification(
-            session.user.id,
-            workoutSessionId,
-            "completed",
-            workoutName,
-          );
-
-          console.log(
-            `Workout completion notification queued for user ${session.user.id}`,
-          );
-        }
-      }
-    } catch (notificationError) {
-      // Log but don't fail the request if notification creation fails
-      console.error(
-        "Error creating workout completion notification:",
-        notificationError,
-      );
-    }
+    // Note: Notification is handled by frontend toast for immediate user feedback
+    // Backend notifications removed to prevent duplicates
 
     return NextResponse.json(updatedWorkoutSession);
   } catch (error) {

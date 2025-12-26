@@ -8,8 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { differenceInDays } from "date-fns";
-
 import Link from "next/link";
 import { EmptyState } from "../ui/empty-state";
 import { Skeleton } from "../ui/skeleton";
@@ -17,9 +15,9 @@ import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowRight01Icon,
-  Clock01Icon,
   ArrowLeft01Icon,
 } from "@hugeicons/core-free-icons";
+import { WorkoutSessionCard } from "@/components/workout/workout-session-card";
 
 export default function WorkoutSummary() {
   const [loading, setLoading] = useState(true);
@@ -134,69 +132,13 @@ export default function WorkoutSummary() {
             />
           ) : (
             <>
-              {currentWorkouts.map((session) => {
-                const sessionContent = (
-                  <>
-                    <div className="flex justify-between">
-                      <h4 className="font-semibold tracking-heading text-lg">
-                        {" "}
-                        {session.notes?.replace("Día: ", "") || "Entrenamiento"}
-                      </h4>
-                      <span className="text-xs text-muted-foreground">
-                        {(() => {
-                          const sessionDate = new Date(session.date);
-                          sessionDate.setHours(0, 0, 0, 0);
-                          const today = new Date();
-                          today.setHours(0, 0, 0, 0);
-                          const daysDiff = differenceInDays(today, sessionDate);
-
-                          if (daysDiff === 0) {
-                            return "Hoy";
-                          } else if (daysDiff === 1) {
-                            return "Ayer";
-                          } else {
-                            return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
-                          }
-                        })()}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center text-xs text-muted-foreground space-x-4">
-                      <div className="flex items-center">
-                        <HugeiconsIcon
-                          icon={Clock01Icon}
-                          className="h-3 w-3 mr-1 text-foreground"
-                        />
-                        <span>
-                          {session.duration ? `${session.duration} min` : "N/A"}
-                        </span>
-                      </div>
-                      <div>
-                        <span>{session.exercises.length} ejercicios</span>
-                      </div>
-                    </div>
-                  </>
-                );
-
-                // Only make it a link if the workout is not completed
-                if (!session.completed) {
-                  return (
-                    <Link
-                      key={session.id}
-                      href={`/dashboard/workout/active`}
-                      className="block p-3 border rounded-lg hover:border-foreground/20 hover:bg-accent/50 transition-colors cursor-pointer"
-                    >
-                      {sessionContent}
-                    </Link>
-                  );
-                }
-
-                // For completed workouts, just show as a div
-                return (
-                  <div key={session.id} className="p-3 border rounded-lg">
-                    {sessionContent}
-                  </div>
-                );
-              })}
+              {currentWorkouts.map((session) => (
+                <WorkoutSessionCard
+                  key={session.id}
+                  session={session}
+                  className="p-3"
+                />
+              ))}
 
               {/* Paginación */}
               {totalPages > 1 && (

@@ -1,6 +1,5 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { publishWorkoutNotification } from "@/lib/notifications/workout-notifications";
 import { auth } from "@auth";
 
 export async function POST(req: NextRequest) {
@@ -114,29 +113,8 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    // Create notification for workout session started
-    try {
-      // Check if user has notifications enabled
-      const userProfile = await prisma.profile.findUnique({
-        where: { userId },
-        select: { notificationsActive: true },
-      });
-
-      if (userProfile?.notificationsActive !== false) {
-        // Default to true if not set
-        // Add to Redis list for polling (the subscriber will create the notification)
-        await publishWorkoutNotification(
-          userId,
-          workoutSession.id,
-          "started",
-          userWorkout.name,
-          day,
-        );
-      }
-    } catch (notificationError) {
-      // Log but don't fail the request if notification creation fails
-      console.error("Error creating workout notification:", notificationError);
-    }
+    // Note: Notification is handled by frontend toast for immediate user feedback
+    // Backend notifications removed to prevent duplicates
 
     return NextResponse.json({
       success: true,

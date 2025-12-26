@@ -564,7 +564,7 @@ export default function ActiveWorkoutPage() {
                       {exercise.exercise.equipment}
                     </p>
                   </div>
-                  <div className="flex items-center justify-end">
+                  <div className="flex items-center">
                     {exercise.completed ? (
                       <Badge
                         variant="outline"
@@ -576,7 +576,7 @@ export default function ActiveWorkoutPage() {
                       <Button
                         variant="outline"
                         size="default"
-                        className="text-xs w-full md:w-auto"
+                        className="text-xs w-full"
                         onClick={() => completeExercise(exercise.id)}
                       >
                         Marcar como completado

@@ -155,214 +155,215 @@ export default function InstructorPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl tracking-heading font-semibold">
-            Mis Instructores
-          </h1>
-          <p className="text-xs text-muted-foreground mt-1">
-            {instructors.length} instructor
-            {instructors.length !== 1 ? "es" : ""} asignado
-            {instructors.length !== 1 ? "s" : ""}
-          </p>
+    <>
+      <Card className="space-y-6 px-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl tracking-heading font-semibold">
+              Mis Instructores
+            </h1>
+            <p className="text-xs text-muted-foreground mt-1">
+              {instructors.length} instructor
+              {instructors.length !== 1 ? "es" : ""} asignado
+              {instructors.length !== 1 ? "s" : ""}
+            </p>
+          </div>
+          <Button size="default" asChild>
+            <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
+          </Button>
         </div>
-        <Button size="default" asChild>
-          <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
-        </Button>
-      </div>
-      {/* Instructors Grid */}
-      {instructors.length === 0 ? (
-        <div className="flex flex-col items-center justify-center min-h-[400px] py-12 px-4 text-center">
-          <h3 className="text-xs font-medium mb-3 max-w-md mx-auto">
-            No tienes instructores asignados
-          </h3>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            Cuando te asignen instructores o solicites uno, aparecerán aquí para
-            que puedas gestionar tu entrenamiento y mantenerte en contacto.
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {instructors.map((instructor) => (
-            <Card
-              key={instructor.id}
-              className="overflow-hidden hover:shadow-md transition-shadow"
-            >
-              <CardHeader className="pb-4">
-                <div className="flex items-start space-x-4">
-                  <Avatar className="h-16 w-16 border border-background shadow-sm">
-                    <AvatarImage
-                      src={instructor.image || "/placeholder-avatar.jpg"}
-                      alt={instructor.name || "Instructor"}
-                    />
-                    <AvatarFallback className="text-lg font-semibold">
-                      {instructor.name?.charAt(0).toUpperCase() || "I"}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 space-y-2">
-                    <div>
-                      <CardTitle className="text-2xl font-semibold tracking-heading">
-                        {instructor.name || "Sin nombre"}
-                      </CardTitle>
-                      <CardDescription className="text-muted-foreground text-xs flex items-center gap-2 mt-1">
-                        <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
-                        {instructor.city || instructor.country ? (
-                          <span className="flex items-center gap-1.5">
-                            {(() => {
-                              // El país se guarda como código cca2 (ej: "US", "MX", "ES")
-                              const countryData = countries.find(
-                                (c) => c.cca2 === instructor.country,
-                              );
+        {/* Instructors Grid */}
+        {instructors.length === 0 ? (
+          <div className="flex flex-col items-center justify-center min-h-[400px] py-12 px-4 text-center">
+            <h3 className="text-xs font-medium mb-3 max-w-md mx-auto">
+              No tienes instructores asignados
+            </h3>
+            <p className="text-xs text-muted-foreground max-w-md mx-auto">
+              Cuando te asignen instructores o solicites uno, aparecerán aquí para
+              que puedas gestionar tu entrenamiento y mantenerte en contacto.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {instructors.map((instructor) => (
+              <Card
+                key={instructor.id}
+                className="overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <CardHeader className="pb-4">
+                  <div className="flex items-start space-x-4">
+                    <Avatar className="h-16 w-16 border border-background shadow-sm">
+                      <AvatarImage
+                        src={instructor.image || "/placeholder-avatar.jpg"}
+                        alt={instructor.name || "Instructor"}
+                      />
+                      <AvatarFallback className="text-lg font-semibold">
+                        {instructor.name?.charAt(0).toUpperCase() || "I"}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-2">
+                      <div>
+                        <CardTitle className="text-2xl font-semibold tracking-heading">
+                          {instructor.name || "Sin nombre"}
+                        </CardTitle>
+                        <CardDescription className="text-muted-foreground text-xs flex items-center gap-2 mt-1">
+                          <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
+                          {instructor.city || instructor.country ? (
+                            <span className="flex items-center gap-1.5">
+                              {(() => {
+                                // El país se guarda como código cca2 (ej: "US", "MX", "ES")
+                                const countryData = countries.find(
+                                  (c) => c.cca2 === instructor.country,
+                                );
 
-                              return countryData ? (
-                                <span className="flex items-center gap-1">
-                                  <Image
-                                    src={
-                                      countryData.flags.svg ||
-                                      "/placeholder.svg"
-                                    }
-                                    alt={countryData.name.common}
-                                    width={14}
-                                    height={10}
-                                    className="w-3.5 h-2.5 object-cover rounded-sm"
-                                  />
+                                return countryData ? (
+                                  <span className="flex items-center gap-1">
+                                    <Image
+                                      src={
+                                        countryData.flags.svg ||
+                                        "/placeholder.svg"
+                                      }
+                                      alt={countryData.name.common}
+                                      width={14}
+                                      height={10}
+                                      className="w-3.5 h-2.5 object-cover rounded-sm"
+                                    />
+                                    <span>
+                                      {instructor.city
+                                        ? `${instructor.city}, `
+                                        : ""}
+                                      {countryData.name.common}
+                                    </span>
+                                  </span>
+                                ) : (
                                   <span>
                                     {instructor.city
-                                      ? `${instructor.city}, `
+                                      ? `${instructor.city}${instructor.country ? ", " : ""}`
                                       : ""}
-                                    {countryData.name.common}
+                                    {instructor.country || ""}
                                   </span>
-                                </span>
-                              ) : (
-                                <span>
-                                  {instructor.city
-                                    ? `${instructor.city}${instructor.country ? ", " : ""}`
-                                    : ""}
-                                  {instructor.country || ""}
-                                </span>
-                              );
-                            })()}
-                          </span>
-                        ) : (
-                          "Ubicación no especificada"
-                        )}
-                      </CardDescription>
-                    </div>
+                                );
+                              })()}
+                            </span>
+                          ) : (
+                            "Ubicación no especificada"
+                          )}
+                        </CardDescription>
+                      </div>
 
-                    <div className="flex flex-wrap gap-1">
-                      {instructor.isRemote && (
-                        <Badge variant="secondary" className="text-xs">
-                          <HugeiconsIcon
-                            icon={GlobeIcon}
-                            className="h-3 w-3 mr-1"
-                          />
-                          Remoto
-                        </Badge>
-                      )}
-                      <Badge variant="outline" className="text-xs">
-                        {instructor.status === "active" ? "Activo" : "Inactivo"}
-                      </Badge>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-
-              <CardContent className="px-4 space-y-4">
-                {/* Bio */}
-                {instructor.bio && (
-                  <div>
-                    <p className="text-xs text-muted-foreground line-clamp-3">
-                      {instructor.bio}
-                    </p>
-                  </div>
-                )}
-
-                {/* Price */}
-                {instructor.pricePerMonth && (
-                  <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
-                    <span className="text-xs font-medium">Precio acordado</span>
-                    <span className="text-xs font-semibold">
-                      ${instructor.pricePerMonth}/mes
-                    </span>
-                  </div>
-                )}
-
-                {/* Specialties */}
-                {instructor.curriculum && (
-                  <div>
-                    <span className="text-xs font-medium text-muted-foreground mb-2 block">
-                      Especialidades
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {instructor.curriculum
-                        .split(",")
-                        .map((item) => item.trim())
-                        .filter((item) => item)
-                        .slice(0, 3)
-                        .map((specialty, index) => (
-                          <Badge
-                            key={index}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {specialty}
+                      <div className="flex flex-wrap gap-1">
+                        {instructor.isRemote && (
+                          <Badge variant="secondary" className="text-xs">
+                            <HugeiconsIcon
+                              icon={GlobeIcon}
+                              className="h-3 w-3 mr-1"
+                            />
+                            Remoto
                           </Badge>
-                        ))}
-                      {instructor.curriculum
-                        .split(",")
-                        .filter((item) => item.trim()).length > 3 && (
+                        )}
                         <Badge variant="outline" className="text-xs">
-                          +
-                          {instructor.curriculum
-                            .split(",")
-                            .filter((item) => item.trim()).length - 3}
+                          {instructor.status === "active" ? "Activo" : "Inactivo"}
                         </Badge>
-                      )}
+                      </div>
                     </div>
                   </div>
-                )}
+                </CardHeader>
 
-                {/* Action Buttons */}
-                <div className="flex flex-col gap-2 pt-2">
-                  <div className="flex gap-2">
-                    <Button
-                      size="default"
-                      variant="outline"
-                      className="flex-1"
-                      asChild
-                    >
-                      <Link
-                        href={`/dashboard/instructors/${instructor.userId}`}
-                      >
-                        Ver Perfil
-                      </Link>
-                    </Button>
-                    {instructor.studentInstructorId && (
-                      <StartChatButton
-                        studentInstructorId={instructor.studentInstructorId}
+                <CardContent className="px-4 space-y-4">
+                  {/* Bio */}
+                  {instructor.bio && (
+                    <div>
+                      <p className="text-xs text-muted-foreground line-clamp-3">
+                        {instructor.bio}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Price */}
+                  {instructor.pricePerMonth && (
+                    <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
+                      <span className="text-xs font-medium">Precio acordado</span>
+                      <span className="text-xs font-semibold">
+                        ${instructor.pricePerMonth}/mes
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Specialties */}
+                  {instructor.curriculum && (
+                    <div>
+                      <span className="text-xs font-medium text-muted-foreground mb-2 block">
+                        Especialidades
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {instructor.curriculum
+                          .split(",")
+                          .map((item) => item.trim())
+                          .filter((item) => item)
+                          .slice(0, 3)
+                          .map((specialty, index) => (
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {specialty}
+                            </Badge>
+                          ))}
+                        {instructor.curriculum
+                          .split(",")
+                          .filter((item) => item.trim()).length > 3 && (
+                            <Badge variant="outline" className="text-xs">
+                              +
+                              {instructor.curriculum
+                                .split(",")
+                                .filter((item) => item.trim()).length - 3}
+                            </Badge>
+                          )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col gap-2 pt-2">
+                    <div className="flex gap-2">
+                      <Button
                         size="default"
                         variant="outline"
-                      />
-                    )}
+                        className="flex-1"
+                        asChild
+                      >
+                        <Link
+                          href={`/dashboard/instructors/${instructor.userId}`}
+                        >
+                          Ver Perfil
+                        </Link>
+                      </Button>
+                      {instructor.studentInstructorId && (
+                        <StartChatButton
+                          studentInstructorId={instructor.studentInstructorId}
+                          size="default"
+                          variant="outline"
+                        />
+                      )}
+                    </div>
+                    <Button
+                      variant="destructive"
+                      className="w-full"
+                      onClick={() => {
+                        setInstructorToCancel(instructor);
+                        setCancelDialogOpen(true);
+                      }}
+                    >
+                      Cancelar Relación
+                    </Button>
                   </div>
-                  <Button
-                    variant="destructive"
-                    className="w-full"
-                    onClick={() => {
-                      setInstructorToCancel(instructor);
-                      setCancelDialogOpen(true);
-                    }}
-                  >
-                    Cancelar Relación
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
-
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </Card>
       {/* Dialog de confirmación para cancelar relación */}
       <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
         <DialogContent>
@@ -402,6 +403,7 @@ export default function InstructorPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
+
   );
 }
