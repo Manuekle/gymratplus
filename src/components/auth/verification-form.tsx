@@ -10,14 +10,13 @@ import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
-  Loading02Icon,
   CheckmarkCircle02Icon,
   CancelCircleIcon,
   Mail01Icon,
-  // SmartPhone01Icon,
 } from "@hugeicons/core-free-icons";
 import { maskPhoneNumber } from "@/lib/utils/phone";
 import { useSession } from "next-auth/react";
+import { Icons } from "../icons";
 
 interface VerificationFormProps {
   type: "email" | "sms";
@@ -204,10 +203,7 @@ export function VerificationForm({
 
             {isVerifying && (
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <HugeiconsIcon
-                  icon={Loading02Icon}
-                  className="h-4 w-4 animate-spin"
-                />
+                <Icons.spinner className="mr-2 h-3 w-3 animate-spin inline" />
                 Verificando...
               </div>
             )}
@@ -228,10 +224,7 @@ export function VerificationForm({
             >
               {isResending ? (
                 <>
-                  <HugeiconsIcon
-                    icon={Loading02Icon}
-                    className="mr-2 h-3 w-3 animate-spin"
-                  />
+                  <Icons.spinner className="mr-2 h-3 w-3 animate-spin inline" />
                   Reenviando...
                 </>
               ) : countdown > 0 ? (

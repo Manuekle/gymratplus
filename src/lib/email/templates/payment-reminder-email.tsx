@@ -1,14 +1,16 @@
+import * as React from "react";
 import {
   Body,
   Button,
   Container,
   Head,
   Heading,
-  Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
+  Tailwind,
   Row,
   Column,
 } from "@react-email/components";
@@ -29,100 +31,114 @@ export const PaymentReminderEmail = ({
   amount,
   currency,
 }: PaymentReminderEmailProps) => {
-  const previewText = `Tu suscripción se renovará pronto`;
-
   return (
-    <Html>
+    <Html lang="es" dir="ltr">
       <Head />
-      <Preview>{previewText}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/* Header */}
-          <Section style={header}>
-            <Heading style={h1}>GymRat+</Heading>
-            <Text style={tagline}>Tu compañero de entrenamiento</Text>
-          </Section>
-
-          {/* Main Content */}
-          <Section style={content}>
-            <Heading style={h2}>Recordatorio de Renovación</Heading>
-            <Text style={paragraph}>Hola {userName},</Text>
-            <Text style={paragraph}>
-              Esperamos que estés disfrutando de <strong>GymRat+</strong>.
-            </Text>
-            <Text style={paragraph}>
-              Te escribimos para recordarte que tu suscripción al plan{" "}
-              <strong>{planName}</strong> se renovará automáticamente el próximo{" "}
-              <strong>{renewalDate}</strong>.
-            </Text>
-
-            {/* Plan Details */}
-            <Section style={detailsBox}>
-              <Heading style={h3}>Detalles de la Renovación</Heading>
-              <Hr style={hr} />
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Plan:</Column>
-                <Column style={invoiceValue}>{planName}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Fecha:</Column>
-                <Column style={invoiceValue}>{renewalDate}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Monto a cobrar:</Column>
-                <Column style={invoiceValue}>
-                  ${amount.toFixed(2)} {currency}
-                </Column>
-              </Row>
+      <Preview>Tu suscripción se renovará pronto - GymRat+</Preview>
+      <Tailwind>
+        <Body
+          style={{
+            fontFamily:
+              '"Geist", "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          }}
+        >
+          <Container className="mx-auto max-w-[520px] px-[24px] py-[32px]">
+            {/* Header */}
+            <Section className="mb-[24px]">
+              <Img
+                src={`${process.env.NEXTAUTH_URL || "https://gymratplus.com"}/favicon.ico`}
+                width="48"
+                height="48"
+                alt="GymRat+"
+                className="mb-[16px] rounded-[12px]"
+              />
+              <Heading className="text-lg tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
+                GymRat+
+              </Heading>
+              <Text className="text-xs text-zinc-500 m-0">
+                Recordatorio de renovación
+              </Text>
             </Section>
 
-            <Text style={paragraph}>
-              Si deseas continuar con tu plan, no necesitas hacer nada. El cobro
-              se procesará automáticamente.
-            </Text>
+            {/* Greeting */}
+            <Section className="mb-[20px]">
+              <Text className="text-xs text-zinc-900 mb-[12px] leading-[22px] m-0">
+                ¡Hola {userName}!
+              </Text>
+              <Text className="text-xs text-zinc-700 mb-0 leading-[22px] m-0">
+                Esperamos que estés disfrutando de GymRat+. Te escribimos para
+                recordarte que tu suscripción al plan <strong>{planName}</strong>{" "}
+                se renovará automáticamente el próximo{" "}
+                <strong>{renewalDate}</strong>.
+              </Text>
+            </Section>
+
+            {/* Plan Details */}
+            <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-xs font-semibold text-zinc-900 mb-[12px] m-0">
+                Detalles de la Renovación
+              </Text>
+              <div className="space-y-[8px]">
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Plan:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {planName}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Fecha:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {renewalDate}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">
+                    Monto a cobrar:
+                  </Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    ${amount.toLocaleString()} {currency}
+                  </Text>
+                </div>
+              </div>
+            </Section>
+
+            {/* Info Message */}
+            <Section className="mb-[20px]">
+              <Text className="text-xs text-zinc-700 mb-[12px] leading-[22px] m-0">
+                Si deseas continuar con tu plan, no necesitas hacer nada. El
+                cobro se procesará automáticamente.
+              </Text>
+            </Section>
 
             {/* CTA Button */}
-            <Section style={buttonContainer}>
+            <Section className="text-center mb-[24px]">
               <Button
-                style={button}
                 href="https://gymratplus.com/dashboard/profile/billing"
+                className="bg-black text-white rounded-[8px] px-[24px] py-[12px] text-xs font-medium no-underline inline-block"
               >
                 Gestionar Suscripción
               </Button>
             </Section>
 
             {/* Footer Info */}
-            <Section style={footerInfo}>
-              <Text style={smallText}>
+            <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-xs text-zinc-600 mb-0 leading-[18px] m-0">
                 Si deseas cancelar o cambiar tu plan antes de la renovación,
-                puedes hacerlo desde tu perfil.
-              </Text>
-              <Text style={smallText}>
-                Si tienes alguna pregunta, contáctanos en{" "}
-                <a href="mailto:support@gymratplus.com" style={link}>
-                  support@gymratplus.com
-                </a>
+                puedes hacerlo desde tu perfil. Si tienes alguna pregunta,
+                contáctanos en support@gymratplus.com
               </Text>
             </Section>
-          </Section>
 
-          {/* Footer */}
-          <Section style={footer}>
-            <Text style={footerText}>
-              © {new Date().getFullYear()} GymRat+. Todos los derechos
-              reservados.
-            </Text>
-            <Text style={footerText}>
-              <a href="https://gymratplus.com" style={link}>
-                gymratplus.com
-              </a>
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+            {/* Footer */}
+            <Section className="border-t border-zinc-100 pt-[20px]">
+              <Text className="text-xs text-zinc-400 mb-[4px] m-0 text-center">
+                © {new Date().getFullYear()} GymRat+. Todos los derechos
+                reservados.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 };
@@ -135,140 +151,3 @@ export async function renderPaymentReminderEmail(
 ): Promise<string> {
   return await render(<PaymentReminderEmail {...props} />);
 }
-
-// Styles
-const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-  backgroundColor: "#ffffff",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
-  maxWidth: "600px",
-};
-
-const header = {
-  padding: "32px 20px",
-  textAlign: "center" as const,
-  backgroundColor: "#18181b",
-  color: "#ffffff",
-};
-
-const h1 = {
-  color: "#ffffff",
-  fontSize: "32px",
-  fontWeight: "bold",
-  margin: "0",
-  padding: "0",
-};
-
-const tagline = {
-  color: "#a1a1aa",
-  fontSize: "14px",
-  margin: "8px 0 0 0",
-};
-
-const content = {
-  padding: "0 20px",
-};
-
-const h2 = {
-  color: "#18181b",
-  fontSize: "24px",
-  fontWeight: "bold",
-  margin: "32px 0 16px",
-};
-
-const h3 = {
-  color: "#18181b",
-  fontSize: "18px",
-  fontWeight: "bold",
-  margin: "0 0 16px",
-};
-
-const paragraph = {
-  color: "#3f3f46",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "16px 0",
-};
-
-const detailsBox = {
-  backgroundColor: "#f4f4f5",
-  borderRadius: "8px",
-  padding: "24px",
-  margin: "24px 0",
-};
-
-const invoiceRow = {
-  marginBottom: "12px",
-};
-
-const invoiceLabel = {
-  color: "#71717a",
-  fontSize: "14px",
-  width: "40%",
-};
-
-const invoiceValue = {
-  color: "#18181b",
-  fontSize: "14px",
-  fontWeight: "500",
-  textAlign: "right" as const,
-};
-
-const hr = {
-  borderColor: "#e4e4e7",
-  margin: "16px 0",
-};
-
-const buttonContainer = {
-  textAlign: "center" as const,
-  margin: "32px 0",
-};
-
-const button = {
-  backgroundColor: "#18181b",
-  borderRadius: "6px",
-  color: "#ffffff",
-  fontSize: "16px",
-  fontWeight: "bold",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "inline-block",
-  padding: "12px 32px",
-};
-
-const footerInfo = {
-  margin: "32px 0",
-};
-
-const smallText = {
-  color: "#71717a",
-  fontSize: "14px",
-  lineHeight: "20px",
-  margin: "8px 0",
-};
-
-const link = {
-  color: "#3b82f6",
-  textDecoration: "underline",
-};
-
-const footer = {
-  borderTop: "1px solid #e4e4e7",
-  padding: "20px",
-  textAlign: "center" as const,
-  marginTop: "32px",
-};
-
-const footerText = {
-  color: "#71717a",
-  fontSize: "12px",
-  lineHeight: "16px",
-  margin: "4px 0",
-};

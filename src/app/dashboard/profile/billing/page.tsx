@@ -322,7 +322,7 @@ export default function BillingPage() {
                       >
                         {loading === plan.id ? (
                           <>
-                            <Icons.spinner className="mr-2 h-4 w-4" />
+                            <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                             Procesando...
                           </>
                         ) : isCurrentPlan ? (
@@ -424,7 +424,7 @@ export default function BillingPage() {
             >
               {loading === selectedPlan?.id ? (
                 <>
-                  <Icons.spinner className="mr-2 h-4 w-4" />
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   Procesando...
                 </>
               ) : (
@@ -464,7 +464,7 @@ export default function BillingPage() {
             >
               {loading === "cancel" ? (
                 <>
-                  <Icons.spinner className="mr-2 h-4 w-4" />
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
                   Cancelando...
                 </>
               ) : (

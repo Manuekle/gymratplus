@@ -1,16 +1,16 @@
+import * as React from "react";
 import {
   Body,
   Button,
   Container,
   Head,
   Heading,
-  Hr,
   Html,
+  Img,
   Preview,
   Section,
   Text,
-  Row,
-  Column,
+  Tailwind,
 } from "@react-email/components";
 import { render } from "@react-email/render";
 
@@ -41,141 +41,167 @@ export const InvoiceEmail = ({
   nextBillingDate,
   subscriptionId,
 }: InvoiceEmailProps) => {
-  const previewText = `Confirmación de suscripción a ${planName}`;
-
   return (
-    <Html>
+    <Html lang="es" dir="ltr">
       <Head />
-      <Preview>{previewText}</Preview>
-      <Body style={main}>
-        <Container style={container}>
-          {/* Header */}
-          <Section style={header}>
-            <Heading style={h1}>GymRat+</Heading>
-            <Text style={tagline}>Tu compañero de entrenamiento</Text>
-          </Section>
-
-          {/* Main Content */}
-          <Section style={content}>
-            <Heading style={h2}>¡Gracias por tu suscripción!</Heading>
-            <Text style={paragraph}>Hola {userName},</Text>
-            <Text style={paragraph}>
-              Tu suscripción a <strong>{planName}</strong> ha sido confirmada
-              exitosamente.
-              {trialEndsAt && (
-                <>
-                  {" "}
-                  Disfruta de 14 días de prueba gratis hasta el {trialEndsAt}.
-                </>
-              )}
-            </Text>
-
-            {/* Invoice Details */}
-            <Section style={invoiceBox}>
-              <Heading style={h3}>Detalles de la Factura</Heading>
-              <Hr style={hr} />
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Número de Factura:</Column>
-                <Column style={invoiceValue}>{invoiceNumber}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Fecha:</Column>
-                <Column style={invoiceValue}>{invoiceDate}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Cliente:</Column>
-                <Column style={invoiceValue}>{userName}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Email:</Column>
-                <Column style={invoiceValue}>{userEmail}</Column>
-              </Row>
-
-              <Hr style={hr} />
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Plan:</Column>
-                <Column style={invoiceValue}>{planName}</Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>Tipo:</Column>
-                <Column style={invoiceValue}>
-                  {planType === "monthly" ? "Mensual" : "Anual"}
-                </Column>
-              </Row>
-
-              <Row style={invoiceRow}>
-                <Column style={invoiceLabel}>ID de Suscripción:</Column>
-                <Column style={invoiceValue}>{subscriptionId}</Column>
-              </Row>
-
-              <Hr style={hr} />
-
-              <Row style={totalRow}>
-                <Column style={totalLabel}>Total:</Column>
-                <Column style={totalValue}>
-                  ${amount.toFixed(2)} {currency}
-                </Column>
-              </Row>
+      <Preview>Confirmación de suscripción a {planName} - GymRat+</Preview>
+      <Tailwind>
+        <Body
+          style={{
+            fontFamily:
+              '"Geist", "Geist Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+          }}
+        >
+          <Container className="mx-auto max-w-[520px] px-[24px] py-[32px]">
+            {/* Header */}
+            <Section className="mb-[24px]">
+              <Img
+                src={`${process.env.NEXTAUTH_URL || "https://gymratplus.com"}/favicon.ico`}
+                width="48"
+                height="48"
+                alt="GymRat+"
+                className="mb-[16px] rounded-[12px]"
+              />
+              <Heading className="text-lg tracking-heading font-semibold text-zinc-900 m-0 mb-[4px]">
+                GymRat+
+              </Heading>
+              <Text className="text-xs text-zinc-500 m-0">
+                Confirmación de suscripción
+              </Text>
             </Section>
 
-            {/* Next Billing */}
-            <Section style={billingInfo}>
-              <Text style={paragraph}>
-                <strong>Próxima facturación:</strong> {nextBillingDate}
+            {/* Greeting */}
+            <Section className="mb-[20px]">
+              <Text className="text-xs text-zinc-900 mb-[12px] leading-[22px] m-0">
+                ¡Hola {userName}!
               </Text>
-              {trialEndsAt && (
-                <Text style={smallText}>
-                  No se te cobrará hasta que termine tu período de prueba el{" "}
-                  {trialEndsAt}.
+              <Text className="text-xs text-zinc-700 mb-0 leading-[22px] m-0">
+                Tu suscripción a <strong>{planName}</strong> ha sido confirmada
+                exitosamente.
+                {trialEndsAt && (
+                  <>
+                    {" "}
+                    Disfruta de 14 días de prueba gratis hasta el {trialEndsAt}.
+                  </>
+                )}
+              </Text>
+            </Section>
+
+            {/* Invoice Details */}
+            <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-xs font-semibold text-zinc-900 mb-[12px] m-0">
+                Detalles de la Factura
+              </Text>
+              <div className="space-y-[8px]">
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">
+                    Número de Factura:
+                  </Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {invoiceNumber}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Fecha:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {invoiceDate}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Cliente:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {userName}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Email:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {userEmail}
+                  </Text>
+                </div>
+              </div>
+
+              <div className="border-t border-zinc-200 my-[12px]" />
+
+              <div className="space-y-[8px]">
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Plan:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {planName}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">Tipo:</Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {planType === "monthly" ? "Mensual" : "Anual"}
+                  </Text>
+                </div>
+                <div className="flex justify-between items-center">
+                  <Text className="text-xs text-zinc-600 m-0">
+                    ID de Suscripción:
+                  </Text>
+                  <Text className="text-xs font-medium text-zinc-900 m-0">
+                    {subscriptionId}
+                  </Text>
+                </div>
+              </div>
+
+              <div className="border-t border-zinc-200 my-[12px]" />
+
+              <div className="flex justify-between items-center">
+                <Text className="text-xs font-semibold text-zinc-900 m-0">
+                  Total:
                 </Text>
-              )}
+                <Text className="text-sm font-bold text-zinc-900 m-0">
+                  ${amount.toLocaleString()} {currency}
+                </Text>
+              </div>
+            </Section>
+
+            {/* Next Billing Info */}
+            <Section className="bg-blue-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-xs text-zinc-700 mb-0 leading-[18px] m-0">
+                <strong>Próxima facturación:</strong> {nextBillingDate}
+                {trialEndsAt && (
+                  <>
+                    <br />
+                    <br />
+                    No se te cobrará hasta que termine tu período de prueba el{" "}
+                    {trialEndsAt}.
+                  </>
+                )}
+              </Text>
             </Section>
 
             {/* CTA Button */}
-            <Section style={buttonContainer}>
+            <Section className="text-center mb-[24px]">
               <Button
-                style={button}
                 href="https://gymratplus.com/dashboard/profile"
+                className="bg-black text-white rounded-[8px] px-[24px] py-[12px] text-xs font-medium no-underline inline-block"
               >
                 Ver mi perfil
               </Button>
             </Section>
 
-            {/* Footer Info */}
-            <Section style={footerInfo}>
-              <Text style={smallText}>
+            {/* Support Info */}
+            <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
+              <Text className="text-xs text-zinc-600 mb-0 leading-[18px] m-0">
                 Puedes gestionar tu suscripción en cualquier momento desde tu
-                perfil.
-              </Text>
-              <Text style={smallText}>
-                Si tienes alguna pregunta, contáctanos en{" "}
-                <a href="mailto:support@gymratplus.com" style={link}>
-                  support@gymratplus.com
-                </a>
+                perfil. Si tienes alguna pregunta, contáctanos en
+                support@gymratplus.com
               </Text>
             </Section>
-          </Section>
 
-          {/* Footer */}
-          <Section style={footer}>
-            <Text style={footerText}>
-              © {new Date().getFullYear()} GymRat+. Todos los derechos
-              reservados.
-            </Text>
-            <Text style={footerText}>
-              <a href="https://gymratplus.com" style={link}>
-                gymratplus.com
-              </a>
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+            {/* Footer */}
+            <Section className="border-t border-zinc-100 pt-[20px]">
+              <Text className="text-xs text-zinc-400 mb-[4px] m-0 text-center">
+                © {new Date().getFullYear()} GymRat+. Todos los derechos
+                reservados.
+              </Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 };
@@ -188,165 +214,3 @@ export async function renderInvoiceEmail(
 ): Promise<string> {
   return await render(<InvoiceEmail {...props} />);
 }
-
-// Styles
-const main = {
-  backgroundColor: "#f6f9fc",
-  fontFamily:
-    '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Ubuntu,sans-serif',
-};
-
-const container = {
-  backgroundColor: "#ffffff",
-  margin: "0 auto",
-  padding: "20px 0 48px",
-  marginBottom: "64px",
-  maxWidth: "600px",
-};
-
-const header = {
-  padding: "32px 20px",
-  textAlign: "center" as const,
-  backgroundColor: "#18181b",
-  color: "#ffffff",
-};
-
-const h1 = {
-  color: "#ffffff",
-  fontSize: "32px",
-  fontWeight: "bold",
-  margin: "0",
-  padding: "0",
-};
-
-const tagline = {
-  color: "#a1a1aa",
-  fontSize: "14px",
-  margin: "8px 0 0 0",
-};
-
-const content = {
-  padding: "0 20px",
-};
-
-const h2 = {
-  color: "#18181b",
-  fontSize: "24px",
-  fontWeight: "bold",
-  margin: "32px 0 16px",
-};
-
-const h3 = {
-  color: "#18181b",
-  fontSize: "18px",
-  fontWeight: "bold",
-  margin: "0 0 16px",
-};
-
-const paragraph = {
-  color: "#3f3f46",
-  fontSize: "16px",
-  lineHeight: "24px",
-  margin: "16px 0",
-};
-
-const invoiceBox = {
-  backgroundColor: "#f4f4f5",
-  borderRadius: "8px",
-  padding: "24px",
-  margin: "24px 0",
-};
-
-const invoiceRow = {
-  marginBottom: "12px",
-};
-
-const invoiceLabel = {
-  color: "#71717a",
-  fontSize: "14px",
-  width: "40%",
-};
-
-const invoiceValue = {
-  color: "#18181b",
-  fontSize: "14px",
-  fontWeight: "500",
-  textAlign: "right" as const,
-};
-
-const totalRow = {
-  marginTop: "16px",
-};
-
-const totalLabel = {
-  color: "#18181b",
-  fontSize: "16px",
-  fontWeight: "bold",
-  width: "40%",
-};
-
-const totalValue = {
-  color: "#18181b",
-  fontSize: "20px",
-  fontWeight: "bold",
-  textAlign: "right" as const,
-};
-
-const hr = {
-  borderColor: "#e4e4e7",
-  margin: "16px 0",
-};
-
-const billingInfo = {
-  backgroundColor: "#eff6ff",
-  borderRadius: "8px",
-  padding: "16px",
-  margin: "24px 0",
-};
-
-const buttonContainer = {
-  textAlign: "center" as const,
-  margin: "32px 0",
-};
-
-const button = {
-  backgroundColor: "#18181b",
-  borderRadius: "6px",
-  color: "#ffffff",
-  fontSize: "16px",
-  fontWeight: "bold",
-  textDecoration: "none",
-  textAlign: "center" as const,
-  display: "inline-block",
-  padding: "12px 32px",
-};
-
-const footerInfo = {
-  margin: "32px 0",
-};
-
-const smallText = {
-  color: "#71717a",
-  fontSize: "14px",
-  lineHeight: "20px",
-  margin: "8px 0",
-};
-
-const link = {
-  color: "#3b82f6",
-  textDecoration: "underline",
-};
-
-const footer = {
-  borderTop: "1px solid #e4e4e7",
-  padding: "20px",
-  textAlign: "center" as const,
-  marginTop: "32px",
-};
-
-const footerText = {
-  color: "#71717a",
-  fontSize: "12px",
-  lineHeight: "16px",
-  margin: "4px 0",
-};
