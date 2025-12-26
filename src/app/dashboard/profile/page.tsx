@@ -536,7 +536,7 @@ export default function ProfilePage() {
         <CardContent className="px-4 pt-0">
           <div className="flex flex-col md:flex-row gap-6 items-center">
             <div className="flex flex-col items-center md:items-start relative gap-2">
-              <div className="relative">
+              <div className="relative group">
                 <Avatar className="h-24 w-24 border-4 border-background">
                   <AvatarImage
                     src={currentImage || session?.user?.image || undefined}
@@ -559,23 +559,25 @@ export default function ProfilePage() {
                   className="hidden"
                   onChange={handleImageUpload}
                 />
+                {isEditing && (
+                  <button
+                    onClick={() =>
+                      document.getElementById("profile-image-upload")?.click()
+                    }
+                    className="absolute inset-0 flex items-center justify-center bg-black/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  >
+                    <div className="flex flex-col items-center gap-1">
+                      <HugeiconsIcon
+                        icon={Camera01Icon}
+                        className="h-5 w-5 text-white"
+                      />
+                      <span className="text-xs text-white font-medium">
+                        Editar
+                      </span>
+                    </div>
+                  </button>
+                )}
               </div>
-              {isEditing && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-xs"
-                  onClick={() =>
-                    document.getElementById("profile-image-upload")?.click()
-                  }
-                >
-                  <HugeiconsIcon
-                    icon={Camera01Icon}
-                    className="h-3 w-3 mr-1"
-                  />
-                  Editar imagen
-                </Button>
-              )}
             </div>
 
             <div className="space-y-4 flex-1 text-center md:text-left pt-2 md:pt-0">
