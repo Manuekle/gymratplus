@@ -1,90 +1,133 @@
-import { PrismaClient } from "@prisma/client";
+// Script to clean database - keeps only Exercise and Food tables
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function cleanDatabase() {
-  console.log("🧹 Starting database cleanup...");
-  console.log("⚠️  This will delete ALL user activity, workouts, and logs.");
-  console.log("🛡️  Preserving: Users, Exercises, Foods, Recipes");
+  console.log('🧹 Starting database cleanup...');
+  console.log('⚠️  This will delete ALL user data except Exercise and Food tables');
 
   try {
-    // 1. Delete Notifications & Communications
-    try {
-      console.log("Deleting Notifications...");
-      await prisma.notification.deleteMany({});
-      await prisma.pushSubscription.deleteMany({});
-      await prisma.verificationCode.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Notification tables");
-    }
+    // Delete in correct order to respect foreign key constraints
 
-    // 2. Delete Chat History
-    try {
-      console.log("Deleting Chat History...");
-      await prisma.chatMessage.deleteMany({});
-      await prisma.chat.deleteMany({});
-      await prisma.studentInstructor.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Chat tables");
-    }
+    console.log('Deleting ChatMessages...');
+    await prisma.chatMessage.deleteMany({});
 
-    // 3. Delete Workout Activity
-    try {
-      console.log("Deleting Workout Activity...");
-      await prisma.setSession.deleteMany({});
-      await prisma.exerciseSession.deleteMany({});
-      await prisma.workoutSession.deleteMany({});
-      await prisma.workoutStreak.deleteMany({});
-      await prisma.workoutExercise.deleteMany({});
-      await prisma.workout.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Workout tables");
-    }
+    console.log('Deleting Chats...');
+    await prisma.chat.deleteMany({});
 
-    // 4. Delete Nutrition Activity
-    try {
-      console.log("Deleting Nutrition Activity...");
-      await prisma.mealEntryRecipe.deleteMany({});
-      await prisma.mealLog.deleteMany({});
-      await prisma.dailyWaterIntake.deleteMany({});
-      await prisma.mealPlanEntry.deleteMany({});
-      await prisma.mealPlanMeal.deleteMany({});
-      await prisma.foodRecommendation.deleteMany({});
-      await prisma.foodPlan.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Nutrition tables");
-    }
+    console.log('Deleting StudentInstructor relationships...');
+    await prisma.studentInstructor.deleteMany({});
 
-    // 5. Delete Progress Tracking
-    try {
-      console.log("Deleting Progress Tracking...");
-      await prisma.goalProgress.deleteMany({});
-      await prisma.goal.deleteMany({});
-      await prisma.weight.deleteMany({});
-      await prisma.progressPhoto.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Progress tables");
-    }
+    console.log('Deleting InstructorProfiles...');
+    await prisma.instructorProfile.deleteMany({});
 
-    // 6. Delete Billing/Invoices
-    try {
-      console.log("Deleting Invoices...");
-      await prisma.invoice.deleteMany({});
-    } catch (e) {
-      console.log("Skipping missing Invoice tables");
-    }
+    console.log('Deleting PushSubscriptions...');
+    await prisma.pushSubscription.deleteMany({});
 
-    console.log("\n✅ Database cleaned successfully!");
-    console.log("   - Users: KEPT");
-    console.log("   - Profiles: KEPT");
-    console.log("   - Exercises (Catalog): KEPT");
-    console.log("   - Foods/Recipes (Catalog): KEPT");
+    console.log('Deleting VerificationCodes...');
+    await prisma.verificationCode.deleteMany({});
+
+    console.log('Deleting Invoices...');
+    await prisma.invoice.deleteMany({});
+
+    console.log('Deleting Notifications...');
+    await prisma.notification.deleteMany({});
+
+    console.log('Deleting SetSessions...');
+    await prisma.setSession.deleteMany({});
+
+    console.log('Deleting ExerciseSessions...');
+    await prisma.exerciseSession.deleteMany({});
+
+    console.log('Deleting WorkoutSessions...');
+    await prisma.workoutSession.deleteMany({});
+
+    console.log('Deleting WorkoutStreaks...');
+    await prisma.workoutStreak.deleteMany({});
+
+    console.log('Deleting MealPlanEntries...');
+    await prisma.mealPlanEntry.deleteMany({});
+
+    console.log('Deleting MealPlanMeals...');
+    await prisma.mealPlanMeal.deleteMany({});
+
+    console.log('Deleting FoodRecommendations...');
+    await prisma.foodRecommendation.deleteMany({});
+
+    console.log('Deleting FoodPlans...');
+    await prisma.foodPlan.deleteMany({});
+
+    console.log('Deleting MealEntryRecipes...');
+    await prisma.mealEntryRecipe.deleteMany({});
+
+    console.log('Deleting MealLogs...');
+    await prisma.mealLog.deleteMany({});
+
+    console.log('Deleting DailyWaterIntake...');
+    await prisma.dailyWaterIntake.deleteMany({});
+
+    console.log('Deleting RecipeIngredients...');
+    await prisma.recipeIngredient.deleteMany({});
+
+    console.log('Deleting Recipes...');
+    await prisma.recipe.deleteMany({});
+
+    console.log('Deleting GoalProgress...');
+    await prisma.goalProgress.deleteMany({});
+
+    console.log('Deleting Goals...');
+    await prisma.goal.deleteMany({});
+
+    console.log('Deleting Weights...');
+    await prisma.weight.deleteMany({});
+
+    console.log('Deleting ProgressPhotos...');
+    await prisma.progressPhoto.deleteMany({});
+
+    console.log('Deleting WorkoutExercises...');
+    await prisma.workoutExercise.deleteMany({});
+
+    console.log('Deleting Workouts...');
+    await prisma.workout.deleteMany({});
+
+    console.log('Deleting Profiles...');
+    await prisma.profile.deleteMany({});
+
+    console.log('Deleting Accounts...');
+    await prisma.account.deleteMany({});
+
+    console.log('Deleting Sessions...');
+    await prisma.session.deleteMany({});
+
+    console.log('Deleting Users...');
+    await prisma.user.deleteMany({});
+
+    console.log('✅ Database cleaned successfully!');
+    console.log('📊 Kept: Exercise and Food tables');
+
+    // Show counts
+    const exerciseCount = await prisma.exercise.count();
+    const foodCount = await prisma.food.count();
+
+    console.log(`\n📈 Remaining data:`);
+    console.log(`   - Exercises: ${exerciseCount}`);
+    console.log(`   - Foods: ${foodCount}`);
+
   } catch (error) {
-    console.error("❌ Error cleaning database:", error);
-    process.exit(1);
+    console.error('❌ Error cleaning database:', error);
+    throw error;
   } finally {
     await prisma.$disconnect();
   }
 }
 
-cleanDatabase();
+cleanDatabase()
+  .then(() => {
+    console.log('\n✨ Done! You can now sign in with a fresh account.');
+    process.exit(0);
+  })
+  .catch((error) => {
+    console.error('Fatal error:', error);
+    process.exit(1);
+  });
