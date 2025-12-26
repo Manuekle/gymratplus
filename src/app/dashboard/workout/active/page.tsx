@@ -469,7 +469,7 @@ export default function ActiveWorkoutPage() {
 
   if (!workoutSession) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] p-4 md:p-8 text-center gap-4">
+      <Card className="flex flex-col items-center justify-center min-h-[60vh] p-4 md:p-8 text-center gap-4">
         <h2 className="text-3xl font-semibold tracking-[-0.04em]">
           No hay entrenamiento activo
         </h2>
@@ -480,7 +480,7 @@ export default function ActiveWorkoutPage() {
         >
           Iniciar un entrenamiento
         </Button>
-      </div>
+      </Card>
     );
   }
 
