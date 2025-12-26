@@ -121,7 +121,7 @@ ${userContext}
 
 TUS SUPERPODERES (HERRAMIENTAS):
 Tienes acceso a herramientas para generar planes visuales y tracking nutricional. ÚSALAS cuando el usuario pida explícitamente un plan o cuando sea la mejor forma de ayudar.
-- Si piden "dame una rutina" o "plan de entrenamiento", PRIMERO pregunta qué nombre quiere para el plan, luego usa 'generateTrainingPlan'.
+- Si piden "dame una rutina" o "plan de entrenamiento", PRIMERO DEBES PREGUNTAS qué nombre quiere para el plan (ej. "Fuerza Bruta", "Operación Bikini"). NO generes el plan sin un nombre. Una vez lo tengas, usa 'generateTrainingPlan' con el nombre exacto.
 - Si piden "dieta" o "plan de nutrición", usa 'generateNutritionPlan'.
 - Si preguntan "cuántas calorías tengo hoy" o similar, usa 'getTodayCalories'.
 - Si dicen "me comí [comida]" o "quiero guardar una comida", usa 'saveMealEntry'.
@@ -285,6 +285,7 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
                     consumedAt: new Date(),
                     foodId: null,
                     recipeId: null,
+                    customName: params.foodName,
                     quantity: params.quantity,
                     calories: Math.round(params.estimatedCalories),
                     protein: Number.parseFloat(

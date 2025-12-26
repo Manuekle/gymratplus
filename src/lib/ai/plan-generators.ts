@@ -30,10 +30,13 @@ ${exercises.map((e) => `- ${e.id}: ${e.name} (${e.muscleGroup})`).join("\n")}
     system: `Eres Rocco, un entrenador experto. Genera un plan de entrenamiento completo.
 INSTRUCCIONES:
 1. Crea un plan de ${params.daysPerWeek} días.
-2. Usa SOLO ejercicios de la lista (IDs exactos).
-3. Para el campo "day", usa el NOMBRE DEL GRUPO MUSCULAR principal (ej: "Pecho", "Espalda", "Piernas", "Hombros", "Brazos", "Full Body").
-4. Para "notes", usa solo la palabra "Día" sin números.
-5. Responde SOLO con un JSON válido.`,
+2. Genera ENTRE 6 y 8 EJERCICIOS por sesión de entrenamiento. ¡ES MUY IMPORTANTE EL VOLUMEN DE TRABAJO!
+3. Usa SOLO ejercicios de la lista (IDs exactos).
+4. Para el campo "day", usa el NOMBRE DEL GRUPO MUSCULAR principal (ej: "Pecho", "Espalda", "Piernas", "Hombros", "Brazos", "Full Body").
+5. Para "notes", da un consejo breve sobre la técnica.
+6. Incluye el NOMBRE del ejercicio en el campo "name".
+7. Si el ID no coincide, busca un ejercicio similar en la lista y usa ese ID.
+8. Responde SOLO con un JSON válido.`,
     prompt: `Genera un plan de entrenamiento con este contexto:
 ${userContext}
 
@@ -49,7 +52,10 @@ FORMATO JSON:
     {
       "day": "Pecho",
       "exercises": [
-        { "id": "ID_EXACTO", "sets": 3, "reps": 12, "restTime": 60, "notes": "Día" }
+        { "id": "ID_EXACTO", "name": "Press de Banca", "sets": 4, "reps": 10, "restTime": 90, "notes": "Controla el arco" },
+        { "id": "ID_EXACTO", "name": "Aperturas", "sets": 3, "reps": 12, "restTime": 60, "notes": "Estira bien" },
+        { "id": "ID_EXACTO", "name": "Fondos ", "sets": 3, "reps": 10, "restTime": 60, "notes": "Codos cerrados" },
+        { "id": "ID_EXACTO", "name": "Cruce poleas", "sets": 3, "reps": 15, "restTime": 45, "notes": "Contracción pico" }
       ]
     }
   ]
@@ -60,20 +66,47 @@ FORMATO JSON:
     .trim()
     .replace(/```json\n?/g, "")
     .replace(/```\n?/g, "");
-  const workoutPlan = JSON.parse(cleanedText);
+
+  let workoutPlan;
+  try {
+    workoutPlan = JSON.parse(cleanedText);
+  } catch (e) {
+    console.error("Error parsing workout plan JSON", e);
+    // Fallback basic plan if parsing fails
+    workoutPlan = {
+      name: params.planName,
+      description: "Error al generar plan",
+      focus: params.focus,
+      daysPerWeek: params.daysPerWeek,
+      durationMinutes: params.durationMinutes,
+      difficulty: params.difficulty,
+      days: []
+    };
+  }
 
   // Enrich
   return {
     ...workoutPlan,
     ...params, // Include input params for UI context
-    days: workoutPlan.days.map((day: any) => ({
+    days: (workoutPlan.days || []).map((day: any) => ({
       ...day,
-      exercises: day.exercises.map((ex: any) => {
-        const exercise = exercises.find((e) => e.id === ex.id);
+      exercises: (day.exercises || []).map((ex: any) => {
+        // Try to find by ID first
+        let exercise = exercises.find((e) => e.id === ex.id);
+
+        // If not found by ID, try to find by name (fuzzy match)
+        if (!exercise) {
+          exercise = exercises.find(e =>
+            e.name.toLowerCase().includes(ex.name.toLowerCase()) ||
+            ex.name.toLowerCase().includes(e.name.toLowerCase())
+          );
+        }
+
         return {
           ...ex,
-          name: exercise?.name || "Ejercicio",
+          name: exercise?.name || ex.name || "Ejercicio",
           muscleGroup: exercise?.muscleGroup || "General",
+          id: exercise?.id || ex.id // Ensure we use a valid ID if found
         };
       }),
     })),

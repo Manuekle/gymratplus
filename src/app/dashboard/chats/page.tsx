@@ -276,6 +276,7 @@ export default function ChatPage() {
                             <div className="space-y-4">
                               {message.parts.map((part, i) => {
                                 if (part.type === "text") {
+                                  if (!part.text || part.text.trim() === "") return null;
                                   return (
                                     <Streamdown
                                       key={i}
@@ -379,7 +380,7 @@ export default function ChatPage() {
                                       return (
                                         <div
                                           key={toolInvocation.toolCallId}
-                                          className="mt-4"
+                                          className="mt-2"
                                         >
                                           <Confirmation
                                             approval={toolInvocation.approval}
@@ -445,22 +446,52 @@ export default function ChatPage() {
                                       state === "output-available" ||
                                       state === "result"
                                     ) {
-                                      const successMessage =
-                                        result?.message || result?.success
-                                          ? `${toolInvocation.input.foodName} guardado correctamente`
-                                          : "Comida guardada correctamente";
+                                      const mealLog = result?.mealLog;
+
+                                      if (!mealLog) return null;
 
                                       return (
                                         <div
                                           key={toolInvocation.toolCallId}
-                                          className="mt-4"
+                                          className="mt-2"
                                         >
-                                          <div className="rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20 p-4">
-                                            <div className="flex items-center gap-2 text-green-700 dark:text-green-400">
-                                              <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-5" />
-                                              <p className="font-medium">
-                                                {successMessage}
-                                              </p>
+                                          <div className="space-y-3 pl-1">
+                                            {/* Title & Header Combined */}
+                                            <div className="flex items-start justify-between gap-4">
+                                              <div>
+                                                <h3 className="font-semibold text-lg text-zinc-900 dark:text-zinc-100 leading-tight tracking-[-0.04em]">
+                                                  {mealLog.customName || "Comida"}
+                                                </h3>
+                                                <p className="text-xs text-zinc-500 uppercase tracking-[-0.04em] font-medium mt-1.5 flex items-center gap-2">
+                                                  <span>{mealLog.quantity} {mealLog.foodId ? "g" : "porción"}</span>
+                                                  <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+                                                  <span>{mealLog.mealType}</span>
+                                                </p>
+                                              </div>
+                                              <div className="flex items-center gap-1.5 text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-full border border-green-100 dark:border-green-500/20">
+                                                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5" />
+                                                <span className="text-xs font-semibold uppercase tracking-[-0.04em]">Guardado</span>
+                                              </div>
+                                            </div>
+
+                                            {/* Macros Grid - Responsive */}
+                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
+                                              <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Calorías</span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.calories}</span>
+                                              </div>
+                                              <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Proteína</span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.protein}g</span>
+                                              </div>
+                                              <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Carbos</span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.carbs}g</span>
+                                              </div>
+                                              <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Grasas</span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.fat}g</span>
+                                              </div>
                                             </div>
                                           </div>
                                         </div>
@@ -471,7 +502,7 @@ export default function ChatPage() {
                                       return (
                                         <div
                                           key={toolInvocation.toolCallId}
-                                          className="mt-4"
+                                          className="mt-2"
                                         >
                                           <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
                                             <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">

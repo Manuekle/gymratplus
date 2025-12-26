@@ -323,12 +323,12 @@ export default function ProgressChart({
             </Button>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2 w-full">
             <Select
               value={timePeriod}
               onValueChange={(value) => setTimePeriod(value as TimePeriod)}
             >
-              <SelectTrigger className="w-full sm:w-[180px] text-xs">
+              <SelectTrigger className="w-full text-xs w-full">
                 <SelectValue placeholder="Seleccionar período" />
               </SelectTrigger>
               <SelectContent>
@@ -346,7 +346,7 @@ export default function ProgressChart({
                 </SelectItem>
               </SelectContent>
             </Select>
-            <div className="w-full sm:w-auto">
+            <div className="w-full">
               <NewProgress
                 onSuccess={() => {
                   loadData();

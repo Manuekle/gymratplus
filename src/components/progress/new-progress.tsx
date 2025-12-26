@@ -229,7 +229,7 @@ export function NewProgress({
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size="default" className="text-xs px-4">
+        <Button size="default" className="text-xs px-4 w-full">
           Añadir registro
         </Button>
       </DialogTrigger>

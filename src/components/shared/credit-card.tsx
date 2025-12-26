@@ -47,9 +47,8 @@ export function CreditCard({
   return (
     <div className="perspective-1000 w-full max-w-sm mx-auto mb-6">
       <div
-        className={`relative w-full h-52 transition-transform duration-700 transform-style-3d ${
-          isFlipped ? "rotate-y-180" : ""
-        }`}
+        className={`relative w-full h-52 transition-transform duration-700 transform-style-3d ${isFlipped ? "rotate-y-180" : ""
+          }`}
         onMouseEnter={() => cvv && setIsFlipped(true)}
         onMouseLeave={() => setIsFlipped(false)}
       >
@@ -59,13 +58,12 @@ export function CreditCard({
             <div className="flex justify-between items-start">
               <HugeiconsIcon
                 icon={cardType.icon}
-                className={`h-12 w-12 ${
-                  cardType.type === "mastercard"
+                className={`h-12 w-12 ${cardType.type === "mastercard"
                     ? "text-slate-800 dark:text-neutral-100"
                     : "text-slate-800 dark:text-neutral-300"
-                }`}
+                  }`}
               />
-              <div className="text-xs font-bold text-slate-700 dark:text-neutral-300 tracking-wider">
+              <div className="text-xs font-bold text-slate-700 dark:text-neutral-300 tracking-[-0.02em]">
                 {cardLabel}
               </div>
             </div>
@@ -77,7 +75,7 @@ export function CreditCard({
 
               <div className="flex justify-between items-end">
                 <div className="space-y-1">
-                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
+                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-[-0.02em] font-medium">
                     Titular
                   </div>
                   <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 uppercase tracking-wide truncate max-w-[180px]">
@@ -85,7 +83,7 @@ export function CreditCard({
                   </div>
                 </div>
                 <div className="space-y-1 text-right">
-                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-wider font-medium">
+                  <div className="text-xs text-slate-500 dark:text-neutral-400 uppercase tracking-[-0.02em] font-medium">
                     Vence
                   </div>
                   <div className="text-xs font-semibold text-slate-800 dark:text-neutral-200 tracking-wide">
@@ -102,11 +100,11 @@ export function CreditCard({
           <div className="w-full h-12 bg-slate-300 dark:bg-neutral-950 mt-6" />
           <div className="p-6 space-y-4">
             <div className="bg-slate-300 dark:bg-neutral-700 h-10 rounded flex items-center justify-end px-4">
-              <span className="text-slate-900 dark:text-neutral-200 font-mono font-bold text-xs tracking-wider">
+              <span className="text-slate-900 dark:text-neutral-200 font-mono font-bold text-xs tracking-[-0.02em]">
                 {cvv || "•••"}
               </span>
             </div>
-            <div className="text-xs text-slate-500 dark:text-neutral-400 text-right uppercase tracking-wider font-medium">
+            <div className="text-xs text-slate-500 dark:text-neutral-400 text-right uppercase tracking-[-0.02em] font-medium">
               CVV
             </div>
           </div>

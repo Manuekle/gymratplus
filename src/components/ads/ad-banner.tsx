@@ -31,7 +31,7 @@ export default function AdBanner({
     if (isDev) {
         return (
             <div className="w-full p-4 my-4 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-lg bg-zinc-50 dark:bg-zinc-900 text-center">
-                <p className="text-sm font-semibold text-zinc-500">Google AdSense Placeholder</p>
+                <p className="text-xs font-semibold text-zinc-500">Google AdSense Placeholder</p>
                 <p className="text-xs text-zinc-400">Slot ID: {dataAdSlot}</p>
                 <p className="text-xs text-zinc-400">Dimensión: {dataAdFormat}</p>
             </div>

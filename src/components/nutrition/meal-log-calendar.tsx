@@ -26,6 +26,7 @@ type MealLog = {
   carbs: number;
   fat: number;
   notes: string | null;
+  customName: string | null;
   food: {
     id: string;
     name: string;

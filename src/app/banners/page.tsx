@@ -1,13 +1,15 @@
 "use client";
 
+import { ArrowLeftIcon } from "@radix-ui/react-icons";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeftIcon } from "@radix-ui/react-icons";
+import { useEffect, useState } from "react";
 
 const banners = [
     {
         title: "Banner Principal",
-        description: "Imagen optimizada para compartir en redes sociales como Facebook, LinkedIn y WhatsApp.",
+        description:
+            "Imagen optimizada para compartir en redes sociales como Facebook, LinkedIn y WhatsApp.",
         url: "/banners/opengraph",
         size: "1200×630",
         usage: "Social Media",
@@ -21,7 +23,8 @@ const banners = [
     },
     {
         title: "Características",
-        description: "Grid visual mostrando las funcionalidades principales de la plataforma.",
+        description:
+            "Grid visual mostrando las funcionalidades principales de la plataforma.",
         url: "/banners/features",
         size: "1200×630",
         usage: "Marketing",
@@ -29,6 +32,12 @@ const banners = [
 ];
 
 export default function BannersPage() {
+    const [origin, setOrigin] = useState("");
+
+    useEffect(() => {
+        setOrigin(window.location.origin);
+    }, []);
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-black dark:to-zinc-900 text-zinc-900 dark:text-zinc-50 relative overflow-hidden">
             {/* Background Elements */}
@@ -59,16 +68,14 @@ export default function BannersPage() {
                                 Banners & Assets
                             </h1>
                             <p className="text-zinc-600 dark:text-zinc-400 text-lg leading-relaxed max-w-2xl">
-                                Colección de imágenes generadas dinámicamente para compartir en redes sociales y materiales de marketing.
+                                Colección de imágenes generadas dinámicamente para compartir en
+                                redes sociales y materiales de marketing.
                             </p>
                         </div>
 
                         <div className="grid gap-12">
                             {banners.map((banner) => (
-                                <div
-                                    key={banner.url}
-                                    className="group space-y-6"
-                                >
+                                <div key={banner.url} className="group space-y-6">
                                     <div className="space-y-2">
                                         <h2 className="text-2xl font-semibold tracking-[-0.02em] flex items-center gap-3">
                                             {banner.title}
@@ -98,18 +105,33 @@ export default function BannersPage() {
                                             href={banner.url}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
+                                            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-900 dark:text-zinc-100 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors"
                                         >
                                             Ver imagen original
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <title>Ver imagen original</title>
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                                                />
                                             </svg>
                                         </a>
                                         <button
+                                            type="button"
                                             onClick={() => {
-                                                navigator.clipboard.writeText(`${window.location.origin}${banner.url}`);
+                                                if (origin)
+                                                    navigator.clipboard.writeText(
+                                                        `${origin}${banner.url}`,
+                                                    );
                                             }}
-                                            className="inline-flex items-center gap-2 text-sm font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
+                                            className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-300 transition-colors"
                                         >
                                             Copiar enlace
                                         </button>
@@ -118,7 +140,7 @@ export default function BannersPage() {
                                     {/* Usage Code */}
                                     <div className="p-4 rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50 border border-zinc-200/50 dark:border-zinc-800/50">
                                         <p className="text-xs font-mono text-zinc-500 break-all">
-                                            {`${window.location.origin}${banner.url}`}
+                                            {origin ? `${origin}${banner.url}` : "Cargando..."}
                                         </p>
                                     </div>
                                 </div>

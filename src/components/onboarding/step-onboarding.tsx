@@ -322,7 +322,7 @@ export default function StepOnboarding() {
   return (
     <div className="w-full max-w-2xl mx-auto p-8">
       <div className="mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
           Crea tu perfil
         </h1>
         <p className="text-xs text-muted-foreground">

@@ -100,7 +100,7 @@ export default async function ExerciseDetailPage({
           </div>
 
           <div className="space-y-4">
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">
+            <h1 className="text-3xl lg:text-4xl font-bold tracking-[-0.04em] text-zinc-900 dark:text-white">
               {exercise.name}
             </h1>
 

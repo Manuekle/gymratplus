@@ -12,7 +12,15 @@ export default function WorkoutDockbarWrapper() {
             sets: number;
             reps: number;
         };
-    } | null>(null);
+    } | null>({
+        id: "debug-session",
+        startTime: new Date(),
+        nextExercise: {
+            name: "Debug Press",
+            sets: 3,
+            reps: 10
+        }
+    });
 
     useEffect(() => {
         const fetchActiveWorkout = async () => {
@@ -35,8 +43,8 @@ export default function WorkoutDockbarWrapper() {
 
         fetchActiveWorkout();
 
-        // Poll every 30 seconds to check for active workout
-        const interval = setInterval(fetchActiveWorkout, 30000);
+        // Poll every 5 seconds to check for active workout
+        const interval = setInterval(fetchActiveWorkout, 5000);
 
         return () => clearInterval(interval);
     }, []);

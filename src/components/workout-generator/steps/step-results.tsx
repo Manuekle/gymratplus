@@ -51,7 +51,7 @@ export function StepResults({ workout }: StepResultsProps) {
       <div className="space-y-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div className="space-y-1">
-            <h3 className="text-lg font-semibold tracking-tight">
+            <h3 className="text-lg font-semibold tracking-[-0.04em]">
               {workout.name}
             </h3>
             {workout.description && (

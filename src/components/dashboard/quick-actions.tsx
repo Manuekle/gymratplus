@@ -102,7 +102,7 @@ export function QuickActions() {
                       icon={action.icon}
                       className="h-5 w-5 opacity-70 group-hover:opacity-100 transition-opacity"
                     />
-                    <span className="text-xs font-medium text-center leading-none tracking-tight">
+                    <span className="text-xs font-medium text-center leading-none tracking-[-0.04em]">
                       {action.title}
                     </span>
                   </Button>

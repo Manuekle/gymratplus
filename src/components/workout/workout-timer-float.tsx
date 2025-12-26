@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Dialog,
   DialogContent,
@@ -16,13 +16,8 @@ import { toast } from "sonner";
 
 import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  Clock01Icon,
-  PauseIcon,
-  PlayIcon,
-  Cancel01Icon,
-  ArrowExpandIcon,
-} from "@hugeicons/core-free-icons";
+import { ArrowExpandIcon } from "@hugeicons/core-free-icons";
+
 
 interface WorkoutTimerFloatProps {
   workoutSessionId: string;
@@ -164,88 +159,112 @@ export default function WorkoutTimerFloat({
 
   return (
     <motion.div
-      animate={{ scale: isMinimized ? 0.8 : 1 }}
-      transition={{ duration: 0.4 }}
-      className="fixed bottom-4 right-4 z-50"
+      layout
+      animate={{
+        scale: isMinimized ? 1 : 1,
+        opacity: 1,
+        y: 0
+      }}
+      initial={{ opacity: 0, y: 20 }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      className="fixed bottom-6 right-6 z-50"
     >
-      <div
-        className={`bg-white/70 dark:bg-zinc-950/70 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl p-4 transition-all duration-300
+      <motion.div
+        layout
+        className={`relative overflow-hidden backdrop-blur-md border shadow-lg
           ${isMinimized
-            ? "rounded-full flex items-center justify-center cursor-pointer hover:scale-105"
-            : "w-64 rounded-2xl"
+            ? "rounded-full bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 cursor-pointer hover:shadow-xl"
+            : "w-64 rounded-3xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
           }`}
         onClick={isMinimized ? () => setIsMinimized(false) : undefined}
+        style={{ borderRadius: isMinimized ? 9999 : 24 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
-        {isMinimized ? (
-          <div className="text-xl text-zinc-900 dark:text-zinc-100 font-semibold px-4 w-fit">
-            {formatTime(elapsedTime)}
-          </div>
-        ) : (
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <HugeiconsIcon
-                  icon={Clock01Icon}
-                  size={14}
-                  className="text-zinc-700 dark:text-zinc-300"
-                />
-                <span className="font-medium text-xs text-zinc-700 dark:text-zinc-300">
-                  Tiempo de entrenamiento
-                </span>
-              </div>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="p-1 rounded-sm h-6 w-6 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
-                onClick={() => setIsMinimized(true)}
-              >
-                <HugeiconsIcon
-                  icon={ArrowExpandIcon}
-                  size={14}
-                  className="text-zinc-700 dark:text-zinc-300"
-                />
-              </Button>
-            </div>
-
-            <div className="text-center">
-              <div className="text-2xl font-semibold text-zinc-900 dark:text-zinc-100">
+        <AnimatePresence mode="popLayout" initial={false}>
+          {isMinimized ? (
+            <motion.div
+              layout
+              key="minimized"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.1 } }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="px-4 py-2 flex items-center gap-2.5"
+            >
+              <div className={`w-2 h-2 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <div className="text-xs font-medium text-zinc-900 dark:text-zinc-100 tabular-nums tracking-[-0.02em]">
                 {formatTime(elapsedTime)}
               </div>
-            </div>
-
-            <div className="flex justify-between gap-2">
-              <Button
-                size="default"
-                variant="ghost"
-                className="p-2 hover:bg-zinc-200/50 dark:hover:bg-zinc-800/50"
-                onClick={togglePause}
-              >
-                {isPaused ? (
+            </motion.div>
+          ) : (
+            <motion.div
+              layout
+              key="expanded"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.1 } }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+              className="p-4 w-full"
+            >
+              <div className="flex justify-between items-start mb-4">
+                <div className="flex items-center gap-2">
+                  <div className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`} />
+                  <span className="text-xs font-semibold tracking-[-0.02em] text-zinc-500 dark:text-zinc-400">
+                    {isPaused ? "Pausado" : "Activo"}
+                  </span>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-5 w-5 -mr-1.5 text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMinimized(true);
+                  }}
+                >
                   <HugeiconsIcon
-                    icon={PlayIcon}
-                    size={16}
-                    className="text-zinc-700 dark:text-zinc-300"
+                    icon={ArrowExpandIcon}
+                    size={14}
+                    className="rotate-45"
                   />
-                ) : (
-                  <HugeiconsIcon
-                    icon={PauseIcon}
-                    size={16}
-                    className="text-zinc-700 dark:text-zinc-300"
-                  />
-                )}
-              </Button>
+                </Button>
+              </div>
 
-              <Button
-                size="default"
-                className="text-xs px-4 bg-red-600 text-white hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800"
-                onClick={() => setShowConfirmDialog(true)}
-              >
-                <HugeiconsIcon icon={Cancel01Icon} size={16} />
-              </Button>
-            </div>
-          </div>
-        )}
-      </div>
+              <div className="flex justify-center mb-6">
+                <div className="text-4xl font-semibold text-zinc-900 dark:text-zinc-50 tabular-nums tracking-[-0.02em]er">
+                  {formatTime(elapsedTime)}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-8 rounded-lg border-zinc-200 dark:border-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-900 text-xs font-medium"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    togglePause();
+                  }}
+                >
+                  {isPaused ? "Reanudar" : "Pausar"}
+                </Button>
+
+                <Button
+                  size="sm"
+                  variant="destructive"
+                  className="h-8 rounded-lg text-white text-xs font-medium"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setShowConfirmDialog(true);
+                  }}
+                >
+                  Terminar
+                </Button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
 
       {/* Diálogo de confirmación */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
@@ -263,7 +282,7 @@ export default function WorkoutTimerFloat({
             <span className="text-xs text-muted-foreground font-medium">
               Tiempo Total
             </span>
-            <div className="text-4xl font-bold tracking-[-0.04em]">
+            <div className="text-3xl font-semibold tracking-[-0.02em]er tabular-nums">
               {formatTime(elapsedTime)}
             </div>
           </div>

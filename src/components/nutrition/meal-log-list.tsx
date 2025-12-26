@@ -20,6 +20,7 @@ type MealLog = {
   carbs: number;
   fat: number;
   notes: string | null;
+  customName: string | null;
   food: {
     id: string;
     name: string;
@@ -155,7 +156,7 @@ export function MealLogList({
           key={mealType}
           className="md:p-4 p-0 md:border border-0 rounded-lg space-y-3"
         >
-          <h3 className="font-semibold tracking-tight text-lg">
+          <h3 className="font-semibold tracking-[-0.04em] text-xl">
             {getMealTypeLabel(mealType)}
           </h3>
 
@@ -167,13 +168,13 @@ export function MealLogList({
                     {format(new Date(meal.consumedAt), "HH:mm", { locale: es })}
                   </span>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs font-medium">
+                    <Badge variant="default" className="text-xs font-medium">
                       {meal.calories} kcal
                     </Badge>
                     <Button
-                      variant="ghost"
+                      variant="destructive"
                       size="icon"
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                      className="text-white"
                       onClick={() => handleDelete(meal.id)}
                       disabled={deletingId === meal.id}
                       aria-label="Eliminar"
@@ -192,7 +193,7 @@ export function MealLogList({
 
                 <div className="grid grid-cols-4 gap-2 text-xs">
                   <div className="col-span-1 truncate font-medium">
-                    {meal.food?.name || meal.recipe?.name}
+                    {meal.customName || meal.food?.name || meal.recipe?.name}
                   </div>
                   <div className="col-span-1 text-right text-muted-foreground">
                     {meal.quantity} {meal.food ? "g" : "porción"}
