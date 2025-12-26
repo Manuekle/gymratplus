@@ -847,7 +847,7 @@ export default function GymRatLanding() {
                 Términos de Servicio
               </Link>
             </div>
-            <p className="text-[10px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
               © 2025 GymRat+. Todos los derechos reservados.
             </p>
           </div>

@@ -151,7 +151,7 @@ export const InvoiceEmail = ({
                 <Text className="text-xs font-semibold text-zinc-900 m-0">
                   Total:
                 </Text>
-                <Text className="text-sm font-bold text-zinc-900 m-0">
+                <Text className="text-xs font-bold text-zinc-900 m-0">
                   ${amount.toLocaleString()} {currency}
                 </Text>
               </div>
