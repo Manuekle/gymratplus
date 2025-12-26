@@ -1,0 +1,149 @@
+import { getUserById } from "@/app/admin/actions";
+import { notFound } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { HugeiconsIcon } from "@hugeicons/react";
+
+export default async function UserDetailPage({
+    params,
+}: {
+    params: { id: string };
+}) {
+    const user = await getUserById(params.id);
+
+    if (!user) {
+        notFound();
+    }
+
+    const { stats, invoices } = user;
+
+    return (
+        <div className="space-y-6">
+            <div className="flex items-center gap-4">
+                <Link href="/admin/users">
+                    <Button variant="ghost" size="icon">
+                        <HugeiconsIcon icon={ArrowLeft01Icon} className="h-5 w-5" />
+                    </Button>
+                </Link>
+                <div>
+                    <h2 className="text-2xl font-bold tracking-tight">{user.name}</h2>
+                    <p className="text-muted-foreground">{user.email}</p>
+                </div>
+            </div>
+
+            <div className="grid gap-6 md:grid-cols-2">
+                {/* Profile Card */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Profile Details</CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center gap-6">
+                        <Avatar className="h-24 w-24">
+                            <AvatarImage src={user.image || ""} alt={user.name || "User"} />
+                            <AvatarFallback className="text-lg">{user.name?.slice(0, 2).toUpperCase()}</AvatarFallback>
+                        </Avatar>
+                        <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">Role:</span>
+                                {user.isInstructor ? (
+                                    <Badge variant="secondary">Instructor</Badge>
+                                ) : (
+                                    <Badge variant="outline">User</Badge>
+                                )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="font-semibold">Plan:</span>
+                                <Badge variant={user.subscriptionTier === "PRO" ? "default" : "secondary"}>
+                                    {user.subscriptionTier || "FREE"}
+                                </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                                Joined: {new Date(user.createdAt).toLocaleDateString()}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {/* Stats Card */}
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Activity Stats</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-accent/10">
+                            <span className="text-3xl font-bold">{stats.workoutCount}</span>
+                            <span className="text-sm text-muted-foreground">Workouts Completed</span>
+                        </div>
+                        <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-accent/10">
+                            <span className="text-3xl font-bold">{stats.invoiceCount}</span>
+                            <span className="text-sm text-muted-foreground">Invoices Paid</span>
+                        </div>
+                    </CardContent>
+                </Card>
+            </div>
+
+            {/* Invoices History */}
+            <Card>
+                <CardHeader>
+                    <CardTitle>Recent Invoices</CardTitle>
+                    <CardDescription>Last 10 payments history</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Invoice #</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Date</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {invoices.length === 0 ? (
+                                <TableRow>
+                                    <TableCell colSpan={4} className="text-center h-24 text-muted-foreground">
+                                        No invoices found.
+                                    </TableCell>
+                                </TableRow>
+                            ) : (
+                                invoices.map((inv) => (
+                                    <TableRow key={inv.id}>
+                                        <TableCell className="font-mono">{inv.invoiceNumber}</TableCell>
+                                        <TableCell>
+                                            {new Intl.NumberFormat("es-CO", {
+                                                style: "currency",
+                                                currency: "COP",
+                                                minimumFractionDigits: 0,
+                                                maximumFractionDigits: 0,
+                                            }).format(inv.amount)}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge variant={inv.status === "paid" ? "default" : "outline"}>
+                                                {inv.status}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            {new Date(inv.billingDate).toLocaleDateString()}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    );
+}

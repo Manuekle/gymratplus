@@ -7,7 +7,7 @@ export async function isStreakAdmin() {
 
     if (!session?.user?.email) return false;
 
-    const adminEmail = process.env.AUTH_EMAIL_STREAK;
+    const adminEmail = process.env.AUTH_EMAIL;
 
     if (!adminEmail) return false;
 

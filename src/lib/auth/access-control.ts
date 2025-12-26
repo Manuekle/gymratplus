@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
+import { auth } from "@auth";
 import { hasAccess, SubscriptionTier } from "@/lib/subscriptions/feature-gates";
 
 /**
