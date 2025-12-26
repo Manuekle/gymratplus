@@ -40,6 +40,7 @@ export function VerificationForm({
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [countdown, setCountdown] = React.useState(0);
+  const [hasAutoSent, setHasAutoSent] = React.useState(false);
 
   // Enmascarar destino para privacidad
   const maskedDestination = React.useMemo(() => {
@@ -52,6 +53,15 @@ export function VerificationForm({
     }
     return maskPhoneNumber(destination);
   }, [type, destination]);
+
+  // Auto-send code on mount (only once)
+  React.useEffect(() => {
+    if (!hasAutoSent && !isResending) {
+      setHasAutoSent(true);
+      handleResend();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Countdown para reenvío
   React.useEffect(() => {
