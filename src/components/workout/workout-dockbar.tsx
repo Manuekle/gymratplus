@@ -88,7 +88,7 @@ export default function WorkoutDockbar({
             >
                 <motion.div
                     layout
-                    className="w-full max-w-sm bg-white/80 dark:bg-zinc-950/80 backdrop-blur-2xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl rounded-[32px] overflow-hidden cursor-pointer"
+                    className="w-full max-w-sm bg-white dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 shadow-2xl rounded-[32px] overflow-hidden cursor-pointer"
                     onClick={() => setIsExpanded(!isExpanded)}
                     style={{ borderRadius: 32 }}
                     transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -131,7 +131,7 @@ export default function WorkoutDockbar({
                                             <HugeiconsIcon icon={EquipmentGym03Icon} size={18} className="text-zinc-700 dark:text-zinc-300" />
                                         </div>
                                         <div>
-                                            <div className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                                            <div className="text-xs font-semibold text-zinc-900 dark:text-zinc-100">
                                                 {nextExercise.name}
                                             </div>
                                             <div className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -175,7 +175,7 @@ export default function WorkoutDockbar({
                                         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400 leading-none mb-1">
                                             {isPaused ? "Pausado" : "En curso"}
                                         </span>
-                                        <span className="text-base font-semibold tabular-nums leading-none text-zinc-900 dark:text-zinc-100">
+                                        <span className="text-xs font-semibold leading-none text-zinc-900 dark:text-zinc-100">
                                             {formatTime(elapsedTime)}
                                         </span>
                                     </div>
@@ -184,7 +184,7 @@ export default function WorkoutDockbar({
                                 <div className="flex items-center gap-3">
                                     {nextExercise && (
                                         <div className="hidden sm:flex flex-col items-end mr-2">
-                                            <span className="text-xs text-zinc-400 uppercase tracking-wide font-bold">Siguiente</span>
+                                            <span className="text-xs text-zinc-400 tracking-[-0.02em] font-semibold">Siguiente</span>
                                             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300 max-w-[120px] truncate text-right">
                                                 {nextExercise.name}
                                             </span>

@@ -12,15 +12,7 @@ export default function WorkoutDockbarWrapper() {
             sets: number;
             reps: number;
         };
-    } | null>({
-        id: "debug-session",
-        startTime: new Date(),
-        nextExercise: {
-            name: "Debug Press",
-            sets: 3,
-            reps: 10
-        }
-    });
+    } | null>(null);
 
     useEffect(() => {
         const fetchActiveWorkout = async () => {
@@ -28,16 +20,18 @@ export default function WorkoutDockbarWrapper() {
                 const response = await fetch("/api/workout-session/active");
                 if (response.ok) {
                     const data = await response.json();
-                    if (data.session) {
-                        setActiveWorkout({
-                            id: data.session.id,
-                            startTime: new Date(data.session.startTime),
-                            nextExercise: data.nextExercise,
-                        });
-                    }
+                    setActiveWorkout({
+                        id: data.id,
+                        startTime: new Date(data.createdAt),
+                        // TODO: Implement next exercise logic based on completed sets
+                        nextExercise: undefined,
+                    });
+                } else {
+                    setActiveWorkout(null);
                 }
             } catch (error) {
                 console.error("Error fetching active workout:", error);
+                setActiveWorkout(null);
             }
         };
 

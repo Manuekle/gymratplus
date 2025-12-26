@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { useSession } from "next-auth/react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -61,7 +60,6 @@ const DEBOUNCE_DELAY = 1000; // 1 segundo de retraso para el guardado
 
 export default function ActiveWorkoutPage() {
   const router = useRouter();
-  const { update: updateSession } = useSession();
   const [loading, setLoading] = useState(true);
   const [workoutSession, setWorkoutSession] = useState<WorkoutSession | null>(
     null,
@@ -155,7 +153,6 @@ export default function ActiveWorkoutPage() {
       setId: string,
       exerciseId: string,
       data: Partial<Set>,
-      retryCount = 0,
     ) => {
       setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
@@ -166,23 +163,11 @@ export default function ActiveWorkoutPage() {
           body: JSON.stringify({ setId, ...data }),
         });
 
-        // Si la respuesta es 401 (no autorizado), revalidar sesión y reintentar
+        // Si la respuesta es 401 (no autorizado), mostrar error
         if (response.status === 401) {
-          try {
-            await updateSession();
-            // Reintentar una vez después de revalidar
-            if (retryCount === 0) {
-              return updateSet(setId, exerciseId, data, 1);
-            }
-          } catch (error) {
-            console.error("Error revalidando sesión:", error);
-          }
-
-          // Si falla después de reintentar, agregar a la cola de reintentos
           failedRequests.current.push({ setId, exerciseId, data });
           toast.error("Error de autenticación", {
-            description:
-              "La sesión expiró. Los cambios se guardarán cuando vuelvas a la app.",
+            description: "Por favor, recarga la página e intenta de nuevo.",
           });
           setIsUpdating((prev) => ({ ...prev, [setId]: false }));
           return;
@@ -253,20 +238,13 @@ export default function ActiveWorkoutPage() {
         setIsUpdating((prev) => ({ ...prev, [setId]: false }));
       }
     },
-    [updateSession],
+    [],
   );
 
-  // Revalidar sesión cuando la página vuelve al foreground
+  // Reintentar peticiones fallidas cuando la página vuelve al foreground
   useEffect(() => {
     const handleVisibilityChange = async () => {
       if (document.visibilityState === "visible") {
-        // Revalidar la sesión cuando la página vuelve a ser visible
-        try {
-          await updateSession();
-        } catch (error) {
-          console.error("Error revalidando sesión:", error);
-        }
-
         // Reintentar peticiones fallidas
         if (failedRequests.current.length > 0) {
           const requestsToRetry = [...failedRequests.current];
@@ -285,23 +263,12 @@ export default function ActiveWorkoutPage() {
       }
     };
 
-    // También escuchar el evento focus para cuando la ventana vuelve al foco
-    const handleFocus = async () => {
-      try {
-        await updateSession();
-      } catch (error) {
-        console.error("Error revalidando sesión en focus:", error);
-      }
-    };
-
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    window.addEventListener("focus", handleFocus);
 
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      window.removeEventListener("focus", handleFocus);
     };
-  }, [updateSession, updateSet]);
+  }, [updateSet]);
 
   // Limpiar temporizadores al desmontar
   useEffect(() => {
@@ -581,11 +548,10 @@ export default function ActiveWorkoutPage() {
           {workoutSession.exercises.map((exercise) => (
             <Card
               key={exercise.id}
-              className={`${exercise.completed ? "opacity-70" : ""} ${
-                restTimer.exerciseId === exercise.id
-                  ? "border border-primary shadow-md"
-                  : ""
-              }`}
+              className={`${exercise.completed ? "opacity-70" : ""} ${restTimer.exerciseId === exercise.id
+                ? "border border-primary shadow-md"
+                : ""
+                }`}
             >
               <CardHeader className="pb-3">
                 <div className="flex flex-col gap-3">
