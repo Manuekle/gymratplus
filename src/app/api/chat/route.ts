@@ -87,8 +87,10 @@ export async function POST(req: Request) {
       return new Response("User not found", { status: 404 });
     }
 
-    // Check subscription tier - AI chat is only available for PRO and INSTRUCTOR users
-    const isPro = user.subscriptionTier === "PRO" && user.subscriptionStatus === "active";
+    // Check subscription tier - AI chat is available for PRO/INSTRUCTOR users with active or trialing status
+    const isPro =
+      user.subscriptionTier === "PRO" &&
+      (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing");
     const isInstructor = user.isInstructor === true;
 
     if (!isPro && !isInstructor) {

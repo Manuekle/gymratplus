@@ -37,8 +37,8 @@ export default function WorkoutDockbarWrapper() {
 
         fetchActiveWorkout();
 
-        // Poll every 5 seconds to check for active workout
-        const interval = setInterval(fetchActiveWorkout, 5000);
+        // Poll every 30 seconds to check for active workout (reduced from 5s to minimize API calls)
+        const interval = setInterval(fetchActiveWorkout, 30000);
 
         return () => clearInterval(interval);
     }, []);

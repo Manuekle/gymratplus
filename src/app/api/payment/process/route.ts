@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     const subscriptionRequest = {
       reason: `GymRat Plus - Plan ${planType.toUpperCase()}`,
       payer_email: session.user.email || undefined,
-      back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}&subscription_id={{subscription_id}}`,
+      back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}&subscription_id=%7B%7Bsubscription_id%7D%7D`,
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
