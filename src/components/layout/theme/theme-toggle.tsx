@@ -50,20 +50,18 @@ export function ThemeToggle() {
     >
       <HugeiconsIcon
         icon={Sun02Icon}
-        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
-          isLight
+        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-zinc-900 dark:text-zinc-100 ${isLight
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 -rotate-90 scale-50"
-        }`}
+          }`}
         aria-hidden={!isLight}
       />
       <HugeiconsIcon
         icon={Moon02Icon}
-        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-foreground ${
-          isDark
+        className={`h-[1.2rem] w-[1.2rem] absolute transition-all duration-700 ease-[cubic-bezier(0.34,1.56,0.64,1)] text-zinc-900 dark:text-zinc-100 ${isDark
             ? "opacity-100 rotate-0 scale-100"
             : "opacity-0 rotate-90 scale-50"
-        }`}
+          }`}
         aria-hidden={!isDark}
       />
       <span className="sr-only">Toggle theme</span>

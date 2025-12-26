@@ -19,10 +19,127 @@ import {
   ArtificialIntelligence02Icon,
   CheckmarkBadge02Icon,
 } from "@hugeicons/core-free-icons";
+import {
+  InstagramIcon,
+  TiktokIcon,
+  Share08Icon,
+  Cancel01Icon,
+  Time01Icon,
+  Award01Icon,
+  CloudIcon,
+  ChartAverageIcon as ChartIcon,
+} from "@hugeicons/core-free-icons";
+
+// Screenshot Carousel Component
+const screenshots = ["body", "qr", "rocco", "water"];
+
+function ScreenshotCarousel({ currentTheme }: { currentTheme: string }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % screenshots.length);
+    }, 4000); // Change every 4 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="relative w-[280px] md:w-[400px] lg:w-[480px] h-[560px] md:h-[800px] lg:h-[960px] p-8">
+      {screenshots.map((screenshot, index) => (
+        <div
+          key={screenshot}
+          className="absolute inset-0 transition-opacity duration-1000 p-8"
+          style={{
+            opacity: index === currentIndex ? 1 : 0,
+            pointerEvents: index === currentIndex ? "auto" : "none",
+          }}
+        >
+          <div className="relative w-full h-full overflow-hidden">
+            <Image
+              src={`/screenshots/${screenshot}-${currentTheme}.png`}
+              alt={`GymRat+ ${screenshot}`}
+              width={1284}
+              height={2778}
+              className="w-full h-full object-cover"
+              priority={index === 0}
+            />
+            {/* Edge blur gradients */}
+            <div className="absolute inset-0 pointer-events-none">
+              {/* Left edge */}
+              <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-white/80 to-transparent dark:from-black/80 dark:to-transparent" />
+              {/* Right edge */}
+              <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-white/80 to-transparent dark:from-black/80 dark:to-transparent" />
+              {/* Top edge */}
+              <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-white/80 to-transparent dark:from-black/80 dark:to-transparent" />
+              {/* Bottom edge */}
+              <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white/80 to-transparent dark:from-black/80 dark:to-transparent" />
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+
+// iOS Install Popup Component
+function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="w-full max-w-md backdrop-blur-2xl bg-white/95 dark:bg-black/95 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl p-5 sm:p-6 animate-in slide-in-from-bottom duration-300">
+        <div className="flex justify-between items-start mb-4 gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-2xl bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center">
+              <HugeiconsIcon icon={Share08Icon} className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700 dark:text-zinc-300" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <h3 className="font-bold text-base sm:text-lg tracking-[-0.04em] truncate">Instalar GymRat+</h3>
+              <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">Acceso rápido desde tu pantalla de inicio</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-8 h-8 flex-shrink-0 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-900 flex items-center justify-center transition-colors"
+            aria-label="Cerrar"
+          >
+            <HugeiconsIcon icon={Cancel01Icon} className="w-5 h-5" />
+          </button>
+        </div>
+        <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-2">
+            <p className="text-[11px] sm:text-xs font-medium text-zinc-700 dark:text-zinc-300">Pasos para instalar:</p>
+            <ol className="space-y-2 text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400">
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">1</span>
+                <span className="flex-1">Toca el botón de <strong>Compartir</strong> <HugeiconsIcon icon={Share08Icon} className="inline w-3 h-3" /> en la barra inferior de Safari</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">2</span>
+                <span className="flex-1">Desplázate y selecciona <strong>"Añadir a pantalla de inicio"</strong></span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">3</span>
+                <span className="flex-1">Toca <strong>"Añadir"</strong> en la esquina superior derecha</span>
+              </li>
+            </ol>
+          </div>
+          <button
+            onClick={onClose}
+            className="w-full py-2.5 sm:py-3 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 font-semibold text-xs hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function GymRatLanding() {
   const { resolvedTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [showIOSPrompt, setShowIOSPrompt] = useState(false);
   const [detectedTheme, setDetectedTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -44,6 +161,19 @@ export default function GymRatLanding() {
       } else {
         mediaQuery.addListener(handleChange);
       }
+
+      // Detect iOS and show install prompt
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const isStandalone = (window.navigator as any).standalone;
+
+      if (isIOS && !isStandalone) {
+        // Show prompt after 3 seconds
+        const timer = setTimeout(() => {
+          setShowIOSPrompt(true);
+        }, 3000);
+        return () => clearTimeout(timer);
+      }
+
       return () => {
         if (mediaQuery.removeEventListener) {
           mediaQuery.removeEventListener("change", handleChange);
@@ -89,7 +219,7 @@ export default function GymRatLanding() {
                   alt="GymRat+"
                   width={32}
                   height={32}
-                  className="rounded-lg"
+                  className="object-contain"
                 />
               ) : (
                 <div className="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-800 animate-pulse" />
@@ -168,31 +298,15 @@ export default function GymRatLanding() {
         </div>
       </section>
 
-      {/* App Preview - Clean */}
+      {/* App Preview - Screenshot Carousel */}
       <section className="relative z-10 py-20 px-6">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-center">
-            <div className="relative w-[280px]">
-              {mounted ? (
-                <div className="flex-1 relative">
-                  <Image
-                    key={currentTheme}
-                    src={
-                      currentTheme === "dark"
-                        ? "/images/phone_dark.png"
-                        : "/images/phone_light.png"
-                    }
-                    alt="GymRat+ App"
-                    width={280}
-                    height={560}
-                    className="drop-shadow-2xl"
-                    priority
-                  />
-                </div>
-              ) : (
-                <div className="flex-1 relative w-[280px] h-[560px] bg-zinc-100 dark:bg-zinc-900 rounded-3xl animate-pulse" />
-              )}
-            </div>
+            {mounted ? (
+              <ScreenshotCarousel currentTheme={currentTheme} />
+            ) : (
+              <div className="w-[280px] md:w-[320px] h-[560px] md:h-[640px] bg-zinc-100 dark:bg-zinc-900 rounded-3xl animate-pulse" />
+            )}
           </div>
         </div>
       </section>
@@ -365,26 +479,185 @@ export default function GymRatLanding() {
         </div>
       </section>
 
-      {/* Stats Section - Frosted Glass */}
+      {/* How It Works - Step by Step */}
       <section className="relative z-10 py-20 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="backdrop-blur-2xl bg-gradient-to-br from-white/50 to-zinc-100/50 dark:from-black/50 dark:to-zinc-900/50 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl p-12">
-            <div className="grid md:grid-cols-3 gap-12 text-center">
-              {[
-                { value: "10K+", label: "Usuarios Activos" },
-                { value: "50K+", label: "Entrenamientos Completados" },
-                { value: "500+", label: "Entrenadores Certificados" },
-              ].map((stat, i) => (
-                <div key={i} className="relative">
-                  <div className="text-5xl font-bold tracking-[-0.04em] bg-gradient-to-br from-zinc-900 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent mb-2">
-                    {stat.value}
+          <div className="text-center mb-16">
+            <Badge
+              variant="outline"
+              className="backdrop-blur-xl bg-white/40 dark:bg-black/40 border-zinc-300/50 dark:border-zinc-700/50 mb-4"
+            >
+              Cómo Funciona
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-4">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+                Empieza en 3 pasos
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 tracking-[-0.02em] max-w-2xl mx-auto">
+              Comienza tu transformación hoy mismo
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6 sm:gap-8">
+            {[
+              {
+                step: "1",
+                title: "Crea tu cuenta",
+                desc: "Regístrate gratis y completa tu perfil con tus objetivos y preferencias",
+              },
+              {
+                step: "2",
+                title: "Obtén tu plan",
+                desc: "Rocco AI genera un plan personalizado de entrenamiento y nutrición para ti",
+              },
+              {
+                step: "3",
+                title: "Alcanza tus metas",
+                desc: "Sigue tu progreso, ajusta tu plan y celebra cada logro en el camino",
+              },
+            ].map((item, i) => (
+              <div
+                key={i}
+                className="relative backdrop-blur-xl bg-white/40 dark:bg-black/40 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 p-6 sm:p-8 hover:bg-white/60 dark:hover:bg-black/60 transition-all duration-300"
+              >
+                <div className="absolute -top-4 left-6 w-12 h-12 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 flex items-center justify-center shadow-xl">
+                  <span className="text-2xl font-bold text-zinc-50 dark:text-zinc-900">
+                    {item.step}
+                  </span>
+                </div>
+                <div className="mt-6">
+                  <h3 className="font-bold text-xl sm:text-2xl tracking-[-0.04em] mb-3 text-zinc-900 dark:text-zinc-100">
+                    {item.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Benefits Section */}
+      <section className="relative z-10 py-20 px-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-16">
+            <Badge
+              variant="outline"
+              className="backdrop-blur-xl bg-white/40 dark:bg-black/40 border-zinc-300/50 dark:border-zinc-700/50 mb-4"
+            >
+              Beneficios
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-4">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+                ¿Por qué GymRat+?
+              </span>
+            </h2>
+          </div>
+
+          <div className="grid sm:grid-cols-2 gap-6">
+            {[
+              {
+                icon: Time01Icon,
+                title: "Ahorra Tiempo",
+                desc: "No más horas investigando rutinas o calculando calorías. Rocco AI lo hace por ti en segundos.",
+              },
+              {
+                icon: Award01Icon,
+                title: "Resultados Reales",
+                desc: "Planes basados en ciencia deportiva y nutrición, adaptados específicamente a tu cuerpo y objetivos.",
+              },
+              {
+                icon: CloudIcon,
+                title: "Siempre Contigo",
+                desc: "Accede desde cualquier dispositivo. Tu progreso se sincroniza automáticamente en la nube.",
+              },
+              {
+                icon: ChartIcon,
+                title: "Evoluciona Contigo",
+                desc: "Tus planes se ajustan automáticamente según tu progreso y cambios en tus objetivos.",
+              },
+            ].map((benefit, i) => (
+              <div
+                key={i}
+                className="group backdrop-blur-xl bg-white/40 dark:bg-black/40 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 p-6 sm:p-8 hover:bg-white/60 dark:hover:bg-black/60 transition-all duration-300 hover:shadow-2xl hover:shadow-zinc-900/10 dark:hover:shadow-zinc-100/10 hover:-translate-y-1 hover:border-zinc-300/80 dark:hover:border-zinc-700/80"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-zinc-900/10 dark:shadow-zinc-100/10">
+                    <HugeiconsIcon
+                      icon={benefit.icon}
+                      className="w-5 h-5 text-zinc-700 dark:text-zinc-300"
+                    />
                   </div>
-                  <div className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 font-medium">
-                    {stat.label}
+                  <div>
+                    <h3 className="font-bold text-lg sm:text-xl tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
+                      {benefit.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                      {benefit.desc}
+                    </p>
                   </div>
                 </div>
-              ))}
-            </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ Section */}
+      <section className="relative z-10 py-20 px-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-16">
+            <Badge
+              variant="outline"
+              className="backdrop-blur-xl bg-white/40 dark:bg-black/40 border-zinc-300/50 dark:border-zinc-700/50 mb-4"
+            >
+              FAQ
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-[-0.04em] mb-4">
+              <span className="bg-gradient-to-br from-zinc-900 to-zinc-600 dark:from-zinc-100 dark:to-zinc-400 bg-clip-text text-transparent">
+                Preguntas Frecuentes
+              </span>
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "¿Necesito experiencia previa en el gimnasio?",
+                a: "No, GymRat+ es perfecto para principiantes y expertos. Los planes se adaptan a tu nivel de experiencia.",
+              },
+              {
+                q: "¿Qué hace diferente a Rocco AI?",
+                a: "Rocco usa inteligencia artificial avanzada para crear planes personalizados basados en tus objetivos, experiencia y preferencias. Además, está disponible 24/7 para responder tus preguntas.",
+              },
+              {
+                q: "¿Puedo usar GymRat+ sin instructor?",
+                a: "Sí, la versión PRO incluye acceso completo a Rocco AI para planes personalizados. Los instructores son opcionales para quienes buscan coaching más personalizado.",
+              },
+              {
+                q: "¿Funciona en mi teléfono?",
+                a: "Sí, GymRat+ funciona en cualquier dispositivo con navegador web. También puedes instalarlo como app en iOS y Android.",
+              },
+              {
+                q: "¿Puedo cancelar mi suscripción?",
+                a: "Sí, puedes cancelar en cualquier momento desde tu perfil. No hay contratos ni penalizaciones.",
+              },
+            ].map((faq, i) => (
+              <div
+                key={i}
+                className="backdrop-blur-xl bg-white/40 dark:bg-black/40 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-5 sm:p-6 hover:bg-white/60 dark:hover:bg-black/60 transition-all duration-300"
+              >
+                <h3 className="font-bold text-sm sm:text-base tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
+                  {faq.q}
+                </h3>
+                <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                  {faq.a}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -443,8 +716,8 @@ export default function GymRatLanding() {
               <div
                 key={i}
                 className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
-                    ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
-                    : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
+                  ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                  : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
                   }`}
               >
                 {plan.popular && (
@@ -454,23 +727,23 @@ export default function GymRatLanding() {
                 )}
                 <h3
                   className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${plan.popular
-                      ? "text-zinc-100 dark:text-zinc-900"
-                      : "text-zinc-900 dark:text-zinc-100"
+                    ? "text-zinc-100 dark:text-zinc-900"
+                    : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.name}
                 </h3>
                 <div
                   className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${plan.popular
-                      ? "text-zinc-100 dark:text-zinc-900"
-                      : "text-zinc-900 dark:text-zinc-100"
+                    ? "text-zinc-100 dark:text-zinc-900"
+                    : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.price}
                   <span
                     className={`text-xs font-normal ${plan.popular
-                        ? "text-zinc-300 dark:text-zinc-700"
-                        : "text-zinc-600 dark:text-zinc-400"
+                      ? "text-zinc-300 dark:text-zinc-700"
+                      : "text-zinc-600 dark:text-zinc-400"
                       }`}
                   >
                     /mes
@@ -482,14 +755,14 @@ export default function GymRatLanding() {
                       <HugeiconsIcon
                         icon={Tick02Icon}
                         className={`w-5 h-5 ${plan.popular
-                            ? "text-zinc-300 dark:text-zinc-700"
-                            : "text-zinc-600 dark:text-zinc-400"
+                          ? "text-zinc-300 dark:text-zinc-700"
+                          : "text-zinc-600 dark:text-zinc-400"
                           }`}
                       />
                       <span
                         className={`text-xs tracking-[-0.02em] ${plan.popular
-                            ? "text-zinc-200 dark:text-zinc-800"
-                            : "text-zinc-700 dark:text-zinc-300"
+                          ? "text-zinc-200 dark:text-zinc-800"
+                          : "text-zinc-700 dark:text-zinc-300"
                           }`}
                       >
                         {feature}
@@ -499,8 +772,8 @@ export default function GymRatLanding() {
                 </ul>
                 <Button
                   className={`w-full ${plan.popular
-                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                    ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                    : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
                     }`}
                   asChild
                 >
@@ -537,27 +810,52 @@ export default function GymRatLanding() {
                 GymRat+
               </span>
             </div>
-            <div className="flex items-center justify-center gap-6 mb-3">
+            {/* Social Media Links */}
+            <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <a
+                href="https://instagram.com/gymratplus"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full backdrop-blur-xl bg-white/60 dark:bg-black/60 border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center hover:bg-white/80 dark:hover:bg-black/80 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                aria-label="Instagram"
+              >
+                <HugeiconsIcon icon={InstagramIcon} className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300" />
+              </a>
+              <a
+                href="https://tiktok.com/@gymratplus"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 sm:w-10 sm:h-10 rounded-full backdrop-blur-xl bg-white/60 dark:bg-black/60 border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center hover:bg-white/80 dark:hover:bg-black/80 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
+                aria-label="TikTok"
+              >
+                <HugeiconsIcon icon={TiktokIcon} className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300" />
+              </a>
+            </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 mb-3">
               <Link
                 href="/privacy"
-                className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-[11px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
                 Política de Privacidad
               </Link>
-              <span className="text-zinc-400 dark:text-zinc-600">•</span>
+              <span className="hidden sm:inline text-zinc-400 dark:text-zinc-600">•</span>
               <Link
                 href="/terms"
-                className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-[11px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
                 Términos de Servicio
               </Link>
             </div>
-            <p className="text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+            <p className="text-[10px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
               © 2025 GymRat+. Todos los derechos reservados.
             </p>
           </div>
         </div>
       </footer>
+
+      {/* iOS Install Prompt */}
+      {showIOSPrompt && <IOSInstallPrompt onClose={() => setShowIOSPrompt(false)} />}
 
       <style jsx global>{`
         @keyframes blob {
