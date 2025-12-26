@@ -7,6 +7,7 @@ import RedisInitializer from "@/components/init/redis-initializer";
 import { motion, AnimatePresence } from "framer-motion";
 import { StreakAlertProvider } from "@/providers/streak-alert-provider";
 import { NotificationsProvider } from "@/providers/notifications-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 export default function ClientLayout({
   children,
@@ -37,6 +38,7 @@ export default function ClientLayout({
             </AnimatePresence>
           </NotificationsProvider>
         </StreakAlertProvider>
+        <Toaster position="top-center" />
       </AuthProvider>
       <Analytics />
     </ThemeProvider>

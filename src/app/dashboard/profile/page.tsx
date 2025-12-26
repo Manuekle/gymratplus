@@ -61,6 +61,7 @@ import {
 import { Loader } from "@/components/ai-elements/loader";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { upload } from "@vercel/blob/client";
+import { AdminStreakTester } from "@/components/profile/admin-streak-tester";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -730,6 +731,8 @@ export default function ProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      <AdminStreakTester />
 
       <Tabs defaultValue="personal" className="w-full space-y-6">
         <TabsList className="grid w-full grid-cols-2 gap-1 md:grid-cols-4 h-auto p-1">

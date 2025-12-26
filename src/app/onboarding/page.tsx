@@ -1,6 +1,5 @@
 "use client";
 
-import { CustomSonner } from "@/components/custom-sonner";
 import StepOnboarding from "@/components/onboarding/step-onboarding";
 import { ThemeToggle } from "@/components/layout/theme/theme-toggle";
 import { useSession } from "next-auth/react";
@@ -34,7 +33,6 @@ export default function OnboardingPage() {
 
   return (
     <main className="flex justify-center items-center min-h-screen p-4 md:p-8 relative">
-      <CustomSonner position="top-center" />
       <div className="fixed top-4 right-4 md:top-6 md:right-6 z-50">
         <ThemeToggle />
       </div>
