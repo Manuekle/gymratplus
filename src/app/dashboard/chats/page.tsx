@@ -497,7 +497,7 @@ export default function ChatPage() {
                       <div className="flex justify-start animate-in fade-in duration-300 w-full">
                         <div className="flex items-start gap-3 w-full">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background border border-zinc-200 dark:border-zinc-800">
-                            <SparklesIcon className="h-4 w-4 animate-pulse text-zinc-500 dark:text-zinc-400" />
+                            <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4 animate-pulse text-zinc-500 dark:text-zinc-400" />
                           </div>
                           <div className="flex flex-col gap-1 py-1.5">
                             <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
