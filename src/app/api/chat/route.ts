@@ -88,8 +88,10 @@ export async function POST(req: Request) {
     }
 
     // Check subscription tier - AI chat is only available for PRO and INSTRUCTOR users
-    const allowedTiers = ["PRO", "INSTRUCTOR"];
-    if (!allowedTiers.includes(user.subscriptionTier || "FREE")) {
+    const isPro = user.subscriptionTier === "PRO" && user.subscriptionStatus === "active";
+    const isInstructor = user.isInstructor === true;
+
+    if (!isPro && !isInstructor) {
       // Return a friendly message for free users
       const upgradeMessage = {
         role: "assistant",
