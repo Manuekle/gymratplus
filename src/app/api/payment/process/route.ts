@@ -4,7 +4,6 @@ import {
   getMercadoPagoClient,
   getPreApprovalController,
   getBaseUrl,
-  MERCADOPAGO_PLAN_IDS,
 } from "@/lib/mercadopago/client";
 import { auth } from "@auth";
 
@@ -55,25 +54,9 @@ export async function POST(req: Request) {
     const preApproval = getPreApprovalController();
     const baseUrl = getBaseUrl();
 
-    // Get Plan ID from mapping
-    const planId = MERCADOPAGO_PLAN_IDS[planType.toLowerCase() as keyof typeof MERCADOPAGO_PLAN_IDS];
-
-    if (!planId) {
-      console.error("[Payment Process] Invalid plan type:", planType);
-      return NextResponse.json(
-        { error: `Plan type inválido: ${planType}` },
-        { status: 400 },
-      );
-    }
-
-    console.log("[Payment Process] Using Mercado Pago Plan ID:", {
-      planType,
-      planId,
-    });
-
-    // Create subscription in Mercado Pago using PreApproval
+    // Create subscription in Mercado Pago WITHOUT associated plan
+    // Using status "pending" to get init_point for user payment
     const subscriptionRequest = {
-      preapproval_plan_id: planId,
       reason: `GymRat Plus - Plan ${planType.toUpperCase()}`,
       payer_email: session.user.email || undefined,
       back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
@@ -90,10 +73,11 @@ export async function POST(req: Request) {
       status: "pending",
     };
 
-    console.log("[Payment Process] Creating subscription with request:", {
-      planId: subscriptionRequest.preapproval_plan_id,
-      reason: subscriptionRequest.reason,
-      payerEmail: subscriptionRequest.payer_email,
+    console.log("[Payment Process] Creating subscription:", {
+      planType,
+      amount: planType === "pro" ? 37700 : 74500,
+      currency: "COP",
+      fullRequest: subscriptionRequest,
     });
 
     let result;
@@ -104,15 +88,21 @@ export async function POST(req: Request) {
         error: mpError,
         message: mpError?.message,
         cause: mpError?.cause,
+        apiResponse: mpError?.apiResponse,
+        status: mpError?.status,
+        statusCode: mpError?.statusCode,
       });
 
       return NextResponse.json(
         {
           error: "Error al crear la suscripción en Mercado Pago",
           message: mpError?.message || "Error desconocido",
+          details: mpError?.cause?.message || mpError?.apiResponse?.message,
           ...(process.env.NODE_ENV === "development" && {
             debug: {
               error: String(mpError),
+              apiResponse: mpError?.apiResponse,
+              cause: mpError?.cause,
             },
           }),
         },

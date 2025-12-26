@@ -22,7 +22,8 @@ import {
 } from "@/components/ui/dialog";
 import { BillingHistory } from "@/components/billing/billing-history";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon, Loading02Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { Icons } from "@/components/icons";
 
 export default function BillingPage() {
   const { data: session, update: updateSession } = useSession();
@@ -321,10 +322,7 @@ export default function BillingPage() {
                       >
                         {loading === plan.id ? (
                           <>
-                            <HugeiconsIcon
-                              icon={Loading02Icon}
-                              className="mr-2 h-4 w-4 animate-spin"
-                            />
+                            <Icons.spinner className="mr-2 h-4 w-4" />
                             Procesando...
                           </>
                         ) : isCurrentPlan ? (
@@ -426,10 +424,7 @@ export default function BillingPage() {
             >
               {loading === selectedPlan?.id ? (
                 <>
-                  <HugeiconsIcon
-                    icon={Loading02Icon}
-                    className="mr-2 h-4 w-4 animate-spin"
-                  />
+                  <Icons.spinner className="mr-2 h-4 w-4" />
                   Procesando...
                 </>
               ) : (
@@ -469,10 +464,7 @@ export default function BillingPage() {
             >
               {loading === "cancel" ? (
                 <>
-                  <HugeiconsIcon
-                    icon={Loading02Icon}
-                    className="mr-2 h-4 w-4 animate-spin"
-                  />
+                  <Icons.spinner className="mr-2 h-4 w-4" />
                   Cancelando...
                 </>
               ) : (

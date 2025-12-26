@@ -28,12 +28,20 @@ export function getPreApprovalController() {
 
 // Get base URL for callbacks
 export function getBaseUrl(): string {
+    // Check if VERCEL_URL is localhost (development)
     if (process.env.VERCEL_URL) {
-        return `https://${process.env.VERCEL_URL}`;
+        const vercelUrl = process.env.VERCEL_URL;
+        // If it's localhost, use http instead of https
+        if (vercelUrl.includes('localhost')) {
+            return `http://${vercelUrl}`;
+        }
+        return `https://${vercelUrl}`;
     }
-    if (process.env.NEXT_PUBLIC_APP_URL) {
-        return process.env.NEXT_PUBLIC_APP_URL;
+    if (process.env.NEXTAUTH_URL) {
+        return process.env.NEXTAUTH_URL;
     }
+    // For local development, use http (not https) for localhost
+    // Mercado Pago sandbox accepts http://localhost
     return "http://localhost:3000";
 }
 

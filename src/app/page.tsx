@@ -95,7 +95,7 @@ function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
             </div>
             <div className="min-w-0 flex-1">
               <h3 className="font-bold text-base sm:text-lg tracking-[-0.04em] truncate">Instalar GymRat+</h3>
-              <p className="text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">Acceso rápido desde tu pantalla de inicio</p>
+              <p className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">Acceso rápido desde tu pantalla de inicio</p>
             </div>
           </div>
           <button
@@ -108,18 +108,18 @@ function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
         </div>
         <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
-            <p className="text-[11px] sm:text-xs font-medium text-zinc-700 dark:text-zinc-300">Pasos para instalar:</p>
-            <ol className="space-y-2 text-[11px] sm:text-xs text-zinc-600 dark:text-zinc-400">
+            <p className="text-xs sm:text-xs font-medium text-zinc-700 dark:text-zinc-300">Pasos para instalar:</p>
+            <ol className="space-y-2 text-xs sm:text-xs text-zinc-600 dark:text-zinc-400">
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">1</span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">1</span>
                 <span className="flex-1">Toca el botón de <strong>Compartir</strong> <HugeiconsIcon icon={Share08Icon} className="inline w-3 h-3" /> en la barra inferior de Safari</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">2</span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">2</span>
                 <span className="flex-1">Desplázate y selecciona <strong>"Añadir a pantalla de inicio"</strong></span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-[10px] font-semibold">3</span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">3</span>
                 <span className="flex-1">Toca <strong>"Añadir"</strong> en la esquina superior derecha</span>
               </li>
             </ol>
@@ -494,7 +494,7 @@ export default function GymRatLanding() {
                 Empieza en 3 pasos
               </span>
             </h2>
-            <p className="text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 tracking-[-0.02em] max-w-2xl mx-auto">
+            <p className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 tracking-[-0.02em] max-w-2xl mx-auto">
               Comienza tu transformación hoy mismo
             </p>
           </div>
@@ -530,7 +530,7 @@ export default function GymRatLanding() {
                   <h3 className="font-bold text-xl sm:text-2xl tracking-[-0.04em] mb-3 text-zinc-900 dark:text-zinc-100">
                     {item.title}
                   </h3>
-                  <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                  <p className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
                     {item.desc}
                   </p>
                 </div>
@@ -595,7 +595,7 @@ export default function GymRatLanding() {
                     <h3 className="font-bold text-lg sm:text-xl tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
                       {benefit.title}
                     </h3>
-                    <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                    <p className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
                       {benefit.desc}
                     </p>
                   </div>
@@ -650,10 +650,10 @@ export default function GymRatLanding() {
                 key={i}
                 className="backdrop-blur-xl bg-white/40 dark:bg-black/40 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-5 sm:p-6 hover:bg-white/60 dark:hover:bg-black/60 transition-all duration-300"
               >
-                <h3 className="font-bold text-sm sm:text-base tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
+                <h3 className="font-bold text-xs sm:text-base tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
                   {faq.q}
                 </h3>
-                <p className="text-xs sm:text-sm tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
+                <p className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
                   {faq.a}
                 </p>
               </div>
@@ -835,14 +835,14 @@ export default function GymRatLanding() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 mb-3">
               <Link
                 href="/privacy"
-                className="text-[11px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
                 Política de Privacidad
               </Link>
               <span className="hidden sm:inline text-zinc-400 dark:text-zinc-600">•</span>
               <Link
                 href="/terms"
-                className="text-[11px] sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+                className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
               >
                 Términos de Servicio
               </Link>
