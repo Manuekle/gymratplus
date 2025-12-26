@@ -78,10 +78,12 @@ type ExercisePlan = {
 
 export async function getOrCreateExercises(): Promise<Exercise[]> {
   try {
-    const existingExercises =
-      (await prisma.exercise.findMany()) as unknown as Exercise[];
-    if (existingExercises.length > 0) {
-      return existingExercises;
+    const count = await prisma.exercise.count();
+
+    if (count > 0) {
+      // Si ya hay ejercicios, no devolvemos nada o devolvemos un array vacío para evitar sobrecarga
+      // Si se necesita la lista completa, se debe usar la API paginada
+      return [];
     }
 
     const createdExercises = (await prisma.$transaction(
@@ -614,9 +616,9 @@ export async function createUpperLowerSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -866,9 +868,9 @@ export async function createPushPullLegsSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -976,13 +978,12 @@ export async function createWeiderSplit(
         restTime: settings.restTime,
         notes: isPlank
           ? `${muscleGroupName} - Plancha 30-60 segundos`
-          : `${muscleGroupName} - ${
-              i === 0
-                ? "Principal"
-                : i === 1
-                  ? "Secundario"
-                  : `Aislamiento ${i - 1}`
-            }`,
+          : `${muscleGroupName} - ${i === 0
+            ? "Principal"
+            : i === 1
+              ? "Secundario"
+              : `Aislamiento ${i - 1}`
+          }`,
       });
     }
 

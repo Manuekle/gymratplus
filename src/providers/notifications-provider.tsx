@@ -33,7 +33,7 @@ const globalSubscribers = new Set<(notifications: Notification[]) => void>();
 let cachedNotifications: Notification[] = [];
 let lastFetchTime = 0;
 const CACHE_DURATION = 10000; // 10 segundos de cache para tiempo real
-const POLLING_INTERVAL = 15000; // 15 segundos - polling en tiempo real
+const POLLING_INTERVAL = 60000; // 60 segundos - polling reducido para optimizar quota
 
 async function fetchNotificationsFromAPI(
   forceRefresh = false,

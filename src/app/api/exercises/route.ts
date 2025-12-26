@@ -27,7 +27,19 @@ export async function GET(request: Request) {
 
     const exercises = await prisma.exercise.findMany({
       where,
+      take: 50, // Limit results to avoid quota usage
       orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        difficulty: true,
+        equipment: true,
+        muscleGroup: true,
+        // primaryMuscles: true, // Not in schema
+        // secondaryMuscles: true, // Not in schema
+        // instructions: false // Exclude heavy fields if not necessary in list view
+      }
     });
 
     return NextResponse.json(exercises);

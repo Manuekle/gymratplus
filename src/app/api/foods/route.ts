@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
     // Note: isFavorite field doesn't exist in schema, removing filter
 
     // Optimize: add pagination and limit fields
-    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "100");
+    const limit = parseInt(req.nextUrl.searchParams.get("limit") || "50");
     const skip = parseInt(req.nextUrl.searchParams.get("skip") || "0");
 
     const [foods, total] = await Promise.all([
