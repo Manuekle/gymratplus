@@ -8,6 +8,7 @@ import {
   ArrowUp01Icon,
   ArrowLeft01Icon,
   ArrowDown01Icon,
+  SparklesIcon,
 } from "@hugeicons/core-free-icons";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -251,6 +252,17 @@ export default function ChatPage() {
                             isOwn ? "justify-end" : "justify-start",
                           )}
                         >
+                            // Hide empty assistant messages during streaming
+                          if (
+                          !isOwn &&
+                          status === "streaming" &&
+                          message.content.length === 0 &&
+                              !message.parts.some((p) => p.type.startsWith("tool"))
+                          ) {
+                              return null;
+                            }
+
+                          return (
                           <div
                             className={cn(
                               "rounded-2xl px-4 py-3 text-xs leading-relaxed w-full",
@@ -480,24 +492,46 @@ export default function ChatPage() {
                       );
                     })}
 
-                    {/* Thinking state indicator */}
-                    {(status === "streaming" || status === "submitted" ||
-                      (messages.length > 0 &&
-                        messages[messages.length - 1]?.role === "assistant" &&
-                        messages[messages.length - 1]?.parts.some(
-                          (part: any) =>
-                            part.type?.startsWith("tool-") &&
-                            (part.state === "call" || part.state === "partial-call")
-                        ))) &&
-                      messages.length > 0 && (
-                        <div className="flex justify-start animate-in fade-in duration-300">
-                          <div className="rounded-2xl px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-zinc-800 dark:text-zinc-200">
-                            <div className="flex items-center gap-2">
-                              <Icons.spinner className="h-4 w-4 animate-spin text-zinc-400" />
-                              <span className="text-xs text-zinc-500 dark:text-zinc-400">
-                                Rocco está pensando
+                    {/* Context-Aware Thinking State */}
+                    {(status === "streaming" || status === "submitted") && (
+                      <div className="flex justify-start animate-in fade-in duration-300 w-full">
+                        <div className="flex items-start gap-3 w-full">
+                          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background border border-zinc-200 dark:border-zinc-800">
+                            <SparklesIcon className="h-4 w-4 animate-pulse text-zinc-500 dark:text-zinc-400" />
+                          </div>
+                          <div className="flex flex-col gap-1 py-1.5">
+                            <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
+                              <span className="font-medium animate-pulse">
+                                {(() => {
+                                  // Determine thinking text based on active tool
+                                  const lastMessage = messages[messages.length - 1];
+                                  if (lastMessage?.role === "assistant") {
+                                    const toolPart = lastMessage.parts.find(
+                                      (p: any) =>
+                                        p.type.startsWith("tool-") &&
+                                        (p.state === "call" || p.state === "partial-call"),
+                                    ) as any;
+
+                                    if (toolPart) {
+                                      const toolName = toolPart.toolName || toolPart.type.replace("tool-", "");
+                                      switch (toolName) {
+                                        case "generateTrainingPlan":
+                                          return "Diseñando tu plan de entrenamiento...";
+                                        case "generateNutritionPlan":
+                                          return "Creando tu plan nutricional...";
+                                        case "getTodayCalories":
+                                          return "Consultando tus calorías...";
+                                        case "saveMealEntry":
+                                          return "Registrando comida...";
+                                        case "requestSuggestions":
+                                          return "Buscando sugerencias...";
+                                      }
+                                    }
+                                  }
+                                  return "Thinking";
+                                })()}
                               </span>
-                              <span className="inline-flex text-xs text-zinc-500 dark:text-zinc-400">
+                              <span className="flex">
                                 <span className="animate-bounce [animation-delay:0ms]">.</span>
                                 <span className="animate-bounce [animation-delay:150ms]">.</span>
                                 <span className="animate-bounce [animation-delay:300ms]">.</span>
@@ -505,7 +539,8 @@ export default function ChatPage() {
                             </div>
                           </div>
                         </div>
-                      )}
+                      </div>
+                    )}
 
                     <div ref={endRef} className="min-h-[24px] min-w-[24px] shrink-0" />
                   </div>
