@@ -1,6 +1,6 @@
 import { ImageResponse } from "next/og";
 
-// export const runtime = "edge";
+export const runtime = "edge";
 
 export const alt = "GymRat+ - Transforma tu cuerpo con IA";
 export const size = {
@@ -10,7 +10,7 @@ export const size = {
 export const contentType = "image/png";
 
 export async function GET() {
-	// Fetch Geist fonts from Google Fonts
+	// Fetch Geist fonts
 	const geistRegular = await fetch(
 		new URL(
 			"https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf",
@@ -22,6 +22,12 @@ export async function GET() {
 			"https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RHOQ4nQ.ttf",
 		),
 	).then((res) => res.arrayBuffer());
+
+	const features = [
+		{ icon: "AI", title: "Rocco IA", desc: "Tu entrenador 24/7" },
+		{ icon: "N", title: "Nutrición", desc: "Tracking automático" },
+		{ icon: "P", title: "Planes", desc: "Personalizados" },
+	];
 
 	return new ImageResponse(
 		<div
@@ -37,6 +43,7 @@ export async function GET() {
 				position: "relative",
 				overflow: "hidden",
 				fontFamily: '"Geist", sans-serif',
+				padding: "60px",
 			}}
 		>
 			{/* Animated Liquid Glass Blobs */}
@@ -101,127 +108,94 @@ export async function GET() {
 					textAlign: "center",
 				}}
 			>
-				{/* Glass Badge */}
-				<div
-					style={{
-						display: "flex",
-						alignItems: "center",
-						gap: "8px",
-						padding: "8px 16px",
-						borderRadius: "9999px",
-						background: "rgba(255,255,255,0.4)",
-						backdropFilter: "blur(40px)",
-						border: "1px solid rgba(228,228,231,0.5)",
-						boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
-						marginBottom: "32px",
-					}}
-				>
-					<div
-						style={{
-							width: "8px",
-							height: "8px",
-							borderRadius: "50%",
-							background: "linear-gradient(135deg, #52525b, #a1a1aa)",
-						}}
-					/>
-					<span
-						style={{
-							fontSize: "14px",
-							fontWeight: 500,
-							letterSpacing: "-0.02em",
-							color: "#3f3f46",
-						}}
-					>
-						Plataforma inteligente de fitness
-					</span>
-				</div>
-
 				{/* Main Heading */}
 				<h1
 					style={{
-						fontSize: "96px",
+						fontSize: "60px",
 						fontWeight: 800,
 						letterSpacing: "-0.04em",
 						margin: 0,
-						marginBottom: "16px",
+						marginBottom: "8px",
 						background:
 							"linear-gradient(135deg, #18181b 0%, #3f3f46 50%, #52525b 100%)",
 						backgroundClip: "text",
 						color: "transparent",
-						lineHeight: 1,
+						lineHeight: 1.1,
 					}}
 				>
-					Transforma
+					Todo lo que necesitas
 				</h1>
 				<h2
 					style={{
-						fontSize: "96px",
+						fontSize: "60px",
 						fontWeight: 800,
 						letterSpacing: "-0.04em",
 						margin: 0,
 						color: "#27272a",
-						lineHeight: 1,
+						lineHeight: 1.1,
 					}}
 				>
-					tu cuerpo
+					para transformarte
 				</h2>
 
-				{/* Tagline */}
-				<p
-					style={{
-						fontSize: "20px",
-						color: "#52525b",
-						marginTop: "24px",
-						letterSpacing: "-0.01em",
-						fontWeight: 500,
-						maxWidth: "600px",
-					}}
-				>
-					La plataforma que conecta entrenadores y atletas con IA
-				</p>
-
-				{/* Stats Row */}
+				{/* Features Grid */}
 				<div
 					style={{
 						display: "flex",
-						gap: "48px",
-						marginTop: "48px",
+						gap: "20px",
+						marginTop: "40px",
 					}}
 				>
-					{[
-						{ value: "10K+", label: "Usuarios" },
-						{ value: "50K+", label: "Entrenamientos" },
-						{ value: "24/7", label: "IA Disponible" },
-					].map((stat) => (
+					{features.map((feature) => (
 						<div
-							key={stat.label}
+							key={feature.title}
 							style={{
 								display: "flex",
 								flexDirection: "column",
 								alignItems: "center",
+								padding: "20px",
+								borderRadius: "20px",
+								background: "rgba(255,255,255,0.6)",
+								backdropFilter: "blur(40px)",
+								border: "1px solid rgba(228,228,231,0.5)",
+								width: "180px",
 							}}
 						>
-							<span
+							<div
 								style={{
-									fontSize: "40px",
+									width: "48px",
+									height: "48px",
+									borderRadius: "12px",
+									background: "linear-gradient(135deg, #18181b 0%, #27272a 100%)",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									fontSize: "20px",
 									fontWeight: 700,
-									background: "linear-gradient(135deg, #18181b, #52525b)",
-									backgroundClip: "text",
-									color: "transparent",
+									color: "#fafafa",
+									marginBottom: "10px",
 								}}
 							>
-								{stat.value}
-							</span>
-							<span
+								{feature.icon}
+							</div>
+							<div
 								style={{
-									fontSize: "14px",
-									color: "#71717a",
-									marginTop: "4px",
-									fontWeight: 500,
+									fontSize: "16px",
+									fontWeight: 700,
+									color: "#18181b",
+									marginBottom: "4px",
 								}}
 							>
-								{stat.label}
-							</span>
+								{feature.title}
+							</div>
+							<div
+								style={{
+									fontSize: "12px",
+									color: "#71717a",
+								}}
+							>
+								{feature.desc}
+							</div>
 						</div>
 					))}
 				</div>
@@ -231,22 +205,21 @@ export async function GET() {
 			<div
 				style={{
 					position: "absolute",
-					bottom: "40px",
-					right: "60px",
+					bottom: "30px",
+					right: "40px",
 					display: "flex",
 					alignItems: "center",
-					gap: "12px",
-					padding: "12px 20px",
-					borderRadius: "16px",
+					gap: "10px",
+					padding: "10px 16px",
+					borderRadius: "14px",
 					background: "rgba(255,255,255,0.6)",
 					backdropFilter: "blur(40px)",
 					border: "1px solid rgba(228,228,231,0.5)",
-					boxShadow: "0 10px 25px rgba(0,0,0,0.05)",
 				}}
 			>
 				<span
 					style={{
-						fontSize: "24px",
+						fontSize: "20px",
 						fontWeight: 700,
 						color: "#18181b",
 						letterSpacing: "-0.04em",

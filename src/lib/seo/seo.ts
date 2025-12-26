@@ -6,7 +6,8 @@ const SITE_CONFIG = {
   description:
     "Aplicación de fitness para seguimiento de entrenamientos y nutrición",
   url: "https://gymratplus.com",
-  ogImage: "/og-image.webp",
+  ogImage: "/banners/opengraph",
+  twitterImage: "/banners/twitter",
   twitterHandle: "@gymratplus",
 } as const;
 
@@ -64,12 +65,18 @@ export function generateMetadata(config: SEOConfig = {}): Metadata {
     ? `${SITE_CONFIG.url}${url.startsWith("/") ? url : `/${url}`}`
     : SITE_CONFIG.url;
 
-  // Construir imagen completa
+  // Construir imagen completa - asegurar URLs absolutas para banners
   const ogImageUrl = image
     ? image.startsWith("http")
       ? image
       : `${SITE_CONFIG.url}${image.startsWith("/") ? image : `/${image}`}`
     : `${SITE_CONFIG.url}${SITE_CONFIG.ogImage}`;
+
+  const twitterImageUrl = twitter?.image
+    ? twitter.image.startsWith("http")
+      ? twitter.image
+      : `${SITE_CONFIG.url}${twitter.image.startsWith("/") ? twitter.image : `/${twitter.image}`}`
+    : `${SITE_CONFIG.url}${SITE_CONFIG.twitterImage}`;
 
   // Procesar keywords
   const keywordsArray = Array.isArray(keywords)
@@ -111,7 +118,7 @@ export function generateMetadata(config: SEOConfig = {}): Metadata {
       card: twitter?.card || "summary_large_image",
       title: twitter?.title || fullTitle,
       description: twitter?.description || metaDescription,
-      images: twitter?.image ? [twitter.image] : [ogImageUrl],
+      images: [twitterImageUrl],
       creator: SITE_CONFIG.twitterHandle,
     },
     alternates: {

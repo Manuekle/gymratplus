@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "GymRat+ - La plataforma de fitness con IA";
+export const alt = "GymRat+ - Plataforma Inteligente de Fitness con IA";
 export const size = {
 	width: 1200,
 	height: 630,
@@ -10,7 +10,7 @@ export const size = {
 export const contentType = "image/png";
 
 export async function GET() {
-	// Fetch Geist fonts from Google Fonts
+	// Fetch Geist fonts
 	const geistRegular = await fetch(
 		new URL(
 			"https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf",
@@ -32,48 +32,63 @@ export async function GET() {
 				flexDirection: "column",
 				alignItems: "center",
 				justifyContent: "center",
-				background: "#09090b",
+				background:
+					"linear-gradient(135deg, #fafafa 0%, #ffffff 50%, #f4f4f5 100%)",
 				position: "relative",
 				overflow: "hidden",
 				fontFamily: '"Geist", sans-serif',
+				padding: "60px",
 			}}
 		>
-			{/* Large Gradient Circle */}
+			{/* Animated Liquid Glass Blobs */}
 			<div
 				style={{
 					position: "absolute",
-					width: "1000px",
-					height: "1000px",
-					borderRadius: "50%",
+					top: "-100px",
+					left: "-100px",
+					width: "400px",
+					height: "400px",
 					background:
-						"radial-gradient(circle, rgba(39,39,42,0.6) 0%, rgba(24,24,27,0.3) 40%, transparent 70%)",
-					filter: "blur(40px)",
+						"radial-gradient(circle, rgba(228,228,231,0.4) 0%, rgba(212,212,216,0.2) 70%)",
+					borderRadius: "50%",
+					filter: "blur(60px)",
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					top: "80px",
+					right: "-100px",
+					width: "400px",
+					height: "400px",
+					background:
+						"radial-gradient(circle, rgba(212,212,216,0.3) 0%, rgba(228,228,231,0.2) 70%)",
+					borderRadius: "50%",
+					filter: "blur(60px)",
+				}}
+			/>
+			<div
+				style={{
+					position: "absolute",
+					bottom: "-100px",
+					left: "33%",
+					width: "400px",
+					height: "400px",
+					background:
+						"radial-gradient(circle, rgba(228,228,231,0.3) 0%, rgba(212,212,216,0.2) 70%)",
+					borderRadius: "50%",
+					filter: "blur(60px)",
 				}}
 			/>
 
-			{/* Accent Lines */}
+			{/* Glass Grid Pattern */}
 			<div
 				style={{
 					position: "absolute",
-					top: "50%",
-					left: "50%",
-					transform: "translate(-50%, -50%)",
-					width: "800px",
-					height: "800px",
-					borderRadius: "50%",
-					border: "1px solid rgba(255,255,255,0.05)",
-				}}
-			/>
-			<div
-				style={{
-					position: "absolute",
-					top: "50%",
-					left: "50%",
-					transform: "translate(-50%, -50%)",
-					width: "600px",
-					height: "600px",
-					borderRadius: "50%",
-					border: "1px solid rgba(255,255,255,0.03)",
+					inset: 0,
+					backgroundImage:
+						"linear-gradient(rgba(0,0,0,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.015) 1px, transparent 1px)",
+					backgroundSize: "40px 40px",
 				}}
 			/>
 
@@ -84,93 +99,114 @@ export async function GET() {
 					flexDirection: "column",
 					alignItems: "center",
 					zIndex: 10,
+					textAlign: "center",
 				}}
 			>
-				{/* Icon */}
+				{/* Glass Badge */}
 				<div
 					style={{
-						width: "80px",
-						height: "80px",
-						borderRadius: "20px",
-						background: "linear-gradient(135deg, #3f3f46, #27272a)",
 						display: "flex",
 						alignItems: "center",
-						justifyContent: "center",
+						gap: "8px",
+						padding: "6px 14px",
+						borderRadius: "9999px",
+						background: "rgba(255,255,255,0.4)",
+						backdropFilter: "blur(40px)",
+						border: "1px solid rgba(228,228,231,0.5)",
 						marginBottom: "32px",
-						fontSize: "40px",
-						boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
 					}}
 				>
-					🏋️
+					<div
+						style={{
+							width: "6px",
+							height: "6px",
+							borderRadius: "50%",
+							background: "linear-gradient(135deg, #52525b, #a1a1aa)",
+						}}
+					/>
+					<span
+						style={{
+							fontSize: "12px",
+							fontWeight: 500,
+							letterSpacing: "-0.02em",
+							color: "#3f3f46",
+						}}
+					>
+						Plataforma inteligente de fitness
+					</span>
 				</div>
 
-				{/* Brand */}
+				{/* Main Heading */}
 				<h1
 					style={{
-						fontSize: "96px",
+						fontSize: "72px",
 						fontWeight: 800,
 						letterSpacing: "-0.04em",
 						margin: 0,
-						color: "#fafafa",
+						marginBottom: "12px",
+						background:
+							"linear-gradient(135deg, #18181b 0%, #3f3f46 50%, #52525b 100%)",
+						backgroundClip: "text",
+						color: "transparent",
+						lineHeight: 1,
 					}}
 				>
-					GymRat+
+					Transforma
 				</h1>
+				<h2
+					style={{
+						fontSize: "72px",
+						fontWeight: 800,
+						letterSpacing: "-0.04em",
+						margin: 0,
+						color: "#27272a",
+						lineHeight: 1,
+					}}
+				>
+					tu cuerpo
+				</h2>
 
 				{/* Tagline */}
 				<p
 					style={{
-						fontSize: "28px",
-						color: "#71717a",
-						marginTop: "16px",
+						fontSize: "18px",
+						color: "#52525b",
+						marginTop: "20px",
 						letterSpacing: "-0.01em",
+						fontWeight: 500,
+						maxWidth: "700px",
 					}}
 				>
-					Tu coach personal impulsado por IA
+					Tu coach personal impulsado por IA, disponible 24/7
 				</p>
+			</div>
 
-				{/* Stats Row */}
-				<div
+			{/* Logo Badge Bottom Right */}
+			<div
+				style={{
+					position: "absolute",
+					bottom: "30px",
+					right: "40px",
+					display: "flex",
+					alignItems: "center",
+					gap: "10px",
+					padding: "10px 16px",
+					borderRadius: "14px",
+					background: "rgba(255,255,255,0.6)",
+					backdropFilter: "blur(40px)",
+					border: "1px solid rgba(228,228,231,0.5)",
+				}}
+			>
+				<span
 					style={{
-						display: "flex",
-						gap: "48px",
-						marginTop: "48px",
+						fontSize: "20px",
+						fontWeight: 700,
+						color: "#18181b",
+						letterSpacing: "-0.04em",
 					}}
 				>
-					{[
-						{ value: "10K+", label: "Usuarios" },
-						{ value: "50K+", label: "Entrenamientos" },
-						{ value: "24/7", label: "IA Disponible" },
-					].map((stat) => (
-						<div
-							key={stat.label}
-							style={{
-								display: "flex",
-								flexDirection: "column",
-								alignItems: "center",
-							}}
-						>
-							<span
-								style={{
-									fontSize: "36px",
-									fontWeight: 700,
-									color: "#a1a1aa",
-								}}
-							>
-								{stat.value}
-							</span>
-							<span
-								style={{
-									fontSize: "16px",
-									color: "#52525b",
-									marginTop: "4px",
-								}}
-							>
-								{stat.label}
-							</span>
-						</div>
-					))}
-				</div>
+					GymRat+
+				</span>
 			</div>
 		</div>,
 		{
