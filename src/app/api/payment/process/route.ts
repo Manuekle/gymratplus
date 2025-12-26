@@ -1,28 +1,27 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
-import { getPayPalClient, getBaseUrl } from "@/lib/paypal/client";
-import { auth } from "@auth";
 import {
-  SubscriptionsController,
-  ApplicationContextUserAction,
-  ExperienceContextShippingPreference,
-  PayeePaymentMethodPreference,
-} from "@paypal/paypal-server-sdk";
+  getMercadoPagoClient,
+  getPreApprovalController,
+  getBaseUrl,
+  MERCADOPAGO_PLAN_IDS,
+} from "@/lib/mercadopago/client";
+import { auth } from "@auth";
 
 export async function POST(req: Request) {
   try {
-    // Validate PayPal credentials first
+    // Validate Mercado Pago credentials first
     try {
-      getPayPalClient();
+      getMercadoPagoClient();
     } catch (error) {
-      console.error("PayPal client initialization failed:", error);
+      console.error("Mercado Pago client initialization failed:", error);
       return NextResponse.json(
         {
-          error: "Configuración de PayPal incompleta",
+          error: "Configuración de Mercado Pago incompleta",
           message:
             error instanceof Error
               ? error.message
-              : "Error al inicializar cliente PayPal",
+              : "Error al inicializar cliente Mercado Pago",
         },
         { status: 500 },
       );
@@ -53,21 +52,11 @@ export async function POST(req: Request) {
       );
     }
 
-    const paypalClient = getPayPalClient();
-    const subscriptionsController = new SubscriptionsController(paypalClient);
+    const preApproval = getPreApprovalController();
     const baseUrl = getBaseUrl();
 
-    // Map plan types to real PayPal Plan IDs (both are monthly subscriptions)
-    // NOTE: These Plan IDs must exist in your PayPal Business account
-    // To create plans, visit: https://www.paypal.com/billing/plans
-    const PAYPAL_PLAN_IDS: Record<string, string> = {
-      pro: process.env.PAYPAL_PLAN_ID_PRO || "P-3NC83718PK617725CNFENPCA",
-      instructor:
-        process.env.PAYPAL_PLAN_ID_INSTRUCTOR || "P-8D459588D1260134BNFENROI",
-    };
-
     // Get Plan ID from mapping
-    const planId = PAYPAL_PLAN_IDS[planType.toLowerCase()];
+    const planId = MERCADOPAGO_PLAN_IDS[planType.toLowerCase() as keyof typeof MERCADOPAGO_PLAN_IDS];
 
     if (!planId) {
       console.error("[Payment Process] Invalid plan type:", planType);
@@ -77,88 +66,53 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("[Payment Process] Using PayPal Plan ID:", {
+    console.log("[Payment Process] Using Mercado Pago Plan ID:", {
       planType,
       planId,
-      isFromEnv:
-        planType === "pro"
-          ? !!process.env.PAYPAL_PLAN_ID_PRO
-          : !!process.env.PAYPAL_PLAN_ID_INSTRUCTOR,
     });
 
-    // Crear la suscripción en PayPal usando el Plan ID existente
+    // Create subscription in Mercado Pago using PreApproval
     const subscriptionRequest = {
-      planId: planId,
-      startTime: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 días de prueba gratis
-      subscriber: {
-        name: {
-          givenName: session.user.name?.split(" ")[0] || "Usuario",
-          surname: session.user.name?.split(" ").slice(1).join(" ") || "",
+      preapproval_plan_id: planId,
+      reason: `GymRat Plus - Plan ${planType.toUpperCase()}`,
+      payer_email: session.user.email || undefined,
+      back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: planType === "pro" ? 9.99 : 19.99,
+        currency_id: "USD",
+        free_trial: {
+          frequency: 14,
+          frequency_type: "days",
         },
-        emailAddress: session.user.email || undefined,
       },
-      applicationContext: {
-        brandName: "GymRat Plus",
-        locale: "es-ES",
-        shippingPreference: ExperienceContextShippingPreference.NoShipping,
-        userAction: ApplicationContextUserAction.SubscribeNow,
-        paymentMethod: {
-          payeePreferred: PayeePaymentMethodPreference.ImmediatePaymentRequired,
-        },
-        returnUrl: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
-        cancelUrl: `${baseUrl}/dashboard/profile/billing?canceled=true`,
-      },
+      status: "pending",
     };
 
     console.log("[Payment Process] Creating subscription with request:", {
-      planId: subscriptionRequest.planId,
-      startTime: subscriptionRequest.startTime,
-      subscriberName: subscriptionRequest.subscriber.name,
-      returnUrl: subscriptionRequest.applicationContext.returnUrl,
+      planId: subscriptionRequest.preapproval_plan_id,
+      reason: subscriptionRequest.reason,
+      payerEmail: subscriptionRequest.payer_email,
     });
 
     let result;
     try {
-      result = await subscriptionsController.createSubscription({
-        body: subscriptionRequest,
+      result = await preApproval.create({ body: subscriptionRequest });
+    } catch (mpError: any) {
+      console.error("[Payment Process] Mercado Pago SDK Error:", {
+        error: mpError,
+        message: mpError?.message,
+        cause: mpError?.cause,
       });
-    } catch (paypalError: any) {
-      console.error("[Payment Process] PayPal SDK Error:", {
-        error: paypalError,
-        message: paypalError?.message,
-        statusCode: paypalError?.statusCode,
-        body: paypalError?.body,
-        result: paypalError?.result,
-      });
-
-      // Try to extract meaningful error message
-      let errorMessage = "Error al comunicarse con PayPal";
-      let errorDetails = "";
-
-      if (paypalError?.body) {
-        try {
-          const errorBody =
-            typeof paypalError.body === "string"
-              ? JSON.parse(paypalError.body)
-              : paypalError.body;
-          errorMessage =
-            errorBody.message || errorBody.error_description || errorMessage;
-          errorDetails = JSON.stringify(errorBody, null, 2);
-        } catch {
-          errorDetails = String(paypalError.body);
-        }
-      }
 
       return NextResponse.json(
         {
-          error: "Error al crear la suscripción en PayPal",
-          message: errorMessage,
-          details: errorDetails,
-          planId: planId,
+          error: "Error al crear la suscripción en Mercado Pago",
+          message: mpError?.message || "Error desconocido",
           ...(process.env.NODE_ENV === "development" && {
             debug: {
-              statusCode: paypalError?.statusCode,
-              paypalError: String(paypalError),
+              error: String(mpError),
             },
           }),
         },
@@ -166,62 +120,29 @@ export async function POST(req: Request) {
       );
     }
 
-    console.log("[Payment Process] PayPal response:", {
-      statusCode: result.statusCode,
-      subscriptionId: result.result?.id,
-      links: result.result?.links?.map((l) => ({ rel: l.rel, href: l.href })),
+    console.log("[Payment Process] Mercado Pago response:", {
+      id: result.id,
+      status: result.status,
+      initPoint: result.init_point,
     });
 
-    if (result.statusCode !== 201 || !result.result) {
-      const errorDetails = result.body
-        ? JSON.stringify(result.body)
-        : "Sin detalles";
-      console.error("[Payment Process] Unexpected response:", {
-        statusCode: result.statusCode,
-        body: result.body,
-        result: result.result,
-      });
-
-      return NextResponse.json(
-        {
-          error: "Respuesta inesperada de PayPal",
-          message: `Status code: ${result.statusCode}`,
-          details: errorDetails,
-          ...(process.env.NODE_ENV === "development" && {
-            debug: {
-              statusCode: result.statusCode,
-              body: result.body,
-            },
-          }),
-        },
-        { status: 500 },
-      );
+    if (!result.init_point) {
+      throw new Error("No se encontró el link de aprobación de Mercado Pago");
     }
 
-    const subscription = result.result;
-
-    // Buscar el link de aprobación en la respuesta
-    const approvalLink = subscription.links?.find(
-      (link) => link.rel === "approve",
-    );
-
-    if (!approvalLink?.href) {
-      throw new Error("No se encontró el link de aprobación de PayPal");
-    }
-
-    // Calcular fechas
+    // Calculate dates
     const trialEndsAt = new Date();
     trialEndsAt.setDate(trialEndsAt.getDate() + 14);
 
     const currentPeriodEnd = new Date();
-    // Both plans are monthly subscriptions
     currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
 
-    // Actualizar usuario con información de la suscripción (estado pendiente hasta aprobación)
+    // Update user with subscription information (pending until approval)
     await prisma.user.update({
       where: { id: session.user.id },
       data: {
         subscriptionStatus: "trialing",
+        subscriptionTier: planType === "pro" ? "PRO" : "INSTRUCTOR",
         planType,
         trialEndsAt,
         currentPeriodEnd,
@@ -229,17 +150,17 @@ export async function POST(req: Request) {
       },
     });
 
-    // Si hay datos del instructor, guardarlos también
+    // If there's instructor data, save it
     if (instructorData && Object.keys(instructorData).length > 0) {
-      // Esto se manejará en el endpoint de registro de instructor
-      // Por ahora solo retornamos la URL de aprobación
+      // This will be handled in the instructor registration endpoint
+      // For now just return the approval URL
     }
 
     return NextResponse.json({
       success: true,
-      message: "Redirigiendo a PayPal para completar el pago",
-      approvalUrl: approvalLink.href,
-      subscriptionId: subscription.id,
+      message: "Redirigiendo a Mercado Pago para completar el pago",
+      approvalUrl: result.init_point,
+      subscriptionId: result.id,
       subscription: {
         status: "trialing",
         planType,
@@ -250,34 +171,16 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Error processing payment:", error);
 
-    // Extraer más información del error
     let errorMessage = "Error desconocido";
-    let errorDetails = "";
 
     if (error instanceof Error) {
       errorMessage = error.message;
-
-      // Si el error tiene más información (como de PayPal SDK)
-      if ("body" in error && typeof error.body === "string") {
-        try {
-          const errorBody = JSON.parse(error.body);
-          errorDetails = errorBody.error_description || errorBody.message || "";
-        } catch {
-          errorDetails = error.body;
-        }
-      } else if ("result" in error && error.result) {
-        errorDetails = JSON.stringify(error.result);
-      }
     }
 
     return new NextResponse(
       JSON.stringify({
         error: "Error al procesar la suscripción",
         message: errorMessage,
-        details:
-          errorDetails ||
-          (error instanceof Error ? error.message : "Error desconocido"),
-        // Incluir información adicional para debugging
         ...(process.env.NODE_ENV === "development" && {
           stack: error instanceof Error ? error.stack : undefined,
         }),

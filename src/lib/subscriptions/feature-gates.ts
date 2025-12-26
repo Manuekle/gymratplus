@@ -155,24 +155,25 @@ export function getTierPrice(tier: string): string {
 }
 
 /**
- * PayPal Plan ID to Subscription Tier mapping
+ * Mercado Pago Plan ID to Subscription Tier mapping
  *
- * IMPORTANT: Update these with real Plan IDs from PayPal when ready for production
- * For development, these placeholders will work with the webhook logic
+ * IMPORTANT: Update these with real Plan IDs from Mercado Pago when ready for production
  */
-export const PAYPAL_PLAN_MAPPING: Record<string, SubscriptionTier> = {
-  // Real PayPal Plan IDs from your account
-  "P-3NC83718PK617725CNFENPCA": SubscriptionTier.PRO, // GymRat+ Pro - $9.99/mes
-  "P-8D459588D1260134BNFENROI": SubscriptionTier.INSTRUCTOR, // GymRat+ Instructor - $19.99/mes
+
+export const MERCADOPAGO_PLAN_MAPPING: Record<string, SubscriptionTier> = {
+  // Real Mercado Pago Plan IDs from your account
+  [process.env.MERCADOPAGO_PLAN_ID_PRO || ""]: SubscriptionTier.PRO,
+  [process.env.MERCADOPAGO_PLAN_ID_INSTRUCTOR || ""]:
+    SubscriptionTier.INSTRUCTOR,
 };
 
 /**
- * Get subscription tier from PayPal plan ID
+ * Get subscription tier from Mercado Pago plan ID
  */
-export function getTierFromPayPalPlan(planId: string): SubscriptionTier {
-  if (planId === process.env.PAYPAL_PLAN_ID_PRO) return SubscriptionTier.PRO;
-  if (planId === process.env.PAYPAL_PLAN_ID_INSTRUCTOR)
+export function getTierFromMercadoPagoPlan(planId: string): SubscriptionTier {
+  if (planId === process.env.MERCADOPAGO_PLAN_ID_PRO) return SubscriptionTier.PRO;
+  if (planId === process.env.MERCADOPAGO_PLAN_ID_INSTRUCTOR)
     return SubscriptionTier.INSTRUCTOR;
 
-  return PAYPAL_PLAN_MAPPING[planId] || SubscriptionTier.FREE;
+  return MERCADOPAGO_PLAN_MAPPING[planId] || SubscriptionTier.FREE;
 }
