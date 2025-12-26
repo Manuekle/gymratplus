@@ -244,6 +244,19 @@ export default function ChatPage() {
 
                     {messages.map((message) => {
                       const isOwn = message.role === "user";
+                      const hasTextContent = message.parts.some(
+                        (p) => p.type === "text" && p.text && p.text.length > 0,
+                      );
+                      // Hide empty assistant messages during streaming
+                      if (
+                        !isOwn &&
+                        status === "streaming" &&
+                        !hasTextContent &&
+                        !message.parts.some((p) => p.type.startsWith("tool"))
+                      ) {
+                        return null;
+                      }
+
                       return (
                         <div
                           key={message.id}
@@ -252,17 +265,6 @@ export default function ChatPage() {
                             isOwn ? "justify-end" : "justify-start",
                           )}
                         >
-                            // Hide empty assistant messages during streaming
-                          if (
-                          !isOwn &&
-                          status === "streaming" &&
-                          message.content.length === 0 &&
-                              !message.parts.some((p) => p.type.startsWith("tool"))
-                          ) {
-                              return null;
-                            }
-
-                          return (
                           <div
                             className={cn(
                               "rounded-2xl px-4 py-3 text-xs leading-relaxed w-full",

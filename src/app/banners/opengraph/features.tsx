@@ -10,13 +10,13 @@ export const size = {
 export const contentType = "image/png";
 
 export async function GET() {
-    // Fetch Inter fonts
-    const interRegular = await fetch(
-        "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.15/files/inter-latin-400-normal.woff"
+    // Fetch Geist fonts from Google Fonts
+    const geistRegular = await fetch(
+        new URL("https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RnOM4nQ.ttf")
     ).then((res) => res.arrayBuffer());
 
-    const interBold = await fetch(
-        "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.15/files/inter-latin-800-normal.woff"
+    const geistBold = await fetch(
+        new URL("https://fonts.gstatic.com/s/geist/v4/gyBhhwUxId8gMGYQMKR3pzfaWI_RHOQ4nQ.ttf")
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
@@ -31,7 +31,7 @@ export async function GET() {
                 background: "linear-gradient(135deg, #fafafa 0%, #ffffff 50%, #f4f4f5 100%)",
                 position: "relative",
                 overflow: "hidden",
-                fontFamily: '"Inter", system-ui, sans-serif',
+                fontFamily: '"Geist", sans-serif',
             }}
         >
             {/* Animated Liquid Glass Blobs */}
@@ -250,14 +250,14 @@ export async function GET() {
             ...size,
             fonts: [
                 {
-                    name: "Inter",
-                    data: interRegular,
+                    name: "Geist",
+                    data: geistRegular,
                     style: "normal",
                     weight: 400,
                 },
                 {
-                    name: "Inter",
-                    data: interBold,
+                    name: "Geist",
+                    data: geistBold,
                     style: "normal",
                     weight: 800,
                 },
