@@ -6,19 +6,19 @@ import { differenceInDays } from "date-fns";
  * @returns "Hoy", "Ayer", or "Hace X días"
  */
 export function formatRelativeDate(date: Date | string): string {
-    const sessionDate = new Date(date);
-    sessionDate.setHours(0, 0, 0, 0);
+  const sessionDate = new Date(date);
+  sessionDate.setHours(0, 0, 0, 0);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
 
-    const daysDiff = differenceInDays(today, sessionDate);
+  const daysDiff = differenceInDays(today, sessionDate);
 
-    if (daysDiff === 0) {
-        return "Hoy";
-    }
-    if (daysDiff === 1) {
-        return "Ayer";
-    }
-    return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
+  if (daysDiff === 0) {
+    return "Hoy";
+  }
+  if (daysDiff === 1) {
+    return "Ayer";
+  }
+  return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"}`;
 }

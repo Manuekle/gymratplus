@@ -37,7 +37,11 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
-import { CheckmarkCircle02Icon, Cancel01Icon, UserSearchIcon } from "@hugeicons/core-free-icons";
+import {
+  CheckmarkCircle02Icon,
+  Cancel01Icon,
+  UserSearchIcon,
+} from "@hugeicons/core-free-icons";
 import { sendErrorEmail } from "@/app/actions/email";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
 import { useSession } from "next-auth/react";
@@ -51,10 +55,12 @@ export default function ChatPage() {
 
   // Check if user is FREE tier
   const user = session?.user as any;
-  const isFreeUser = !user?.subscriptionTier || user.subscriptionTier === "FREE";
+  const isFreeUser =
+    !user?.subscriptionTier || user.subscriptionTier === "FREE";
 
   // Auto-scroll functionality
-  const { containerRef, endRef, isAtBottom, scrollToBottom } = useScrollToBottom<HTMLDivElement>();
+  const { containerRef, endRef, isAtBottom, scrollToBottom } =
+    useScrollToBottom<HTMLDivElement>();
 
   // Ensure we have a persistent ID for the current session if not selecting a history chat
   const [currentSessionId] = useState(() =>
@@ -66,26 +72,27 @@ export default function ChatPage() {
       : selectedChatId;
 
   // AI Chat configuration
-  const { messages, sendMessage, status, addToolApprovalResponse } =
-    useChat({
-      id: activeChatId,
-      transport: new DefaultChatTransport({
-        api: "/api/chat",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: {
-          id: activeChatId,
-        },
-      }),
-      onError: async (error) => {
-        console.error("❌ [Chat Error]", error);
-        toast.error("Error al comunicarse con Rocco", {
-          description: error.message || "Intenta de nuevo",
-        });
-        await sendErrorEmail(error instanceof Error ? error.message : "Unknown error");
+  const { messages, sendMessage, status, addToolApprovalResponse } = useChat({
+    id: activeChatId,
+    transport: new DefaultChatTransport({
+      api: "/api/chat",
+      headers: {
+        "Content-Type": "application/json",
       },
-    });
+      body: {
+        id: activeChatId,
+      },
+    }),
+    onError: async (error) => {
+      console.error("❌ [Chat Error]", error);
+      toast.error("Error al comunicarse con Rocco", {
+        description: error.message || "Intenta de nuevo",
+      });
+      await sendErrorEmail(
+        error instanceof Error ? error.message : "Unknown error",
+      );
+    },
+  });
 
   const [input, setInput] = useState("");
 
@@ -112,7 +119,9 @@ export default function ChatPage() {
     } catch (error) {
       console.error("❌ [Chat] Error sending message:", error);
       toast.error("Error al enviar mensaje");
-      await sendErrorEmail(error instanceof Error ? error.message : "Unknown error");
+      await sendErrorEmail(
+        error instanceof Error ? error.message : "Unknown error",
+      );
     }
   };
 
@@ -286,7 +295,8 @@ export default function ChatPage() {
                             <div className="space-y-4">
                               {message.parts.map((part, i) => {
                                 if (part.type === "text") {
-                                  if (!part.text || part.text.trim() === "") return null;
+                                  if (!part.text || part.text.trim() === "")
+                                    return null;
                                   return (
                                     <Streamdown
                                       key={i}
@@ -316,7 +326,10 @@ export default function ChatPage() {
                                 if (part.type.startsWith("tool-")) {
                                   const toolInvocation = part as any;
                                   const state = toolInvocation.state;
-                                  const toolName = part.type.replace("tool-", "");
+                                  const toolName = part.type.replace(
+                                    "tool-",
+                                    "",
+                                  );
                                   const result =
                                     toolInvocation.result ??
                                     toolInvocation.output;
@@ -344,7 +357,7 @@ export default function ChatPage() {
                                             }
                                             isSaved={
                                               savedPlans[
-                                              toolInvocation.toolCallId
+                                                toolInvocation.toolCallId
                                               ]
                                             }
                                           />
@@ -360,7 +373,7 @@ export default function ChatPage() {
                                             }
                                             isSaved={
                                               savedPlans[
-                                              toolInvocation.toolCallId
+                                                toolInvocation.toolCallId
                                               ]
                                             }
                                           />
@@ -408,16 +421,23 @@ export default function ChatPage() {
                                                 <span className="text-xs text-muted-foreground">
                                                   Proteínas:{" "}
                                                   {input.estimatedProtein}g |
-                                                  Carbos: {input.estimatedCarbs}g
-                                                  | Grasas: {input.estimatedFat}g
+                                                  Carbos: {input.estimatedCarbs}
+                                                  g | Grasas:{" "}
+                                                  {input.estimatedFat}g
                                                 </span>
                                               </ConfirmationRequest>
                                               <ConfirmationAccepted>
-                                                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-4 text-green-600 dark:text-green-400" />
+                                                <HugeiconsIcon
+                                                  icon={CheckmarkCircle02Icon}
+                                                  className="size-4 text-green-600 dark:text-green-400"
+                                                />
                                                 <span>Comida guardada</span>
                                               </ConfirmationAccepted>
                                               <ConfirmationRejected>
-                                                <HugeiconsIcon icon={Cancel01Icon} className="size-4 text-red-600 dark:text-red-400" />
+                                                <HugeiconsIcon
+                                                  icon={Cancel01Icon}
+                                                  className="size-4 text-red-600 dark:text-red-400"
+                                                />
                                                 <span>Guardado cancelado</span>
                                               </ConfirmationRejected>
                                             </ConfirmationTitle>
@@ -470,37 +490,66 @@ export default function ChatPage() {
                                             <div className="flex items-start justify-between gap-4">
                                               <div>
                                                 <h3 className="font-semibold text-lg text-zinc-900 dark:text-zinc-100 leading-tight tracking-[-0.04em]">
-                                                  {mealLog.customName || "Comida"}
+                                                  {mealLog.customName ||
+                                                    "Comida"}
                                                 </h3>
                                                 <p className="text-xs text-zinc-500 uppercase tracking-[-0.04em] font-medium mt-1.5 flex items-center gap-2">
-                                                  <span>{mealLog.quantity} {mealLog.foodId ? "g" : "porción"}</span>
+                                                  <span>
+                                                    {mealLog.quantity}{" "}
+                                                    {mealLog.foodId
+                                                      ? "g"
+                                                      : "porción"}
+                                                  </span>
                                                   <span className="h-1 w-1 rounded-full bg-zinc-300 dark:bg-zinc-700" />
-                                                  <span>{mealLog.mealType}</span>
+                                                  <span>
+                                                    {mealLog.mealType}
+                                                  </span>
                                                 </p>
                                               </div>
                                               <div className="flex items-center gap-1.5 text-green-600 dark:text-green-500 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-full border border-green-100 dark:border-green-500/20">
-                                                <HugeiconsIcon icon={CheckmarkCircle02Icon} className="size-3.5" />
-                                                <span className="text-xs font-semibold uppercase tracking-[-0.04em]">Guardado</span>
+                                                <HugeiconsIcon
+                                                  icon={CheckmarkCircle02Icon}
+                                                  className="size-3.5"
+                                                />
+                                                <span className="text-xs font-semibold uppercase tracking-[-0.04em]">
+                                                  Guardado
+                                                </span>
                                               </div>
                                             </div>
 
                                             {/* Macros Grid - Responsive */}
                                             <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-1">
                                               <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Calorías</span>
-                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.calories}</span>
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">
+                                                  Calorías
+                                                </span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">
+                                                  {mealLog.calories}
+                                                </span>
                                               </div>
                                               <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Proteína</span>
-                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.protein}g</span>
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">
+                                                  Proteína
+                                                </span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">
+                                                  {mealLog.protein}g
+                                                </span>
                                               </div>
                                               <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Carbos</span>
-                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.carbs}g</span>
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">
+                                                  Carbos
+                                                </span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">
+                                                  {mealLog.carbs}g
+                                                </span>
                                               </div>
                                               <div className="space-y-0.5 p-2 rounded-lg border border-zinc-100 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50">
-                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">Grasas</span>
-                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">{mealLog.fat}g</span>
+                                                <span className="block text-xs uppercase text-zinc-500 font-semibold tracking-[-0.04em]">
+                                                  Grasas
+                                                </span>
+                                                <span className="block text-xs font-semibold text-zinc-900 dark:text-white tabular-nums tracking-[-0.04em]">
+                                                  {mealLog.fat}g
+                                                </span>
                                               </div>
                                             </div>
                                           </div>
@@ -516,7 +565,10 @@ export default function ChatPage() {
                                         >
                                           <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-900/20 p-4">
                                             <div className="flex items-center gap-2 text-zinc-600 dark:text-zinc-400">
-                                              <HugeiconsIcon icon={Cancel01Icon} className="size-5" />
+                                              <HugeiconsIcon
+                                                icon={Cancel01Icon}
+                                                className="size-5"
+                                              />
                                               <p className="font-medium">
                                                 Guardado cancelado
                                               </p>
@@ -540,23 +592,30 @@ export default function ChatPage() {
                       <div className="flex justify-start animate-in fade-in duration-300 w-full">
                         <div className="flex items-start gap-3 w-full">
                           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-background border border-zinc-200 dark:border-zinc-800">
-                            <HugeiconsIcon icon={SparklesIcon} className="h-4 w-4 animate-pulse text-zinc-500 dark:text-zinc-400" />
+                            <HugeiconsIcon
+                              icon={SparklesIcon}
+                              className="h-4 w-4 animate-pulse text-zinc-500 dark:text-zinc-400"
+                            />
                           </div>
                           <div className="flex flex-col gap-1 py-1.5">
                             <div className="flex items-center gap-1 text-xs text-zinc-500 dark:text-zinc-400">
                               <span className="font-medium animate-pulse">
                                 {(() => {
                                   // Determine thinking text based on active tool
-                                  const lastMessage = messages[messages.length - 1];
+                                  const lastMessage =
+                                    messages[messages.length - 1];
                                   if (lastMessage?.role === "assistant") {
                                     const toolPart = lastMessage.parts.find(
                                       (p: any) =>
                                         p.type.startsWith("tool-") &&
-                                        (p.state === "call" || p.state === "partial-call"),
+                                        (p.state === "call" ||
+                                          p.state === "partial-call"),
                                     ) as any;
 
                                     if (toolPart) {
-                                      const toolName = toolPart.toolName || toolPart.type.replace("tool-", "");
+                                      const toolName =
+                                        toolPart.toolName ||
+                                        toolPart.type.replace("tool-", "");
                                       switch (toolName) {
                                         case "generateTrainingPlan":
                                           return "Diseñando tu plan de entrenamiento...";
@@ -575,9 +634,15 @@ export default function ChatPage() {
                                 })()}
                               </span>
                               <span className="flex">
-                                <span className="animate-bounce [animation-delay:0ms]">.</span>
-                                <span className="animate-bounce [animation-delay:150ms]">.</span>
-                                <span className="animate-bounce [animation-delay:300ms]">.</span>
+                                <span className="animate-bounce [animation-delay:0ms]">
+                                  .
+                                </span>
+                                <span className="animate-bounce [animation-delay:150ms]">
+                                  .
+                                </span>
+                                <span className="animate-bounce [animation-delay:300ms]">
+                                  .
+                                </span>
                               </span>
                             </div>
                           </div>
@@ -585,7 +650,10 @@ export default function ChatPage() {
                       </div>
                     )}
 
-                    <div ref={endRef} className="min-h-[24px] min-w-[24px] shrink-0" />
+                    <div
+                      ref={endRef}
+                      className="min-h-[24px] min-w-[24px] shrink-0"
+                    />
                   </div>
                 </div>
 
@@ -596,7 +664,7 @@ export default function ChatPage() {
                     "absolute bottom-24 left-1/2 -translate-x-1/2 z-10 rounded-full border bg-background p-2 shadow-lg transition-all hover:bg-muted",
                     isAtBottom
                       ? "pointer-events-none scale-0 opacity-0"
-                      : "pointer-events-auto scale-100 opacity-100"
+                      : "pointer-events-auto scale-100 opacity-100",
                   )}
                   onClick={() => scrollToBottom("smooth")}
                   type="button"

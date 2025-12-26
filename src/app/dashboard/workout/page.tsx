@@ -71,12 +71,12 @@ export default function WorkoutsPage() {
 
     const profile = session.user.profile as
       | {
-        id?: string;
-        activityLevel?: string;
-        dailyActivity?: string;
-        trainingFrequency?: number;
-        trainingDays?: string[];
-      }
+          id?: string;
+          activityLevel?: string;
+          dailyActivity?: string;
+          trainingFrequency?: number;
+          trainingDays?: string[];
+        }
       | null
       | undefined;
 
@@ -247,7 +247,9 @@ export default function WorkoutsPage() {
                     size="sm"
                     className="h-6 w-6 p-0"
                     onClick={() => {
-                      setTrainingFrequency(user?.activity.trainingFrequency || 0);
+                      setTrainingFrequency(
+                        user?.activity.trainingFrequency || 0,
+                      );
                       setTrainingDays(user?.activity.trainingDays || []);
                       setShowTrainingDialog(true);
                     }}
@@ -339,7 +341,8 @@ export default function WorkoutsPage() {
               </ToggleGroup>
               {trainingFrequency > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  {trainingFrequency} día{trainingFrequency !== 1 ? "s" : ""} seleccionado{trainingFrequency !== 1 ? "s" : ""}
+                  {trainingFrequency} día{trainingFrequency !== 1 ? "s" : ""}{" "}
+                  seleccionado{trainingFrequency !== 1 ? "s" : ""}
                 </p>
               )}
             </div>

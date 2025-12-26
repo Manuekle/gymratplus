@@ -40,24 +40,29 @@ export function WorkoutPlanCard({
   const [isExpanded, setIsExpanded] = useState(false);
 
   // Show first 5 exercises by default
-  const allExercises = plan.days?.flatMap((day, dayIndex) =>
-    day.exercises.map((ex, exIndex) => ({
-      ...ex,
-      dayLabel: day.day.includes(" - ") ? day.day.split(" - ")[1] : day.day,
-      isFirstInDay: exIndex === 0,
-      dayIndex,
-      exIndex,
-    }))
-  ) || [];
+  const allExercises =
+    plan.days?.flatMap((day, dayIndex) =>
+      day.exercises.map((ex, exIndex) => ({
+        ...ex,
+        dayLabel: day.day.includes(" - ") ? day.day.split(" - ")[1] : day.day,
+        isFirstInDay: exIndex === 0,
+        dayIndex,
+        exIndex,
+      })),
+    ) || [];
 
-  const displayedExercises = isExpanded ? allExercises : allExercises.slice(0, 5);
+  const displayedExercises = isExpanded
+    ? allExercises
+    : allExercises.slice(0, 5);
   const hasMore = allExercises.length > 5;
 
   return (
     <div className="w-full space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl tracking-[-0.04em] font-semibold">Plan de Entrenamiento</h3>
+        <h3 className="text-xl tracking-[-0.04em] font-semibold">
+          Plan de Entrenamiento
+        </h3>
         <span className="text-xs text-zinc-500 dark:text-zinc-400 capitalize px-2 py-0.5 bg-zinc-100 dark:bg-zinc-800 rounded-full">
           {plan.difficulty}
         </span>
@@ -125,7 +130,9 @@ export function WorkoutPlanCard({
               onClick={() => setIsExpanded(!isExpanded)}
               className="w-full text-xs text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300 py-2 transition-colors duration-200"
             >
-              {isExpanded ? "Ver menos" : `Ver ${allExercises.length - 5} más...`}
+              {isExpanded
+                ? "Ver menos"
+                : `Ver ${allExercises.length - 5} más...`}
             </button>
           )}
         </div>
@@ -147,7 +154,8 @@ export function WorkoutPlanCard({
           disabled={isSaved}
           className={cn(
             "text-xs",
-            isSaved && "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800",
+            isSaved &&
+              "bg-green-600 text-white hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800",
           )}
         >
           {isSaved ? "Guardado" : "Guardar Plan"}

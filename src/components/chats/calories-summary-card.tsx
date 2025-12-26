@@ -35,7 +35,9 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
     <div className="w-full space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <h3 className="text-xl tracking-[-0.04em] font-semibold">Calorías de Hoy</h3>
+        <h3 className="text-xl tracking-[-0.04em] font-semibold">
+          Calorías de Hoy
+        </h3>
         <span className="text-xs text-zinc-500 dark:text-zinc-400">
           {new Date(data.date).toLocaleDateString("es-ES", {
             day: "numeric",
@@ -90,7 +92,9 @@ export function CaloriesSummaryCard({ data }: CaloriesSummaryCardProps) {
         {/* Carbs */}
         <div className="space-y-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-zinc-500 dark:text-zinc-400">Carbohidratos</span>
+            <span className="text-zinc-500 dark:text-zinc-400">
+              Carbohidratos
+            </span>
             <span className="font-medium tabular-nums">
               {consumed.carbs.toFixed(0)}g
             </span>

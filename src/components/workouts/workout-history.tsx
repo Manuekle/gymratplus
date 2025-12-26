@@ -13,10 +13,7 @@ import { EmptyState } from "../ui/empty-state";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
 import { HugeiconsIcon } from "@hugeicons/react";
-import {
-  ArrowRight01Icon,
-  ArrowLeft01Icon,
-} from "@hugeicons/core-free-icons";
+import { ArrowRight01Icon, ArrowLeft01Icon } from "@hugeicons/core-free-icons";
 import { WorkoutSessionCard } from "@/components/workout/workout-session-card";
 
 export default function WorkoutSummary() {

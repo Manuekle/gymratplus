@@ -90,7 +90,8 @@ export async function POST(req: Request) {
     // Check subscription tier - AI chat is available for PRO/INSTRUCTOR users with active or trialing status
     const isPro =
       user.subscriptionTier === "PRO" &&
-      (user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing");
+      (user.subscriptionStatus === "active" ||
+        user.subscriptionStatus === "trialing");
     const isInstructor = user.isInstructor === true;
 
     if (!isPro && !isInstructor) {
@@ -162,7 +163,9 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
               inputSchema: z.object({
                 planName: z
                   .string()
-                  .describe("Nombre del plan de entrenamiento (pregunta al usuario)"),
+                  .describe(
+                    "Nombre del plan de entrenamiento (pregunta al usuario)",
+                  ),
                 focus: z
                   .enum([
                     "fuerza",
@@ -189,11 +192,11 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
               execute: async (params: {
                 planName: string;
                 focus:
-                | "fuerza"
-                | "hipertrofia"
-                | "resistencia"
-                | "perdida_peso"
-                | "flexibilidad";
+                  | "fuerza"
+                  | "hipertrofia"
+                  | "resistencia"
+                  | "perdida_peso"
+                  | "flexibilidad";
                 daysPerWeek: number;
                 durationMinutes: number;
                 difficulty: "principiante" | "intermedio" | "avanzado";

@@ -68,13 +68,13 @@ export async function POST(req: Request) {
     // Send Cancellation Email
     const endDate = user.currentPeriodEnd
       ? new Date(user.currentPeriodEnd).toLocaleDateString("es-ES", {
-        day: "numeric",
-        month: "long",
-        year: "numeric",
-      })
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        })
       : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(
-        "es-ES",
-      );
+          "es-ES",
+        );
 
     try {
       await sendEmail({

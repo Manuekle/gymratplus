@@ -56,8 +56,17 @@ export async function proxy(req: NextRequest) {
     }
   } */
 
-  // Si el usuario está autenticado y viene de /auth/signin, redirige al dashboard
+  // Si el usuario está autenticado y viene de /auth/signin, redirige al dashboard o admin
   if (token && path === "/auth/signin") {
+    const authEmail = process.env.AUTH_EMAIL;
+    if (token.email === authEmail) {
+      // Si es admin, redirigir al panel de administración (o dashboard si prefiere)
+      // Por ahora redirigimos al dashboard para dar opción, o admin directo.
+      // El usuario pidió "mostrar donde quiere ir".
+      // Vamos a redirigir al dashboard, pero el dashboard debe manejar la opción de ir a admin.
+      // O podríamos redirigir a una página intermedia si existiera.
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
@@ -87,6 +96,14 @@ export async function proxy(req: NextRequest) {
     }
   }
 
+  // Manejo de rutas de admin
+  if (path.startsWith("/admin")) {
+    const authEmail = process.env.AUTH_EMAIL;
+    if (!token || token.email !== authEmail) {
+      return NextResponse.redirect(new URL("/dashboard", req.url));
+    }
+  }
+
   // Manejo de rutas de estudiantes
   if (token && isDashboardRoute && path.startsWith("/dashboard/instructors")) {
     // Solo estudiantes pueden acceder a /dashboard/instructors
@@ -107,5 +124,6 @@ export const config = {
     "/auth/signup",
     "/dashboard/students/:path*",
     "/dashboard/instructors/:path*",
+    "/admin/:path*",
   ],
 };

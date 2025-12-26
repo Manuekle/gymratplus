@@ -631,4 +631,302 @@ export const exercises = [
     equipment: "peso corporal",
     description: "Ejercicio dinámico para core y cardio",
   },
+  // Nuevas adiciones para Casa/Peso Libre
+  {
+    name: "Sentadilla Goblet",
+    muscleGroup: "piernas",
+    equipment: "peso libre",
+    description:
+      "Excelente para aprender la técnica de sentadilla y trabajar cuádriceps.",
+  },
+  {
+    name: "Puente de glúteos",
+    muscleGroup: "piernas",
+    equipment: "peso corporal",
+    description: "Ejercicio fundamental para glúteos y core sin equipo.",
+  },
+  {
+    name: "Estocadas laterales",
+    muscleGroup: "piernas",
+    equipment: "peso corporal",
+    description: "Trabajo de movilidad y fuerza para aductores y glúteos.",
+  },
+  {
+    name: "Superman",
+    muscleGroup: "espalda",
+    equipment: "peso corporal",
+    description:
+      "Fortalecimiento de la espalda baja y cadena posterior en suelo.",
+  },
+  {
+    name: "Remo Kroc",
+    muscleGroup: "espalda",
+    equipment: "peso libre",
+    description: "Remo unilateral pesado para fuerza de espalda alta y agarre.",
+  },
+  {
+    name: "Pájaros con mancuernas",
+    muscleGroup: "hombros",
+    equipment: "peso libre",
+    description: "Ejercicio clave para la cabeza posterior del deltoides.",
+  },
+  {
+    name: "Press Arnold",
+    muscleGroup: "hombros",
+    equipment: "peso libre",
+    description:
+      "Variación del press de hombros con mayor rango de movimiento.",
+  },
+  {
+    name: "Press de pecho en suelo",
+    muscleGroup: "pecho",
+    equipment: "peso libre",
+    description: "Opción de press de banca para realizar desde el suelo.",
+  },
+  {
+    name: "Burpees",
+    muscleGroup: "core",
+    equipment: "peso corporal",
+    description: "Ejercicio metabólico completo.",
+  },
+  {
+    name: "Plancha lateral",
+    muscleGroup: "core",
+    equipment: "peso corporal",
+    description: "Trabajo isométrico para oblicuos y estabilidad core.",
+  },
+
+  // ============================================================================
+  // CARDIO & RESISTENCIA
+  // ============================================================================
+  {
+    name: "Jumping Jacks",
+    muscleGroup: "cardio",
+    equipment: "peso corporal",
+    description: "Ejercicio cardiovascular clásico de cuerpo completo.",
+  },
+  {
+    name: "Salto a la comba",
+    muscleGroup: "cardio",
+    equipment: "accesorio",
+    description: "Excelente para coordinación y resistencia cardiovascular.",
+  },
+  {
+    name: "High Knees (Rodillas al pecho)",
+    muscleGroup: "cardio",
+    equipment: "peso corporal",
+    description:
+      "Carrera en el sitio elevando rodillas para intensidad cardiovascular.",
+  },
+  {
+    name: "Salto al cajón (Box Jumps)",
+    muscleGroup: "cardio",
+    equipment: "accesorio",
+    description: "Potencia de piernas y trabajo cardiovascular explosivo.",
+  },
+  {
+    name: "Battle Ropes",
+    muscleGroup: "cardio",
+    equipment: "accesorio",
+    description: "Trabajo de alta intensidad para tren superior y resistencia.",
+  },
+  {
+    name: "Remo o Ergómetro",
+    muscleGroup: "cardio",
+    equipment: "máquina",
+    description: "Cardio de bajo impacto que involucra todo el cuerpo.",
+  },
+  {
+    name: "Assault Bike / Air Bike",
+    muscleGroup: "cardio",
+    equipment: "máquina",
+    description: "Cardio metabólico de alta intensidad.",
+  },
+  {
+    name: "SkiErg",
+    muscleGroup: "cardio",
+    equipment: "máquina",
+    description: "Simulación de esquí para trabajo de dorsal, tríceps y core.",
+  },
+  {
+    name: "Burpees con salto",
+    muscleGroup: "cardio",
+    equipment: "peso corporal",
+    description: "La versión más completa e intensa del burpee.",
+  },
+  {
+    name: "Escaladora (Stairmaster)",
+    muscleGroup: "cardio",
+    equipment: "máquina",
+    description: "Excelente para resistencia de piernas y glúteos.",
+  },
+
+  // ============================================================================
+  // MOVILIDAD & FLEXIBILIDAD
+  // ============================================================================
+  {
+    name: "Gato-Vaca (Cat-Cow)",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description: "Movilización básica de la columna vertebral.",
+  },
+  {
+    name: "El mejor estiramiento del mundo (World's Greatest Stretch)",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description:
+      "Movilidad integral de cadera, columna torácica e isquiotibiales.",
+  },
+  {
+    name: "Rotaciones torácicas en cuadrupedia",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description: "Mejora la movilidad de la columna dorsal.",
+  },
+  {
+    name: "Estiramiento 90/90",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description: "Movilidad interna y externa de cadera.",
+  },
+  {
+    name: "Dislocaciones de hombro",
+    muscleGroup: "movilidad",
+    equipment: "accesorio",
+    description: "Movilidad de hombro usando palo o banda elástica.",
+  },
+  {
+    name: "Cossack Squat",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description: "Movilidad de cadera, aductores y tobillo.",
+  },
+  {
+    name: "Caminata de gusano (Inchworm)",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description:
+      "Estiramiento dinámico de cadena posterior y activación de core.",
+  },
+  {
+    name: "Deep Squat Hold",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description:
+      "Sentadilla profunda mantenida para movilidad de tobillo y cadera.",
+  },
+  {
+    name: "Escorpión",
+    muscleGroup: "movilidad",
+    equipment: "peso corporal",
+    description: "Movilidad dinámica de cadera y columna lumbar.",
+  },
+
+  // ============================================================================
+  // PILATES & CORE CONTROL
+  // ============================================================================
+  {
+    name: "The Hundred",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description:
+      "Clásico de Pilates para calentamiento y estabilidad del core.",
+  },
+  {
+    name: "Roll Up",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Articulación de columna y fuerza abdominal.",
+  },
+  {
+    name: "Single Leg Circle",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Estabilidad pélvica y movilidad de cadera.",
+  },
+  {
+    name: "Swimming",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Fortalecimiento de la cadena posterior (espalda y glúteos).",
+  },
+  {
+    name: "Criss-Cross",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Trabajo intenso de oblicuos y control abdominal.",
+  },
+  {
+    name: "Swan Dive",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Extensión de columna y fortalecimiento de espalda dorsal.",
+  },
+  {
+    name: "Leg Pull Front",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description: "Variación de plancha con elevación de pierna.",
+  },
+  {
+    name: "Teaser",
+    muscleGroup: "pilates",
+    equipment: "peso corporal",
+    description:
+      "Ejercicio avanzado de control, equilibrio y fuerza abdominal.",
+  },
+
+  // ============================================================================
+  // FUNCIONAL & CROSS-TRAINING
+  // ============================================================================
+  {
+    name: "Kettlebell Swing",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description: "Potencia de cadera y acondicionamiento general.",
+  },
+  {
+    name: "Wall Balls",
+    muscleGroup: "full body",
+    equipment: "accesorio",
+    description:
+      "Sentadilla con lanzamiento de balón, alta demanda metabólica.",
+  },
+  {
+    name: "Thrusters",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description: "Combinación de sentadilla frontal y press militar.",
+  },
+  {
+    name: "Devil Press",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description: "Burpee con mancuernas y snatch, muy alta intensidad.",
+  },
+  {
+    name: "Clean and Jerk",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description: "Movimiento olímpico completo para potencia y fuerza.",
+  },
+  {
+    name: "Snatch con mancuerna",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description:
+      "Potencia unilateral desde el suelo hasta arriba de la cabeza.",
+  },
+  {
+    name: "Turkish Get-Up (Levantamiento turco)",
+    muscleGroup: "full body",
+    equipment: "peso libre",
+    description: "Estabilidad total del cuerpo, hombre y core.",
+  },
+  {
+    name: "Sled Push (Empuje de trineo)",
+    muscleGroup: "piernas",
+    equipment: "máquina",
+    description: "Fuerza de empuje y acondicionamiento brutal para piernas.",
+  },
 ];

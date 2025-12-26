@@ -69,8 +69,8 @@ export const CancellationEmail = ({
             <Text className="text-xs text-zinc-700 mb-[12px] leading-[20px] m-0">
               Lamentamos verte partir. Tu suscripción ha sido cancelada
               exitosamente, pero podrás seguir disfrutando de todos los
-              beneficios de tu plan hasta el final de tu período de
-              facturación actual:
+              beneficios de tu plan hasta el final de tu período de facturación
+              actual:
             </Text>
             <Text className="text-xs font-semibold text-zinc-900 mb-0 m-0">
               Tu acceso finalizará el: {endDate}
@@ -102,8 +102,8 @@ export const CancellationEmail = ({
           {/* Support Info */}
           <Section className="bg-zinc-50 rounded-[8px] p-[16px] mb-[20px]">
             <Text className="text-xs text-zinc-600 mb-0 leading-[18px] m-0">
-              Si tienes alguna pregunta, responde a este correo o contáctanos
-              en support@gymratplus.com
+              Si tienes alguna pregunta, responde a este correo o contáctanos en
+              support@gymratplus.com
             </Text>
           </Section>
 

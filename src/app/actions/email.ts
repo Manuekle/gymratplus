@@ -3,22 +3,22 @@
 import { sendEmail } from "@/lib/email/resend";
 
 export async function sendErrorEmail(errorMessage: string) {
-    try {
-        const result = await sendEmail({
-            // Si no se especifica 'from', usa el default configurado en resend.ts
-            to: "delivered@resend.dev",
-            subject: "Error in Chat Application",
-            html: `<p>An error occurred in the chat application:</p><pre>${errorMessage}</pre>`,
-        });
+  try {
+    const result = await sendEmail({
+      // Si no se especifica 'from', usa el default configurado en resend.ts
+      to: "delivered@resend.dev",
+      subject: "Error in Chat Application",
+      html: `<p>An error occurred in the chat application:</p><pre>${errorMessage}</pre>`,
+    });
 
-        if (!result.success) {
-            console.error("Failed to send error email:", result.error);
-            return { success: false, error: result.error };
-        }
-
-        return { success: true };
-    } catch (error) {
-        console.error("Unexpected error sending error email:", error);
-        return { success: false, error: "Unexpected error" };
+    if (!result.success) {
+      console.error("Failed to send error email:", result.error);
+      return { success: false, error: result.error };
     }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error sending error email:", error);
+    return { success: false, error: "Unexpected error" };
+  }
 }

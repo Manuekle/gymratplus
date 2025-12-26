@@ -149,11 +149,7 @@ export default function ActiveWorkoutPage() {
    * También inicia el temporizador de descanso si el set tiene datos.
    */
   const updateSet = useCallback(
-    async (
-      setId: string,
-      exerciseId: string,
-      data: Partial<Set>,
-    ) => {
+    async (setId: string, exerciseId: string, data: Partial<Set>) => {
       setIsUpdating((prev) => ({ ...prev, [setId]: true }));
 
       try {
@@ -548,10 +544,11 @@ export default function ActiveWorkoutPage() {
           {workoutSession.exercises.map((exercise) => (
             <Card
               key={exercise.id}
-              className={`${exercise.completed ? "opacity-70" : ""} ${restTimer.exerciseId === exercise.id
-                ? "border border-primary shadow-md"
-                : ""
-                }`}
+              className={`${exercise.completed ? "opacity-70" : ""} ${
+                restTimer.exerciseId === exercise.id
+                  ? "border border-primary shadow-md"
+                  : ""
+              }`}
             >
               <CardHeader className="pb-3">
                 <div className="flex flex-col gap-3">

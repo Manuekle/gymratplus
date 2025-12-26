@@ -82,7 +82,6 @@ function ScreenshotCarousel({ currentTheme }: { currentTheme: string }) {
   );
 }
 
-
 // iOS Install Popup Component
 function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
   return (
@@ -91,11 +90,18 @@ function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
         <div className="flex justify-between items-start mb-4 gap-3">
           <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <div className="w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0 rounded-2xl bg-gradient-to-br from-zinc-200 to-zinc-300 dark:from-zinc-800 dark:to-zinc-700 flex items-center justify-center">
-              <HugeiconsIcon icon={Share08Icon} className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700 dark:text-zinc-300" />
+              <HugeiconsIcon
+                icon={Share08Icon}
+                className="w-5 h-5 sm:w-6 sm:h-6 text-zinc-700 dark:text-zinc-300"
+              />
             </div>
             <div className="min-w-0 flex-1">
-              <h3 className="font-bold text-base sm:text-lg tracking-[-0.04em] truncate">Instalar GymRat+</h3>
-              <p className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">Acceso rápido desde tu pantalla de inicio</p>
+              <h3 className="font-bold text-xs sm:text-lg tracking-[-0.04em] truncate">
+                Instalar GymRat+
+              </h3>
+              <p className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400 line-clamp-2">
+                Acceso rápido desde tu pantalla de inicio
+              </p>
             </div>
           </div>
           <button
@@ -108,19 +114,39 @@ function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
         </div>
         <div className="space-y-3 sm:space-y-4">
           <div className="space-y-2">
-            <p className="text-xs sm:text-xs font-medium text-zinc-700 dark:text-zinc-300">Pasos para instalar:</p>
+            <p className="text-xs sm:text-xs font-medium text-zinc-700 dark:text-zinc-300">
+              Pasos para instalar:
+            </p>
             <ol className="space-y-2 text-xs sm:text-xs text-zinc-600 dark:text-zinc-400">
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">1</span>
-                <span className="flex-1">Toca el botón de <strong>Compartir</strong> <HugeiconsIcon icon={Share08Icon} className="inline w-3 h-3" /> en la barra inferior de Safari</span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">
+                  1
+                </span>
+                <span className="flex-1">
+                  Toca el botón de <strong>Compartir</strong>{" "}
+                  <HugeiconsIcon
+                    icon={Share08Icon}
+                    className="inline w-3 h-3"
+                  />{" "}
+                  en la barra inferior de Safari
+                </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">2</span>
-                <span className="flex-1">Desplázate y selecciona <strong>"Añadir a pantalla de inicio"</strong></span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">
+                  2
+                </span>
+                <span className="flex-1">
+                  Desplázate y selecciona{" "}
+                  <strong>"Añadir a pantalla de inicio"</strong>
+                </span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">3</span>
-                <span className="flex-1">Toca <strong>"Añadir"</strong> en la esquina superior derecha</span>
+                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-xs font-semibold">
+                  3
+                </span>
+                <span className="flex-1">
+                  Toca <strong>"Añadir"</strong> en la esquina superior derecha
+                </span>
               </li>
             </ol>
           </div>
@@ -163,7 +189,9 @@ export default function GymRatLanding() {
       }
 
       // Detect iOS and show install prompt
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !(window as any).MSStream;
+      const isIOS =
+        /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+        !(window as any).MSStream;
       const isStandalone = (window.navigator as any).standalone;
 
       if (isIOS && !isStandalone) {
@@ -650,7 +678,7 @@ export default function GymRatLanding() {
                 key={i}
                 className="backdrop-blur-xl bg-white/40 dark:bg-black/40 rounded-2xl border border-zinc-200/50 dark:border-zinc-800/50 p-5 sm:p-6 hover:bg-white/60 dark:hover:bg-black/60 transition-all duration-300"
               >
-                <h3 className="font-bold text-xs sm:text-base tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
+                <h3 className="font-bold text-xs sm:text-xs tracking-[-0.04em] mb-2 text-zinc-900 dark:text-zinc-100">
                   {faq.q}
                 </h3>
                 <p className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400">
@@ -716,8 +744,8 @@ export default function GymRatLanding() {
               <div
                 key={i}
                 className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
-                  ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
-                  : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
+                    ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                    : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
                   }`}
               >
                 {plan.popular && (
@@ -727,23 +755,23 @@ export default function GymRatLanding() {
                 )}
                 <h3
                   className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${plan.popular
-                    ? "text-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-900 dark:text-zinc-100"
+                      ? "text-zinc-100 dark:text-zinc-900"
+                      : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.name}
                 </h3>
                 <div
                   className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${plan.popular
-                    ? "text-zinc-100 dark:text-zinc-900"
-                    : "text-zinc-900 dark:text-zinc-100"
+                      ? "text-zinc-100 dark:text-zinc-900"
+                      : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.price}
                   <span
                     className={`text-xs font-normal ${plan.popular
-                      ? "text-zinc-300 dark:text-zinc-700"
-                      : "text-zinc-600 dark:text-zinc-400"
+                        ? "text-zinc-300 dark:text-zinc-700"
+                        : "text-zinc-600 dark:text-zinc-400"
                       }`}
                   >
                     /mes
@@ -755,14 +783,14 @@ export default function GymRatLanding() {
                       <HugeiconsIcon
                         icon={Tick02Icon}
                         className={`w-5 h-5 ${plan.popular
-                          ? "text-zinc-300 dark:text-zinc-700"
-                          : "text-zinc-600 dark:text-zinc-400"
+                            ? "text-zinc-300 dark:text-zinc-700"
+                            : "text-zinc-600 dark:text-zinc-400"
                           }`}
                       />
                       <span
                         className={`text-xs tracking-[-0.02em] ${plan.popular
-                          ? "text-zinc-200 dark:text-zinc-800"
-                          : "text-zinc-700 dark:text-zinc-300"
+                            ? "text-zinc-200 dark:text-zinc-800"
+                            : "text-zinc-700 dark:text-zinc-300"
                           }`}
                       >
                         {feature}
@@ -772,8 +800,8 @@ export default function GymRatLanding() {
                 </ul>
                 <Button
                   className={`w-full ${plan.popular
-                    ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                    : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
                     }`}
                   asChild
                 >
@@ -819,7 +847,10 @@ export default function GymRatLanding() {
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-full backdrop-blur-xl bg-white/60 dark:bg-black/60 border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center hover:bg-white/80 dark:hover:bg-black/80 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
                 aria-label="Instagram"
               >
-                <HugeiconsIcon icon={InstagramIcon} className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300" />
+                <HugeiconsIcon
+                  icon={InstagramIcon}
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300"
+                />
               </a>
               <a
                 href="https://tiktok.com/@gymratplus"
@@ -828,7 +859,10 @@ export default function GymRatLanding() {
                 className="w-9 h-9 sm:w-10 sm:h-10 rounded-full backdrop-blur-xl bg-white/60 dark:bg-black/60 border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center hover:bg-white/80 dark:hover:bg-black/80 hover:scale-110 transition-all duration-300 shadow-lg hover:shadow-xl"
                 aria-label="TikTok"
               >
-                <HugeiconsIcon icon={TiktokIcon} className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300" />
+                <HugeiconsIcon
+                  icon={TiktokIcon}
+                  className="w-4 h-4 sm:w-5 sm:h-5 text-zinc-700 dark:text-zinc-300"
+                />
               </a>
             </div>
 
@@ -839,7 +873,9 @@ export default function GymRatLanding() {
               >
                 Política de Privacidad
               </Link>
-              <span className="hidden sm:inline text-zinc-400 dark:text-zinc-600">•</span>
+              <span className="hidden sm:inline text-zinc-400 dark:text-zinc-600">
+                •
+              </span>
               <Link
                 href="/terms"
                 className="text-xs sm:text-xs tracking-[-0.02em] text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
@@ -855,7 +891,9 @@ export default function GymRatLanding() {
       </footer>
 
       {/* iOS Install Prompt */}
-      {showIOSPrompt && <IOSInstallPrompt onClose={() => setShowIOSPrompt(false)} />}
+      {showIOSPrompt && (
+        <IOSInstallPrompt onClose={() => setShowIOSPrompt(false)} />
+      )}
 
       <style jsx global>{`
         @keyframes blob {

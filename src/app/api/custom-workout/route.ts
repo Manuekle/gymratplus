@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
     // Get request parameters
     const {
       goal = "gain-muscle",
+      location = "gym",
       splitType = "Full Body",
       methodology = "standard",
       trainingFrequency = 3,
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
       "fat-loss",
       "mobility",
     ];
+    const validLocations = ["gym", "home"];
     const validSplitTypes = [
       "Full Body",
       "Upper/Lower Split",
@@ -50,6 +52,10 @@ export async function POST(request: NextRequest) {
 
     if (!validGoals.includes(goal)) {
       return NextResponse.json({ error: "Invalid goal" }, { status: 400 });
+    }
+
+    if (!validLocations.includes(location)) {
+      return NextResponse.json({ error: "Invalid location" }, { status: 400 });
     }
 
     if (!validSplitTypes.includes(splitType)) {
@@ -87,6 +93,8 @@ export async function POST(request: NextRequest) {
       "Upper/Lower Split": "División Superior/Inferior",
       "Push/Pull/Legs": "Empuje/Tirón/Piernas",
       Weider: "Weider",
+      gym: "gimnasio",
+      home: "casa",
       standard: "estándar",
       circuit: "circuito",
       hiit: "HIIT",
@@ -108,6 +116,8 @@ export async function POST(request: NextRequest) {
         name,
         description: `Entrenamiento ${
           translations[splitType as keyof typeof translations]
+        } en ${
+          translations[location as keyof typeof translations]
         } con metodología ${
           translations[methodology as keyof typeof translations]
         } para ${translations[goal as keyof typeof translations]}`,
@@ -127,6 +137,7 @@ export async function POST(request: NextRequest) {
       profile.gender,
       trainingFrequency,
       splitType,
+      location,
       methodology,
     );
 

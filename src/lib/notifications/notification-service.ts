@@ -38,7 +38,9 @@ export async function createNotification({
   });
 
   if (!userExists) {
-    console.warn(`[Notification] User ${userId} not found, skipping notification creation`);
+    console.warn(
+      `[Notification] User ${userId} not found, skipping notification creation`,
+    );
     return null;
   }
 

@@ -80,7 +80,7 @@ FORMATO JSON:
       daysPerWeek: params.daysPerWeek,
       durationMinutes: params.durationMinutes,
       difficulty: params.difficulty,
-      days: []
+      days: [],
     };
   }
 
@@ -96,9 +96,10 @@ FORMATO JSON:
 
         // If not found by ID, try to find by name (fuzzy match)
         if (!exercise) {
-          exercise = exercises.find(e =>
-            e.name.toLowerCase().includes(ex.name.toLowerCase()) ||
-            ex.name.toLowerCase().includes(e.name.toLowerCase())
+          exercise = exercises.find(
+            (e) =>
+              e.name.toLowerCase().includes(ex.name.toLowerCase()) ||
+              ex.name.toLowerCase().includes(e.name.toLowerCase()),
           );
         }
 
@@ -106,7 +107,7 @@ FORMATO JSON:
           ...ex,
           name: exercise?.name || ex.name || "Ejercicio",
           muscleGroup: exercise?.muscleGroup || "General",
-          id: exercise?.id || ex.id // Ensure we use a valid ID if found
+          id: exercise?.id || ex.id, // Ensure we use a valid ID if found
         };
       }),
     })),
@@ -147,9 +148,9 @@ INSTRUCCIONES:
 ${userContext}
 ALIMENTOS:
 ${foods
-        .slice(0, 100)
-        .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
-        .join("\n")}
+  .slice(0, 100)
+  .map((f) => `${f.id}:${f.name} (${f.calories}kcal/100g)`)
+  .join("\n")}
 
 FORMATO JSON:
 {

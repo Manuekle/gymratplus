@@ -47,8 +47,9 @@ export function CreditCard({
   return (
     <div className="perspective-1000 w-full max-w-sm mx-auto mb-6">
       <div
-        className={`relative w-full h-52 transition-transform duration-700 transform-style-3d ${isFlipped ? "rotate-y-180" : ""
-          }`}
+        className={`relative w-full h-52 transition-transform duration-700 transform-style-3d ${
+          isFlipped ? "rotate-y-180" : ""
+        }`}
         onMouseEnter={() => cvv && setIsFlipped(true)}
         onMouseLeave={() => setIsFlipped(false)}
       >
@@ -58,10 +59,11 @@ export function CreditCard({
             <div className="flex justify-between items-start">
               <HugeiconsIcon
                 icon={cardType.icon}
-                className={`h-12 w-12 ${cardType.type === "mastercard"
+                className={`h-12 w-12 ${
+                  cardType.type === "mastercard"
                     ? "text-slate-800 dark:text-neutral-100"
                     : "text-slate-800 dark:text-neutral-300"
-                  }`}
+                }`}
               />
               <div className="text-xs font-bold text-slate-700 dark:text-neutral-300 tracking-[-0.02em]">
                 {cardLabel}

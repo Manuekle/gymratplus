@@ -169,7 +169,9 @@ export default function InstructorPage() {
             </p>
           </div>
           <Button size="default" asChild>
-            <Link href="/dashboard/instructors/search">Buscar Instructores</Link>
+            <Link href="/dashboard/instructors/search">
+              Buscar Instructores
+            </Link>
           </Button>
         </div>
         {/* Instructors Grid */}
@@ -179,8 +181,9 @@ export default function InstructorPage() {
               No tienes instructores asignados
             </h3>
             <p className="text-xs text-muted-foreground max-w-md mx-auto">
-              Cuando te asignen instructores o solicites uno, aparecerán aquí para
-              que puedas gestionar tu entrenamiento y mantenerte en contacto.
+              Cuando te asignen instructores o solicites uno, aparecerán aquí
+              para que puedas gestionar tu entrenamiento y mantenerte en
+              contacto.
             </p>
           </div>
         ) : (
@@ -207,7 +210,10 @@ export default function InstructorPage() {
                           {instructor.name || "Sin nombre"}
                         </CardTitle>
                         <CardDescription className="text-muted-foreground text-xs flex items-center gap-2 mt-1">
-                          <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
+                          <HugeiconsIcon
+                            icon={MapPinIcon}
+                            className="h-3 w-3"
+                          />
                           {instructor.city || instructor.country ? (
                             <span className="flex items-center gap-1.5">
                               {(() => {
@@ -262,7 +268,9 @@ export default function InstructorPage() {
                           </Badge>
                         )}
                         <Badge variant="outline" className="text-xs">
-                          {instructor.status === "active" ? "Activo" : "Inactivo"}
+                          {instructor.status === "active"
+                            ? "Activo"
+                            : "Inactivo"}
                         </Badge>
                       </div>
                     </div>
@@ -282,7 +290,9 @@ export default function InstructorPage() {
                   {/* Price */}
                   {instructor.pricePerMonth && (
                     <div className="flex items-center justify-between p-2 rounded-md bg-muted/50">
-                      <span className="text-xs font-medium">Precio acordado</span>
+                      <span className="text-xs font-medium">
+                        Precio acordado
+                      </span>
                       <span className="text-xs font-semibold">
                         ${instructor.pricePerMonth}/mes
                       </span>
@@ -313,13 +323,13 @@ export default function InstructorPage() {
                         {instructor.curriculum
                           .split(",")
                           .filter((item) => item.trim()).length > 3 && (
-                            <Badge variant="outline" className="text-xs">
-                              +
-                              {instructor.curriculum
-                                .split(",")
-                                .filter((item) => item.trim()).length - 3}
-                            </Badge>
-                          )}
+                          <Badge variant="outline" className="text-xs">
+                            +
+                            {instructor.curriculum
+                              .split(",")
+                              .filter((item) => item.trim()).length - 3}
+                          </Badge>
+                        )}
                       </div>
                     </div>
                   )}
@@ -404,6 +414,5 @@ export default function InstructorPage() {
         </DialogContent>
       </Dialog>
     </>
-
   );
 }

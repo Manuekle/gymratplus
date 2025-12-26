@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { StepGoal } from "./steps/step-goal";
+import { StepLocation } from "./steps/step-location";
 import { StepSplit } from "./steps/step-split";
 import { StepMethodology } from "./steps/step-methodology";
 import { StepFrequency } from "./steps/step-frequency";
@@ -22,6 +23,7 @@ import { WorkoutPersonalize } from "../workouts/workout-personalize";
 
 export type FormData = {
   goal: string;
+  location: string;
   splitType: string;
   methodology: string;
   trainingFrequency: number;
@@ -32,6 +34,7 @@ export function WorkoutGenerator() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     goal: "",
+    location: "gym",
     splitType: "",
     methodology: "",
     trainingFrequency: 3,
@@ -41,7 +44,7 @@ export function WorkoutGenerator() {
 
   const [workoutResult, setWorkoutResult] = useState<Workout | null>(null);
 
-  const totalSteps = 5;
+  const totalSteps = 6;
 
   const updateFormData = (field: keyof FormData, value: string | number) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -72,7 +75,9 @@ export function WorkoutGenerator() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || errorData.details || "Failed to create workout");
+        throw new Error(
+          errorData.error || errorData.details || "Failed to create workout",
+        );
       }
 
       const result = await response.json();
@@ -80,7 +85,10 @@ export function WorkoutGenerator() {
       setStep(totalSteps + 1); // Move to results step
     } catch (error) {
       console.error("Error creating workout:", error);
-      const errorMessage = error instanceof Error ? error.message : "No se pudo crear el entrenamiento";
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "No se pudo crear el entrenamiento";
       toast.error("Error", {
         description: errorMessage,
       });
@@ -94,14 +102,16 @@ export function WorkoutGenerator() {
       case 1:
         return !!formData.goal;
       case 2:
-        return !!formData.splitType;
+        return !!formData.location;
       case 3:
-        return !!formData.methodology;
+        return !!formData.splitType;
       case 4:
+        return !!formData.methodology;
+      case 5:
         return (
           formData.trainingFrequency >= 1 && formData.trainingFrequency <= 7
         );
-      case 5:
+      case 6:
         return !!formData.name && formData.name.trim().length > 0;
       default:
         return true;
@@ -119,33 +129,40 @@ export function WorkoutGenerator() {
         );
       case 2:
         return (
+          <StepLocation
+            value={formData.location}
+            onChange={(value) => updateFormData("location", value)}
+          />
+        );
+      case 3:
+        return (
           <StepSplit
             value={formData.splitType}
             onChange={(value) => updateFormData("splitType", value)}
           />
         );
-      case 3:
+      case 4:
         return (
           <StepMethodology
             value={formData.methodology}
             onChange={(value) => updateFormData("methodology", value)}
           />
         );
-      case 4:
+      case 5:
         return (
           <StepFrequency
             value={formData.trainingFrequency}
             onChange={(value) => updateFormData("trainingFrequency", value)}
           />
         );
-      case 5:
+      case 6:
         return (
           <StepName
             value={formData.name}
             onChange={(value) => updateFormData("name", value)}
           />
         );
-      case 6:
+      case 7:
         return workoutResult ? <StepResults workout={workoutResult} /> : null;
       default:
         return null;

@@ -18,7 +18,6 @@ import { Icons } from "@/components/icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ArrowExpandIcon } from "@hugeicons/core-free-icons";
 
-
 interface WorkoutTimerFloatProps {
   workoutSessionId: string;
   startTime: Date;
@@ -163,7 +162,7 @@ export default function WorkoutTimerFloat({
       animate={{
         scale: isMinimized ? 1 : 1,
         opacity: 1,
-        y: 0
+        y: 0,
       }}
       initial={{ opacity: 0, y: 20 }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
@@ -172,9 +171,10 @@ export default function WorkoutTimerFloat({
       <motion.div
         layout
         className={`relative overflow-hidden backdrop-blur-md border shadow-lg
-          ${isMinimized
-            ? "rounded-full bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 cursor-pointer hover:shadow-xl"
-            : "w-64 rounded-3xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
+          ${
+            isMinimized
+              ? "rounded-full bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 cursor-pointer hover:shadow-xl"
+              : "w-64 rounded-3xl bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800"
           }`}
         onClick={isMinimized ? () => setIsMinimized(false) : undefined}
         style={{ borderRadius: isMinimized ? 9999 : 24 }}
@@ -191,7 +191,9 @@ export default function WorkoutTimerFloat({
               transition={{ type: "spring", stiffness: 300, damping: 30 }}
               className="px-4 py-2 flex items-center gap-2.5"
             >
-              <div className={`w-2 h-2 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`} />
+              <div
+                className={`w-2 h-2 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`}
+              />
               <div className="text-xs font-medium text-zinc-900 dark:text-zinc-100 tabular-nums tracking-[-0.02em]">
                 {formatTime(elapsedTime)}
               </div>
@@ -208,7 +210,9 @@ export default function WorkoutTimerFloat({
             >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`} />
+                  <div
+                    className={`w-1.5 h-1.5 rounded-full ${isPaused ? "bg-amber-500" : "bg-emerald-500"}`}
+                  />
                   <span className="text-xs font-semibold tracking-[-0.02em] text-zinc-500 dark:text-zinc-400">
                     {isPaused ? "Pausado" : "Activo"}
                   </span>

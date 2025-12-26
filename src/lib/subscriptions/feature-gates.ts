@@ -171,7 +171,8 @@ export const MERCADOPAGO_PLAN_MAPPING: Record<string, SubscriptionTier> = {
  * Get subscription tier from Mercado Pago plan ID
  */
 export function getTierFromMercadoPagoPlan(planId: string): SubscriptionTier {
-  if (planId === process.env.MERCADOPAGO_PLAN_ID_PRO) return SubscriptionTier.PRO;
+  if (planId === process.env.MERCADOPAGO_PLAN_ID_PRO)
+    return SubscriptionTier.PRO;
   if (planId === process.env.MERCADOPAGO_PLAN_ID_INSTRUCTOR)
     return SubscriptionTier.INSTRUCTOR;
 

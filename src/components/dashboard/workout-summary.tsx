@@ -133,9 +133,11 @@ export default function WorkoutSummary() {
               className="flex-1 h-full"
             />
           ) : (
-            workoutSessions.slice(0, 2).map((session) => (
-              <WorkoutSessionCard key={session.id} session={session} />
-            ))
+            workoutSessions
+              .slice(0, 2)
+              .map((session) => (
+                <WorkoutSessionCard key={session.id} session={session} />
+              ))
           )}
         </div>
       </CardContent>

@@ -67,9 +67,9 @@ export const PaymentReminderEmail = ({
               </Text>
               <Text className="text-xs text-zinc-700 mb-0 leading-[22px] m-0">
                 Esperamos que estés disfrutando de GymRat+. Te escribimos para
-                recordarte que tu suscripción al plan <strong>{planName}</strong>{" "}
-                se renovará automáticamente el próximo{" "}
-                <strong>{renewalDate}</strong>.
+                recordarte que tu suscripción al plan{" "}
+                <strong>{planName}</strong> se renovará automáticamente el
+                próximo <strong>{renewalDate}</strong>.
               </Text>
             </Section>
 

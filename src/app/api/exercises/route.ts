@@ -39,7 +39,7 @@ export async function GET(request: Request) {
         // primaryMuscles: true, // Not in schema
         // secondaryMuscles: true, // Not in schema
         // instructions: false // Exclude heavy fields if not necessary in list view
-      }
+      },
     });
 
     return NextResponse.json(exercises);

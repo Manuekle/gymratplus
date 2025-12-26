@@ -81,7 +81,9 @@ export default function ProgressPage() {
     <div className="container mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-500">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-[-0.04em]">Mi Evolución</h1>
+          <h1 className="text-3xl font-bold tracking-[-0.04em]">
+            Mi Evolución
+          </h1>
           <p className="text-muted-foreground mt-1">
             Registra tu cambio físico visual y monitorea tu peso.
           </p>

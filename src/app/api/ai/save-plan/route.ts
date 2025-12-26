@@ -74,9 +74,9 @@ export async function POST(req: Request) {
         data: {
           dailyCalorieTarget: parseInt(
             plan.calories ||
-            plan.macros?.calories ||
-            plan.macros?.totalCalories ||
-            "2000",
+              plan.macros?.calories ||
+              plan.macros?.totalCalories ||
+              "2000",
           ),
           dailyProteinTarget: parseInt(
             (plan.macros?.protein || "0").toString().replace("g", ""),

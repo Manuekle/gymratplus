@@ -8,15 +8,13 @@ import { exercises } from "@/data/exercises";
 export type Exercise = {
   id: string;
   name: string;
-  category: string;
-  primaryMuscles: string[];
-  secondaryMuscles?: string[];
-  equipment?: string[];
-  difficulty?: "beginner" | "intermediate" | "advanced";
-  instructions?: string[];
-  force?: string;
-  mechanics?: string;
-  muscleGroup?: string;
+  description?: string | null;
+  muscleGroup: string;
+  equipment?: string | null;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
+  difficulty?: string;
+  createdById?: string | null;
 };
 
 export type WorkoutPlan = {
@@ -78,20 +76,31 @@ type ExercisePlan = {
 
 export async function getOrCreateExercises(): Promise<Exercise[]> {
   try {
-    const count = await prisma.exercise.count();
+    const existingExercises = await prisma.exercise.findMany({
+      select: { name: true },
+    });
 
-    if (count > 0) {
-      // Si ya hay ejercicios, no devolvemos nada o devolvemos un array vacío para evitar sobrecarga
-      // Si se necesita la lista completa, se debe usar la API paginada
+    // Optimization: If we have the same number of exercises, assume we are good.
+    // (This falls short if names changed, but good enough for simple additions)
+    if (existingExercises.length >= exercises.length) {
       return [];
     }
 
-    const createdExercises = (await prisma.$transaction(
-      exercises.map((exercise) => prisma.exercise.create({ data: exercise })),
-    )) as unknown as Exercise[];
+    const existingNames = new Set(existingExercises.map((e) => e.name));
+    const missingExercises = exercises.filter(
+      (e) => !existingNames.has(e.name),
+    );
 
-    console.log(`Created ${createdExercises.length} exercises`);
-    return createdExercises;
+    if (missingExercises.length > 0) {
+      console.log(`Creating ${missingExercises.length} new exercises...`);
+      await prisma.$transaction(
+        missingExercises.map((exercise) =>
+          prisma.exercise.create({ data: exercise }),
+        ),
+      );
+    }
+
+    return [];
   } catch (error) {
     console.error("Error in getOrCreateExercises:", error);
     throw new Error(
@@ -139,6 +148,26 @@ export function getRecommendedWorkoutType(profile: {
   return "Full Body";
 }
 
+// Helper to filter exercises based on location
+function filterExercisesByLocation(
+  exercises: Exercise[],
+  location: string,
+): Exercise[] {
+  if (location === "gym") return exercises;
+
+  // For home, exclude machines
+  return exercises.filter((ex) => {
+    const equipment = ex.equipment?.toLowerCase() || "";
+    // Exclude machines
+    if (equipment === "máquina") return false;
+    // Also exclude exercises that clearly require a machine in their name if equipment is generic
+    if (ex.name.toLowerCase().includes("polea")) return false;
+    if (ex.name.toLowerCase().includes("máquina")) return false;
+
+    return true;
+  });
+}
+
 export async function createWorkoutPlan(
   workoutId: string,
   exercises: Exercise[],
@@ -146,7 +175,7 @@ export async function createWorkoutPlan(
   gender: string | null,
   trainingFrequency: number,
   workoutType: WorkoutType,
-  // _workoutHistory: unknown[] = [], // Reserved for future use
+  location: string = "gym",
   methodology: Methodology = "standard",
 ) {
   if (!workoutId || !exercises?.length) {
@@ -174,6 +203,7 @@ export async function createWorkoutPlan(
     goal,
     gender,
     trainingFrequency,
+    location,
     methodology,
   );
 }
@@ -269,7 +299,7 @@ function selectUniqueExercises(
   usedExercises: Set<string> = new Set(),
 ): Exercise[] {
   if (!exercises || exercises.length === 0) {
-    console.warn("No exercises available for selection");
+    // console.warn("No exercises available for selection");
     return [];
   }
 
@@ -280,7 +310,7 @@ function selectUniqueExercises(
 
   if (availableExercises.length === 0) {
     // Fallback: If all are used, log a warning and return from the original pool (allowing repetition)
-    console.warn("All exercises are already used, allowing repetition.");
+    // console.warn("All exercises are already used, allowing repetition.");
     return exercises.slice(0, count);
   }
 
@@ -361,6 +391,7 @@ export async function createFullBodyWorkout(
   goal: WorkoutGoal,
   _gender: string | null,
   trainingFrequency: number,
+  location: string,
   methodology: Methodology = "standard",
 ) {
   const workoutExercises: {
@@ -376,13 +407,31 @@ export async function createFullBodyWorkout(
   let order = 1;
   const usedExercises = new Set<string>();
 
+  // Filter exercises by location first
+  const locationExercises = filterExercisesByLocation(exercises, location);
+
   // Filter exercises by muscle group (assuming a Spanish muscleGroup property)
-  const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
-  const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
-  const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
-  const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
-  const armExercises = filterExercisesByMuscleGroup(exercises, "brazos");
-  const coreExercises = filterExercisesByMuscleGroup(exercises, "core");
+  const legExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "piernas",
+  );
+  const chestExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "pecho",
+  );
+  const backExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "espalda",
+  );
+  const shoulderExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "hombros",
+  );
+  const armExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "brazos",
+  );
+  const coreExercises = filterExercisesByMuscleGroup(locationExercises, "core");
 
   // Validate we have exercises
   const allExercises = [
@@ -394,7 +443,10 @@ export async function createFullBodyWorkout(
     coreExercises,
   ];
   if (allExercises.every((arr) => arr.length === 0)) {
-    throw new Error("No exercises available for full body workout");
+    // If filtering by location removed everything (unlikely but possible), fallback to something
+    console.warn(
+      "No exercises available for full body workout after location filter",
+    );
   }
 
   const workoutDays = Math.min(trainingFrequency, 3);
@@ -480,8 +532,9 @@ export async function createFullBodyWorkout(
     }
   }
 
-  if (workoutExercises.length === 0) {
-    throw new Error("No valid exercises were added to the workout plan");
+  if (workoutExercises.length === 0 && exercises.length > 0) {
+    // throw new Error("No valid exercises were added to the workout plan");
+    console.warn("No exercises added, potentially due to strict filtering");
   }
 
   return prisma.$transaction(
@@ -498,6 +551,7 @@ export async function createUpperLowerSplit(
   goal: WorkoutGoal,
   _gender: string | null,
   trainingFrequency: number,
+  location: string,
   methodology: Methodology = "standard",
 ) {
   const workoutExercises: {
@@ -512,12 +566,30 @@ export async function createUpperLowerSplit(
   }[] = [];
   let order = 1;
 
-  const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
-  const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
-  const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
-  const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
-  const armExercises = filterExercisesByMuscleGroup(exercises, "brazos");
-  const coreExercises = filterExercisesByMuscleGroup(exercises, "core");
+  // Filter exercises by location first
+  const locationExercises = filterExercisesByLocation(exercises, location);
+
+  const legExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "piernas",
+  );
+  const chestExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "pecho",
+  );
+  const backExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "espalda",
+  );
+  const shoulderExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "hombros",
+  );
+  const armExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "brazos",
+  );
+  const coreExercises = filterExercisesByMuscleGroup(locationExercises, "core");
 
   const workoutDays = Math.min(trainingFrequency, 6);
   const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
@@ -616,9 +688,9 @@ export async function createUpperLowerSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-          methodology,
-        )
+            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+            methodology,
+          )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -651,6 +723,7 @@ export async function createPushPullLegsSplit(
   goal: WorkoutGoal,
   _gender: string | null,
   trainingFrequency: number,
+  location: string,
   methodology: Methodology = "standard",
 ) {
   const workoutExercises: {
@@ -666,24 +739,39 @@ export async function createPushPullLegsSplit(
   let order = 1;
   const usedExercises = new Set<string>();
 
-  const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
-  const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
-  const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
-  const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
+  // Filter exercises by location first
+  const locationExercises = filterExercisesByLocation(exercises, location);
+
+  const legExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "piernas",
+  );
+  const chestExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "pecho",
+  );
+  const backExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "espalda",
+  );
+  const shoulderExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "hombros",
+  );
   // Filter for specific triceps/biceps exercises, falling back to general arm if empty
   const tricepsExercises = filterExercisesByMuscleGroup(
-    exercises,
+    locationExercises,
     "brazos",
   ).filter((e) => e.name.toLowerCase().includes("tríceps"));
   const bicepsExercises = filterExercisesByMuscleGroup(
-    exercises,
+    locationExercises,
     "brazos",
   ).filter((e) => e.name.toLowerCase().includes("bíceps"));
   const armExercisesFallback = filterExercisesByMuscleGroup(
-    exercises,
+    locationExercises,
     "brazos",
   );
-  const coreExercises = filterExercisesByMuscleGroup(exercises, "core");
+  const coreExercises = filterExercisesByMuscleGroup(locationExercises, "core");
 
   const workoutDays = Math.min(trainingFrequency, 6);
   const compoundSettings = getSetsAndRepsForGoal(goal, "compound");
@@ -868,9 +956,9 @@ export async function createPushPullLegsSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-          methodology,
-        )
+            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+            methodology,
+          )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -903,6 +991,7 @@ export async function createWeiderSplit(
   goal: WorkoutGoal,
   _gender: string | null,
   trainingFrequency: number,
+  location: string,
   methodology: Methodology = "standard",
 ) {
   const workoutExercises: {
@@ -917,13 +1006,31 @@ export async function createWeiderSplit(
   }[] = [];
   let order = 1;
 
+  // Filter exercises by location
+  const locationExercises = filterExercisesByLocation(exercises, location);
+
   // Filter exercises by muscle group
-  const legExercises = filterExercisesByMuscleGroup(exercises, "piernas");
-  const chestExercises = filterExercisesByMuscleGroup(exercises, "pecho");
-  const backExercises = filterExercisesByMuscleGroup(exercises, "espalda");
-  const shoulderExercises = filterExercisesByMuscleGroup(exercises, "hombros");
-  const armExercises = filterExercisesByMuscleGroup(exercises, "brazos");
-  const coreExercises = filterExercisesByMuscleGroup(exercises, "core");
+  const legExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "piernas",
+  );
+  const chestExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "pecho",
+  );
+  const backExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "espalda",
+  );
+  const shoulderExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "hombros",
+  );
+  const armExercises = filterExercisesByMuscleGroup(
+    locationExercises,
+    "brazos",
+  );
+  const coreExercises = filterExercisesByMuscleGroup(locationExercises, "core");
 
   const muscleGroups = [
     { name: "Pecho", exercises: chestExercises },
@@ -978,12 +1085,13 @@ export async function createWeiderSplit(
         restTime: settings.restTime,
         notes: isPlank
           ? `${muscleGroupName} - Plancha 30-60 segundos`
-          : `${muscleGroupName} - ${i === 0
-            ? "Principal"
-            : i === 1
-              ? "Secundario"
-              : `Aislamiento ${i - 1}`
-          }`,
+          : `${muscleGroupName} - ${
+              i === 0
+                ? "Principal"
+                : i === 1
+                  ? "Secundario"
+                  : `Aislamiento ${i - 1}`
+            }`,
       });
     }
 

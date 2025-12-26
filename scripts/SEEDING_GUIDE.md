@@ -7,42 +7,51 @@ This guide explains how to seed the production database with food and exercise d
 ## Available Scripts
 
 ### Seed Everything (Recommended)
+
 ```bash
 npm run seed:prod
 ```
+
 Seeds both food and exercise data in one command.
 
 ### Seed Food Only
+
 ```bash
 npm run seed:food
 ```
+
 Seeds only food data from `src/data/food.ts`.
 
 ### Seed Exercises Only
+
 ```bash
 npm run seed:exercises
 ```
+
 Seeds only exercise data from `src/data/exercises.ts`.
 
 ## Production Seeding
 
 ### Prerequisites
+
 1. Ensure you have access to the production database
 2. Have the production `DATABASE_URL` environment variable
 
 ### Steps
 
 1. **Backup the database** (IMPORTANT!)
+
    ```bash
    # Create a backup before seeding
    pg_dump $DATABASE_URL > backup_$(date +%Y%m%d_%H%M%S).sql
    ```
 
 2. **Set the DATABASE_URL**
+
    ```bash
    # Option 1: Use .env file
    DATABASE_URL="your-production-url" npm run seed:prod
-   
+
    # Option 2: Export environment variable
    export DATABASE_URL="your-production-url"
    npm run seed:prod
@@ -90,14 +99,17 @@ Seeds only exercise data from `src/data/exercises.ts`.
 ## Features
 
 ### Duplicate Detection
+
 The scripts automatically detect and skip existing records based on name matching. This means you can safely run the scripts multiple times without creating duplicates.
 
 ### Progress Tracking
+
 - Real-time progress indicators
 - Batch progress updates every 10 items
 - Final summary with statistics
 
 ### Error Handling
+
 - Individual item errors don't stop the entire process
 - Detailed error messages for debugging
 - Exit codes for CI/CD integration
@@ -105,19 +117,24 @@ The scripts automatically detect and skip existing records based on name matchin
 ## Troubleshooting
 
 ### Connection Issues
+
 ```bash
 # Test database connection
 psql $DATABASE_URL -c "SELECT 1"
 ```
 
 ### Permission Issues
+
 Ensure your database user has INSERT permissions:
+
 ```sql
 GRANT INSERT ON TABLE "Food", "Exercise" TO your_user;
 ```
 
 ### Data Verification
+
 After seeding, verify the data:
+
 ```sql
 -- Check food count
 SELECT COUNT(*) FROM "Food";

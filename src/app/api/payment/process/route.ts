@@ -119,10 +119,13 @@ export async function POST(req: Request) {
       throw new Error("No se encontró el link de aprobación de Mercado Pago");
     }
 
-    console.log("[Payment Process] Subscription created, redirecting to payment:", {
-      subscriptionId: result.id,
-      initPoint: result.init_point,
-    });
+    console.log(
+      "[Payment Process] Subscription created, redirecting to payment:",
+      {
+        subscriptionId: result.id,
+        initPoint: result.init_point,
+      },
+    );
 
     return NextResponse.json({
       success: true,

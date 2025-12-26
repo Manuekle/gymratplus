@@ -50,13 +50,13 @@ const weightOptions = Array.from({ length: 141 }, (_, i) =>
 ); // 40kg to 180kg
 
 const daysOfWeek = [
-  { id: "mon", label: "L" },  // Lunes
-  { id: "tue", label: "M" },  // Martes
-  { id: "wed", label: "X" },  // Miércoles
-  { id: "thu", label: "J" },  // Jueves
-  { id: "fri", label: "V" },  // Viernes
-  { id: "sat", label: "S" },  // Sábado
-  { id: "sun", label: "D" },  // Domingo
+  { id: "mon", label: "L" }, // Lunes
+  { id: "tue", label: "M" }, // Martes
+  { id: "wed", label: "X" }, // Miércoles
+  { id: "thu", label: "J" }, // Jueves
+  { id: "fri", label: "V" }, // Viernes
+  { id: "sat", label: "S" }, // Sábado
+  { id: "sun", label: "D" }, // Domingo
 ];
 
 type ProfileFormData = {
