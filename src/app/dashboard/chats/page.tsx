@@ -37,13 +37,21 @@ import {
   ConfirmationRequest,
   ConfirmationTitle,
 } from "@/components/ai-elements/confirmation";
-import { CheckmarkCircle02Icon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { CheckmarkCircle02Icon, Cancel01Icon, UserSearchIcon } from "@hugeicons/core-free-icons";
 import { sendErrorEmail } from "@/app/actions/email";
 import { useScrollToBottom } from "@/hooks/use-scroll-to-bottom";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function ChatPage() {
+  const { data: session } = useSession();
+  const router = useRouter();
   const [selectedChatId, setSelectedChatId] = useState<string | null>(null);
   const [savedPlans, setSavedPlans] = useState<Record<string, boolean>>({});
+
+  // Check if user is FREE tier
+  const user = session?.user as any;
+  const isFreeUser = !user?.subscriptionTier || user.subscriptionTier === "FREE";
 
   // Auto-scroll functionality
   const { containerRef, endRef, isAtBottom, scrollToBottom } = useScrollToBottom<HTMLDivElement>();
@@ -171,29 +179,31 @@ export default function ChatPage() {
           </div>
           <div className="flex-1 overflow-y-auto">
             <div className="p-2 space-y-1">
-              <button
-                type="button"
-                className={cn(
-                  "w-full p-2.5 rounded-lg text-left flex items-center gap-3 transition-all",
-                  selectedChatId === "rocco-ai"
-                    ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white"
-                    : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50",
-                )}
-                onClick={() => setSelectedChatId("rocco-ai")}
-              >
-                <div className="h-8 w-8 rounded-full border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
-                  <HugeiconsIcon
-                    icon={Robot01Icon}
-                    className="h-4 w-4 text-zinc-600 dark:text-zinc-400"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-xs">Rocco (AI)</p>
-                  <p className="text-xs text-zinc-500 truncate">
-                    Coach de GymRat+
-                  </p>
-                </div>
-              </button>
+              {!isFreeUser && (
+                <button
+                  type="button"
+                  className={cn(
+                    "w-full p-2.5 rounded-lg text-left flex items-center gap-3 transition-all",
+                    selectedChatId === "rocco-ai"
+                      ? "bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white"
+                      : "text-zinc-500 hover:bg-zinc-50 dark:hover:bg-zinc-900/50",
+                  )}
+                  onClick={() => setSelectedChatId("rocco-ai")}
+                >
+                  <div className="h-8 w-8 rounded-full border border-zinc-200/50 dark:border-zinc-800/50 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+                    <HugeiconsIcon
+                      icon={Robot01Icon}
+                      className="h-4 w-4 text-zinc-600 dark:text-zinc-400"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-xs">Rocco (AI)</p>
+                    <p className="text-xs text-zinc-500 truncate">
+                      Coach de GymRat+
+                    </p>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -205,7 +215,7 @@ export default function ChatPage() {
             "flex",
           )}
         >
-          {selectedChatId === "rocco-ai" ? (
+          {!isFreeUser && selectedChatId === "rocco-ai" ? (
             <div className="flex-1 flex flex-col h-full relative">
               {/* Header aligned with Sidebar */}
               <div className="h-14 border-b border-zinc-200/50 dark:border-zinc-800/50 flex items-center px-4 gap-3 bg-background/80 backdrop-blur-sm z-10 sticky top-0">
@@ -670,25 +680,32 @@ export default function ChatPage() {
               <div className="relative z-10 flex flex-col items-center text-center space-y-4 max-w-md mx-auto">
                 <div className="h-20 w-20 rounded-2xl bg-gradient-to-tr from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-900 border border-black/5 dark:border-white/5 flex items-center justify-center transform rotate-3 shadow-xl">
                   <HugeiconsIcon
-                    icon={Robot01Icon}
+                    icon={isFreeUser ? UserSearchIcon : Robot01Icon}
                     className="h-10 w-10 text-zinc-400"
                   />
                 </div>
                 <div>
                   <h3 className="text-2xl tracking-[-0.04em] font-semibold text-zinc-900 dark:text-white">
-                    Selecciona un chat
+                    {isFreeUser ? "Busca un instructor" : "Selecciona un chat"}
                   </h3>
                   <p className="text-zinc-500 text-xs tracking-[-0.02em] dark:text-zinc-400 mt-2">
-                    Elige a Rocco para empezar tu entrenamiento personalizado o
-                    revisa tu historial de conversaciones.
+                    {isFreeUser
+                      ? "Conecta con instructores profesionales para recibir entrenamiento personalizado y alcanzar tus objetivos."
+                      : "Elige a Rocco para empezar tu entrenamiento personalizado o revisa tu historial de conversaciones."}
                   </p>
                 </div>
                 <Button
                   variant="outline"
                   className="mt-4 rounded-full"
-                  onClick={() => setSelectedChatId("rocco-ai")}
+                  onClick={() =>
+                    isFreeUser
+                      ? router.push("/dashboard/instructors")
+                      : setSelectedChatId("rocco-ai")
+                  }
                 >
-                  Iniciar chat con Rocco
+                  {isFreeUser
+                    ? "Buscar instructores"
+                    : "Iniciar chat con Rocco"}
                 </Button>
               </div>
             </div>
