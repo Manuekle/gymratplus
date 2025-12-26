@@ -148,8 +148,8 @@ export function getTierName(tier: string): string {
 export function getTierPrice(tier: string): string {
   const prices: Record<string, string> = {
     [SubscriptionTier.FREE]: "$0",
-    [SubscriptionTier.PRO]: "$9.99",
-    [SubscriptionTier.INSTRUCTOR]: "$19.99",
+    [SubscriptionTier.PRO]: "$37.700",
+    [SubscriptionTier.INSTRUCTOR]: "$74.500",
   };
   return prices[tier] || "$0";
 }

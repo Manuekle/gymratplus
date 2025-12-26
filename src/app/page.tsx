@@ -692,7 +692,7 @@ export default function GymRatLanding() {
               },
               {
                 name: "Pro",
-                price: "$9.99",
+                price: "$37.700",
                 features: [
                   "Todo en Gratis",
                   "Chat con Rocco IA",
@@ -704,7 +704,7 @@ export default function GymRatLanding() {
               },
               {
                 name: "Instructor",
-                price: "$19.99",
+                price: "$74.500",
                 features: [
                   "Todo en Pro",
                   "Gestión de estudiantes",

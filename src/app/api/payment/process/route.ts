@@ -80,8 +80,8 @@ export async function POST(req: Request) {
       auto_recurring: {
         frequency: 1,
         frequency_type: "months",
-        transaction_amount: planType === "pro" ? 9.99 : 19.99,
-        currency_id: "USD",
+        transaction_amount: planType === "pro" ? 37700 : 74500,
+        currency_id: "COP",
         free_trial: {
           frequency: 14,
           frequency_type: "days",

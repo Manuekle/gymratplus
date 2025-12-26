@@ -57,7 +57,7 @@ export async function GET(req: Request) {
       usersToRemind.map(async (user) => {
         if (!user.email) return;
 
-        const amount = user.subscriptionTier === "INSTRUCTOR" ? 19.99 : 9.99; // Simplified logic, should ideally come from plan details
+        const amount = user.subscriptionTier === "INSTRUCTOR" ? 74500 : 37700; // Simplified logic, should ideally come from plan details
         const planName =
           user.subscriptionTier === "INSTRUCTOR" ? "Instructor" : "Pro";
 
@@ -68,7 +68,7 @@ export async function GET(req: Request) {
             ? new Date(user.currentPeriodEnd).toLocaleDateString("es-ES")
             : "Próximamente",
           amount: amount,
-          currency: "USD",
+          currency: "COP",
         });
 
         await sendEmail({

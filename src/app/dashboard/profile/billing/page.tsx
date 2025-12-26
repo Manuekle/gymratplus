@@ -233,14 +233,14 @@ export default function BillingPage() {
     {
       id: "pro",
       name: "Pro",
-      price: "$9.99",
+      price: "$37.700",
       description: "Plan profesional mensual.",
       tier: "PRO",
     },
     {
       id: "instructor",
       name: "Instructor",
-      price: "$19.99",
+      price: "$74.500",
       description: "Plan completo para instructores.",
       tier: "INSTRUCTOR",
     },
