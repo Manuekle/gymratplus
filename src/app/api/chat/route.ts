@@ -87,6 +87,31 @@ export async function POST(req: Request) {
       return new Response("User not found", { status: 404 });
     }
 
+    // Check subscription tier - AI chat is only available for PRO and INSTRUCTOR users
+    const allowedTiers = ["PRO", "INSTRUCTOR"];
+    if (!allowedTiers.includes(user.subscriptionTier || "FREE")) {
+      // Return a friendly message for free users
+      const upgradeMessage = {
+        role: "assistant",
+        content: `¡Hola! 👋 Soy Rocco, tu entrenador personal de IA.
+
+Para poder ayudarte con planes de entrenamiento personalizados, seguimiento nutricional y mucho más, necesitas actualizar a GymRat+ **Pro** o **Instructor**.
+
+**Con Pro obtienes:**
+✨ Planes de entrenamiento personalizados con IA
+🍎 Seguimiento nutricional inteligente
+📊 Análisis avanzado de progreso
+💪 Acceso a todas las funciones premium
+
+¿Listo para llevar tu entrenamiento al siguiente nivel? ¡Actualiza ahora!`,
+      };
+
+      return new Response(JSON.stringify(upgradeMessage), {
+        status: 403,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
     // Build context string from user data
     const userContext = `
 PERFIL DEL USUARIO:

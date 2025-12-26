@@ -18,7 +18,10 @@
     "postinstall": "prisma generate",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update": "ncu -u",
-    "seed:users": "tsx prisma/seed-users.ts"
+    "seed:users": "tsx prisma/seed-users.ts",
+    "seed:prod": "tsx scripts/seed-production.ts",
+    "seed:food": "tsx scripts/seed-food.ts",
+    "seed:exercises": "tsx scripts/seed-exercises.ts"
   },
   "resolutions": {
     "@types/react": "18.0.28",

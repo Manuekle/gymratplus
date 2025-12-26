@@ -21,6 +21,20 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import WorkoutHistory from "@/components/workouts/workout-history";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Icons } from "@/components/icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { Edit02Icon } from "@hugeicons/core-free-icons";
 
 interface UserProfile {
   id: string;
@@ -33,21 +47,24 @@ interface UserProfile {
 }
 
 export default function WorkoutsPage() {
-  const { data: session, status } = useSession();
+  const { data: session, status, update } = useSession();
 
   const [user, setUser] = useState<UserProfile | null>(null);
+  const [showTrainingDialog, setShowTrainingDialog] = useState(false);
+  const [trainingFrequency, setTrainingFrequency] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (!session?.user) return;
 
     const profile = session.user.profile as
       | {
-          id?: string;
-          activityLevel?: string;
-          dailyActivity?: string;
-          trainingFrequency?: number;
-          trainingDays?: string[];
-        }
+        id?: string;
+        activityLevel?: string;
+        dailyActivity?: string;
+        trainingFrequency?: number;
+        trainingDays?: string[];
+      }
       | null
       | undefined;
 
@@ -62,7 +79,57 @@ export default function WorkoutsPage() {
         trainingDays: (profile.trainingDays as string[]) || [],
       },
     });
+    setTrainingFrequency(Number(profile.trainingFrequency) || 0);
   }, [session?.user]); // Se ejecuta cuando el perfil del usuario cambia
+
+  const handleUpdateTrainingFrequency = async () => {
+    try {
+      setIsSaving(true);
+
+      const response = await fetch("/api/profile", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ trainingFrequency }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update training frequency");
+      }
+
+      const data = await response.json();
+
+      // Update session
+      await update({
+        ...session,
+        user: {
+          ...session?.user,
+          profile: data.profile,
+        },
+      });
+
+      // Update local state
+      if (user) {
+        setUser({
+          ...user,
+          activity: {
+            ...user.activity,
+            trainingFrequency,
+          },
+        });
+      }
+
+      setShowTrainingDialog(false);
+      toast.success("Días de entrenamiento actualizados", {
+        description: `Ahora entrenas ${trainingFrequency} día${trainingFrequency !== 1 ? "s" : ""} por semana`,
+      });
+    } catch (error) {
+      toast.error("Error", {
+        description: "No se pudo actualizar los días de entrenamiento",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   console.log(user);
 
@@ -153,10 +220,23 @@ export default function WorkoutsPage() {
                     Días de entrenamiento por semana
                   </span>
                 </div>
-                <span className="font-medium text-xs">
-                  {user?.activity.trainingFrequency} día
-                  {user?.activity.trainingFrequency !== 1 ? "s" : ""}
-                </span>
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-xs">
+                    {user?.activity.trainingFrequency} día
+                    {user?.activity.trainingFrequency !== 1 ? "s" : ""}
+                  </span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 w-6 p-0"
+                    onClick={() => {
+                      setTrainingFrequency(user?.activity.trainingFrequency || 0);
+                      setShowTrainingDialog(true);
+                    }}
+                  >
+                    <HugeiconsIcon icon={Edit02Icon} className="h-3 w-3" />
+                  </Button>
+                </div>
               </div>
               {user?.activity.trainingDays &&
                 user.activity.trainingDays.length > 0 && (
@@ -202,6 +282,55 @@ export default function WorkoutsPage() {
       </Card>
       <WorkoutCreator />
       <WorkoutHistory />
+
+      {/* Training Frequency Dialog */}
+      <Dialog open={showTrainingDialog} onOpenChange={setShowTrainingDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Días de entrenamiento</DialogTitle>
+            <DialogDescription className="text-xs">
+              ¿Cuántos días por semana entrenas?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label className="text-xs">Días por semana</Label>
+              <div className="flex items-center gap-4">
+                <input
+                  type="range"
+                  min="1"
+                  max="7"
+                  value={trainingFrequency}
+                  onChange={(e) => setTrainingFrequency(Number(e.target.value))}
+                  className="flex-1"
+                />
+                <span className="text-2xl font-bold w-8 text-center">
+                  {trainingFrequency}
+                </span>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowTrainingDialog(false)}
+              disabled={isSaving}
+            >
+              Cancelar
+            </Button>
+            <Button onClick={handleUpdateTrainingFrequency} disabled={isSaving}>
+              {isSaving ? (
+                <>
+                  <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                "Guardar"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
