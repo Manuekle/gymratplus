@@ -10,9 +10,13 @@ export const size = {
 export const contentType = "image/png";
 
 export async function GET() {
-    // Fetch Inter font
-    const fontData = await fetch(
-        "https://fonts.gstatic.com/s/inter/v12/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff"
+    // Fetch Inter fonts
+    const interRegular = await fetch(
+        "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.15/files/inter-latin-400-normal.woff"
+    ).then((res) => res.arrayBuffer());
+
+    const interBold = await fetch(
+        "https://cdn.jsdelivr.net/npm/@fontsource/inter@5.0.15/files/inter-latin-800-normal.woff"
     ).then((res) => res.arrayBuffer());
 
     return new ImageResponse(
@@ -237,9 +241,15 @@ export async function GET() {
             fonts: [
                 {
                     name: "Inter",
-                    data: fontData,
+                    data: interRegular,
                     style: "normal",
                     weight: 400,
+                },
+                {
+                    name: "Inter",
+                    data: interBold,
+                    style: "normal",
+                    weight: 800,
                 },
             ],
         },
