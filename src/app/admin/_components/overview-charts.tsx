@@ -27,7 +27,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
   if (!data || data.length === 0) {
     return (
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-background/40 backdrop-blur-md border border-border">
+        <Card>
           <CardHeader>
             <CardTitle>Analítica de Ingresos</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
             <p className="text-muted-foreground">No hay datos disponibles.</p>
           </CardContent>
         </Card>
-        <Card className="bg-background/40 backdrop-blur-md border border-border">
+        <Card>
           <CardHeader>
             <CardTitle>Crecimiento de Usuarios</CardTitle>
           </CardHeader>
@@ -49,7 +49,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
-      <Card className="bg-background/40 backdrop-blur-md border border-white/5 shadow-2xl">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <CardTitle className="text-lg font-medium">Ingresos</CardTitle>
@@ -71,7 +71,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                     <stop
                       offset="5%"
                       stopColor="hsl(var(--primary))"
-                      stopOpacity={0.3}
+                      stopOpacity={0.2}
                     />
                     <stop
                       offset="95%"
@@ -83,8 +83,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="hsl(var(--muted-foreground))"
-                  opacity={0.1}
+                  stroke="hsl(var(--border))"
                 />
                 <XAxis
                   dataKey="name"
@@ -103,19 +102,12 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                   dx={-10}
                 />
                 <Tooltip
-                  cursor={{
-                    stroke: "hsl(var(--primary))",
-                    strokeWidth: 1,
-                    strokeDasharray: "4 4",
-                  }}
                   contentStyle={{
-                    backgroundColor: "hsl(var(--popover))",
-                    borderRadius: "12px",
+                    backgroundColor: "hsl(var(--background))",
+                    borderRadius: "8px",
                     border: "1px solid hsl(var(--border))",
-                    boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
-                    color: "hsl(var(--popover-foreground))",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                   }}
-                  itemStyle={{ color: "hsl(var(--primary))" }}
                   formatter={(value: any) => {
                     return [
                       new Intl.NumberFormat("es-CO", {
@@ -132,7 +124,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                   type="monotone"
                   dataKey="revenue"
                   stroke="hsl(var(--primary))"
-                  strokeWidth={3}
+                  strokeWidth={2}
                   fillOpacity={1}
                   fill="url(#colorRevenue)"
                 />
@@ -142,7 +134,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         </CardContent>
       </Card>
 
-      <Card className="bg-background/40 backdrop-blur-md border border-white/5 shadow-2xl">
+      <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <CardTitle className="text-lg font-medium">Usuarios</CardTitle>
@@ -158,12 +150,11 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <CardContent className="pt-6">
           <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data} barGap={0} barCategoryGap={0}>
+              <BarChart data={data}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="hsl(var(--muted-foreground))"
-                  opacity={0.1}
+                  stroke="hsl(var(--border))"
                 />
                 <XAxis
                   dataKey="name"
@@ -182,22 +173,18 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                   dx={-10}
                 />
                 <Tooltip
-                  cursor={{ fill: "hsl(var(--muted)/0.2)" }}
                   contentStyle={{
-                    backgroundColor: "hsl(var(--popover))",
-                    borderRadius: "12px",
+                    backgroundColor: "hsl(var(--background))",
+                    borderRadius: "8px",
                     border: "1px solid hsl(var(--border))",
-                    boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
-                    color: "hsl(var(--popover-foreground))",
+                    boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
                   }}
-                  itemStyle={{ color: "hsl(var(--chart-2))" }}
                 />
                 <Bar
                   dataKey="users"
                   fill="hsl(var(--chart-2))"
-                  radius={[6, 6, 0, 0]}
+                  radius={[4, 4, 0, 0]}
                   barSize={40}
-                  className="fill-chart-2/80 hover:fill-chart-2 transition-colors"
                 />
               </BarChart>
             </ResponsiveContainer>

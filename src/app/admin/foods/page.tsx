@@ -103,12 +103,9 @@ export default async function FoodsPage({
                 {categoryFoods.map((food) => (
                   <Card
                     key={food.id}
-                    className="group relative overflow-hidden border-border/50 bg-gradient-to-br from-background/95 via-background/80 to-background/95 backdrop-blur-xl transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/5"
+                    className="group transition-all duration-200 hover:shadow-md"
                   >
-                    {/* Gradient overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-                    <CardContent className="relative p-5">
+                    <CardContent className="p-5">
                       <div className="space-y-4">
                         {/* Header */}
                         <div className="flex items-start justify-between gap-2">
