@@ -11,6 +11,7 @@ import AnimatedLayout from "@/components/layout/animated-layout";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import AdBanner from "@/components/ads/ad-banner";
+import { SubscriptionTier } from "@/lib/subscriptions/feature-gates";
 
 export default function DashboardClient() {
   const { data: session, status } = useSession();
@@ -108,8 +109,10 @@ export default function DashboardClient() {
           </motion.div>
         </div>
 
-        {/* AdSense Banner */}
-        <AdBanner dataAdSlot="1234567890" />
+        {/* AdSense Banner - Only for FREE users */}
+        {(session.user as any)?.subscriptionTier === SubscriptionTier.FREE && (
+          <AdBanner dataAdSlot="1234567890" />
+        )}
 
         {/* Resúmenes */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
