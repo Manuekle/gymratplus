@@ -3,13 +3,13 @@
 import {
   Bar,
   BarChart,
-  Line,
-  LineChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
   CartesianGrid,
+  Area,
+  AreaChart,
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Money03Icon, UserGroupIcon } from "@hugeicons/core-free-icons";
@@ -26,8 +26,8 @@ interface OverviewChartsProps {
 export function OverviewCharts({ data }: OverviewChartsProps) {
   if (!data || data.length === 0) {
     return (
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card>
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="bg-background/40 backdrop-blur-md border border-white/5">
           <CardHeader>
             <CardTitle>Analítica de Ingresos</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
             <p className="text-muted-foreground">No hay datos disponibles.</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-background/40 backdrop-blur-md border border-white/5">
           <CardHeader>
             <CardTitle>Crecimiento de Usuarios</CardTitle>
           </CardHeader>
@@ -48,46 +48,64 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2">
-      <Card>
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card className="bg-background/40 backdrop-blur-md border border-white/5 shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-normal">
-            Tendencias de Ingresos
-          </CardTitle>
-          <HugeiconsIcon
-            icon={Money03Icon}
-            className="h-4 w-4 text-muted-foreground"
-          />
+          <div className="space-y-1">
+            <CardTitle className="text-lg font-medium">
+              Ingresos
+            </CardTitle>
+            <p className="text-sm text-muted-foreground">Últimos 12 meses</p>
+          </div>
+          <div className="p-2 bg-primary/10 rounded-lg">
+            <HugeiconsIcon
+              icon={Money03Icon}
+              className="h-5 w-5 text-primary"
+            />
+          </div>
         </CardHeader>
-        <CardContent className="pt-4">
-          <div className="h-[300px] w-full">
+        <CardContent className="pt-6">
+          <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data}>
+              <AreaChart data={data}>
+                <defs>
+                  <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#E5E7EB"
+                  stroke="hsl(var(--muted-foreground))"
+                  opacity={0.1}
                 />
                 <XAxis
                   dataKey="name"
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
+                  dy={10}
                 />
                 <YAxis
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `$${value}`}
+                  dx={-10}
                 />
                 <Tooltip
-                  cursor={{ fill: "transparent" }}
+                  cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1, strokeDasharray: "4 4" }}
                   contentStyle={{
-                    borderRadius: "8px",
-                    border: "1px solid #E5E7EB",
+                    backgroundColor: "hsl(var(--popover))",
+                    borderRadius: "12px",
+                    border: "1px solid hsl(var(--border))",
+                    boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+                    color: "hsl(var(--popover-foreground))",
                   }}
+                  itemStyle={{ color: "hsl(var(--primary))" }}
                   formatter={(value: any) => {
                     return [
                       new Intl.NumberFormat("es-CO", {
@@ -100,64 +118,77 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                     ] as [string, string];
                   }}
                 />
-                <Bar
+                <Area
+                  type="monotone"
                   dataKey="revenue"
-                  fill="currentColor"
-                  radius={[4, 4, 0, 0]}
-                  className="fill-primary"
+                  stroke="hsl(var(--primary))"
+                  strokeWidth={3}
+                  fillOpacity={1}
+                  fill="url(#colorRevenue)"
                 />
-              </BarChart>
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="bg-background/40 backdrop-blur-md border border-white/5 shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-normal">Crecimiento de Usuarios</CardTitle>
-          <HugeiconsIcon
-            icon={UserGroupIcon}
-            className="h-4 w-4 text-muted-foreground"
-          />
+          <div className="space-y-1">
+            <CardTitle className="text-lg font-medium">Usuarios</CardTitle>
+            <p className="text-sm text-muted-foreground">Crecimiento mensual</p>
+          </div>
+          <div className="p-2 bg-blue-500/10 rounded-lg">
+            <HugeiconsIcon
+              icon={UserGroupIcon}
+              className="h-5 w-5 text-blue-500"
+            />
+          </div>
         </CardHeader>
-        <CardContent className="pt-4">
-          <div className="h-[300px] w-full">
+        <CardContent className="pt-6">
+          <div className="h-[350px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data}>
+              <BarChart data={data} barGap={0} barCategoryGap={0}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   vertical={false}
-                  stroke="#E5E7EB"
+                  stroke="hsl(var(--muted-foreground))"
+                  opacity={0.1}
                 />
                 <XAxis
                   dataKey="name"
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
+                  dy={10}
                 />
                 <YAxis
-                  stroke="#888888"
+                  stroke="hsl(var(--muted-foreground))"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   allowDecimals={false}
+                  dx={-10}
                 />
                 <Tooltip
+                  cursor={{ fill: "hsl(var(--muted)/0.2)" }}
                   contentStyle={{
-                    borderRadius: "8px",
-                    border: "1px solid #E5E7EB",
+                    backgroundColor: "hsl(var(--popover))",
+                    borderRadius: "12px",
+                    border: "1px solid hsl(var(--border))",
+                    boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
+                    color: "hsl(var(--popover-foreground))",
                   }}
                 />
-                <Line
-                  type="monotone"
+                <Bar
                   dataKey="users"
-                  strokeWidth={2}
-                  activeDot={{ r: 6 }}
-                  className="stroke-primary"
-                  stroke="currentColor"
+                  fill="hsl(var(--blue-500))" // Or a specific blue color to differentiate
+                  radius={[6, 6, 0, 0]}
+                  barSize={40}
+                  className="fill-blue-500/80 hover:fill-blue-500 transition-colors"
                 />
-              </LineChart>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </CardContent>
