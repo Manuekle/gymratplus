@@ -30,7 +30,11 @@ export type FormData = {
   name: string;
 };
 
-export function WorkoutGenerator() {
+interface WorkoutGeneratorProps {
+  onWorkoutCreated?: () => void;
+}
+
+export function WorkoutGenerator({ onWorkoutCreated }: WorkoutGeneratorProps) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     goal: "",
@@ -83,6 +87,11 @@ export function WorkoutGenerator() {
       const result = await response.json();
       setWorkoutResult(result);
       setStep(totalSteps + 1); // Move to results step
+
+      // Refresh the workouts list
+      if (onWorkoutCreated) {
+        onWorkoutCreated();
+      }
     } catch (error) {
       console.error("Error creating workout:", error);
       const errorMessage =

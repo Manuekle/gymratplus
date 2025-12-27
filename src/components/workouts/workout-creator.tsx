@@ -9,10 +9,13 @@ import {
 } from "@/components/ui/card";
 import WorkoutsTable from "../tables/workouts-table";
 import { WorkoutGenerator } from "../workout-generator/workout-generator";
+import { useWorkouts } from "@/hooks/use-workouts";
 /* import ExerciseButtons from "../config/add-exercise-button";
 import FoodButtons from "../config/add-foods-button"; */
 
 export default function WorkoutCreator() {
+  const { refreshWorkouts } = useWorkouts();
+
   return (
     <Card className="">
       <CardHeader className="pb-2">
@@ -25,7 +28,7 @@ export default function WorkoutCreator() {
       </CardHeader>
       <CardContent className="px-4">
         <div>
-          <WorkoutGenerator />
+          <WorkoutGenerator onWorkoutCreated={refreshWorkouts} />
           <WorkoutsTable />
           {/* <ExerciseButtons />
           <FoodButtons /> */}
