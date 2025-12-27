@@ -326,40 +326,59 @@ export async function POST(req: Request): Promise<NextResponse> {
       }
     }
 
-    await createFoodRecommendationNormalized({
-      userId,
-      calorieTarget,
-      proteinTarget,
-      carbsTarget,
-      fatTarget,
-      description: nutritionPlan.macros.description,
-      meals: {
-        breakfast: {
-          entries: nutritionPlan.meals.breakfast.entries.map((entry) => ({
-            foodId: entry.foodId,
-            quantity: entry.quantity,
-          })),
-        },
-        lunch: {
-          entries: nutritionPlan.meals.lunch.entries.map((entry) => ({
-            foodId: entry.foodId,
-            quantity: entry.quantity,
-          })),
-        },
-        dinner: {
-          entries: nutritionPlan.meals.dinner.entries.map((entry) => ({
-            foodId: entry.foodId,
-            quantity: entry.quantity,
-          })),
-        },
-        snacks: {
-          entries: nutritionPlan.meals.snacks.entries.map((entry) => ({
-            foodId: entry.foodId,
-            quantity: entry.quantity,
-          })),
-        },
-      },
+    console.log("[Recommendations API] Saving food recommendation to database...");
+    console.log("[Recommendations API] Nutrition plan meals:", {
+      breakfast: nutritionPlan.meals.breakfast?.entries?.length || 0,
+      lunch: nutritionPlan.meals.lunch?.entries?.length || 0,
+      dinner: nutritionPlan.meals.dinner?.entries?.length || 0,
+      snacks: nutritionPlan.meals.snacks?.entries?.length || 0,
     });
+
+    try {
+      const savedRecommendation = await createFoodRecommendationNormalized({
+        userId,
+        calorieTarget,
+        proteinTarget,
+        carbsTarget,
+        fatTarget,
+        description: nutritionPlan.macros.description,
+        meals: {
+          breakfast: {
+            entries: nutritionPlan.meals.breakfast.entries.map((entry) => ({
+              foodId: entry.foodId,
+              quantity: entry.quantity,
+            })),
+          },
+          lunch: {
+            entries: nutritionPlan.meals.lunch.entries.map((entry) => ({
+              foodId: entry.foodId,
+              quantity: entry.quantity,
+            })),
+          },
+          dinner: {
+            entries: nutritionPlan.meals.dinner.entries.map((entry) => ({
+              foodId: entry.foodId,
+              quantity: entry.quantity,
+            })),
+          },
+          snacks: {
+            entries: nutritionPlan.meals.snacks.entries.map((entry) => ({
+              foodId: entry.foodId,
+              quantity: entry.quantity,
+            })),
+          },
+        },
+      });
+      console.log("[Recommendations API] Food recommendation saved successfully:", savedRecommendation.id);
+    } catch (saveError) {
+      console.error("[Recommendations API] Error saving food recommendation:", saveError);
+      console.error("[Recommendations API] Error details:", {
+        message: saveError instanceof Error ? saveError.message : String(saveError),
+        stack: saveError instanceof Error ? saveError.stack : undefined,
+      });
+      // Don't throw - continue with the response even if save fails
+      // This way the user still gets the plan in the response
+    }
 
     // Create weight entry if it doesn't exist
     const existingWeight = await prisma.weight.findFirst({
@@ -530,11 +549,11 @@ export async function POST(req: Request): Promise<NextResponse> {
       success: true,
       workoutPlan: workoutWithExercises
         ? {
-            id: workoutWithExercises.id,
-            name: workoutWithExercises.name,
-            description: workoutWithExercises.description || "",
-            days,
-          }
+          id: workoutWithExercises.id,
+          name: workoutWithExercises.name,
+          description: workoutWithExercises.description || "",
+          days,
+        }
         : null,
       foodRecommendation: populatedNutritionPlan,
       recommendations: [],
