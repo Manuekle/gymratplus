@@ -27,14 +27,18 @@ export default async function AdminDashboardPage() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight">
-          Dashboard Overview
-        </h2>
-        <p className="text-muted-foreground mt-2">
-          Bienvenido al panel de administración de GymRat+.
-        </p>
+    <div className="space-y-8">
+      {/* Header with gradient background */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background p-8 backdrop-blur-xl border border-border/50">
+        <div className="absolute inset-0 bg-grid-white/5 [mask-image:linear-gradient(0deg,transparent,black)]" />
+        <div className="relative">
+          <h2 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+            Panel de Administración
+          </h2>
+          <p className="mt-2 text-muted-foreground max-w-2xl">
+            Gestiona usuarios, contenido y analiza el rendimiento de GymRat+ desde un solo lugar.
+          </p>
+        </div>
       </div>
 
       {/* Stats Overview */}
@@ -43,7 +47,7 @@ export default async function AdminDashboardPage() {
           title="Ingresos Totales"
           value={formatCurrency(totalRevenue || 0)}
           icon={Money03Icon}
-          trend="+20.1%" // Placeholder trend, can be real if data exists
+          trend="+20.1%"
           trendDirection="up"
           description="desde el mes pasado"
         />
@@ -72,8 +76,6 @@ export default async function AdminDashboardPage() {
 
       {/* Analytics Charts */}
       <OverviewCharts data={analyticsData} />
-
-      {/* Recent Activity Sections (Placeholder for now, could be Recent Users table) */}
     </div>
   );
 }
