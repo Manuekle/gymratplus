@@ -202,17 +202,6 @@ export const foodsToCreate: FoodItem[] = [
     serving: 100,
     category: "supplements",
   },
-  {
-    name: "Proteína de suero de leche (whey)",
-    calories: 80,
-    protein: 18,
-    carbs: 2,
-    fat: 1,
-    fiber: 0,
-    sugar: 1,
-    serving: 25, // 1 scoop
-    category: "supplements",
-  },
   // Proteínas vegetales
   {
     name: "Tofu firme",
@@ -258,28 +247,6 @@ export const foodsToCreate: FoodItem[] = [
     serving: 100,
     category: "legumes",
   },
-  {
-    name: "Tempeh",
-    calories: 193,
-    protein: 19,
-    carbs: 9,
-    fat: 11,
-    fiber: 0,
-    sugar: 0,
-    serving: 100,
-    category: "plant_protein",
-  },
-  {
-    name: "Seitán",
-    calories: 75,
-    protein: 15,
-    carbs: 4,
-    fat: 0.5,
-    fiber: 0,
-    sugar: 0,
-    serving: 100,
-    category: "plant_protein",
-  },
   // Legumbres
   {
     name: "Garbanzos cocidos",
@@ -301,28 +268,6 @@ export const foodsToCreate: FoodItem[] = [
     fiber: 8,
     sugar: 1.8,
     serving: 100, // ~1/2 taza
-    category: "legumes",
-  },
-  {
-    name: "Garbanzos cocidos",
-    calories: 164,
-    protein: 8.9,
-    carbs: 27.4,
-    fat: 2.6,
-    fiber: 7.6,
-    sugar: 4.8,
-    serving: 100,
-    category: "legumes",
-  },
-  {
-    name: "Garbanzos",
-    calories: 164,
-    protein: 8.9,
-    carbs: 27.4,
-    fat: 2.6,
-    fiber: 7.6,
-    sugar: 4.8,
-    serving: 100,
     category: "legumes",
   },
   {
