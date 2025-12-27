@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     // Create subscription in Mercado Pago WITHOUT associated plan
     // Using status "pending" to get init_point for user payment
     const subscriptionRequest = {
-      reason: `GymRat Plus - Plan ${planType.toUpperCase()}`,
+      reason: `GymRat+ - Plan ${planType.toUpperCase()}`,
       payer_email: session.user.email || undefined,
       back_url: `${baseUrl}/dashboard/profile/billing?success=true&plan_type=${planType}`,
       auto_recurring: {

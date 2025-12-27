@@ -8,7 +8,7 @@ export const resend = new Resend(process.env.RESEND_API_KEY);
 
 // Company information for emails
 export const COMPANY_INFO = {
-  name: "GymRat Plus",
+  name: "GymRat+",
   email: "noreply@gymratplus.com",
   supportEmail: "support@gymratplus.com",
   website: "https://gymratplus.com",

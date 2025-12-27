@@ -117,7 +117,7 @@ export async function POST(req: Request) {
     const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
     const finalAmount = amount || (subscriptionTier === "PRO" ? 37700 : 74500);
     const planNameDisplay =
-      subscriptionTier === "PRO" ? "GymRat Plus - Plan PRO" : "GymRat Plus - Plan Instructor";
+      subscriptionTier === "PRO" ? "GymRat+ - Plan PRO" : "GymRat+ - Plan Instructor";
 
     await prisma.invoice.create({
       data: {
