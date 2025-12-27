@@ -27,7 +27,6 @@ export async function GET(request: Request) {
 
     const exercises = await prisma.exercise.findMany({
       where,
-      take: 50, // Limit results to avoid quota usage
       orderBy: { name: "asc" },
       select: {
         id: true,
