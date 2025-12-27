@@ -19,7 +19,26 @@ import {
   CheckmarkCircle02Icon,
   Clock02Icon,
   Dumbbell01Icon,
+  ChartLineData01Icon,
 } from "@hugeicons/core-free-icons";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+} from "recharts";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 // import { Icons } from "@/components/icons";
 
 export default function WorkoutHistoryPage() {
@@ -34,6 +53,13 @@ export default function WorkoutHistoryPage() {
     totalSets: 0,
     averageDuration: 0,
   });
+
+  // Analytics State
+  const [analyticsData, setAnalyticsData] = useState<{
+    volumeHistory: { date: string; volume: number }[];
+    exercises: { id: string; name: string; history: { date: string; oneRm: number }[] }[];
+  } | null>(null);
+  const [selectedExerciseId, setSelectedExerciseId] = useState<string>("all");
 
   useEffect(() => {
     const fetchWorkoutHistory = async () => {
@@ -84,6 +110,23 @@ export default function WorkoutHistoryPage() {
     };
 
     fetchWorkoutHistory();
+
+    // Fetch Analytics Data
+    const fetchAnalytics = async () => {
+      try {
+        const response = await fetch("/api/analytics/progress");
+        if (response.ok) {
+          const data = await response.json();
+          setAnalyticsData(data);
+          if (data.exercises.length > 0) {
+            setSelectedExerciseId(data.exercises[0].id);
+          }
+        }
+      } catch (error) {
+        console.error("Error loading analytics:", error);
+      }
+    };
+    fetchAnalytics();
   }, []);
 
   // Filtrar sesiones según la pestaña activa
@@ -310,8 +353,99 @@ export default function WorkoutHistoryPage() {
             <TabsTrigger value="inProgress" className="text-xs flex-shrink-0">
               En progreso
             </TabsTrigger>
+            <TabsTrigger value="charts" className="text-xs flex-shrink-0">
+              Estadísticas
+            </TabsTrigger>
           </TabsList>
         </div>
+
+        <TabsContent value="charts" className="space-y-6">
+          {/* Volume Chart */}
+          <Card className="p-4 md:p-6">
+            <CardTitle className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <HugeiconsIcon icon={ChartLineData01Icon} className="w-5 h-5 text-primary" />
+              Volumen Total por Sesión (kg)
+            </CardTitle>
+            <div className="h-[300px] w-full">
+              {analyticsData?.volumeHistory && analyticsData.volumeHistory.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData.volumeHistory}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(val) => format(parseISO(val), "dd/MM", { locale: es })}
+                    />
+                    <YAxis tick={{ fontSize: 10 }} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', fontSize: '12px' }}
+                      labelFormatter={(label) => format(parseISO(label), "PPP", { locale: es })}
+                    />
+                    <Bar dataKey="volume" fill="currentColor" className="fill-primary" radius={[4, 4, 0, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground text-xs">
+                  No hay suficientes datos para mostrar la gráfica de volumen.
+                </div>
+              )}
+            </div>
+          </Card>
+
+          {/* Strength Chart */}
+          <Card className="p-4 md:p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <HugeiconsIcon icon={Dumbbell01Icon} className="w-5 h-5 text-primary" />
+                Progresión de Fuerza (1RM Estimado)
+              </CardTitle>
+              <Select value={selectedExerciseId} onValueChange={setSelectedExerciseId}>
+                <SelectTrigger className="w-full sm:w-[200px] text-xs h-9">
+                  <SelectValue placeholder="Selecciona ejercicio" />
+                </SelectTrigger>
+                <SelectContent>
+                  {analyticsData?.exercises.map((ex) => (
+                    <SelectItem key={ex.id} value={ex.id} className="text-xs">
+                      {ex.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="h-[300px] w-full">
+              {analyticsData?.exercises.find(e => e.id === selectedExerciseId)?.history.length ? (
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={analyticsData.exercises.find(e => e.id === selectedExerciseId)?.history}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis
+                      dataKey="date"
+                      tick={{ fontSize: 10 }}
+                      tickFormatter={(val) => format(parseISO(val), "dd/MM", { locale: es })}
+                    />
+                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 10 }} />
+                    <Tooltip
+                      contentStyle={{ borderRadius: '8px', fontSize: '12px' }}
+                      labelFormatter={(label) => format(parseISO(label), "PPP", { locale: es })}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="oneRm"
+                      stroke="currentColor"
+                      className="stroke-primary"
+                      strokeWidth={2}
+                      activeDot={{ r: 6 }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              ) : (
+                <div className="h-full flex items-center justify-center text-muted-foreground text-xs">
+                  Selecciona un ejercicio con historial para ver su progresión.
+                </div>
+              )}
+            </div>
+          </Card>
+        </TabsContent>
 
         <TabsContent
           value={activeTab}
@@ -325,11 +459,10 @@ export default function WorkoutHistoryPage() {
             return (
               <Card
                 key={session.id}
-                className={`overflow-hidden transition-all duration-300 ${
-                  isExpanded
-                    ? "col-span-1 sm:col-span-2 lg:col-span-3 row-span-2"
-                    : ""
-                }`}
+                className={`overflow-hidden transition-all duration-300 ${isExpanded
+                  ? "col-span-1 sm:col-span-2 lg:col-span-3 row-span-2"
+                  : ""
+                  }`}
               >
                 <CardHeader className="pb-2">
                   <div className="flex justify-between items-center">

@@ -454,6 +454,8 @@ model SetSession {
   setNumber         Int // número de serie (1, 2, 3...)
   weight            Float? // peso utilizado
   reps              Int? // repeticiones realizadas
+  rir               Int?            // Reps In Reserve (0-4+)
+  tempo             String?         // Tempo (e.g., "3-0-1")
   isDropSet         Boolean         @default(false)
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())

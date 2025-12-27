@@ -17,7 +17,15 @@ import WorkoutTimerFloat from "@/components/workout/workout-timer-float";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowLeft01Icon } from "@hugeicons/core-free-icons";
+import { ArrowLeft01Icon, ArrowUp01Icon } from "@hugeicons/core-free-icons";
+import { calculate1RM, calculateVolume } from "@/lib/utils/1rm-calculator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Spinner = () => (
   <div className="animate-spin h-4 w-4 border border-current border-t-transparent rounded-full" />
@@ -33,6 +41,7 @@ interface WorkoutSession {
 interface Exercise {
   id: string;
   exercise: {
+    id: string; // Added id
     name: string;
     muscleGroup: string;
     equipment: string;
@@ -47,6 +56,8 @@ interface Set {
   setNumber: number;
   weight: number | null;
   reps: number | null;
+  rir?: number | null;
+  tempo?: string | null;
   completed: boolean;
   isDropSet?: boolean;
 }
@@ -54,6 +65,8 @@ interface Set {
 interface InputValue {
   weight?: string;
   reps?: string;
+  rir?: string;
+  tempo?: string;
 }
 
 const DEBOUNCE_DELAY = 1000; // 1 segundo de retraso para el guardado
@@ -82,6 +95,7 @@ export default function ActiveWorkoutPage() {
   const [inputValues, setInputValues] = useState<Record<string, InputValue>>(
     {},
   );
+  const [lastStats, setLastStats] = useState<Record<string, { weight: number; reps: number; setNumber: number }[]>>({});
 
   // Ref para almacenar peticiones fallidas que necesitan reintento
   const failedRequests = useRef<
@@ -130,10 +144,23 @@ export default function ActiveWorkoutPage() {
           initialInputValues[set.id] = {
             weight: set.weight?.toString() || "",
             reps: set.reps?.toString() || "",
+            rir: set.rir?.toString() || "", // Initialize RIR
+            tempo: set.tempo || "3-0-1", // Initialize Tempo
           };
         });
       });
       setInputValues(initialInputValues);
+
+      // Fetch last session stats for comparison
+      const exerciseIds = workoutSession.exercises.map(e => e.exercise.id).join(",");
+      if (exerciseIds) {
+        fetch(`/api/workout-session/last?exerciseIds=${exerciseIds}`)
+          .then(res => res.json())
+          .then(stats => {
+            if (!stats.error) setLastStats(stats);
+          })
+          .catch(err => console.error("Error creating stats", err));
+      }
     }
   }, [workoutSession]);
 
@@ -143,6 +170,8 @@ export default function ActiveWorkoutPage() {
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
+
+
 
   /**
    * Envía la actualización del set a la API y maneja el estado local.
@@ -320,7 +349,7 @@ export default function ActiveWorkoutPage() {
     (
       setId: string,
       exerciseId: string,
-      field: "weight" | "reps",
+      field: "weight" | "reps" | "rir" | "tempo",
       value: string,
     ) => {
       // 1. Limpiar el timer anterior si existe
@@ -341,6 +370,8 @@ export default function ActiveWorkoutPage() {
       const currentValues = inputValues[setId] || {};
       const newWeight = field === "weight" ? value : currentValues.weight || "";
       const newReps = field === "reps" ? value : currentValues.reps || "";
+      const newRir = field === "rir" ? value : currentValues.rir || "";
+      const newTempo = field === "tempo" ? value : currentValues.tempo || "";
 
       // 4. Crear el nuevo timer de debounce
       const newTimer = setTimeout(() => {
@@ -349,16 +380,22 @@ export default function ActiveWorkoutPage() {
           newWeight === "" ? null : parseFloat(newWeight) || null;
         const numericReps =
           newReps === "" ? null : parseInt(newReps, 10) || null;
+        const numericRir = newRir === "" ? null : parseInt(newRir, 10);
 
         // Llamar a la API si hay al menos un valor válido (peso o repeticiones)
+        // O si estamos actualizando RIR o Tempo
         if (
           numericWeight !== null ||
           numericReps !== null ||
-          value === "" // Esto permite guardar un campo como null si se borra
+          value === "" ||
+          field === "rir" ||
+          field === "tempo"
         ) {
           updateSet(setId, exerciseId, {
             weight: numericWeight,
             reps: numericReps,
+            rir: numericRir,
+            tempo: newTempo || null,
           });
         }
       }, DEBOUNCE_DELAY);
@@ -544,22 +581,28 @@ export default function ActiveWorkoutPage() {
           {workoutSession.exercises.map((exercise) => (
             <Card
               key={exercise.id}
-              className={`${exercise.completed ? "opacity-70" : ""} ${
-                restTimer.exerciseId === exercise.id
-                  ? "border border-primary shadow-md"
-                  : ""
-              }`}
+              className={`${exercise.completed ? "opacity-70" : ""} ${restTimer.exerciseId === exercise.id
+                ? "border border-primary shadow-md"
+                : ""
+                }`}
             >
               <CardHeader className="pb-3">
                 <div className="flex flex-col gap-3">
-                  <div>
-                    <CardTitle className="text-lg tracking-heading font-semibold">
-                      {exercise.exercise.name}
-                    </CardTitle>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {exercise.exercise.muscleGroup} |{" "}
-                      {exercise.exercise.equipment}
-                    </p>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="text-lg tracking-heading font-semibold">
+                        {exercise.exercise.name}
+                      </CardTitle>
+                      <div className="flex items-center gap-2 mt-1">
+                        <p className="text-xs text-muted-foreground">
+                          {exercise.exercise.muscleGroup} |{" "}
+                          {exercise.exercise.equipment}
+                        </p>
+                        <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal">
+                          Vol: {calculateVolume(exercise.sets as any)}kg
+                        </Badge>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center">
                     {exercise.completed ? (
@@ -584,74 +627,141 @@ export default function ActiveWorkoutPage() {
               </CardHeader>
               <CardContent className="px-4 pt-0">
                 <div className="space-y-3">
-                  <div className="grid grid-cols-3 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                  <div className="grid grid-cols-12 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
                     <div className="col-span-1">Set</div>
-                    <div className="col-span-1">Peso (kg)</div>
-                    <div className="col-span-1">Reps</div>
+                    <div className="col-span-2">Peso (kg)</div>
+                    <div className="col-span-2">Reps</div>
+                    <div className="col-span-2">RIR</div>
+                    <div className="col-span-3">Tempo</div>
+                    <div className="col-span-2 text-right">1RM</div>
                   </div>
 
-                  {exercise.sets.map((set) => (
-                    <div
-                      key={set.id}
-                      className="grid grid-cols-3 gap-2 items-center"
-                    >
-                      <div className="col-span-1 text-xs font-medium flex items-center gap-1.5">
-                        <span>{set.setNumber}</span>
-                        {set.isDropSet && (
-                          <span className="text-destructive font-bold">*</span>
-                        )}
-                        {isUpdating[set.id] && (
-                          <div className="ml-1">
-                            <Spinner />
+                  {exercise.sets.map((set) => {
+                    const currentVal = inputValues[set.id] || {};
+                    const currentWeight = currentVal.weight !== undefined ? parseFloat(currentVal.weight) : (set.weight || 0);
+                    const currentReps = currentVal.reps !== undefined ? parseInt(currentVal.reps) : (set.reps || 0);
+                    const est1RM = calculate1RM(currentWeight, currentReps);
+
+                    // Overload Check
+                    const lastSetStats = lastStats[exercise.exercise.id]?.find(s => s.setNumber === set.setNumber);
+                    const isImproved = lastSetStats && (currentWeight > lastSetStats.weight || (currentWeight === lastSetStats.weight && currentReps > lastSetStats.reps));
+
+                    return (
+                      <div
+                        key={set.id}
+                        className="grid grid-cols-12 gap-2 items-center"
+                      >
+                        <div className="col-span-1 text-xs font-medium flex items-center gap-1.5 direction-col">
+                          <div className="flex items-center gap-1">
+                            <span>{set.setNumber}</span>
+                            {set.isDropSet && (
+                              <span className="text-destructive font-bold">*</span>
+                            )}
                           </div>
-                        )}
+                          {lastSetStats && (
+                            <div className="text-[9px] text-muted-foreground whitespace-nowrap hidden sm:block">
+                              Last: {lastSetStats.weight}x{lastSetStats.reps}
+                            </div>
+                          )}
+                          {isUpdating[set.id] && (
+                            <div className="ml-1">
+                              <Spinner />
+                            </div>
+                          )}
+                        </div>
+                        <div className="col-span-2 relative">
+                          <Input
+                            type="text"
+                            inputMode="decimal"
+                            pattern="[0-9]*[.,]?[0-9]*"
+                            placeholder="0"
+                            value={inputValues[set.id]?.weight ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "" || /^\d*[.,]?\d*$/.test(value)) {
+                                handleInputChange(
+                                  set.id,
+                                  exercise.id,
+                                  "weight",
+                                  value.replace(",", "."),
+                                );
+                              }
+                            }}
+                            disabled={exercise.completed || isUpdating[set.id]}
+                            className={`text-xs h-9 px-2 ${isImproved ? 'border-green-500 ring-1 ring-green-500/20' : ''}`}
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Input
+                            type="text"
+                            inputMode="numeric"
+                            pattern="[0-9]*"
+                            placeholder="0"
+                            value={inputValues[set.id]?.reps ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              if (value === "" || /^\d*$/.test(value)) {
+                                handleInputChange(
+                                  set.id,
+                                  exercise.id,
+                                  "reps",
+                                  value,
+                                );
+                              }
+                            }}
+                            onBlur={() => {
+                              // Optional: trigger save here specifically if needed or rely on debounce
+                            }}
+                            disabled={exercise.completed || isUpdating[set.id]}
+                            className="text-xs h-9 px-2"
+                          />
+                        </div>
+                        <div className="col-span-2">
+                          <Select
+                            value={inputValues[set.id]?.rir ?? set.rir?.toString() ?? ""}
+                            onValueChange={(val) => handleInputChange(set.id, exercise.id, "rir", val)}
+                            disabled={exercise.completed || isUpdating[set.id]}
+                          >
+                            <SelectTrigger className="h-9 text-xs px-2">
+                              <SelectValue placeholder="-" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[0, 1, 2, 3, 4].map((r) => (
+                                <SelectItem key={r} value={r.toString()} className="text-xs">
+                                  {r === 0 ? "0 (Fallo)" : r === 4 ? "4+" : r}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="col-span-3">
+                          <Input
+                            type="text"
+                            placeholder="3-0-1"
+                            className="text-xs h-9 px-2"
+                            value={inputValues[set.id]?.tempo ?? ""}
+                            onChange={(e) => {
+                              handleInputChange(set.id, exercise.id, "tempo", e.target.value);
+                            }}
+                            disabled={exercise.completed || isUpdating[set.id]}
+                          />
+                        </div>
+                        <div className="col-span-2 text-right">
+                          {est1RM > 0 && (
+                            <div className="flex flex-col items-end">
+                              <span className="text-xs font-bold text-primary">{est1RM}</span>
+                              {(set.rir !== undefined && set.rir !== null && set.rir >= 3) && (
+                                <div className="flex items-center text-[10px] text-green-500 animate-pulse">
+                                  <HugeiconsIcon icon={ArrowUp01Icon} className="h-3 w-3 mr-0.5" />
+                                  <span>Subir</span>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="text"
-                          inputMode="decimal"
-                          pattern="[0-9]*[.,]?[0-9]*"
-                          placeholder="0"
-                          value={inputValues[set.id]?.weight ?? ""}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === "" || /^\d*[.,]?\d*$/.test(value)) {
-                              handleInputChange(
-                                set.id,
-                                exercise.id,
-                                "weight",
-                                value.replace(",", "."),
-                              );
-                            }
-                          }}
-                          disabled={exercise.completed || isUpdating[set.id]}
-                          className="text-xs h-9"
-                        />
-                      </div>
-                      <div className="col-span-1">
-                        <Input
-                          type="text"
-                          inputMode="numeric"
-                          pattern="[0-9]*"
-                          placeholder="0"
-                          value={inputValues[set.id]?.reps ?? ""}
-                          onChange={(e) => {
-                            const value = e.target.value;
-                            if (value === "" || /^\d+$/.test(value)) {
-                              handleInputChange(
-                                set.id,
-                                exercise.id,
-                                "reps",
-                                value,
-                              );
-                            }
-                          }}
-                          disabled={exercise.completed || isUpdating[set.id]}
-                          className="text-xs h-9"
-                        />
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>

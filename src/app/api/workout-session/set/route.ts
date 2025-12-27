@@ -10,7 +10,7 @@ export async function PUT(req: NextRequest) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const { setId, weight, reps, completed } = await req.json();
+    const { setId, weight, reps, completed, rir } = await req.json();
 
     if (!setId) {
       return NextResponse.json(
@@ -50,6 +50,7 @@ export async function PUT(req: NextRequest) {
       data: {
         weight: weight !== undefined ? weight : setWithSession.weight,
         reps: reps !== undefined ? reps : setWithSession.reps,
+        rir: rir !== undefined ? rir : setWithSession.rir,
         completed:
           completed !== undefined ? completed : setWithSession.completed,
       },
