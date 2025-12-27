@@ -111,7 +111,7 @@ export default function DashboardClient() {
 
         {/* AdSense Banner - Only for FREE users */}
         {(session.user as any)?.subscriptionTier === SubscriptionTier.FREE && (
-          <AdBanner dataAdSlot="1234567890" />
+          <AdBanner dataAdSlot="5481337988" />
         )}
 
         {/* Resúmenes */}
