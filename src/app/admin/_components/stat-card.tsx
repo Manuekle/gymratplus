@@ -22,7 +22,7 @@ export function StatCard({
     className,
 }: StatCardProps) {
     return (
-        <Card className={cn("bg-background/40 backdrop-blur-md border border-white/5", className)}>
+        <Card className={cn("hover:shadow-md transition-shadow", className)}>
             <CardContent className="p-6">
                 <div className="flex items-center justify-between space-y-0 pb-2">
                     <p className="text-sm font-medium text-muted-foreground">{title}</p>

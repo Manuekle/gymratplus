@@ -32,32 +32,30 @@ export function AdminPortal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
-          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:scale-105 transition-all duration-300"
+          className="fixed bottom-6 right-6 z-50 h-14 w-14 rounded-full shadow-lg"
           size="icon"
-          variant="outline"
         >
-          <HugeiconsIcon icon={Exchange01Icon} className="h-6 w-6 text-foreground" />
+          <HugeiconsIcon icon={Exchange01Icon} className="h-6 w-6" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-4xl bg-background/80 backdrop-blur-xl border-white/10">
-        <DialogHeader className="text-center space-y-4 pt-8">
-          <DialogTitle className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent pb-2">
+      <DialogContent className="max-w-3xl sm:max-w-4xl">
+        <DialogHeader className="text-center space-y-2 pt-4">
+          <DialogTitle className="text-3xl font-bold tracking-tight">
             Portal de Navegación
           </DialogTitle>
-          <DialogDescription className="text-lg">
+          <DialogDescription className="text-lg text-muted-foreground">
             Selecciona tu destino para continuar
           </DialogDescription>
         </DialogHeader>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
           <Link href="/admin" onClick={() => setOpen(false)} className="group">
-            <Card className="h-full bg-background/50 border-white/5 hover:border-primary/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer border-2 hover:border-primary/50">
               <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="h-12 w-12 rounded-lg bg-primary/10 flex items-center justify-center mb-4 text-primary">
                   <HugeiconsIcon
                     icon={Settings01Icon}
-                    className="h-6 w-6 text-primary"
+                    className="h-6 w-6"
                   />
                 </div>
                 <CardTitle className="text-xl">Panel Administrativo</CardTitle>
@@ -66,21 +64,20 @@ export function AdminPortal() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <span className="text-xs font-medium text-primary group-hover:underline">
+                <Button variant="link" className="p-0 h-auto font-semibold text-primary group-hover:underline">
                   Ir al Admin &rarr;
-                </span>
+                </Button>
               </CardContent>
             </Card>
           </Link>
 
           <Link href="/dashboard" onClick={() => setOpen(false)} className="group">
-            <Card className="h-full bg-background/50 border-white/5 hover:border-emerald-500/50 hover:shadow-lg transition-all duration-300 relative overflow-hidden group-hover:-translate-y-1">
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+            <Card className="h-full hover:bg-muted/50 transition-colors cursor-pointer border-2 hover:border-emerald-500/50">
               <CardHeader>
-                <div className="h-12 w-12 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <div className="h-12 w-12 rounded-lg bg-emerald-500/10 flex items-center justify-center mb-4 text-emerald-600">
                   <HugeiconsIcon
                     icon={Activity01Icon}
-                    className="h-6 w-6 text-emerald-600"
+                    className="h-6 w-6"
                   />
                 </div>
                 <CardTitle className="text-xl">App Dashboard</CardTitle>
@@ -89,9 +86,9 @@ export function AdminPortal() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <span className="text-xs font-medium text-emerald-600 group-hover:underline">
+                <Button variant="link" className="p-0 h-auto font-semibold text-emerald-600 group-hover:underline">
                   Ir al Dashboard &rarr;
-                </span>
+                </Button>
               </CardContent>
             </Card>
           </Link>

@@ -18,7 +18,7 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="flex min-h-screen bg-[#09090b] text-foreground">
+    <div className="flex min-h-screen bg-background text-foreground">
       {/* Sidebar - Desktop */}
       <AdminSidebar />
 

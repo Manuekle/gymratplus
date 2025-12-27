@@ -29,7 +29,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-foreground to-foreground/60 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold tracking-tight">
           Dashboard Overview
         </h2>
         <p className="text-muted-foreground mt-2">
