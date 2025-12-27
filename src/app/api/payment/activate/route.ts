@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 import { getPreApprovalController } from "@/lib/mercadopago/client";
 import { auth } from "@auth";
+import { sendEmail } from "@/lib/email/resend";
+import { renderInvoiceEmail } from "@/lib/email/templates/invoice-email";
 
 export async function POST(req: Request) {
   try {
@@ -99,7 +101,6 @@ export async function POST(req: Request) {
         subscriptionStatus: "active",
         subscriptionTier,
         planType,
-        mercadoPagoSubscriptionId: subscriptionId,
         trialEndsAt,
         currentPeriodEnd,
         cancelAtPeriodEnd: false,
@@ -111,6 +112,52 @@ export async function POST(req: Request) {
       tier: updatedUser.subscriptionTier,
       status: updatedUser.subscriptionStatus,
     });
+
+    // Create Invoice Record
+    const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    const finalAmount = amount || (subscriptionTier === "PRO" ? 37700 : 74500);
+    const planNameDisplay =
+      subscriptionTier === "PRO" ? "GymRat Plus - Plan PRO" : "GymRat Plus - Plan Instructor";
+
+    await prisma.invoice.create({
+      data: {
+        userId: session.user.id,
+        invoiceNumber,
+        subscriptionId,
+        planName: planNameDisplay,
+        planType: "monthly",
+        amount: finalAmount,
+        currency: "COP",
+        status: "paid",
+        paidAt: new Date(),
+        billingDate: new Date(),
+      },
+    });
+
+    // Send Welcome/Invoice Email
+    try {
+      const emailHtml = await renderInvoiceEmail({
+        userName: session.user.name || "Usuario",
+        userEmail: session.user.email!,
+        invoiceNumber,
+        invoiceDate: new Date().toLocaleDateString("es-CO"),
+        planName: planNameDisplay,
+        planType: "monthly",
+        amount: finalAmount,
+        currency: "COP",
+        trialEndsAt: trialEndsAt.toLocaleDateString("es-CO"),
+        nextBillingDate: currentPeriodEnd.toLocaleDateString("es-CO"),
+        subscriptionId: subscriptionId,
+      });
+
+      await sendEmail({
+        to: session.user.email!,
+        subject: "¡Bienvenido a GymRat+! - Confirmación de suscripción",
+        html: emailHtml,
+      });
+    } catch (emailError) {
+      console.error("Error sending welcome email:", emailError);
+    }
 
     return NextResponse.json({
       success: true,
