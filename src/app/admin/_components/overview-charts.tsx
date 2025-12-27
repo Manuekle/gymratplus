@@ -27,7 +27,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
   if (!data || data.length === 0) {
     return (
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="bg-background/40 backdrop-blur-md border border-white/5">
+        <Card className="bg-background/40 backdrop-blur-md border border-border">
           <CardHeader>
             <CardTitle>Analítica de Ingresos</CardTitle>
           </CardHeader>
@@ -35,7 +35,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
             <p className="text-muted-foreground">No hay datos disponibles.</p>
           </CardContent>
         </Card>
-        <Card className="bg-background/40 backdrop-blur-md border border-white/5">
+        <Card className="bg-background/40 backdrop-blur-md border border-border">
           <CardHeader>
             <CardTitle>Crecimiento de Usuarios</CardTitle>
           </CardHeader>
@@ -52,10 +52,8 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
       <Card className="bg-background/40 backdrop-blur-md border border-white/5 shadow-2xl">
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
-            <CardTitle className="text-lg font-medium">
-              Ingresos
-            </CardTitle>
-            <p className="text-sm text-muted-foreground">Últimos 12 meses</p>
+            <CardTitle className="text-lg font-medium">Ingresos</CardTitle>
+            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
           </div>
           <div className="p-2 bg-primary/10 rounded-lg">
             <HugeiconsIcon
@@ -70,8 +68,16 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
               <AreaChart data={data}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                    <stop
+                      offset="5%"
+                      stopColor="hsl(var(--primary))"
+                      stopOpacity={0.3}
+                    />
+                    <stop
+                      offset="95%"
+                      stopColor="hsl(var(--primary))"
+                      stopOpacity={0}
+                    />
                   </linearGradient>
                 </defs>
                 <CartesianGrid
@@ -97,7 +103,11 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                   dx={-10}
                 />
                 <Tooltip
-                  cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1, strokeDasharray: "4 4" }}
+                  cursor={{
+                    stroke: "hsl(var(--primary))",
+                    strokeWidth: 1,
+                    strokeDasharray: "4 4",
+                  }}
                   contentStyle={{
                     backgroundColor: "hsl(var(--popover))",
                     borderRadius: "12px",
@@ -138,10 +148,10 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
             <CardTitle className="text-lg font-medium">Usuarios</CardTitle>
             <p className="text-sm text-muted-foreground">Crecimiento mensual</p>
           </div>
-          <div className="p-2 bg-blue-500/10 rounded-lg">
+          <div className="p-2 bg-chart-2/10 rounded-lg">
             <HugeiconsIcon
               icon={UserGroupIcon}
-              className="h-5 w-5 text-blue-500"
+              className="h-5 w-5 text-chart-2"
             />
           </div>
         </CardHeader>
@@ -180,13 +190,14 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                     boxShadow: "0 4px 20px -2px rgba(0, 0, 0, 0.5)",
                     color: "hsl(var(--popover-foreground))",
                   }}
+                  itemStyle={{ color: "hsl(var(--chart-2))" }}
                 />
                 <Bar
                   dataKey="users"
-                  fill="hsl(var(--blue-500))" // Or a specific blue color to differentiate
+                  fill="hsl(var(--chart-2))"
                   radius={[6, 6, 0, 0]}
                   barSize={40}
-                  className="fill-blue-500/80 hover:fill-blue-500 transition-colors"
+                  className="fill-chart-2/80 hover:fill-chart-2 transition-colors"
                 />
               </BarChart>
             </ResponsiveContainer>

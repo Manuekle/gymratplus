@@ -20,11 +20,11 @@ export async function getExercises(query?: string) {
   const exercises = await prisma.exercise.findMany({
     where: query
       ? {
-          OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { muscleGroup: { contains: query, mode: "insensitive" } },
-          ],
-        }
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { muscleGroup: { contains: query, mode: "insensitive" } },
+        ],
+      }
       : undefined,
     orderBy: { createdAt: "desc" },
     take: 50, // Limit for performance
@@ -182,8 +182,8 @@ export async function getFoods(query?: string) {
   const foods = await prisma.food.findMany({
     where: query
       ? {
-          name: { contains: query, mode: "insensitive" },
-        }
+        name: { contains: query, mode: "insensitive" },
+      }
       : undefined,
     orderBy: { createdAt: "desc" },
     take: 50,
@@ -308,35 +308,160 @@ export async function deleteFood(id: string) {
 import { sendEmail } from "@/lib/email/resend";
 
 export async function sendAdminEmail(prevState: any, formData: FormData) {
+  const audience = formData.get("audience") as string;
+  const template = formData.get("template") as string;
   const to = formData.get("to") as string;
   const subject = formData.get("subject") as string;
   const customMessage = formData.get("message") as string;
 
-  if (!to || !subject || !customMessage) {
-    return { message: "Please fill in all fields." };
+  if ((audience === "single" && !to) || !subject || !customMessage) {
+    return { message: "Por favor completa todos los campos requeridos." };
   }
 
-  // Basic HTML wrapper
-  const html = `
-    <div style="font-family: sans-serif; padding: 20px;">
-      <h1>${subject}</h1>
-      <p style="white-space: pre-line;">${customMessage}</p>
-      <hr />
-      <p style="font-size: 12px; color: #888;">Sent from GymRat+ Admin</p>
+  let recipients: string[] = [];
+
+  // 1. Determine Recipients
+  try {
+    switch (audience) {
+      case "single":
+        recipients = [to];
+        break;
+      case "test_me":
+        // Fallback to a default email if auth email is missing, but ideally auth email
+        recipients = [process.env.AUTH_EMAIL || "admin@gymratplus.com"];
+        break;
+      case "all_free":
+        const freeUsers = await prisma.user.findMany({
+          where: { subscriptionTier: "FREE" },
+          select: { email: true },
+        });
+        recipients = freeUsers
+          .map((u) => u.email)
+          .filter((e): e is string => !!e);
+        break;
+      case "all_pro":
+        const proUsers = await prisma.user.findMany({
+          where: { subscriptionTier: "PRO" },
+          select: { email: true },
+        });
+        recipients = proUsers.map((u) => u.email).filter((e): e is string => !!e);
+        break;
+      case "all_instructors":
+        const instructors = await prisma.user.findMany({
+          where: { isInstructor: true },
+          select: { email: true },
+        });
+        recipients = instructors
+          .map((u) => u.email)
+          .filter((e): e is string => !!e);
+        break;
+      default:
+        return { message: "Audiencia no válida." };
+    }
+  } catch (error) {
+    return { message: "Error al obtener destinatarios de la base de datos." };
+  }
+
+  if (recipients.length === 0) {
+    return {
+      message:
+        "No se encontraron destinatarios para la audiencia seleccionada.",
+    };
+  }
+
+  // 2. Build HTML Template
+  let htmlBody = "";
+  const baseStyles = `
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9fafb;
+  `;
+
+  const containerStyles = `
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 30px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+  `;
+
+  // Template variations
+  let headerColor = "#1f2937"; // default dark
+  let headerBg = "#ffffff";
+  let borderColor = "#e5e7eb";
+
+  switch (template) {
+    case "announcement":
+      headerColor = "#2563eb"; // blue
+      borderColor = "#bfdbfe"; // light blue border
+      break;
+    case "alert":
+      headerColor = "#dc2626"; // red
+      borderColor = "#fecaca"; // light red border
+      headerBg = "#fef2f2";
+      break;
+    case "welcome":
+      headerColor = "#059669"; // green
+      borderColor = "#a7f3d0";
+      break;
+    default: // standard
+      break;
+  }
+
+  htmlBody = `
+    <div style="${baseStyles}">
+      <div style="${containerStyles} border-top: 4px solid ${headerColor}; border-color: ${borderColor};">
+        <div style="text-align: center; margin-bottom: 24px;">
+           <h2 style="color: ${headerColor}; margin: 0; font-size: 24px;">${subject}</h2>
+        </div>
+        
+        <div style="font-size: 16px; color: #4b5563; white-space: pre-line;">
+          ${customMessage}
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 30px 0;" />
+        
+        <div style="text-align: center; font-size: 12px; color: #9ca3af;">
+          <p style="margin: 0;">Enviado desde el Panel Administrativo de GymRat+</p>
+          <p style="margin: 4px 0;">Este es un mensaje automático, por favor no responder.</p>
+        </div>
+      </div>
     </div>
   `;
 
-  const result = await sendEmail({
-    to,
-    subject,
-    html,
-  });
+  // 3. Send Emails (Batching logic is ideal, but for now loop)
+  // Note: Resend Free tier limit is 100 emails/day. Be careful with "All Users".
+  let successCount = 0;
+  let failCount = 0;
 
-  if (!result.success) {
-    return { message: "Failed to send email: " + result.error };
-  }
+  // Limit to avoid hitting limits accidentally in dev/test
+  const MAX_BATCH = 20;
+  const limitedRecipients = recipients.slice(0, MAX_BATCH);
 
-  return { message: "Email Sent Successfully!", success: true };
+  // In a real bulk scenario, request Resend batch API support or queue.
+  // For now we send individually to avoid exposing other emails in "To" field.
+  // BCC is another option but individual personalization is better long term.
+
+  await Promise.all(
+    limitedRecipients.map(async (email) => {
+      const res = await sendEmail({
+        to: email,
+        subject,
+        html: htmlBody,
+      });
+      if (res.success) successCount++;
+      else failCount++;
+    }),
+  );
+
+  return {
+    success: true,
+    message: `Enviados: ${successCount}, Fallidos: ${failCount}. (Límite de seguridad: ${MAX_BATCH})`,
+  };
 }
 
 // --- Financials ---
@@ -382,11 +507,11 @@ export async function getInvoices(query?: string) {
   const invoices = await prisma.invoice.findMany({
     where: query
       ? {
-          OR: [
-            { invoiceNumber: { contains: query, mode: "insensitive" } },
-            { user: { email: { contains: query, mode: "insensitive" } } },
-          ],
-        }
+        OR: [
+          { invoiceNumber: { contains: query, mode: "insensitive" } },
+          { user: { email: { contains: query, mode: "insensitive" } } },
+        ],
+      }
       : undefined,
     include: {
       user: {
@@ -515,11 +640,11 @@ export async function getUsers(query?: string) {
   const users = await prisma.user.findMany({
     where: query
       ? {
-          OR: [
-            { name: { contains: query, mode: "insensitive" } },
-            { email: { contains: query, mode: "insensitive" } },
-          ],
-        }
+        OR: [
+          { name: { contains: query, mode: "insensitive" } },
+          { email: { contains: query, mode: "insensitive" } },
+        ],
+      }
       : undefined,
     orderBy: { createdAt: "desc" },
     select: {

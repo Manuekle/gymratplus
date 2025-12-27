@@ -1,5 +1,5 @@
 import { getUserById } from "@/app/admin/actions";
-import { notFound } from "next/navigation";
+
 import {
   Card,
   CardContent,
@@ -30,10 +30,21 @@ export default async function UserDetailPage({
   const user = await getUserById(params.id);
 
   if (!user) {
-    notFound();
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-4">
+        <h2 className="text-2xl font-bold">Usuario no encontrado</h2>
+        <p className="text-muted-foreground">
+          No se pudo encontrar un usuario con el ID proporcionado.
+        </p>
+        <Link href="/admin/users">
+          <Button>Volver a la lista</Button>
+        </Link>
+      </div>
+    );
   }
 
-  const { stats, invoices } = user;
+  const stats = user.stats || { workoutCount: 0, invoiceCount: 0 };
+  const invoices = user.invoices || [];
 
   return (
     <div className="space-y-6">
