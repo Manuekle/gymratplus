@@ -1,107 +1,134 @@
-#!/usr/bin/env tsx
-/**
- * Exercise Data Seed Script
- *
- * Seeds only exercise data into the database.
- *
- * Usage:
- *   npm run seed:exercises
- */
-
-import { config } from "dotenv";
-import { PrismaClient } from "@prisma/client";
-import { exercises } from "../src/data/exercises";
-
-// Load environment variables
+import fetch from "node-fetch";
+import fs from "fs-extra";
 import path from "path";
-const envPath = path.resolve(process.cwd(), ".env");
-const envLocalPath = path.resolve(process.cwd(), ".env.local");
-console.log(`Loading env from: ${envPath} and ${envLocalPath}`);
-const result = config({ path: [envLocalPath, envPath] });
+import { PrismaClient } from "@prisma/client";
+import dotenv from "dotenv";
 
-if (result.error) {
-  console.warn("Dotenv error:", result.error);
-}
-
-if (!process.env.DATABASE_URL) {
-  console.warn("⚠️ DATABASE_URL not found, checking alternatives...");
-  if (process.env.DATABASE_URL_DEV) {
-    process.env.DATABASE_URL = process.env.DATABASE_URL_DEV;
-    console.log("✅ Using DATABASE_URL_DEV");
-  } else if (process.env.DATABASE_URL_PRO) {
-    process.env.DATABASE_URL = process.env.DATABASE_URL_PRO;
-    console.log("✅ Using DATABASE_URL_PRO");
-  } else {
-    console.error("❌ No suitable database URL found.");
-  }
-} else {
-  console.log("✅ DATABASE_URL found");
-}
+dotenv.config();
 
 const prisma = new PrismaClient();
 
-async function main() {
-  console.log("💪 Starting exercise data seeding...\n");
+const API_URL = "https://exercisedb.p.rapidapi.com/exercises?limit=10000"; // Get all
+const HEADERS = {
+  "x-rapidapi-key": process.env.RAPIDAPI_KEY || "",
+  "x-rapidapi-host": "exercisedb.p.rapidapi.com",
+};
 
-  let created = 0;
-  let skipped = 0;
-  let errors = 0;
+const OUTPUT_DIR = path.join(process.cwd(), "public", "exercises");
+
+async function ensureDirectory() {
+  await fs.ensureDir(OUTPUT_DIR);
+}
+
+async function downloadGif(url: string, filename: string, headers: Record<string, string> = {}) {
+  try {
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error(`Failed to fetch ${url}: ${res.status} ${res.statusText}`);
+    const buffer = await res.arrayBuffer();
+    await fs.writeFile(filename, Buffer.from(buffer));
+    return true;
+  } catch (error) {
+    console.warn(`Error downloading ${url}:`, error);
+    return false;
+  }
+}
+
+async function seedExercises() {
+  if (!process.env.RAPIDAPI_KEY) {
+    console.error("❌ RAPIDAPI_KEY is missing in .env");
+    return;
+  }
+
+  await ensureDirectory();
+  console.log("🚀 Starting Exercise Seed...");
+  console.log(`📂 Output directory: ${OUTPUT_DIR}`);
 
   try {
-    await prisma.$connect();
-    console.log("✅ Database connected\n");
+    console.log("⬇️ Fetching exercises from RapidAPI...");
+    const res = await fetch(API_URL, { headers: HEADERS });
 
-    for (const exercise of exercises) {
-      try {
-        // Check if exercise already exists
-        const existing = await prisma.exercise.findFirst({
-          where: { name: exercise.name },
-        });
+    if (!res.ok) {
+      throw new Error(`API Error: ${res.status} ${res.statusText}`);
+    }
 
-        if (existing) {
-          skipped++;
-          process.stdout.write(".");
-          continue;
+    const exercises = (await res.json()) as any[];
+    console.log(`✅ Fetched ${exercises.length} exercises from API`);
+
+    let processed = 0;
+    let downloaded = 0;
+    let skipped = 0;
+    let metadataOnly = 0;
+
+    for (const ex of exercises) {
+      processed++;
+      const gifFilename = `${ex.id}.gif`;
+      const localGifPath = path.join(OUTPUT_DIR, gifFilename);
+      let publicUrl: string | null = `/exercises/${gifFilename}`;
+
+      // Use authenticated RapidAPI Image endpoint (try resolution param)
+      const gifUrl = `https://exercisedb.p.rapidapi.com/image?id=${ex.id}&resolution=medium`;
+
+      // 1. Download GIF if not exists
+      if (!fs.existsSync(localGifPath)) {
+        console.log(`[${processed}/${exercises.length}] ⬇️ Downloading GIF for: ${ex.name}`);
+        // Pass HEADERS to authenticate the image download
+        const success = await downloadGif(gifUrl, localGifPath, HEADERS);
+        if (success) {
+          downloaded++;
+        } else {
+          console.warn(`⚠️ Download failed for ${ex.name}. Saving metadata only.`);
+          publicUrl = null;
+          metadataOnly++;
         }
+      } else {
+        skipped++;
+      }
 
-        // Create exercise
-        await prisma.exercise.create({
-          data: {
-            name: exercise.name,
-            description: exercise.description,
-            muscleGroup: exercise.muscleGroup,
-            equipment: exercise.equipment || "peso corporal",
-            difficulty: "intermediate",
-          },
-        });
+      const bodyPartMap: Record<string, string> = {
+        "waist": "abs",
+        "upper legs": "piernas",
+        "back": "espalda",
+        "lower legs": "pantorrillas",
+        "chest": "pecho",
+        "upper arms": "brazos",
+        "cardio": "cardio",
+        "shoulders": "hombros",
+        "lower arms": "antebrazos",
+        "neck": "cuello"
+      };
 
-        created++;
-        process.stdout.write("✓");
+      await prisma.exercise.upsert({
+        where: { id: ex.id },
+        update: {
+          name: ex.name,
+          muscleGroup: bodyPartMap[ex.bodyPart] || ex.bodyPart,
+          target: ex.target,
+          equipment: ex.equipment,
+          imageUrl: publicUrl,
+        },
+        create: {
+          id: ex.id,
+          name: ex.name,
+          muscleGroup: bodyPartMap[ex.bodyPart] || ex.bodyPart,
+          target: ex.target,
+          equipment: ex.equipment,
+          imageUrl: publicUrl,
+        },
+      });
 
-        if ((created + skipped) % 50 === 0) {
-          console.log(` ${created + skipped}/${exercises.length}`);
-        }
-      } catch (error) {
-        errors++;
-        process.stdout.write("✗");
-        console.error(`\n  Error with "${exercise.name}":`, error);
+      if (processed % 50 === 0) {
+        console.log(`💾 Saved/Updated ${processed} exercises...`);
       }
     }
 
-    console.log("\n\n" + "=".repeat(50));
-    console.log("📊 EXERCISE SEEDING SUMMARY");
-    console.log("=".repeat(50));
-    console.log(`✅ Created:  ${created}`);
-    console.log(`⏭️  Skipped:  ${skipped}`);
-    console.log(`❌ Errors:   ${errors}`);
-    console.log(`📊 Total:    ${exercises.length}`);
-    console.log("=".repeat(50));
+    console.log("✅ Seed Complete!");
+    console.log(`📊 Summary: ${processed} processed, ${downloaded} downloaded, ${skipped} existing skipped, ${metadataOnly} metadata only.`);
+
   } catch (error) {
-    console.error("\n❌ Seeding failed:", error);
-    process.exit(1);
+    console.error("❌ Fatal Error:", error);
   } finally {
     await prisma.$disconnect();
   }
 }
 
-main();
+seedExercises();

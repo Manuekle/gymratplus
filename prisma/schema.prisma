@@ -130,6 +130,7 @@ model Exercise {
   name             String
   description      String?           @db.Text
   muscleGroup      String // pecho, espalda, piernas, etc.
+  target           String? // cuádriceps, bíceps, etc. (RapidAPI target)
   equipment        String? // mancuernas, máquinas, peso corporal, etc.
   videoUrl         String?
   imageUrl         String?
