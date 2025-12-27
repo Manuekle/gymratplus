@@ -5,9 +5,10 @@ import { notFound } from "next/navigation";
 export default async function EditFoodPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const food = await getFoodById(params.id);
+  const { id } = await params;
+  const food = await getFoodById(id);
 
   if (!food) {
     notFound();

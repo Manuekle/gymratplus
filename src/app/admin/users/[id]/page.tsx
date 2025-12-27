@@ -25,9 +25,10 @@ import { HugeiconsIcon } from "@hugeicons/react";
 export default async function UserDetailPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
-  const user = await getUserById(params.id);
+  const { id } = await params;
+  const user = await getUserById(id);
 
   if (!user) {
     return (
