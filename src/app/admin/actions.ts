@@ -27,7 +27,6 @@ export async function getExercises(query?: string) {
       }
       : undefined,
     orderBy: { createdAt: "desc" },
-    take: 50, // Limit for performance
   });
   return exercises;
 }
