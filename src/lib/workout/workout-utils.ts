@@ -76,15 +76,7 @@ type ExercisePlan = {
 
 export async function getOrCreateExercises(): Promise<Exercise[]> {
   try {
-    const existingExercises = await prisma.exercise.findMany({
-      select: { name: true },
-    });
-
-    // Optimization: If we have the same number of exercises, assume we are good.
-    // (This falls short if names changed, but good enough for simple additions)
-    if (existingExercises.length >= exercises.length) {
-      return [];
-    }
+    const existingExercises = await prisma.exercise.findMany();
 
     const existingNames = new Set(existingExercises.map((e) => e.name));
     const missingExercises = exercises.filter(
@@ -98,9 +90,10 @@ export async function getOrCreateExercises(): Promise<Exercise[]> {
           prisma.exercise.create({ data: exercise }),
         ),
       );
+      return await prisma.exercise.findMany();
     }
 
-    return [];
+    return existingExercises;
   } catch (error) {
     console.error("Error in getOrCreateExercises:", error);
     throw new Error(
@@ -688,9 +681,9 @@ export async function createUpperLowerSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -956,9 +949,9 @@ export async function createPushPullLegsSplit(
     const finalExercises =
       methodology !== "standard"
         ? applyMethodology(
-            dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
-            methodology,
-          )
+          dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[],
+          methodology,
+        )
         : (dayExercises.filter((ex) => ex.exercise !== null) as ExercisePlan[]);
 
     for (const ex of finalExercises) {
@@ -1085,13 +1078,12 @@ export async function createWeiderSplit(
         restTime: settings.restTime,
         notes: isPlank
           ? `${muscleGroupName} - Plancha 30-60 segundos`
-          : `${muscleGroupName} - ${
-              i === 0
-                ? "Principal"
-                : i === 1
-                  ? "Secundario"
-                  : `Aislamiento ${i - 1}`
-            }`,
+          : `${muscleGroupName} - ${i === 0
+            ? "Principal"
+            : i === 1
+              ? "Secundario"
+              : `Aislamiento ${i - 1}`
+          }`,
       });
     }
 
