@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { checkPhoneUniqueness } from "@/lib/auth/verification-service";
-import { validatePhoneNumber } from "@/lib/sms/twilio";
+import { validatePhoneNumber } from "@/lib/utils/phone";
 
 export async function GET(request: NextRequest) {
   try {

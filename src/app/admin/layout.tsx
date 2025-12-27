@@ -10,7 +10,6 @@ export default async function AdminLayout({
   const session = await auth();
 
   if (
-    process.env.NODE_ENV !== "development" ||
     !session?.user?.email ||
     session.user.email !== process.env.AUTH_EMAIL
   ) {

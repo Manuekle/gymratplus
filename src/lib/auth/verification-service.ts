@@ -1,14 +1,13 @@
 import { prisma } from "@/lib/database/prisma";
 import { redis } from "@/lib/database/redis";
 import { sendEmail } from "@/lib/email/resend";
-// import { sendVerificationSMS } from "@/lib/sms/twilio";
 
 // Configuración
 const VERIFICATION_CODE_EXPIRY = 10 * 60 * 1000; // 10 minutos
 const MAX_VERIFICATION_ATTEMPTS = 5;
 const RATE_LIMIT_WINDOW = 60 * 60 * 1000; // 1 hora
 
-export type VerificationType = "email" | "sms" | "password-reset";
+export type VerificationType = "email" | "password-reset";
 
 /**
  * Genera un código de verificación de 6 dígitos
@@ -187,11 +186,7 @@ export async function sendEmailVerification(
   };
 }
 
-/*
-export async function sendSMSVerification(userId: string, phone: string) {
-  // ... (comentado por ahora)
-}
-*/
+
 
 /**
  * Verifica un código ingresado por el usuario
@@ -223,8 +218,7 @@ export async function verifyCode(
       expiresAt = parsed.expiresAt;
       attempts = parsed.attempts || 0;
       console.log(
-        `[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${
-          expiresAt ? new Date(expiresAt) : "null"
+        `[VERIFY] Found in Redis - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
         }`,
       );
     } else {
@@ -255,8 +249,7 @@ export async function verifyCode(
         expiresAt = dbCode.expiresAt.getTime();
         attempts = dbCode.attempts;
         console.log(
-          `[VERIFY] Found in DB - attempts: ${attempts}, expires: ${
-            expiresAt ? new Date(expiresAt) : "null"
+          `[VERIFY] Found in DB - attempts: ${attempts}, expires: ${expiresAt ? new Date(expiresAt) : "null"
           }`,
         );
       } else {
@@ -347,9 +340,8 @@ export async function verifyCode(
     return {
       success: false,
       verified: false,
-      error: `Código incorrecto. Te quedan ${
-        MAX_VERIFICATION_ATTEMPTS - attempts
-      } intentos.`,
+      error: `Código incorrecto. Te quedan ${MAX_VERIFICATION_ATTEMPTS - attempts
+        } intentos.`,
     };
   }
 
@@ -373,11 +365,6 @@ export async function verifyCode(
       await prisma.user.update({
         where: { id: userId },
         data: { emailVerified: new Date() },
-      });
-    } else if (type === "sms") {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { phoneVerified: new Date() },
       });
     }
 

@@ -1,11 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import {
   sendEmailVerification,
-  // sendSMSVerification,
   checkEmailUniqueness,
-  // checkPhoneUniqueness,
 } from "@/lib/auth/verification-service";
-// import { validatePhoneNumber } from "@/lib/sms/twilio";
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,10 +20,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Validar tipo
-    if (type !== "email" && type !== "sms") {
+    if (type !== "email") {
       return NextResponse.json(
         {
-          error: "Tipo inválido. Debe ser 'email' o 'sms'",
+          error: "Tipo inválido. Debe ser 'email'",
         },
         { status: 400 },
       );
@@ -75,48 +72,10 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    /* 
-    // Verificación por SMS
-    if (type === "sms") {
-      const trimmedPhone = destination.trim();
-
-      // Validar formato de teléfono
-      if (!validatePhoneNumber(trimmedPhone)) {
-        return NextResponse.json(
-          {
-            error:
-              "Formato de teléfono inválido. Debe incluir código de país (ej: +1234567890)",
-          },
-          { status: 400 },
-        );
-      }
-
-      // Verificar unicidad
-      const uniqueCheck = await checkPhoneUniqueness(trimmedPhone, userId);
-      if (!uniqueCheck.available) {
-        return NextResponse.json(
-          { error: uniqueCheck.message },
-          { status: 409 },
-        );
-      }
-
-      // Enviar código
-      const result = await sendSMSVerification(userId, trimmedPhone);
-
-      if (!result.success) {
-        return NextResponse.json({ error: result.error }, { status: 500 });
-      }
-
-      return NextResponse.json(
-        {
-          success: true,
-          message: "message" in result ? result.message : "Código enviado",
-          ...("code" in result && result.code ? { code: result.code } : {}),
-        },
-        { status: 200 },
-      );
-    }
-    */
+    return NextResponse.json(
+      { error: "Tipo de verificación no soportado" },
+      { status: 400 },
+    );
 
     return NextResponse.json(
       { error: "Tipo de verificación no soportado" },
