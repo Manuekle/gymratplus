@@ -1,7 +1,6 @@
 import { auth } from "@auth";
 import { redirect } from "next/navigation";
 import { AdminSidebar } from "./_components/admin-sidebar";
-import { AdminPortal } from "../dashboard/_components/admin-portal";
 
 export default async function AdminLayout({
   children,
@@ -28,9 +27,6 @@ export default async function AdminLayout({
           {children}
         </div>
       </main>
-
-      {/* Floating Portal Switcher */}
-      <AdminPortal />
     </div>
   );
 }
