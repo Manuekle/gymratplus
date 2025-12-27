@@ -96,9 +96,17 @@ export async function GET(req: NextRequest) {
         hasMore: skip + limit < total,
       },
     });
-  } catch {
+  } catch (error) {
+    console.error("[Foods API] Error fetching foods:", error);
+    console.error("[Foods API] Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: "Failed to fetch foods" },
+      {
+        error: "Failed to fetch foods",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
