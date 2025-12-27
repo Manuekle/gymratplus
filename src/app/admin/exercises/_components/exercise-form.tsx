@@ -15,7 +15,6 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { Icons } from "@/components/icons";
-import { useState } from "react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -48,14 +47,14 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
         // handle errors
         toast.error(result.message);
       } else if (result?.message) {
-        toast.success("Exercise Updated");
+        toast.success("Ejercicio Actualizado");
       }
     } else {
       const result = await createExercise(null, formData);
       if (result?.errors) {
         toast.error(result.message);
       } else if (result?.message) {
-        toast.success("Exercise Created");
+        toast.success("Ejercicio Creado");
         // Redirect is handled in server action but sometimes client needs help if error handling is complex
       }
     }
@@ -66,44 +65,44 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
       <CardContent className="pt-6">
         <form action={handleSubmit} className="space-y-6">
           <div className="grid gap-2">
-            <Label htmlFor="name">Name</Label>
+            <Label htmlFor="name">Nombre</Label>
             <Input
               id="name"
               name="name"
-              placeholder="e.g. Bench Press"
+              placeholder="ej. Press de Banca"
               defaultValue={exercise?.name}
               required
             />
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="description">Description</Label>
+            <Label htmlFor="description">Descripción</Label>
             <Textarea
               id="description"
               name="description"
-              placeholder="Describe the exercise..."
+              placeholder="Describe el ejercicio..."
               defaultValue={exercise?.description || ""}
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="muscleGroup">Muscle Group</Label>
+              <Label htmlFor="muscleGroup">Grupo Muscular</Label>
               <Input
                 id="muscleGroup"
                 name="muscleGroup"
-                placeholder="e.g. Chest"
+                placeholder="ej. Pecho"
                 defaultValue={exercise?.muscleGroup}
                 required
               />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="equipment">Equipment</Label>
+              <Label htmlFor="equipment">Equipamiento</Label>
               <Input
                 id="equipment"
                 name="equipment"
-                placeholder="e.g. Barbell"
+                placeholder="ej. Barra"
                 defaultValue={exercise?.equipment || ""}
               />
             </div>
@@ -111,24 +110,24 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="grid gap-2">
-              <Label htmlFor="difficulty">Difficulty</Label>
+              <Label htmlFor="difficulty">Dificultad</Label>
               <Select
                 name="difficulty"
                 defaultValue={exercise?.difficulty || "beginner"}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select difficulty" />
+                  <SelectValue placeholder="Seleccionar dificultad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advanced">Advanced</SelectItem>
+                  <SelectItem value="beginner">Principiante</SelectItem>
+                  <SelectItem value="intermediate">Intermedio</SelectItem>
+                  <SelectItem value="advanced">Avanzado</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="videoUrl">Video URL</Label>
+              <Label htmlFor="videoUrl">URL del Video</Label>
               <Input
                 id="videoUrl"
                 name="videoUrl"
@@ -145,7 +144,7 @@ export function ExerciseForm({ exercise }: ExerciseFormProps) {
               variant="outline"
               onClick={() => router.back()}
             >
-              Cancel
+              Cancelar
             </Button>
             <SubmitButton isEditing={isEditing} />
           </div>
@@ -161,7 +160,7 @@ function SubmitButton({ isEditing }: { isEditing: boolean }) {
   return (
     <Button type="submit" disabled={pending}>
       {pending && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
-      {isEditing ? "Update Exercise" : "Create Exercise"}
+      {isEditing ? "Actualizar Ejercicio" : "Crear Ejercicio"}
     </Button>
   );
 }

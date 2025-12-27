@@ -22,11 +22,11 @@ export function WorkoutForm() {
       )}
 
       <div className="space-y-2">
-        <Label htmlFor="name">Workout Name</Label>
+        <Label htmlFor="name">Nombre del Entrenamiento</Label>
         <Input
           id="name"
           name="name"
-          placeholder="e.g. Beginner Full Body A"
+          placeholder="ej. Principiante Cuerpo Completo A"
           required
         />
         {state?.errors?.name && (
@@ -35,11 +35,11 @@ export function WorkoutForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="description">Description</Label>
+        <Label htmlFor="description">Descripción</Label>
         <Textarea
           id="description"
           name="description"
-          placeholder="Describe the focus of this workout..."
+          placeholder="Describe el enfoque de este entrenamiento..."
         />
         {state?.errors?.description && (
           <p className="text-xs text-destructive">{state.errors.description}</p>
@@ -55,7 +55,7 @@ export function WorkoutForm() {
             */}
 
       <div className="flex justify-end gap-4">
-        <Button type="submit">Create Template</Button>
+        <Button type="submit">Crear Plantilla</Button>
       </div>
     </form>
   );

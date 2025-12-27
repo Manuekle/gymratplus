@@ -29,18 +29,18 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Revenue Analytics</CardTitle>
+            <CardTitle>Analítica de Ingresos</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">No data available.</p>
+            <p className="text-muted-foreground">No hay datos disponibles.</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>User Growth</CardTitle>
+            <CardTitle>Crecimiento de Usuarios</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground">No data available.</p>
+            <p className="text-muted-foreground">No hay datos disponibles.</p>
           </CardContent>
         </Card>
       </div>
@@ -52,7 +52,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-xs font-normal">
-            Revenue Trends
+            Tendencias de Ingresos
           </CardTitle>
           <HugeiconsIcon
             icon={Money03Icon}
@@ -96,7 +96,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
                         minimumFractionDigits: 0,
                         maximumFractionDigits: 0,
                       }).format(Number(value || 0)),
-                      "Revenue",
+                      "Ingresos",
                     ] as [string, string];
                   }}
                 />
@@ -114,7 +114,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
 
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-xs font-normal">User Growth</CardTitle>
+          <CardTitle className="text-xs font-normal">Crecimiento de Usuarios</CardTitle>
           <HugeiconsIcon
             icon={UserGroupIcon}
             className="h-4 w-4 text-muted-foreground"

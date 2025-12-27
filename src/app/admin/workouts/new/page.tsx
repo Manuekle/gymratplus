@@ -15,10 +15,10 @@ export default function NewWorkoutPage() {
         </Link>
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            New Workout Template
+            Nueva Plantilla de Entrenamiento
           </h2>
           <p className="text-muted-foreground">
-            Create a new system workout routine.
+            Crear una nueva rutina de entrenamiento del sistema.
           </p>
         </div>
       </div>

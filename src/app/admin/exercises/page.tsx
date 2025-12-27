@@ -29,16 +29,16 @@ export default async function ExercisesPage({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            Exercises (Videos)
+            Ejercicios (Videos)
           </h2>
           <p className="text-muted-foreground">
-            Manage the exercise library and video tutorials.
+            Gestionar la biblioteca de ejercicios y video tutoriales.
           </p>
         </div>
         <Link href="/admin/exercises/new">
           <Button className="gap-2">
             <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
-            Add New
+            Añadir Nuevo
           </Button>
         </Link>
       </div>
@@ -47,11 +47,11 @@ export default async function ExercisesPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Muscle Group</TableHead>
-              <TableHead>Difficulty</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Grupo Muscular</TableHead>
+              <TableHead>Dificultad</TableHead>
               <TableHead>Video</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -61,7 +61,7 @@ export default async function ExercisesPage({
                   colSpan={5}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No exercises found.
+                  No se encontraron ejercicios.
                 </TableCell>
               </TableRow>
             ) : (
@@ -80,11 +80,11 @@ export default async function ExercisesPage({
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
                       >
-                        View Video
+                        Ver Video
                       </a>
                     ) : (
                       <span className="text-muted-foreground text-xs">
-                        No video
+                        Sin video
                       </span>
                     )}
                   </TableCell>

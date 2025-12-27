@@ -22,20 +22,20 @@ export default async function UsersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Users</h2>
-        <p className="text-muted-foreground">View registered users.</p>
+        <h2 className="text-2xl font-bold tracking-tight">Usuarios</h2>
+        <p className="text-muted-foreground">Ver usuarios registrados.</p>
       </div>
 
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Subscription</TableHead>
-              <TableHead>Joined</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Correo</TableHead>
+              <TableHead>Rol</TableHead>
+              <TableHead>Suscripción</TableHead>
+              <TableHead>Registrado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -45,7 +45,7 @@ export default async function UsersPage({
                   colSpan={5}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No users found.
+                  No se encontraron usuarios.
                 </TableCell>
               </TableRow>
             ) : (
@@ -59,14 +59,14 @@ export default async function UsersPage({
                     {user.isInstructor ? (
                       <Badge variant="secondary">Instructor</Badge>
                     ) : (
-                      <Badge variant="outline">User</Badge>
+                      <Badge variant="outline">Usuario</Badge>
                     )}
                   </TableCell>
                   <TableCell>
                     <Badge
                       variant={
                         user.subscriptionTier === "PRO" ||
-                        user.subscriptionTier === "INSTRUCTOR"
+                          user.subscriptionTier === "INSTRUCTOR"
                           ? "default"
                           : "secondary"
                       }
@@ -80,7 +80,7 @@ export default async function UsersPage({
                   <TableCell className="text-right">
                     <Link href={`/admin/users/${user.id}`}>
                       <Button variant="ghost" size="sm">
-                        View
+                        Ver
                       </Button>
                     </Link>
                   </TableCell>

@@ -15,7 +15,7 @@ export function AdminHeader() {
               className="gap-2 text-muted-foreground"
             >
               <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
-              Back to App
+              Volver a la App
             </Button>
           </Link>
           <div className="h-6 w-px bg-border" />
@@ -25,7 +25,7 @@ export function AdminHeader() {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full border border-yellow-200">
-            Development Env
+            Entorno Desarrollo
           </span>
         </div>
       </div>

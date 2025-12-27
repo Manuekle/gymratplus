@@ -37,9 +37,9 @@ export default async function InvoicesPage({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            Invoices & Revenue
+            Facturas e Ingresos
           </h2>
-          <p className="text-muted-foreground">Track financial performance.</p>
+          <p className="text-muted-foreground">Seguimiento del rendimiento financiero.</p>
         </div>
       </div>
 
@@ -47,7 +47,7 @@ export default async function InvoicesPage({
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-xs font-medium">Ingresos Totales</CardTitle>
             <HugeiconsIcon
               icon={Money03Icon}
               className="h-4 w-4 text-muted-foreground"
@@ -57,13 +57,13 @@ export default async function InvoicesPage({
             <div className="text-2xl font-bold">
               {formatCurrency(stats.totalRevenue)}
             </div>
-            <p className="text-xs text-muted-foreground">All time earnings</p>
+            <p className="text-xs text-muted-foreground">Ganancias históricas</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-medium">
-              Monthly Revenue
+              Ingresos Mensuales
             </CardTitle>
             <HugeiconsIcon
               icon={Calendar03Icon}
@@ -74,7 +74,7 @@ export default async function InvoicesPage({
             <div className="text-2xl font-bold">
               {formatCurrency(stats.monthlyRevenue)}
             </div>
-            <p className="text-xs text-muted-foreground">Earnings this month</p>
+            <p className="text-xs text-muted-foreground">Ganancias este mes</p>
           </CardContent>
         </Card>
       </div>
@@ -83,12 +83,12 @@ export default async function InvoicesPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Invoice #</TableHead>
-              <TableHead>User</TableHead>
+              <TableHead># Factura</TableHead>
+              <TableHead>Usuario</TableHead>
               <TableHead>Plan</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Date</TableHead>
+              <TableHead>Monto</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Fecha</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -98,7 +98,7 @@ export default async function InvoicesPage({
                   colSpan={6}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No invoices found.
+                  No se encontraron facturas.
                 </TableCell>
               </TableRow>
             ) : (
@@ -109,7 +109,7 @@ export default async function InvoicesPage({
                   </TableCell>
                   <TableCell>
                     <div className="flex flex-col">
-                      <span>{invoice.user.name || "Unknown"}</span>
+                      <span>{invoice.user.name || "Desconocido"}</span>
                       <span className="text-xs text-muted-foreground">
                         {invoice.user.email}
                       </span>

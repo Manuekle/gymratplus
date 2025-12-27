@@ -53,22 +53,22 @@ export default async function UserDetailPage({
         {/* Profile Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile Details</CardTitle>
+            <CardTitle>Detalles de Perfil</CardTitle>
           </CardHeader>
           <CardContent className="flex items-center gap-6">
             <Avatar className="h-24 w-24">
-              <AvatarImage src={user.image || ""} alt={user.name || "User"} />
+              <AvatarImage src={user.image || ""} alt={user.name || "Usuario"} />
               <AvatarFallback className="text-lg">
                 {user.name?.slice(0, 2).toUpperCase()}
               </AvatarFallback>
             </Avatar>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="font-semibold">Role:</span>
+                <span className="font-semibold">Rol:</span>
                 {user.isInstructor ? (
                   <Badge variant="secondary">Instructor</Badge>
                 ) : (
-                  <Badge variant="outline">User</Badge>
+                  <Badge variant="outline">Usuario</Badge>
                 )}
               </div>
               <div className="flex items-center gap-2">
@@ -82,7 +82,7 @@ export default async function UserDetailPage({
                 </Badge>
               </div>
               <div className="text-xs text-muted-foreground">
-                Joined: {new Date(user.createdAt).toLocaleDateString()}
+                Registrado: {new Date(user.createdAt).toLocaleDateString()}
               </div>
             </div>
           </CardContent>
@@ -91,19 +91,19 @@ export default async function UserDetailPage({
         {/* Stats Card */}
         <Card>
           <CardHeader>
-            <CardTitle>Activity Stats</CardTitle>
+            <CardTitle>Estadísticas de Actividad</CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-2 gap-4">
             <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-accent/10">
               <span className="text-3xl font-bold">{stats.workoutCount}</span>
               <span className="text-xs text-muted-foreground">
-                Workouts Completed
+                Entrenamientos Completados
               </span>
             </div>
             <div className="flex flex-col items-center justify-center p-4 border rounded-lg bg-accent/10">
               <span className="text-3xl font-bold">{stats.invoiceCount}</span>
               <span className="text-xs text-muted-foreground">
-                Invoices Paid
+                Facturas Pagadas
               </span>
             </div>
           </CardContent>
@@ -113,17 +113,17 @@ export default async function UserDetailPage({
       {/* Invoices History */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Invoices</CardTitle>
-          <CardDescription>Last 10 payments history</CardDescription>
+          <CardTitle>Facturas Recientes</CardTitle>
+          <CardDescription>Historial de los últimos 10 pagos</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Invoice #</TableHead>
-                <TableHead>Amount</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Date</TableHead>
+                <TableHead># Factura</TableHead>
+                <TableHead>Monto</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Fecha</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -133,7 +133,7 @@ export default async function UserDetailPage({
                     colSpan={4}
                     className="text-center h-24 text-muted-foreground"
                   >
-                    No invoices found.
+                    No se encontraron facturas.
                   </TableCell>
                 </TableRow>
               ) : (

@@ -19,10 +19,10 @@ export default async function AdminInstructorsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight">
-          Instructor Verification
+          Verificación de Instructores
         </h2>
         <p className="text-muted-foreground">
-          Review and approve instructor applications.
+          Revisar y aprobar solicitudes de instructores.
         </p>
       </div>
 
@@ -30,11 +30,11 @@ export default async function AdminInstructorsPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Requested</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Usuario</TableHead>
+              <TableHead>Correo</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Solicitado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -44,7 +44,7 @@ export default async function AdminInstructorsPage() {
                   colSpan={5}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No pending applications.
+                  No hay solicitudes pendientes.
                 </TableCell>
               </TableRow>
             ) : (
@@ -53,7 +53,7 @@ export default async function AdminInstructorsPage() {
                   <TableCell className="font-medium">
                     <div className="flex items-center gap-2">
                       {/* We could add Avatar here if we had the component handy */}
-                      <span>{profile.user.name || "Unnamed User"}</span>
+                      <span>{profile.user.name || "Usuario sin nombre"}</span>
                     </div>
                   </TableCell>
                   <TableCell>{profile.user.email}</TableCell>
@@ -62,7 +62,7 @@ export default async function AdminInstructorsPage() {
                       variant="secondary"
                       className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100"
                     >
-                      Pending
+                      Pendiente
                     </Badge>
                   </TableCell>
                   <TableCell>
@@ -96,7 +96,7 @@ function VerifyButton({ id }: { id: string }) {
         className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
       >
         <HugeiconsIcon icon={CheckmarkCircle02Icon} className="h-4 w-4" />
-        Approve
+        Aprobar
       </Button>
     </form>
   );

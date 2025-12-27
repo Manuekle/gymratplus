@@ -32,9 +32,9 @@ export default async function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Admin Dashboard</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Panel de Administración</h2>
         <p className="text-muted-foreground">
-          Manage your application content and users.
+          Gestiona el contenido de tu aplicación y usuarios.
         </p>
       </div>
 
@@ -42,7 +42,7 @@ export default async function AdminDashboardPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Total Revenue</CardTitle>
+            <CardTitle className="text-xs font-medium">Ingresos Totales</CardTitle>
             <HugeiconsIcon
               icon={Money03Icon}
               className="h-4 w-4 text-muted-foreground"
@@ -52,12 +52,12 @@ export default async function AdminDashboardPage() {
             <div className="text-2xl font-bold">
               {formatCurrency(totalRevenue || 0)}
             </div>
-            <p className="text-xs text-muted-foreground">All time earnings</p>
+            <p className="text-xs text-muted-foreground">Ganancias totales</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Total Users</CardTitle>
+            <CardTitle className="text-xs font-medium">Usuarios Totales</CardTitle>
             <HugeiconsIcon
               icon={UserGroupIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -65,12 +65,12 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{usersCount}</div>
-            <p className="text-xs text-muted-foreground">Registered accounts</p>
+            <p className="text-xs text-muted-foreground">Cuentas registradas</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-medium">Exercises</CardTitle>
+            <CardTitle className="text-xs font-medium">Ejercicios</CardTitle>
             <HugeiconsIcon
               icon={DumbbellIcon}
               className="h-4 w-4 text-muted-foreground"
@@ -78,13 +78,13 @@ export default async function AdminDashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{exercisesCount}</div>
-            <p className="text-xs text-muted-foreground">Videos in library</p>
+            <p className="text-xs text-muted-foreground">Videos en biblioteca</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-xs font-medium">
-              Active Sessions
+              Sesiones Activas
             </CardTitle>
             <HugeiconsIcon
               icon={Activity01Icon}
@@ -94,7 +94,7 @@ export default async function AdminDashboardPage() {
           <CardContent>
             <div className="text-2xl font-bold">{activeSessionsCount}</div>
             <p className="text-xs text-muted-foreground">
-              Workouts in progress
+              Entrenamientos en curso
             </p>
           </CardContent>
         </Card>
@@ -108,7 +108,7 @@ export default async function AdminDashboardPage() {
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-xs font-medium">
-                Exercises (Videos)
+                Ejercicios (Videos)
               </CardTitle>
               <HugeiconsIcon
                 icon={DumbbellIcon}
@@ -116,9 +116,9 @@ export default async function AdminDashboardPage() {
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Manage</div>
+              <div className="text-2xl font-bold">Gestionar</div>
               <p className="text-xs text-muted-foreground">
-                Add, edit, or remove exercises and videos
+                Añadir, editar o eliminar ejercicios y videos
               </p>
             </CardContent>
           </Card>
@@ -127,16 +127,16 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/users">
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Users</CardTitle>
+              <CardTitle className="text-xs font-medium">Usuarios</CardTitle>
               <HugeiconsIcon
                 icon={UserGroupIcon}
                 className="h-4 w-4 text-muted-foreground"
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">View</div>
+              <div className="text-2xl font-bold">Ver</div>
               <p className="text-xs text-muted-foreground">
-                View registered users and details
+                Ver usuarios registrados y detalles
               </p>
             </CardContent>
           </Card>
@@ -145,16 +145,16 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/foods">
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Foods</CardTitle>
+              <CardTitle className="text-xs font-medium">Alimentos</CardTitle>
               <HugeiconsIcon
                 icon={DumbbellIcon}
                 className="h-4 w-4 text-muted-foreground"
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Nutrition</div>
+              <div className="text-2xl font-bold">Nutrición</div>
               <p className="text-xs text-muted-foreground">
-                Manage food database and macros
+                Gestionar base de datos de alimentos y macros
               </p>
             </CardContent>
           </Card>
@@ -163,16 +163,16 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/emails">
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Emails</CardTitle>
+              <CardTitle className="text-xs font-medium">Correos</CardTitle>
               <HugeiconsIcon
                 icon={Activity01Icon}
                 className="h-4 w-4 text-muted-foreground"
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Compose</div>
+              <div className="text-2xl font-bold">Redactar</div>
               <p className="text-xs text-muted-foreground">
-                Send notifications to users
+                Enviar notificaciones a usuarios
               </p>
             </CardContent>
           </Card>
@@ -181,16 +181,16 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/invoices">
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Invoices</CardTitle>
+              <CardTitle className="text-xs font-medium">Facturas</CardTitle>
               <HugeiconsIcon
                 icon={Money03Icon}
                 className="h-4 w-4 text-muted-foreground"
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Revenue</div>
+              <div className="text-2xl font-bold">Ingresos</div>
               <p className="text-xs text-muted-foreground">
-                Track payments and subscriptions
+                Rastrear pagos y suscripciones
               </p>
             </CardContent>
           </Card>
@@ -199,16 +199,16 @@ export default async function AdminDashboardPage() {
         <Link href="/admin/workouts">
           <Card className="hover:bg-accent/50 transition-colors cursor-pointer h-full">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-xs font-medium">Workouts</CardTitle>
+              <CardTitle className="text-xs font-medium">Rutinas</CardTitle>
               <HugeiconsIcon
                 icon={DumbbellIcon}
                 className="h-4 w-4 text-muted-foreground"
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Templates</div>
+              <div className="text-2xl font-bold">Plantillas</div>
               <p className="text-xs text-muted-foreground">
-                Manage system workout routines
+                Gestionar rutinas del sistema
               </p>
             </CardContent>
           </Card>
@@ -224,9 +224,9 @@ export default async function AdminDashboardPage() {
               />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">Verify</div>
+              <div className="text-2xl font-bold">Verificar</div>
               <p className="text-xs text-muted-foreground">
-                Approve instructor applications
+                Aprobar solicitudes de instructores
               </p>
             </CardContent>
           </Card>

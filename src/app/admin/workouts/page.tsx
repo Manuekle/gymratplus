@@ -25,16 +25,16 @@ export default async function AdminWorkoutsPage({
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            Workouts (Templates)
+            Entrenamientos (Plantillas)
           </h2>
           <p className="text-muted-foreground">
-            Manage system workout templates.
+            Gestionar plantillas de entrenamiento del sistema.
           </p>
         </div>
         <Link href="/admin/workouts/new">
           <Button className="gap-2">
             <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
-            Create Template
+            Crear Plantilla
           </Button>
         </Link>
       </div>
@@ -43,10 +43,10 @@ export default async function AdminWorkoutsPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Exercises</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Ejercicios</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -56,7 +56,7 @@ export default async function AdminWorkoutsPage({
                   colSpan={4}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No templates found.
+                  No se encontraron plantillas.
                 </TableCell>
               </TableRow>
             ) : (
@@ -68,7 +68,7 @@ export default async function AdminWorkoutsPage({
                       {workout.description}
                     </div>
                   </TableCell>
-                  <TableCell>{workout.exercises.length} exercises</TableCell>
+                  <TableCell>{workout.exercises.length} ejercicios</TableCell>
                   <TableCell>
                     <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
                       {workout.type}

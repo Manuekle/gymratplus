@@ -28,13 +28,13 @@ export default async function FoodsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Foods</h2>
-          <p className="text-muted-foreground">Manage nutritional database.</p>
+          <h2 className="text-2xl font-bold tracking-tight">Alimentos</h2>
+          <p className="text-muted-foreground">Gestionar base de datos nutricional.</p>
         </div>
         <Link href="/admin/foods/new">
           <Button className="gap-2">
             <HugeiconsIcon icon={PlusSignIcon} className="h-4 w-4" />
-            Add New
+            Añadir Nuevo
           </Button>
         </Link>
       </div>
@@ -43,11 +43,11 @@ export default async function FoodsPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Calories</TableHead>
-              <TableHead>Macros (P/C/F)</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Categoría</TableHead>
+              <TableHead>Calorías</TableHead>
+              <TableHead>Macros (P/C/G)</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -57,7 +57,7 @@ export default async function FoodsPage({
                   colSpan={5}
                   className="text-center h-24 text-muted-foreground"
                 >
-                  No foods found.
+                  No se encontraron alimentos.
                 </TableCell>
               </TableRow>
             ) : (
