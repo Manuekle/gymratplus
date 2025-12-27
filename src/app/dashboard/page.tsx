@@ -9,10 +9,9 @@ export default async function DashboardPage({
 }) {
   const session = await auth();
 
-  // Check if user is Admin and in Development environment
-  const isDev = process.env.NODE_ENV === "development";
+  // Check if user is Admin
   const isAdminEmail = session?.user?.email === process.env.AUTH_EMAIL;
-  const showPortal = isDev && isAdminEmail && searchParams?.view !== "app";
+  const showPortal = isAdminEmail && searchParams?.view !== "app";
 
   if (showPortal) {
     return <AdminPortal />;
