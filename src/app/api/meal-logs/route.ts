@@ -85,9 +85,17 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(mealLogs);
-  } catch {
+  } catch (error) {
+    console.error("[Meal Logs API] Error fetching meal logs:", error);
+    console.error("[Meal Logs API] Error details:", {
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     return NextResponse.json(
-      { error: "Failed to fetch meal logs" },
+      {
+        error: "Failed to fetch meal logs",
+        details: error instanceof Error ? error.message : String(error),
+      },
       { status: 500 },
     );
   }
