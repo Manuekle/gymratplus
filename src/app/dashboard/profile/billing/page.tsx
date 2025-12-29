@@ -279,13 +279,18 @@ export default function BillingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             {plans.map((plan) => {
               const isCurrentPlan = currentTier === plan.tier;
-              const isDisabled = plan.disabled || isCurrentPlan;
+              const isSubscriptionActive = session?.user?.subscriptionStatus === "active";
+
+              // Disable buying other plans if currently active in another paid plan
+              // Exception: Allow buying if current status is 'canceled' (grace period) or if no active subscription
+              const isDisabled = plan.disabled || (isSubscriptionActive && !isCurrentPlan);
 
               return (
                 <Card key={plan.id} className="relative">
                   <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                       <div>
+                        {/* Title & Desc */}
                         <CardTitle className="text-2xl tracking-heading font-semibold">
                           {plan.name}
                         </CardTitle>
@@ -297,6 +302,7 @@ export default function BillingPage() {
                   </CardHeader>
                   <CardContent className="pb-4 pt-0">
                     <div className="mb-4">
+                      {/* Price */}
                       <span className="text-3xl font-semibold">
                         {plan.price}
                       </span>
@@ -314,8 +320,7 @@ export default function BillingPage() {
                         disabled={
                           isDisabled ||
                           loading !== null ||
-                          (isCurrentPlan &&
-                            session?.user?.subscriptionStatus === "canceled")
+                          (isCurrentPlan && session?.user?.subscriptionStatus === "canceled")
                         }
                         onClick={() => {
                           if (!isDisabled) {
@@ -335,6 +340,8 @@ export default function BillingPage() {
                           ) : (
                             "Plan Actual"
                           )
+                        ) : isDisabled && isSubscriptionActive ? (
+                          "Cancela actual 1ro"
                         ) : (
                           "Cambiar Plan"
                         )}
