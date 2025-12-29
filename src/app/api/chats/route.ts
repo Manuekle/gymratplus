@@ -103,52 +103,62 @@ export async function GET() {
       });
     }
 
-    // Format response
-    const formattedChats = await Promise.all(
-      chats.map(async (chat) => {
-        const lastMessage = chat.messages[0] || null;
-        const otherUser = instructorProfile
-          ? (chat as any).studentInstructor.student
-          : (chat as any).studentInstructor.instructor.user;
+    // Format response - Optimized: Use groupBy to avoid N+1 query
+    const chatIds = chats.map((c) => c.id);
 
-        // Count unread messages (get all unread messages, not just the last one)
-        const unreadCount = await prisma.chatMessage.count({
-          where: {
-            chatId: chat.id,
-            senderId: { not: userId },
-            read: false,
-          },
-        });
+    // Single query to get all unread counts at once
+    const unreadCounts = await prisma.chatMessage.groupBy({
+      by: ["chatId"],
+      where: {
+        chatId: { in: chatIds },
+        senderId: { not: userId },
+        read: false,
+      },
+      _count: { id: true },
+    });
 
-        return {
-          id: chat.id,
-          studentInstructorId: chat.studentInstructorId,
-          otherUser: {
-            id: otherUser.id,
-            name: otherUser.name,
-            image: otherUser.image,
-            email: otherUser.email,
-          },
-          lastMessage: lastMessage
-            ? {
-                id: lastMessage.id,
-                content: lastMessage.content,
-                senderId: lastMessage.senderId,
-                sender: {
-                  id: lastMessage.sender.id,
-                  name: lastMessage.sender.name,
-                  image: lastMessage.sender.image,
-                },
-                type: lastMessage.type,
-                createdAt: lastMessage.createdAt.toISOString(),
-                read: lastMessage.read,
-              }
-            : null,
-          unreadCount,
-          updatedAt: chat.updatedAt.toISOString(),
-        };
-      }),
+    // Create a map for O(1) lookup
+    const unreadMap = new Map(
+      unreadCounts.map((u) => [u.chatId, u._count.id]),
     );
+
+    // Format chats without additional queries
+    const formattedChats = chats.map((chat) => {
+      const lastMessage = chat.messages[0] || null;
+      const otherUser = instructorProfile
+        ? (chat as any).studentInstructor.student
+        : (chat as any).studentInstructor.instructor.user;
+
+      return {
+        id: chat.id,
+        studentInstructorId: chat.studentInstructorId,
+        otherUser: {
+          id: otherUser.id,
+          name: otherUser.name,
+          image: otherUser.image,
+          email: otherUser.email,
+        },
+        lastMessage: lastMessage
+          ? {
+            id: lastMessage.id,
+            content: lastMessage.content,
+            senderId: lastMessage.senderId,
+            sender: lastMessage.sender
+              ? {
+                id: lastMessage.sender.id,
+                name: lastMessage.sender.name,
+                image: lastMessage.sender.image,
+              }
+              : null,
+            type: lastMessage.type,
+            createdAt: lastMessage.createdAt.toISOString(),
+            read: lastMessage.read,
+          }
+          : null,
+        unreadCount: unreadMap.get(chat.id) || 0,
+        updatedAt: chat.updatedAt.toISOString(),
+      };
+    });
 
     return NextResponse.json(formattedChats, { status: 200 });
   } catch (error) {

@@ -1,6 +1,7 @@
 import { streamText } from "ai";
 import { auth } from "@auth";
 import { prisma } from "@/lib/database/prisma";
+import { getCached, CacheKeys } from "@/lib/cache/redis";
 
 export const maxDuration = 30;
 
@@ -24,20 +25,27 @@ export async function POST() {
       return new Response("User not found", { status: 404 });
     }
 
-    // Fetch available foods from database
-    const foods = await prisma.food.findMany({
-      select: {
-        id: true,
-        name: true,
-        calories: true,
-        protein: true,
-        carbs: true,
-        fat: true,
-        serving: true,
-        category: true,
-      },
-      take: 200, // Limit to avoid token overflow
-    });
+    // Fetch ALL available foods from cache (no limit)
+    const foods = await getCached(
+      `${CacheKeys.FOODS_ALL}:${user.id}`,
+      () =>
+        prisma.food.findMany({
+          where: {
+            OR: [{ userId: null }, { userId: user.id }],
+          },
+          select: {
+            id: true,
+            name: true,
+            calories: true,
+            protein: true,
+            carbs: true,
+            fat: true,
+            serving: true,
+            category: true,
+          },
+        }),
+      3600, // Cache for 1 hour
+    );
 
     const profile = (user as any).profile;
     const calorieTarget = profile?.dailyCalorieTarget || 2000;
@@ -58,12 +66,12 @@ INFORMACIÓN DEL USUARIO:
 
 ALIMENTOS DISPONIBLES (muestra):
 ${foods
-  .slice(0, 100)
-  .map(
-    (f) =>
-      `- ${f.id}: ${f.name} (${f.category}) - ${f.calories}kcal, P:${f.protein}g, C:${f.carbs}g, F:${f.fat}g por ${f.serving}g`,
-  )
-  .join("\n")}
+        .slice(0, 100)
+        .map(
+          (f) =>
+            `- ${f.id}: ${f.name} (${f.category}) - ${f.calories}kcal, P:${f.protein}g, C:${f.carbs}g, F:${f.fat}g por ${f.serving}g`,
+        )
+        .join("\n")}
     `.trim();
 
     const result = await streamText({

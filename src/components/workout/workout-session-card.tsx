@@ -55,17 +55,16 @@ export function WorkoutSessionCard({
     return (
       <Link
         href="/dashboard/workout/active"
-        className={`block p-4 sm:p-5 border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-foreground/30 hover:bg-accent/50 cursor-pointer ${className}`}
+        className={`block p-4 sm:p-5 border border-border/40 rounded-2xl shadow-sm hover:shadow-lg hover:border-border/60 hover:bg-accent/30 hover:ring-1 hover:ring-border/20 cursor-pointer transition-all duration-200 ${className}`}
       >
         {sessionContent}
       </Link>
     );
   }
 
-  // For completed workouts, just show as a div
   return (
     <div
-      className={`p-4 sm:p-5 border border-border rounded-2xl shadow-sm bg-muted/30 ${className}`}
+      className={`p-4 sm:p-5 border border-border/30 rounded-2xl shadow-sm bg-muted/20 ${className}`}
     >
       {sessionContent}
     </div>

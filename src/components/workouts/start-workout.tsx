@@ -50,6 +50,8 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
   const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedMode, setSelectedMode] = useState<"simple" | "intermediate" | "advanced">("simple");
+  const [showModeHelp, setShowModeHelp] = useState(false);
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [activeWorkoutExists, setActiveWorkoutExists] = useState(false);
@@ -100,7 +102,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       const response = await fetch("/api/workout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day: selectedDay, exercises }),
+        body: JSON.stringify({ day: selectedDay, exercises, workoutMode: selectedMode }),
       });
 
       if (!response.ok) {
@@ -179,7 +181,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       const startResponse = await fetch("/api/workout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day: selectedDay, exercises }),
+        body: JSON.stringify({ day: selectedDay, exercises, workoutMode: selectedMode }),
       });
 
       if (!startResponse.ok) {
@@ -223,7 +225,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           Comenzar rutina
         </Button>
       </DialogTrigger>
-      <DialogContent className="space-y-4 w-full max-w-[95vw] sm:max-w-md overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <DialogContent className="space-y-4 w-full overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Selecciona el día de entrenamiento
@@ -287,38 +289,116 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                 ))}
               </div>
             </div>
+
             {selectedDay && (
-              <div className="max-h-[400px] w-full overflow-y-auto scroll-hidden">
-                <div className="space-y-1 pr-2">
-                  {days
-                    .find((day: Day) => day.day === selectedDay)
-                    ?.exercises.map((exercise: Exercise) => (
-                      <div
-                        key={exercise.id}
-                        className="flex flex-col border-b py-2 last:border-0"
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <h4 className="font-medium text-xs flex-1 truncate pr-2">
-                            {truncateText(exercise.name)}
-                          </h4>
-                          <div className="flex items-center gap-3 text-xs flex-shrink-0">
-                            <span className="text-muted-foreground whitespace-nowrap">
-                              {exercise.sets}×{exercise.reps || "Tiempo"}
-                            </span>
-                            <span className="font-medium whitespace-nowrap">
-                              ⏱️{exercise.restTime}s
-                            </span>
-                          </div>
-                        </div>
-                        {exercise.notes && (
-                          <p className="text-xs text-muted-foreground mt-1">
-                            {exercise.notes}
-                          </p>
-                        )}
+              <>
+                <div className="space-y-3 pb-4 border-b">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-sm font-semibold">Modo de seguimiento</h3>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowModeHelp(!showModeHelp)}
+                      className="text-xs h-7 px-2"
+                    >
+                      {showModeHelp ? "Ocultar ayuda" : "¿No estás seguro?"}
+                    </Button>
+                  </div>
+
+                  {showModeHelp && (
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-xs">
+                      <p className="font-medium">Elige según tu experiencia:</p>
+                      <ul className="space-y-1.5 ml-4 list-disc">
+                        <li><strong>Principiante:</strong> Si llevas menos de 6 meses entrenando o prefieres algo simple</li>
+                        <li><strong>Intermedio:</strong> Si tienes 6-24 meses de experiencia y quieres más control</li>
+                        <li><strong>Avanzado:</strong> Si tienes más de 2 años entrenando y quieres seguimiento completo</li>
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 gap-2">
+                    <button
+                      onClick={() => setSelectedMode("simple")}
+                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "simple"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                        }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-sm">Principiante</span>
+                        <span className="text-xs text-muted-foreground">Simple</span>
                       </div>
-                    ))}
+                      <p className="text-xs text-muted-foreground">
+                        Solo peso y repeticiones
+                      </p>
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedMode("intermediate")}
+                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "intermediate"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                        }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-sm">Intermedio</span>
+                        <span className="text-xs text-muted-foreground">Balanceado</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Peso, repeticiones y RIR
+                      </p>
+                    </button>
+
+                    <button
+                      onClick={() => setSelectedMode("advanced")}
+                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "advanced"
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
+                        }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-semibold text-sm">Avanzado</span>
+                        <span className="text-xs text-muted-foreground">Completo</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Peso, repeticiones, RIR y Tempo
+                      </p>
+                    </button>
+                  </div>
                 </div>
-              </div>
+
+                <div className="max-h-[300px] w-full overflow-y-auto scroll-hidden">
+                  <div className="space-y-1 pr-2">
+                    {days
+                      .find((day: Day) => day.day === selectedDay)
+                      ?.exercises.map((exercise: Exercise) => (
+                        <div
+                          key={exercise.id}
+                          className="flex flex-col border-b py-2 last:border-0"
+                        >
+                          <div className="flex items-center justify-between gap-2">
+                            <h4 className="font-medium text-xs flex-1 truncate pr-2">
+                              {truncateText(exercise.name)}
+                            </h4>
+                            <div className="flex items-center gap-3 text-xs flex-shrink-0">
+                              <span className="text-muted-foreground whitespace-nowrap">
+                                {exercise.sets}×{exercise.reps || "Tiempo"}
+                              </span>
+                              <span className="font-medium whitespace-nowrap">
+                                ⏱️{exercise.restTime}s
+                              </span>
+                            </div>
+                          </div>
+                          {exercise.notes && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {exercise.notes}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              </>
             )}
             <DialogFooter>
               <Button

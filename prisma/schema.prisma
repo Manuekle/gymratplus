@@ -307,6 +307,8 @@ model MealLog {
   @@index([foodId])
   @@index([recipeId])
   @@index([consumedAt])
+  @@index([userId, consumedAt(sort: Desc)]) // Composite index for nutrition queries
+  @@index([userId, mealType, consumedAt]) // Composite index for meal type filtering
 }
 
 model DailyWaterIntake {
@@ -347,6 +349,7 @@ model Weight {
 
   @@index([userId])
   @@index([date])
+  @@index([userId, date(sort: Desc)]) // Composite index for weight progress queries
 }
 
 model Goal {
@@ -390,6 +393,7 @@ model Goal {
   @@index([userId])
   @@index([type])
   @@index([status])
+  @@index([userId, status, type]) // Composite index for active goals filtering
 }
 
 model GoalProgress {
@@ -419,21 +423,27 @@ model Notification {
   updatedAt DateTime @updatedAt
 
   @@index([userId])
+  @@index([userId, read, createdAt(sort: Desc)]) // Composite index for unread notifications
+  @@index([userId, type, createdAt(sort: Desc)]) // Composite index for notification type filtering
 }
 
 model WorkoutSession {
-  id        String            @id @default(cuid())
-  userId    String
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
-  workoutId String?
-  workout   Workout?          @relation(fields: [workoutId], references: [id], onDelete: SetNull)
-  date      DateTime          @default(now())
-  completed Boolean           @default(false)
-  duration  Int? // duración en minutos
-  exercises ExerciseSession[]
-  notes     String?
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  workoutId   String?
+  workout     Workout?          @relation(fields: [workoutId], references: [id], onDelete: SetNull)
+  date        DateTime          @default(now())
+  completed   Boolean           @default(false)
+  duration    Int? // duración en minutos
+  workoutMode String            @default("simple") // "simple", "intermediate", "advanced"
+  exercises   ExerciseSession[]
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId, date(sort: Desc)]) // Composite index for workout history queries
+  @@index([userId, completed]) // Composite index for filtering completed workouts
 }
 
 model ExerciseSession {
@@ -446,6 +456,8 @@ model ExerciseSession {
   sets             SetSession[]
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
+
+  @@index([workoutSessionId, exerciseId]) // Composite index for exercise session joins
 }
 
 model SetSession {
@@ -461,6 +473,8 @@ model SetSession {
   completed         Boolean         @default(false)
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
+
+  @@index([exerciseSessionId, setNumber]) // Composite index for set ordering
 }
 
 model FoodRecommendation {
@@ -647,6 +661,8 @@ model ChatMessage {
   @@index([senderId])
   @@index([createdAt])
   @@index([replyToId])
+  @@index([chatId, senderId, read]) // Composite index for unread message counts
+  @@index([chatId, createdAt(sort: Desc)]) // Composite index for message ordering
 }
 
 model PushSubscription {

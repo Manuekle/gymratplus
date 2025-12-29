@@ -35,6 +35,7 @@ interface WorkoutSession {
   id: string;
   notes: string;
   createdAt: string;
+  workoutMode: "simple" | "intermediate" | "advanced";
   exercises: Exercise[];
 }
 
@@ -543,9 +544,26 @@ export default function ActiveWorkoutPage() {
       <div className="border rounded-lg p-4 md:p-6 shadow-sm bg-card">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div className="flex flex-col gap-1 w-full">
-            <CardTitle className="text-2xl font-semibold tracking-heading">
-              {workoutSession.notes || "Sesión de Entrenamiento"}
-            </CardTitle>
+            <div className="flex items-center gap-2 flex-wrap">
+              <CardTitle className="text-2xl font-semibold tracking-heading">
+                {workoutSession.notes || "Sesión de Entrenamiento"}
+              </CardTitle>
+              <Badge
+                variant="outline"
+                className={`text-xs ${workoutSession.workoutMode === "simple"
+                    ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                    : workoutSession.workoutMode === "intermediate"
+                      ? "bg-purple-500/10 text-purple-600 border-purple-500/20"
+                      : "bg-orange-500/10 text-orange-600 border-orange-500/20"
+                  }`}
+              >
+                {workoutSession.workoutMode === "simple"
+                  ? "Principiante"
+                  : workoutSession.workoutMode === "intermediate"
+                    ? "Intermedio"
+                    : "Avanzado"}
+              </Badge>
+            </div>
             <CardDescription className="text-xs">
               Entrenamiento en progreso
             </CardDescription>
@@ -627,14 +645,32 @@ export default function ActiveWorkoutPage() {
               </CardHeader>
               <CardContent className="px-4 pt-0">
                 <div className="space-y-3">
-                  <div className="grid grid-cols-12 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
-                    <div className="col-span-1">Set</div>
-                    <div className="col-span-2">Peso (kg)</div>
-                    <div className="col-span-2">Reps</div>
-                    <div className="col-span-2">RIR</div>
-                    <div className="col-span-3">Tempo</div>
-                    <div className="col-span-2 text-right">1RM</div>
-                  </div>
+                  {/* Conditional headers based on workout mode */}
+                  {workoutSession.workoutMode === "simple" ? (
+                    <div className="grid grid-cols-8 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                      <div className="col-span-1">Set</div>
+                      <div className="col-span-3">Peso (kg)</div>
+                      <div className="col-span-2">Reps</div>
+                      <div className="col-span-2 text-right">1RM</div>
+                    </div>
+                  ) : workoutSession.workoutMode === "intermediate" ? (
+                    <div className="grid grid-cols-10 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                      <div className="col-span-1">Set</div>
+                      <div className="col-span-3">Peso (kg)</div>
+                      <div className="col-span-2">Reps</div>
+                      <div className="col-span-2">RIR</div>
+                      <div className="col-span-2 text-right">1RM</div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-12 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                      <div className="col-span-1">Set</div>
+                      <div className="col-span-2">Peso (kg)</div>
+                      <div className="col-span-2">Reps</div>
+                      <div className="col-span-2">RIR</div>
+                      <div className="col-span-3">Tempo</div>
+                      <div className="col-span-2 text-right">1RM</div>
+                    </div>
+                  )}
 
                   {exercise.sets.map((set) => {
                     const currentVal = inputValues[set.id] || {};
@@ -649,7 +685,12 @@ export default function ActiveWorkoutPage() {
                     return (
                       <div
                         key={set.id}
-                        className="grid grid-cols-12 gap-2 items-center"
+                        className={`grid gap-2 items-center ${workoutSession.workoutMode === "simple"
+                          ? "grid-cols-8"
+                          : workoutSession.workoutMode === "intermediate"
+                            ? "grid-cols-10"
+                            : "grid-cols-12"
+                          }`}
                       >
                         <div className="col-span-1 text-xs font-medium flex items-center gap-1.5 direction-col">
                           <div className="flex items-center gap-1">
@@ -669,7 +710,9 @@ export default function ActiveWorkoutPage() {
                             </div>
                           )}
                         </div>
-                        <div className="col-span-2 relative">
+
+                        {/* Weight input - always shown */}
+                        <div className={workoutSession.workoutMode === "simple" ? "col-span-3" : workoutSession.workoutMode === "intermediate" ? "col-span-3" : "col-span-2"}>
                           <Input
                             type="text"
                             inputMode="decimal"
@@ -691,6 +734,8 @@ export default function ActiveWorkoutPage() {
                             className={`text-xs h-9 px-2 ${isImproved ? 'border-green-500 ring-1 ring-green-500/20' : ''}`}
                           />
                         </div>
+
+                        {/* Reps input - always shown */}
                         <div className="col-span-2">
                           <Input
                             type="text"
@@ -709,43 +754,50 @@ export default function ActiveWorkoutPage() {
                                 );
                               }
                             }}
-                            onBlur={() => {
-                              // Optional: trigger save here specifically if needed or rely on debounce
-                            }}
                             disabled={exercise.completed || isUpdating[set.id]}
                             className="text-xs h-9 px-2"
                           />
                         </div>
-                        <div className="col-span-2">
-                          <Select
-                            value={inputValues[set.id]?.rir ?? set.rir?.toString() ?? ""}
-                            onValueChange={(val) => handleInputChange(set.id, exercise.id, "rir", val)}
-                            disabled={exercise.completed || isUpdating[set.id]}
-                          >
-                            <SelectTrigger className="h-9 text-xs px-2">
-                              <SelectValue placeholder="-" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {[0, 1, 2, 3, 4].map((r) => (
-                                <SelectItem key={r} value={r.toString()} className="text-xs">
-                                  {r === 0 ? "0 (Fallo)" : r === 4 ? "4+" : r}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                        <div className="col-span-3">
-                          <Input
-                            type="text"
-                            placeholder="3-0-1"
-                            className="text-xs h-9 px-2"
-                            value={inputValues[set.id]?.tempo ?? ""}
-                            onChange={(e) => {
-                              handleInputChange(set.id, exercise.id, "tempo", e.target.value);
-                            }}
-                            disabled={exercise.completed || isUpdating[set.id]}
-                          />
-                        </div>
+
+                        {/* RIR - shown for intermediate and advanced */}
+                        {(workoutSession.workoutMode === "intermediate" || workoutSession.workoutMode === "advanced") && (
+                          <div className="col-span-2">
+                            <Select
+                              value={inputValues[set.id]?.rir ?? set.rir?.toString() ?? ""}
+                              onValueChange={(val) => handleInputChange(set.id, exercise.id, "rir", val)}
+                              disabled={exercise.completed || isUpdating[set.id]}
+                            >
+                              <SelectTrigger className="h-9 text-xs px-2">
+                                <SelectValue placeholder="-" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {[0, 1, 2, 3, 4].map((r) => (
+                                  <SelectItem key={r} value={r.toString()} className="text-xs">
+                                    {r === 0 ? "0 (Fallo)" : r === 4 ? "4+" : r}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        )}
+
+                        {/* Tempo - shown only for advanced */}
+                        {workoutSession.workoutMode === "advanced" && (
+                          <div className="col-span-3">
+                            <Input
+                              type="text"
+                              placeholder="3-0-1"
+                              className="text-xs h-9 px-2"
+                              value={inputValues[set.id]?.tempo ?? ""}
+                              onChange={(e) => {
+                                handleInputChange(set.id, exercise.id, "tempo", e.target.value);
+                              }}
+                              disabled={exercise.completed || isUpdating[set.id]}
+                            />
+                          </div>
+                        )}
+
+                        {/* 1RM - always shown */}
                         <div className="col-span-2 text-right">
                           {est1RM > 0 && (
                             <div className="flex flex-col items-end">

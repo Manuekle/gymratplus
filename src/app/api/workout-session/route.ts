@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const userId = session.user.id;
 
-    const { day, exercises } = await req.json();
+    const { day, exercises, workoutMode = "simple" } = await req.json();
 
     if (
       !day ||
@@ -29,8 +29,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Validate workoutMode
+    const validModes = ["simple", "intermediate", "advanced"];
+    const mode = validModes.includes(workoutMode) ? workoutMode : "simple";
+
     console.log("Día recibido:", day);
     console.log("Ejercicios recibidos:", exercises);
+    console.log("Modo de entrenamiento:", mode);
 
     // Buscar el workout del usuario (personal o asignado)
     // Primero intentamos encontrar una rutina personal activa
@@ -60,6 +65,7 @@ export async function POST(req: NextRequest) {
         userId: userId,
         workoutId: userWorkout.id,
         notes: `Día: ${day}`,
+        workoutMode: mode,
         exercises: {
           create: await Promise.all(
             exercises.map(

@@ -21,3 +21,7 @@ export const prisma =
   });
 
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
+
+// Note: Query performance monitoring via middleware requires Prisma extension
+// For now, use Prisma's built-in query logging in development mode
+// Slow queries will be visible in the console via the log configuration above

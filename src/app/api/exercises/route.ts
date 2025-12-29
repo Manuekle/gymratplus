@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getCached, CacheKeys } from "@/lib/cache/redis";
 
 export async function GET(request: Request) {
   try {
@@ -7,6 +8,9 @@ export async function GET(request: Request) {
     const search = searchParams.get("search") || "";
     const muscle = searchParams.get("muscle") || "";
     const difficulty = searchParams.get("difficulty") || "";
+
+    // Build cache key based on filters
+    const cacheKey = CacheKeys.EXERCISES_FILTERED(muscle, difficulty, search);
 
     const where: any = {};
 
@@ -25,21 +29,24 @@ export async function GET(request: Request) {
       where.difficulty = difficulty;
     }
 
-    const exercises = await prisma.exercise.findMany({
-      where,
-      orderBy: { name: "asc" },
-      select: {
-        id: true,
-        name: true,
-        description: true,
-        difficulty: true,
-        equipment: true,
-        muscleGroup: true,
-        // primaryMuscles: true, // Not in schema
-        // secondaryMuscles: true, // Not in schema
-        // instructions: false // Exclude heavy fields if not necessary in list view
-      },
-    });
+    // Use cache for exercises query
+    const exercises = await getCached(
+      cacheKey,
+      () =>
+        prisma.exercise.findMany({
+          where,
+          orderBy: { name: "asc" },
+          select: {
+            id: true,
+            name: true,
+            description: true,
+            difficulty: true,
+            equipment: true,
+            muscleGroup: true,
+          },
+        }),
+      3600, // Cache for 1 hour
+    );
 
     return NextResponse.json(exercises);
   } catch (error) {
