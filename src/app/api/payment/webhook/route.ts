@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
+import { getPreApprovalController } from "@/lib/mercadopago/client";
+import { sendEmail } from "@/lib/email/resend";
+import { renderInvoiceEmail } from "@/lib/email/templates/invoice-email";
 
 export async function POST(req: Request) {
   try {
@@ -24,19 +27,145 @@ export async function POST(req: Request) {
       }
 
       // Get preapproval details from Mercado Pago
-      // Note: In production, you should verify the webhook signature
-      // and fetch the preapproval details from MP API to ensure authenticity
+      const preApproval = getPreApprovalController();
+      let subscription;
+
+      try {
+        subscription = await preApproval.get({ id: preapprovalId });
+        console.log("[Webhook] Subscription details:", {
+          id: subscription.id,
+          status: subscription.status,
+          payer_email: subscription.payer_email,
+          amount: subscription.auto_recurring?.transaction_amount,
+        });
+      } catch (mpError: any) {
+        console.error("[Webhook] Error fetching subscription:", mpError);
+        return NextResponse.json({ received: true, error: "Failed to fetch subscription" });
+      }
 
       // For now, we'll handle based on the action
       switch (body.action) {
         case "created":
-          console.log("[Webhook] Preapproval created:", preapprovalId);
-          // Subscription was created, update user status
-          break;
-
         case "updated":
-          console.log("[Webhook] Preapproval updated:", preapprovalId);
-          // Subscription was updated, check new status
+          console.log(`[Webhook] Preapproval ${body.action}:`, preapprovalId);
+
+          // Only activate if subscription is authorized or active
+          if (subscription.status === "authorized" || subscription.status === "active") {
+            // Find user by payer email
+            const payerEmail = subscription.payer_email;
+            if (!payerEmail) {
+              console.error("[Webhook] No payer email in subscription");
+              break;
+            }
+
+            const user = await prisma.user.findUnique({
+              where: { email: payerEmail },
+            });
+
+            if (!user) {
+              console.error("[Webhook] User not found for email:", payerEmail);
+              break;
+            }
+
+            // Determine plan type from subscription amount
+            const amount = subscription.auto_recurring?.transaction_amount;
+            let planType: "pro" | "instructor";
+            let subscriptionTier: "PRO" | "INSTRUCTOR";
+
+            if (amount === 37700) {
+              planType = "pro";
+              subscriptionTier = "PRO";
+            } else if (amount === 74500) {
+              planType = "instructor";
+              subscriptionTier = "INSTRUCTOR";
+            } else {
+              // Fallback: try to determine from reason
+              const reason = subscription.reason?.toLowerCase() || "";
+              if (reason.includes("instructor")) {
+                planType = "instructor";
+                subscriptionTier = "INSTRUCTOR";
+              } else {
+                planType = "pro";
+                subscriptionTier = "PRO";
+              }
+            }
+
+            // Calculate dates
+            const trialEndsAt = new Date();
+            trialEndsAt.setDate(trialEndsAt.getDate() + 14);
+
+            const currentPeriodEnd = new Date();
+            currentPeriodEnd.setMonth(currentPeriodEnd.getMonth() + 1);
+
+            // Update user with active subscription
+            const updatedUser = await prisma.user.update({
+              where: { id: user.id },
+              data: {
+                subscriptionStatus: "active",
+                subscriptionTier,
+                planType,
+                trialEndsAt,
+                currentPeriodEnd,
+                cancelAtPeriodEnd: false,
+              },
+            });
+
+            console.log("[Webhook] Subscription activated:", {
+              userId: updatedUser.id,
+              tier: updatedUser.subscriptionTier,
+              status: updatedUser.subscriptionStatus,
+            });
+
+            // Create Invoice Record
+            const invoiceNumber = `INV-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+            const finalAmount = amount || (subscriptionTier === "PRO" ? 37700 : 74500);
+            const planNameDisplay =
+              subscriptionTier === "PRO" ? "GymRat+ - Plan PRO" : "GymRat+ - Plan Instructor";
+
+            await prisma.invoice.create({
+              data: {
+                userId: user.id,
+                invoiceNumber,
+                subscriptionId: preapprovalId,
+                planName: planNameDisplay,
+                planType: "monthly",
+                amount: finalAmount,
+                currency: "COP",
+                status: "paid",
+                paidAt: new Date(),
+                billingDate: new Date(),
+              },
+            });
+
+            // Send Welcome/Invoice Email
+            try {
+              const emailHtml = await renderInvoiceEmail({
+                userName: user.name || "Usuario",
+                userEmail: user.email!,
+                invoiceNumber,
+                invoiceDate: new Date().toLocaleDateString("es-CO"),
+                planName: planNameDisplay,
+                planType: "monthly",
+                amount: finalAmount,
+                currency: "COP",
+                trialEndsAt: trialEndsAt.toLocaleDateString("es-CO"),
+                nextBillingDate: currentPeriodEnd.toLocaleDateString("es-CO"),
+                subscriptionId: preapprovalId,
+              });
+
+              await sendEmail({
+                to: user.email!,
+                subject: "¡Bienvenido a GymRat+! - Confirmación de suscripción",
+                html: emailHtml,
+              });
+
+              console.log("[Webhook] Welcome email sent to:", user.email);
+            } catch (emailError) {
+              console.error("[Webhook] Error sending welcome email:", emailError);
+            }
+          } else {
+            console.log("[Webhook] Subscription not authorized yet, status:", subscription.status);
+          }
           break;
 
         case "cancelled":
