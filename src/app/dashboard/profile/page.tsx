@@ -58,10 +58,8 @@ import {
   Dumbbell01Icon,
   Camera01Icon,
 } from "@hugeicons/core-free-icons";
-import { Loader } from "@/components/ai-elements/loader";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { upload } from "@vercel/blob/client";
-import { AdminStreakTester } from "@/components/profile/admin-streak-tester";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -200,7 +198,7 @@ export default function ProfilePage() {
         setGoal((user.profile as { goal?: string })?.goal || "");
         setDietaryPreference(
           (user.profile as { dietaryPreference?: string })?.dietaryPreference ||
-            "",
+          "",
         );
         setMonthsTraining(
           (user.profile as { monthsTraining?: number })?.monthsTraining || 0,
@@ -218,7 +216,7 @@ export default function ProfilePage() {
         .then((interests: string[]) => {
           setSelectedTags(interests);
         })
-        .catch(() => {});
+        .catch(() => { });
 
       // Load streak stats
       if (session.user.id) {
@@ -591,16 +589,16 @@ export default function ProfilePage() {
                   {/* Icono de Verificado para PRO/Instructor */}
                   {(session?.user?.subscriptionStatus === "active" ||
                     session?.user?.subscriptionStatus === "trialing") && (
-                    <VerifiedBadge
-                      variant={
-                        session?.user?.subscriptionTier === "PRO"
-                          ? "pro"
-                          : isInstructor
-                            ? "instructor"
-                            : "default"
-                      }
-                    />
-                  )}
+                      <VerifiedBadge
+                        variant={
+                          session?.user?.subscriptionTier === "PRO"
+                            ? "pro"
+                            : isInstructor
+                              ? "instructor"
+                              : "default"
+                        }
+                      />
+                    )}
                 </div>
 
                 {/* Badge de Instructor o Alumno */}
@@ -683,12 +681,12 @@ export default function ProfilePage() {
                       )?.profile?.createdAt;
                       return createdAt
                         ? new Date(createdAt as string).toLocaleDateString(
-                            "es-ES",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )
+                          "es-ES",
+                          {
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )
                         : "";
                     })()}
                   </span>
@@ -732,7 +730,7 @@ export default function ProfilePage() {
         </CardContent>
       </Card>
 
-      <AdminStreakTester />
+
 
       <Tabs defaultValue="personal" className="w-full space-y-6">
         <TabsList className="grid w-full grid-cols-2 gap-1 md:grid-cols-4 h-auto p-1">
@@ -1006,12 +1004,12 @@ export default function ProfilePage() {
                             )?.profile?.birthdate;
                             return birthdate
                               ? new Date(
-                                  birthdate as string,
-                                ).toLocaleDateString("es-ES", {
-                                  day: "numeric",
-                                  month: "long",
-                                  year: "numeric",
-                                })
+                                birthdate as string,
+                              ).toLocaleDateString("es-ES", {
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                              })
                               : "Fecha no disponible";
                           })()}
                         </div>
@@ -1573,9 +1571,8 @@ export default function ProfilePage() {
                                 } else if (daysDiff === 1) {
                                   return "Ayer";
                                 } else {
-                                  return `Hace ${daysDiff} ${
-                                    daysDiff === 1 ? "día" : "días"
-                                  }`;
+                                  return `Hace ${daysDiff} ${daysDiff === 1 ? "día" : "días"
+                                    }`;
                                 }
                               })()}
                             </div>

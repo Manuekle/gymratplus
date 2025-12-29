@@ -88,13 +88,14 @@ export async function POST(req: Request) {
     }
 
     // Check subscription tier - AI chat is available for PRO/INSTRUCTOR users with active or trialing status
-    const isPro =
-      user.subscriptionTier === "PRO" &&
+    const hasActiveSubscription =
+      (user.subscriptionTier === "PRO" ||
+        user.subscriptionTier === "INSTRUCTOR") &&
       (user.subscriptionStatus === "active" ||
         user.subscriptionStatus === "trialing");
     const isInstructor = user.isInstructor === true;
 
-    if (!isPro && !isInstructor) {
+    if (!hasActiveSubscription && !isInstructor) {
       // Return a friendly message for free users
       const upgradeMessage = {
         role: "assistant",
@@ -192,11 +193,11 @@ Tienes acceso a herramientas para generar planes visuales y tracking nutricional
               execute: async (params: {
                 planName: string;
                 focus:
-                  | "fuerza"
-                  | "hipertrofia"
-                  | "resistencia"
-                  | "perdida_peso"
-                  | "flexibilidad";
+                | "fuerza"
+                | "hipertrofia"
+                | "resistencia"
+                | "perdida_peso"
+                | "flexibilidad";
                 daysPerWeek: number;
                 durationMinutes: number;
                 difficulty: "principiante" | "intermedio" | "avanzado";
