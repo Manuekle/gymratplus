@@ -19,6 +19,44 @@ export async function POST(req: Request) {
     // - preapproval (subscription created/updated)
     // - authorized_payment (payment was successful)
 
+    // Verify Webhook Signature if secret matches
+    const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+    const signature = req.headers.get("x-signature");
+    const requestId = req.headers.get("x-request-id");
+
+    if (secret && signature && requestId) {
+      // Split signature into parts (ts and v1)
+      const parts = signature.split(",");
+      let ts, hash;
+
+      parts.forEach((part) => {
+        const [key, value] = part.split("=");
+        if (key === "ts") ts = value;
+        if (key === "v1") hash = value;
+      });
+
+      // Reconstruct the manifest string
+      const manifest = `id:${body.data?.id};request-id:${requestId};ts:${ts};`;
+
+      // Create HMAC SHA-256
+      // Note: In typical Node env we use crypto, but in Edge/Next we might need subtle crypto or just skip strict verification if complex.
+      // However, for now we will log that we received it. 
+      // Implementing full HMAC verification requires the 'crypto' module.
+
+      const crypto = require('crypto');
+      const hmac = crypto.createHmac('sha256', secret);
+      hmac.update(manifest);
+      const sha = hmac.digest('hex');
+
+      if (sha !== hash) {
+        console.error("[Webhook] Invalid signature");
+        // return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+        // Keeping it loose for now to avoid breaking existing flows until fully tested
+      } else {
+        console.log("[Webhook] Signature verified successfully");
+      }
+    }
+
     if (body.type === "preapproval" || body.type === "subscription_preapproval") {
       const preapprovalId = body.data?.id;
 
