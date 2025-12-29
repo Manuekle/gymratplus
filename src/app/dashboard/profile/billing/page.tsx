@@ -105,6 +105,23 @@ export default function BillingPage() {
           setProcessing(false);
           router.replace("/dashboard/profile/billing");
         });
+    } else if (
+      success === "true" &&
+      !subscriptionId &&
+      !hasProcessedRef.current
+    ) {
+      hasProcessedRef.current = true;
+      toast.info("Pago procesado. Verificando suscripción...", {
+        duration: 5000,
+      });
+
+      // Give the webhook a moment to fire and update the database
+      setTimeout(async () => {
+        await updateSession();
+        // Remove query params and reload to show new status
+        router.replace("/dashboard/profile/billing");
+        window.location.reload();
+      }, 4000);
     }
   }, [searchParams, processing, router, updateSession]);
 
@@ -304,8 +321,8 @@ export default function BillingPage() {
                     <div className="flex flex-row gap-2 items-center justify-between ">
                       <Button
                         className={`w-full dark:text-black ${isCurrentPlan
-                            ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
-                            : "bg-black dark:bg-white text-white hover:bg-zinc-900"
+                          ? "bg-white dark:bg-white text-black hover:bg-zinc-100 border"
+                          : "bg-black dark:bg-white text-white hover:bg-zinc-900"
                           }`}
                         size="default"
                         disabled={

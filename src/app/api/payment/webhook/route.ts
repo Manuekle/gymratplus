@@ -51,19 +51,28 @@ export async function POST(req: Request) {
 
           // Only activate if subscription is authorized or active
           if (subscription.status === "authorized" || subscription.status === "active") {
-            // Find user by payer email
+            // Find user by external_reference (userId) or payer email
+            const userId = subscription.external_reference;
             const payerEmail = subscription.payer_email;
-            if (!payerEmail) {
-              console.error("[Webhook] No payer email in subscription");
-              break;
+
+            let user;
+
+            if (userId) {
+              console.log("[Webhook] Finding user by external_reference:", userId);
+              user = await prisma.user.findUnique({
+                where: { id: userId },
+              });
             }
 
-            const user = await prisma.user.findUnique({
-              where: { email: payerEmail },
-            });
+            if (!user && payerEmail) {
+              console.log("[Webhook] Finding user by email (fallback):", payerEmail);
+              user = await prisma.user.findUnique({
+                where: { email: payerEmail },
+              });
+            }
 
             if (!user) {
-              console.error("[Webhook] User not found for email:", payerEmail);
+              console.error("[Webhook] User not found. External reference:", userId, "Email:", payerEmail);
               break;
             }
 
