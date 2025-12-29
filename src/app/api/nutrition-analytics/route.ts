@@ -3,6 +3,8 @@ import { addDays, endOfDay, format, startOfDay, startOfWeek } from "date-fns";
 import { type NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/database/prisma";
 
+export const runtime = "nodejs";
+
 // GET nutrition analytics
 export async function GET(req: NextRequest) {
   try {

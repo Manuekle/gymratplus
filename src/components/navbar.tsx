@@ -38,7 +38,9 @@ export function Navbar() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const { unreadCount } = useChatUnreadCount();
-  const isInstructor = session?.user?.isInstructor;
+  const isInstructor =
+    session?.user?.isInstructor ||
+    session?.user?.subscriptionTier === "INSTRUCTOR";
 
   const navItems = [
     {
