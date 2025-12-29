@@ -20,6 +20,7 @@ const getStreakColor = (streak: number) => {
   if (streak >= 365) {
     return {
       text: "text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-100 to-white",
+      badge: "shadow-[0_0_20px_rgba(255,215,0,0.3),0_0_40px_rgba(255,200,0,0.2)]",
       svgFilter:
         "saturate(2.0) brightness(1.8) contrast(1.2) drop-shadow(0 0 10px rgba(255, 255, 255, 0.9)) drop-shadow(0 0 20px rgba(255, 215, 0, 0.8)) drop-shadow(0 0 30px rgba(255, 200, 0, 0.6))",
       filter: "saturate(2.0) brightness(1.8)",
@@ -29,7 +30,8 @@ const getStreakColor = (streak: number) => {
   // 291-364: Rojo anaranjado / Rojo intenso
   if (streak >= 291)
     return {
-      text: "text-red-600 bg-red-500/80 dark:bg-red-600/30 shadow-lg shadow-red-500/20 dark:shadow-red-600/20",
+      text: "text-red-600 bg-red-500/80 dark:bg-red-600/30",
+      badge: "shadow-[0_0_15px_rgba(220,38,38,0.25),0_0_30px_rgba(239,68,68,0.15)]",
       svgFilter:
         "hue-rotate(0deg) saturate(1.6) brightness(1.3) drop-shadow(0 0 8px rgba(220, 38, 38, 0.9)) drop-shadow(0 0 16px rgba(239, 68, 68, 0.7))",
       filter: "saturate(1.6) brightness(1.3)",
@@ -37,7 +39,8 @@ const getStreakColor = (streak: number) => {
   // 221-290: Naranja
   if (streak >= 221)
     return {
-      text: "text-orange-500 bg-orange-500/80 dark:bg-orange-600/30 shadow-lg shadow-orange-500/20 dark:shadow-orange-600/20",
+      text: "text-orange-500 bg-orange-500/80 dark:bg-orange-600/30",
+      badge: "shadow-[0_0_15px_rgba(249,115,22,0.25),0_0_30px_rgba(251,146,60,0.15)]",
       svgFilter:
         "hue-rotate(5deg) saturate(1.5) brightness(1.25) drop-shadow(0 0 8px rgba(249, 115, 22, 0.8)) drop-shadow(0 0 16px rgba(251, 146, 60, 0.6))",
       filter: "saturate(1.5) brightness(1.25)",
@@ -45,7 +48,8 @@ const getStreakColor = (streak: number) => {
   // 151-220: Amarillo pálido / Amarillo brillante
   if (streak >= 151)
     return {
-      text: "text-yellow-400 bg-yellow-500/80 dark:bg-yellow-600/30 shadow-lg shadow-yellow-500/20 dark:shadow-yellow-600/20",
+      text: "text-yellow-400 bg-yellow-500/80 dark:bg-yellow-600/30",
+      badge: "shadow-[0_0_15px_rgba(250,204,21,0.25),0_0_30px_rgba(255,237,74,0.15)]",
       svgFilter:
         "hue-rotate(30deg) saturate(1.4) brightness(1.2) drop-shadow(0 0 6px rgba(250, 204, 21, 0.7)) drop-shadow(0 0 12px rgba(255, 237, 74, 0.5))",
       filter: "saturate(1.4) brightness(1.2)",
@@ -53,7 +57,8 @@ const getStreakColor = (streak: number) => {
   // 101-150: Verde claro / Lima
   if (streak >= 101)
     return {
-      text: "text-lime-400 bg-lime-500/80 dark:bg-lime-600/30 shadow-lg shadow-lime-500/20 dark:shadow-lime-600/20",
+      text: "text-lime-400 bg-lime-500/80 dark:bg-lime-600/30",
+      badge: "shadow-[0_0_15px_rgba(163,230,53,0.25),0_0_30px_rgba(190,242,100,0.15)]",
       svgFilter:
         "hue-rotate(80deg) saturate(1.3) brightness(1.15) drop-shadow(0 0 6px rgba(163, 230, 53, 0.7)) drop-shadow(0 0 12px rgba(190, 242, 100, 0.5))",
       filter: "saturate(1.3) brightness(1.15)",
@@ -61,7 +66,8 @@ const getStreakColor = (streak: number) => {
   // 51-100: Cian / Turquesa
   if (streak >= 51)
     return {
-      text: "text-cyan-400 bg-cyan-500/80 dark:bg-cyan-600/30 shadow-lg shadow-cyan-500/20 dark:shadow-cyan-600/20",
+      text: "text-cyan-400 bg-cyan-500/80 dark:bg-cyan-600/30",
+      badge: "shadow-[0_0_15px_rgba(34,211,238,0.25),0_0_30px_rgba(103,232,249,0.15)]",
       svgFilter:
         "hue-rotate(175deg) saturate(1.2) brightness(1.1) drop-shadow(0 0 5px rgba(34, 211, 238, 0.6)) drop-shadow(0 0 10px rgba(103, 232, 249, 0.4))",
       filter: "saturate(1.2) brightness(1.1)",
@@ -69,14 +75,16 @@ const getStreakColor = (streak: number) => {
   // 1-50: Azul profundo / Índigo
   if (streak >= 1)
     return {
-      text: "text-white bg-indigo-500/80 dark:bg-indigo-600/30 shadow-lg shadow-indigo-500/20 dark:shadow-indigo-600/20",
+      text: "text-white bg-indigo-500/80 dark:bg-indigo-600/30",
+      badge: "shadow-[0_0_15px_rgba(79,70,229,0.25),0_0_30px_rgba(99,102,241,0.15)]",
       svgFilter:
         "hue-rotate(220deg) saturate(1.1) brightness(1.05) drop-shadow(0 0 4px rgba(79, 70, 229, 0.5)) drop-shadow(0 0 8px rgba(99, 102, 241, 0.3))",
       filter: "saturate(1.1) brightness(1.05)",
     };
   // 0: Gris sin racha
   return {
-    text: "text-white bg-zinc-500/80 dark:bg-zinc-600/30 shadow-lg shadow-zinc-500/20 dark:shadow-zinc-600/20",
+    text: "text-white bg-zinc-500/80 dark:bg-zinc-600/30",
+    badge: "",
     svgFilter: "saturate(0.8) brightness(0.9) zincscale(0.5)",
     filter: "saturate(0.8) brightness(0.9)",
   };
@@ -317,7 +325,7 @@ export function WorkoutStreak({ userId }: WorkoutStreakProps) {
       />
       <Badge
         variant="secondary"
-        className={`text-xs ${streakColor.text || "text-foreground"}`}
+        className={`text-xs ${streakColor.text || "text-foreground"} ${streakColor.badge || ""}`}
       >
         {stats.currentStreak} {dayText}
       </Badge>
