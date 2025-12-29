@@ -30,7 +30,7 @@ export default function BillingPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [loading, setLoading] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
+
   const hasProcessedRef = useRef(false);
   const [selectedPlan, setSelectedPlan] = useState<{
     id: string;
@@ -61,7 +61,6 @@ export default function BillingPage() {
     // If we have a success signal and haven't processed yet
     if (hasSuccessSignal && !hasProcessedRef.current) {
       hasProcessedRef.current = true;
-      setProcessing(true);
 
       const subId = subscriptionId || undefined; // If only success=true, this might be undefined, but new backend sends ID. 
       // If we don't have ID but have success=true, we can't call activate easily without ID.
@@ -80,8 +79,14 @@ export default function BillingPage() {
             if (data.success) {
               toast.success("¡Suscripción activada! 🎉");
               await updateSession();
-              // Clean redirect
-              window.location.href = "/dashboard/profile/billing";
+
+              // Redirect based on plan type
+              if (data.planType === "instructor" || data.subscriptionTier === "INSTRUCTOR") {
+                window.location.href = "/dashboard/profile/billing/instructor-register";
+              } else {
+                // Clean redirect
+                window.location.href = "/dashboard/profile/billing";
+              }
             } else {
               toast.warning("El pago está procesándose. Tu plan se actualizará en breve.");
               // Still clean redirect to avoid loop
