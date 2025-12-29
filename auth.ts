@@ -31,18 +31,18 @@ export const config = {
   providers: [
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
       ? [
-          GoogleProvider({
-            clientId: process.env.GOOGLE_CLIENT_ID,
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            authorization: {
-              params: {
-                prompt: "consent",
-                access_type: "offline",
-                response_type: "code",
-              },
+        GoogleProvider({
+          clientId: process.env.GOOGLE_CLIENT_ID,
+          clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+          authorization: {
+            params: {
+              prompt: "consent",
+              access_type: "offline",
+              response_type: "code",
             },
-          }),
-        ]
+          },
+        }),
+      ]
       : []),
     CredentialsProvider({
       name: "credentials",
@@ -150,8 +150,9 @@ export const config = {
       // Ensure specific fields are present for consistency (Node only enrichments)
       (updatedSession.user as any).instructorProfile = token.instructorProfile;
       (updatedSession.user as any).experienceLevel = token.experienceLevel;
-      (updatedSession.user as any).subscriptionStatus =
-        token.subscriptionStatus;
+      (updatedSession.user as any).subscriptionStatus = token.subscriptionStatus;
+      (updatedSession.user as any).subscriptionTier = token.subscriptionTier;
+      (updatedSession.user as any).isInstructor = token.isInstructor;
 
       return updatedSession;
     },
