@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     // - preapproval (subscription created/updated)
     // - authorized_payment (payment was successful)
 
-    if (body.type === "preapproval") {
+    if (body.type === "preapproval" || body.type === "subscription_preapproval") {
       const preapprovalId = body.data?.id;
 
       if (!preapprovalId) {
