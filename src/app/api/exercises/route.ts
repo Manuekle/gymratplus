@@ -25,9 +25,9 @@ export async function GET(request: Request) {
       where.muscleGroup = muscle;
     }
 
-    if (difficulty && difficulty !== "all") {
-      where.difficulty = difficulty;
-    }
+    // if (difficulty && difficulty !== "all") {
+    //   where.difficulty = difficulty;
+    // }
 
     // Use cache for exercises query
     const exercises = await getCached(
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
             id: true,
             name: true,
             description: true,
-            difficulty: true,
+            // difficulty: true, // Field does not exist in schema
             equipment: true,
             muscleGroup: true,
           },
