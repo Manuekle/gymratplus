@@ -111,6 +111,16 @@ export default function BillingPage() {
     }
   }, [searchParams, router, updateSession]);
 
+  // Redirect pending instructors to registration
+  useEffect(() => {
+    if (session?.user) {
+      const user = session.user as any;
+      if (user.subscriptionTier === "INSTRUCTOR" && !user.isInstructor) {
+        router.push("/dashboard/profile/billing/instructor-register");
+      }
+    }
+  }, [session, router]);
+
   const handleSubscribe = async (planId: string) => {
     if (!session?.user) {
       toast.error("Debes iniciar sesión");

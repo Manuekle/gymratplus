@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import {
@@ -76,7 +76,7 @@ export default function InstructorDashboardPage() {
     totalRevenue: number;
   } | null>(null);
 
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     setIsLoadingStudents(true);
     try {
       const response = await fetch("/api/instructors/students");
@@ -107,9 +107,9 @@ export default function InstructorDashboardPage() {
     } finally {
       setIsLoadingStudents(false);
     }
-  };
+  }, []);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     try {
       const response = await fetch("/api/instructors/students/stats");
       if (!response.ok) {
@@ -120,7 +120,7 @@ export default function InstructorDashboardPage() {
     } catch (error) {
       console.error("Error fetching stats:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (status === "loading") return;
@@ -129,6 +129,14 @@ export default function InstructorDashboardPage() {
       return;
     }
     if (!session.user.isInstructor) {
+      if (session.user.subscriptionTier === "INSTRUCTOR") {
+        toast.error("Configuración requerida", {
+          description: "Debes completar tu perfil de instructor para continuar.",
+        });
+        router.push("/dashboard/profile/billing/instructor-register");
+        return;
+      }
+
       toast.error("Acceso denegado", {
         description: "Debes ser un instructor para acceder a esta página.",
       });
@@ -140,7 +148,7 @@ export default function InstructorDashboardPage() {
     setIsLoadingProfile(false);
     fetchStudents();
     fetchStats();
-  }, [session, status, router]);
+  }, [session, status, router, fetchStudents, fetchStats]);
 
   const handleAcceptRequest = async (requestId: string) => {
     try {

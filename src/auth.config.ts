@@ -14,6 +14,8 @@ export const authConfig = {
       // Basic mapping on first sign in
       if (user) {
         token.sub = user.id;
+        token.isInstructor = (user as any).isInstructor;
+        token.subscriptionTier = (user as any).subscriptionTier;
       }
       if (account) {
         token.isOAuth = account.provider !== "credentials";

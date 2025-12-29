@@ -118,6 +118,10 @@ export default function InstructorRegistrationPage() {
         }
 
         const user = session.user as any;
+        console.log("[InstructorRegister] Checking status:", {
+          tier: user.subscriptionTier,
+          isInstructor: user.isInstructor,
+        });
         const subscriptionTier = user.subscriptionTier || "FREE";
         const isInstructor = user.isInstructor || false;
         const instructorProfile = user.instructorProfile || null;
@@ -133,7 +137,7 @@ export default function InstructorRegistrationPage() {
 
         // If user is already an instructor with complete profile, redirect to profile
         if (isInstructor && instructorProfile?.bio) {
-          router.push("/dashboard/profile");
+          router.push("/dashboard/students");
           return;
         }
 
