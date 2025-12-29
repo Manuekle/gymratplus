@@ -4,6 +4,7 @@ import { prisma } from "@/lib/database/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
+import { invalidateCache } from "@/lib/cache/redis";
 
 // --- Exercises ---
 
@@ -74,6 +75,9 @@ export async function createExercise(prevState: any, formData: FormData) {
     };
   }
 
+  // Invalidate exercises cache
+  await invalidateCache("exercises:*");
+
   revalidatePath("/admin/exercises");
   redirect("/admin/exercises");
 }
@@ -120,6 +124,9 @@ export async function updateExercise(
     };
   }
 
+  // Invalidate exercises cache
+  await invalidateCache("exercises:*");
+
   revalidatePath("/admin/exercises");
   redirect("/admin/exercises");
 }
@@ -129,6 +136,10 @@ export async function deleteExercise(id: string) {
     await prisma.exercise.delete({
       where: { id },
     });
+
+    // Invalidate exercises cache
+    await invalidateCache("exercises:*");
+
     revalidatePath("/admin/exercises");
     return { message: "Deleted Exercise." };
   } catch (error) {
@@ -238,6 +249,9 @@ export async function createFood(prevState: any, formData: FormData) {
     };
   }
 
+  // Invalidate foods cache
+  await invalidateCache("foods:*");
+
   revalidatePath("/admin/foods");
   redirect("/admin/foods");
 }
@@ -286,6 +300,9 @@ export async function updateFood(
     };
   }
 
+  // Invalidate foods cache
+  await invalidateCache("foods:*");
+
   revalidatePath("/admin/foods");
   redirect("/admin/foods");
 }
@@ -295,6 +312,10 @@ export async function deleteFood(id: string) {
     await prisma.food.delete({
       where: { id },
     });
+
+    // Invalidate foods cache
+    await invalidateCache("foods:*");
+
     revalidatePath("/admin/foods");
     return { message: "Deleted Food." };
   } catch (error) {
