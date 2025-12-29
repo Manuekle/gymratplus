@@ -294,7 +294,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
               <>
                 <div className="space-y-3 pb-4 border-b">
                   <div className="flex items-center justify-between">
-                    <h3 className="text-sm font-semibold">Modo de seguimiento</h3>
+                    <h3 className="text-xs font-semibold">Modo de seguimiento</h3>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -325,7 +325,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Principiante</span>
+                        <span className="font-semibold text-xs">Principiante</span>
                         <span className="text-xs text-muted-foreground">Simple</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
@@ -341,7 +341,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Intermedio</span>
+                        <span className="font-semibold text-xs">Intermedio</span>
                         <span className="text-xs text-muted-foreground">Balanceado</span>
                       </div>
                       <p className="text-xs text-muted-foreground">
@@ -357,7 +357,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Avanzado</span>
+                        <span className="font-semibold text-xs">Avanzado</span>
                         <span className="text-xs text-muted-foreground">Completo</span>
                       </div>
                       <p className="text-xs text-muted-foreground">

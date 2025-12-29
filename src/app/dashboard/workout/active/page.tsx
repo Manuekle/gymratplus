@@ -551,10 +551,10 @@ export default function ActiveWorkoutPage() {
               <Badge
                 variant="outline"
                 className={`text-xs ${workoutSession.workoutMode === "simple"
-                    ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
-                    : workoutSession.workoutMode === "intermediate"
-                      ? "bg-purple-500/10 text-purple-600 border-purple-500/20"
-                      : "bg-orange-500/10 text-orange-600 border-orange-500/20"
+                  ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                  : workoutSession.workoutMode === "intermediate"
+                    ? "bg-purple-500/10 text-purple-600 border-purple-500/20"
+                    : "bg-orange-500/10 text-orange-600 border-orange-500/20"
                   }`}
               >
                 {workoutSession.workoutMode === "simple"
@@ -616,7 +616,7 @@ export default function ActiveWorkoutPage() {
                           {exercise.exercise.muscleGroup} |{" "}
                           {exercise.exercise.equipment}
                         </p>
-                        <Badge variant="secondary" className="text-[10px] h-5 px-1.5 font-normal">
+                        <Badge variant="secondary" className="text-xs h-5 px-1.5 font-normal">
                           Vol: {calculateVolume(exercise.sets as any)}kg
                         </Badge>
                       </div>
@@ -700,7 +700,7 @@ export default function ActiveWorkoutPage() {
                             )}
                           </div>
                           {lastSetStats && (
-                            <div className="text-[9px] text-muted-foreground whitespace-nowrap hidden sm:block">
+                            <div className="text-xs text-muted-foreground whitespace-nowrap hidden sm:block">
                               Last: {lastSetStats.weight}x{lastSetStats.reps}
                             </div>
                           )}
@@ -803,7 +803,7 @@ export default function ActiveWorkoutPage() {
                             <div className="flex flex-col items-end">
                               <span className="text-xs font-bold text-primary">{est1RM}</span>
                               {(set.rir !== undefined && set.rir !== null && set.rir >= 3) && (
-                                <div className="flex items-center text-[10px] text-green-500 animate-pulse">
+                                <div className="flex items-center text-xs text-green-500 animate-pulse">
                                   <HugeiconsIcon icon={ArrowUp01Icon} className="h-3 w-3 mr-0.5" />
                                   <span>Subir</span>
                                 </div>

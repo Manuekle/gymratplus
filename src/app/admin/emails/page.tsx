@@ -52,7 +52,7 @@ export default function EmailsPage() {
                 <select
                   id="audience"
                   name="audience"
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   defaultValue="single"
                 >
                   <option value="single">Usuario Individual (por email)</option>
@@ -69,7 +69,7 @@ export default function EmailsPage() {
                 <select
                   id="template"
                   name="template"
-                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-xs shadow-sm transition-colors file:border-0 file:bg-transparent file:text-xs file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
                   defaultValue="standard"
                 >
                   <option value="standard">Estándar (Texto simple)</option>
@@ -87,7 +87,7 @@ export default function EmailsPage() {
                   type="email"
                   placeholder="usuario@ejemplo.com"
                 />
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Deja en blanco si seleccionaste una audiencia masiva.
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function EmailsPage() {
         <div className="space-y-6">
           <Card className="bg-muted/50 border-blue-500/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
+              <CardTitle className="flex items-center gap-2 text-xs">
                 <HugeiconsIcon icon={Mail01Icon} className="h-5 w-5 text-blue-500" />
                 Consejos de Uso
               </CardTitle>

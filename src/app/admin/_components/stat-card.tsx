@@ -52,7 +52,7 @@ export function StatCard({
         <Card className={cn("transition-all duration-200 hover:shadow-md", className)}>
             <CardContent className="p-6">
                 <div className="flex items-center justify-between space-y-0 pb-3">
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-xs font-medium text-muted-foreground">
                         {title}
                     </p>
                     <div className="p-2 rounded-lg bg-primary/10">

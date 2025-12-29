@@ -77,7 +77,7 @@ export default async function ExercisesPage({
               className="h-12 w-12 text-muted-foreground/50 mb-4"
             />
             <h3 className="text-lg font-medium mb-1">No hay ejercicios</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-xs text-muted-foreground mb-4">
               Comienza agregando tu primer ejercicio
             </p>
             <Link href="/admin/exercises/new">
@@ -95,14 +95,14 @@ export default async function ExercisesPage({
               <div className="flex items-center gap-3">
                 <Badge
                   variant="outline"
-                  className={`px-3 py-1 text-sm font-semibold capitalize ${muscleGroupColors[muscleGroup.toLowerCase()] ||
+                  className={`px-3 py-1 text-xs font-semibold capitalize ${muscleGroupColors[muscleGroup.toLowerCase()] ||
                     "bg-muted text-muted-foreground"
                     }`}
                 >
                   {muscleGroup}
                 </Badge>
                 <div className="h-px flex-1 bg-border" />
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {groupExercises.length} ejercicio{groupExercises.length !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -118,7 +118,7 @@ export default async function ExercisesPage({
                         {/* Header */}
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-base leading-tight line-clamp-2 mb-2">
+                            <h3 className="font-semibold text-xs leading-tight line-clamp-2 mb-2">
                               {exercise.name}
                             </h3>
                             <div className="flex flex-wrap gap-2">
@@ -145,13 +145,13 @@ export default async function ExercisesPage({
                             href={exercise.videoUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-2 text-sm text-primary hover:underline"
+                            className="flex items-center gap-2 text-xs text-primary hover:underline"
                           >
                             <HugeiconsIcon icon={VideoReplayIcon} className="h-4 w-4" />
                             Ver video
                           </a>
                         ) : (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
                             <HugeiconsIcon icon={VideoReplayIcon} className="h-4 w-4" />
                             Sin video
                           </div>

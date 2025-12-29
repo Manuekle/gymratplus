@@ -69,7 +69,7 @@ export default async function FoodsPage({
               className="h-12 w-12 text-muted-foreground/50 mb-4"
             />
             <h3 className="text-lg font-medium mb-1">No hay alimentos</h3>
-            <p className="text-sm text-muted-foreground mb-4">
+            <p className="text-xs text-muted-foreground mb-4">
               Comienza agregando tu primer alimento
             </p>
             <Link href="/admin/foods/new">
@@ -87,14 +87,14 @@ export default async function FoodsPage({
               <div className="flex items-center gap-3">
                 <Badge
                   variant="outline"
-                  className={`px-3 py-1 text-sm font-semibold capitalize ${categoryColors[category.toLowerCase()] ||
+                  className={`px-3 py-1 text-xs font-semibold capitalize ${categoryColors[category.toLowerCase()] ||
                     "bg-muted text-muted-foreground"
                     }`}
                 >
                   {category}
                 </Badge>
                 <div className="h-px flex-1 bg-border" />
-                <span className="text-sm text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {categoryFoods.length} alimento{categoryFoods.length !== 1 ? "s" : ""}
                 </span>
               </div>
@@ -110,12 +110,12 @@ export default async function FoodsPage({
                         {/* Header */}
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-base leading-tight line-clamp-2 mb-2">
+                            <h3 className="font-semibold text-xs leading-tight line-clamp-2 mb-2">
                               {food.name}
                             </h3>
                             <div className="text-2xl font-bold text-primary">
                               {food.calories}
-                              <span className="text-sm font-normal text-muted-foreground ml-1">
+                              <span className="text-xs font-normal text-muted-foreground ml-1">
                                 kcal
                               </span>
                             </div>
@@ -132,19 +132,19 @@ export default async function FoodsPage({
                         <div className="grid grid-cols-3 gap-2 p-3 rounded-lg bg-muted/50">
                           <div className="text-center">
                             <div className="text-xs text-muted-foreground mb-1">Proteína</div>
-                            <div className="text-sm font-semibold text-red-600 dark:text-red-400">
+                            <div className="text-xs font-semibold text-red-600 dark:text-red-400">
                               {food.protein}g
                             </div>
                           </div>
                           <div className="text-center border-x border-border/50">
                             <div className="text-xs text-muted-foreground mb-1">Carbos</div>
-                            <div className="text-sm font-semibold text-amber-600 dark:text-amber-400">
+                            <div className="text-xs font-semibold text-amber-600 dark:text-amber-400">
                               {food.carbs}g
                             </div>
                           </div>
                           <div className="text-center">
                             <div className="text-xs text-muted-foreground mb-1">Grasas</div>
-                            <div className="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+                            <div className="text-xs font-semibold text-yellow-600 dark:text-yellow-400">
                               {food.fat}g
                             </div>
                           </div>

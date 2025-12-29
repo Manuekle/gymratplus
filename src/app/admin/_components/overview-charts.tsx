@@ -53,7 +53,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <CardTitle className="text-lg font-medium">Ingresos</CardTitle>
-            <p className="text-sm text-muted-foreground">Últimos 6 meses</p>
+            <p className="text-xs text-muted-foreground">Últimos 6 meses</p>
           </div>
           <div className="p-2 bg-primary/10 rounded-lg">
             <HugeiconsIcon
@@ -138,7 +138,7 @@ export function OverviewCharts({ data }: OverviewChartsProps) {
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div className="space-y-1">
             <CardTitle className="text-lg font-medium">Usuarios</CardTitle>
-            <p className="text-sm text-muted-foreground">Crecimiento mensual</p>
+            <p className="text-xs text-muted-foreground">Crecimiento mensual</p>
           </div>
           <div className="p-2 bg-chart-2/10 rounded-lg">
             <HugeiconsIcon
