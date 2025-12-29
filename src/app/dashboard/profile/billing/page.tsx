@@ -61,17 +61,48 @@ export default function BillingPage() {
     // If we have a success signal and haven't processed yet
     if (hasSuccessSignal && !hasProcessedRef.current) {
       hasProcessedRef.current = true;
+      setProcessing(true);
 
-      toast.info("Pago procesado. Verificando suscripción...", {
-        duration: 5000,
-      });
+      const subId = subscriptionId || undefined; // If only success=true, this might be undefined, but new backend sends ID. 
+      // If we don't have ID but have success=true, we can't call activate easily without ID.
+      // But step 240 ensured we don't send query params if we can help it, and MP sends ID.
 
-      // Give the webhook a moment to fire and update the database
-      // Then hard redirect to clean URL to break reload loops and refresh session
-      setTimeout(async () => {
-        await updateSession(); // Attempt to update client session
-        window.location.href = "/dashboard/profile/billing";
-      }, 4000);
+      if (subId) {
+        toast.info("Verificando pago...", { duration: 4000 });
+
+        fetch("/api/payment/activate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subscriptionId: subId }),
+        })
+          .then((res) => res.json())
+          .then(async (data) => {
+            if (data.success) {
+              toast.success("¡Suscripción activada! 🎉");
+              await updateSession();
+              // Clean redirect
+              window.location.href = "/dashboard/profile/billing";
+            } else {
+              toast.warning("El pago está procesándose. Tu plan se actualizará en breve.");
+              // Still clean redirect to avoid loop
+              window.location.href = "/dashboard/profile/billing";
+            }
+          })
+          .catch((err) => {
+            console.error("Activation error:", err);
+            toast.error("Hubo un error al verificar, pero no te preocupes. Tu plan se activará pronto.");
+            window.location.href = "/dashboard/profile/billing";
+          });
+      } else {
+        // Fallback if no ID found but success=true (legacy flow)
+        toast.info("Pago procesado. Verificando suscripción...", {
+          duration: 5000,
+        });
+        setTimeout(async () => {
+          await updateSession();
+          window.location.href = "/dashboard/profile/billing";
+        }, 4000);
+      }
     }
   }, [searchParams, router, updateSession]);
 
