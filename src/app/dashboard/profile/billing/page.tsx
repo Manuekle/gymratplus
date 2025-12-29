@@ -42,9 +42,14 @@ export default function BillingPage() {
 
   // Handle Mercado Pago callback
   useEffect(() => {
-    const success = searchParams.get("success");
+    // Check for success signals
     const subscriptionId =
-      searchParams.get("subscription_id") || searchParams.get("preapproval_id");
+      searchParams.get("subscription_id") ||
+      searchParams.get("preapproval_id") ||
+      searchParams.get("id");
+
+    // Mercado Pago might append parameters incorrectly or we might settle for just having an ID
+    const hasSuccessSignal = subscriptionId || searchParams.get("success") === "true";
     const canceled = searchParams.get("canceled");
 
     if (canceled) {
@@ -53,77 +58,22 @@ export default function BillingPage() {
       return;
     }
 
-    if (
-      success === "true" &&
-      subscriptionId &&
-      !processing &&
-      !hasProcessedRef.current
-    ) {
+    // If we have a success signal and haven't processed yet
+    if (hasSuccessSignal && !hasProcessedRef.current) {
       hasProcessedRef.current = true;
-      setProcessing(true);
 
-      fetch("/api/payment/activate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ subscriptionId }),
-      })
-        .then((res) => res.json())
-        .then(async (data) => {
-          if (data.success) {
-            toast.success("¡Suscripción activada exitosamente! 🎉", {
-              duration: 5000,
-            });
-            await updateSession();
-
-            // Check if the subscription is for INSTRUCTOR plan
-            const planType = searchParams.get("plan_type");
-            if (
-              planType === "instructor" ||
-              data.subscriptionTier === "INSTRUCTOR"
-            ) {
-              // Hard reload to update session
-              window.location.href =
-                "/dashboard/profile/billing/instructor-register";
-            } else {
-              // Hard reload to update session
-              window.location.href = "/dashboard";
-            }
-          } else {
-            throw new Error(data.error || "Error al activar la suscripción");
-          }
-        })
-        .catch((error) => {
-          console.error("Error activating subscription:", error);
-          toast.error(
-            error instanceof Error
-              ? error.message
-              : "Error al activar la suscripción",
-          );
-          hasProcessedRef.current = false;
-        })
-        .finally(() => {
-          setProcessing(false);
-          router.replace("/dashboard/profile/billing");
-        });
-    } else if (
-      success === "true" &&
-      !subscriptionId &&
-      !hasProcessedRef.current
-    ) {
-      hasProcessedRef.current = true;
       toast.info("Pago procesado. Verificando suscripción...", {
         duration: 5000,
       });
 
       // Give the webhook a moment to fire and update the database
+      // Then hard redirect to clean URL to break reload loops and refresh session
       setTimeout(async () => {
-        await updateSession();
-        // Remove query params and reload to show new status
-        router.replace("/dashboard/profile/billing");
-        window.location.reload();
+        await updateSession(); // Attempt to update client session
+        window.location.href = "/dashboard/profile/billing";
       }, 4000);
     }
-  }, [searchParams, processing, router, updateSession]);
+  }, [searchParams, router, updateSession]);
 
   const handleSubscribe = async (planId: string) => {
     if (!session?.user) {
