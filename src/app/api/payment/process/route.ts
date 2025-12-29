@@ -58,6 +58,10 @@ export async function POST(req: Request) {
     const subscriptionRequest = {
       reason: `GymRat+ - Plan ${planType.toUpperCase()}`,
       payer_email: session.user.email || undefined,
+      // Add explicit name to help MP prevent auto-filling with email
+      payer_first_name: session.user.name?.split(" ")[0] || "Usuario",
+      payer_last_name:
+        session.user.name?.split(" ").slice(1).join(" ") || "GymRat",
       back_url: `${baseUrl}/dashboard/profile/billing`,
       external_reference: session.user.id,
       auto_recurring: {
