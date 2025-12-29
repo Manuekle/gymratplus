@@ -1,7 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { withOptimize } from "@prisma/extension-optimize";
 
-const globalForPrisma = global as unknown as { prisma: PrismaClient };
+const globalForPrisma = global as unknown as {
+  prisma: PrismaClient | ReturnType<typeof basePrisma.$extends>
+};
 
 const basePrisma = new PrismaClient({
   datasources: {
