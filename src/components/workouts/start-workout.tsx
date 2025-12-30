@@ -225,7 +225,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           Comenzar rutina
         </Button>
       </DialogTrigger>
-      <DialogContent className="space-y-4 w-full overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <DialogContent className="space-y-4 w-full max-h-[85vh] overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold  tracking-heading">
             Selecciona el día de entrenamiento
@@ -316,7 +316,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                     <button
                       onClick={() => setSelectedMode("simple")}
                       className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "simple"
@@ -367,7 +367,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                   </div>
                 </div>
 
-                <div className="max-h-[300px] w-full overflow-y-auto scroll-hidden">
+                <div className="w-full">
                   <div className="space-y-1 pr-2">
                     {days
                       .find((day: Day) => day.day === selectedDay)

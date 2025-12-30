@@ -549,13 +549,8 @@ export default function ActiveWorkoutPage() {
                 {workoutSession.notes || "Sesión de Entrenamiento"}
               </CardTitle>
               <Badge
-                variant="outline"
-                className={`text-xs ${workoutSession.workoutMode === "simple"
-                  ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
-                  : workoutSession.workoutMode === "intermediate"
-                    ? "bg-purple-500/10 text-purple-600 border-purple-500/20"
-                    : "bg-orange-500/10 text-orange-600 border-orange-500/20"
-                  }`}
+                variant="secondary"
+                className="text-xs font-normal"
               >
                 {workoutSession.workoutMode === "simple"
                   ? "Principiante"
@@ -646,29 +641,30 @@ export default function ActiveWorkoutPage() {
               <CardContent className="px-4 pt-0">
                 <div className="space-y-3">
                   {/* Conditional headers based on workout mode */}
+                  {/* Conditional headers based on workout mode */}
                   {workoutSession.workoutMode === "simple" ? (
-                    <div className="grid grid-cols-8 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                    <div className="grid grid-cols-6 sm:grid-cols-8 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
                       <div className="col-span-1">Set</div>
                       <div className="col-span-3">Peso (kg)</div>
                       <div className="col-span-2">Reps</div>
-                      <div className="col-span-2 text-right">1RM</div>
+                      <div className="col-span-2 text-right hidden sm:block">1RM</div>
                     </div>
                   ) : workoutSession.workoutMode === "intermediate" ? (
-                    <div className="grid grid-cols-10 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                    <div className="grid grid-cols-8 sm:grid-cols-10 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
                       <div className="col-span-1">Set</div>
                       <div className="col-span-3">Peso (kg)</div>
                       <div className="col-span-2">Reps</div>
                       <div className="col-span-2">RIR</div>
-                      <div className="col-span-2 text-right">1RM</div>
+                      <div className="col-span-2 text-right hidden sm:block">1RM</div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-12 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
+                    <div className="grid grid-cols-10 sm:grid-cols-12 gap-2 items-center font-medium text-xs text-muted-foreground pb-1 border-b">
                       <div className="col-span-1">Set</div>
                       <div className="col-span-2">Peso (kg)</div>
                       <div className="col-span-2">Reps</div>
                       <div className="col-span-2">RIR</div>
                       <div className="col-span-3">Tempo</div>
-                      <div className="col-span-2 text-right">1RM</div>
+                      <div className="col-span-2 text-right hidden sm:block">1RM</div>
                     </div>
                   )}
 
@@ -686,10 +682,10 @@ export default function ActiveWorkoutPage() {
                       <div
                         key={set.id}
                         className={`grid gap-2 items-center ${workoutSession.workoutMode === "simple"
-                          ? "grid-cols-8"
+                          ? "grid-cols-6 sm:grid-cols-8"
                           : workoutSession.workoutMode === "intermediate"
-                            ? "grid-cols-10"
-                            : "grid-cols-12"
+                            ? "grid-cols-8 sm:grid-cols-10"
+                            : "grid-cols-10 sm:grid-cols-12"
                           }`}
                       >
                         <div className="col-span-1 text-xs font-medium flex items-center gap-1.5 direction-col">
@@ -797,8 +793,8 @@ export default function ActiveWorkoutPage() {
                           </div>
                         )}
 
-                        {/* 1RM - always shown */}
-                        <div className="col-span-2 text-right">
+                        {/* 1RM - hidden on mobile */}
+                        <div className="col-span-2 text-right hidden sm:block">
                           {est1RM > 0 && (
                             <div className="flex flex-col items-end">
                               <span className="text-xs font-bold text-primary">{est1RM}</span>
