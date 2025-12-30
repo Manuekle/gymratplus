@@ -268,7 +268,7 @@ export default function WorkoutExercise({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <DialogContent className="sm:max-w-[600px] w-full max-h-[85vh] overflow-y-auto pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-semibold tracking-heading">
             Añadir Nuevo Ejercicio
@@ -282,20 +282,20 @@ export default function WorkoutExercise({
             {/* Selección de día */}
             <div className="space-y-2">
               <Label className="text-xs font-medium">Selecciona el día:</Label>
-              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
+              <div className="flex flex-wrap gap-2">
                 {days.map((day) => (
-                  <Badge
+                  <div
                     key={day}
-                    variant={currentDay === day ? "default" : "outline"}
-                    className={cn(
-                      "cursor-pointer px-4 py-1 text-xs transition-colors w-full sm:w-auto",
-                      currentDay === day &&
-                        "bg-primary text-primary-foreground",
-                    )}
                     onClick={() => setCurrentDay(day)}
+                    className={cn(
+                      "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 cursor-pointer border border-border",
+                      currentDay === day
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "bg-background hover:bg-secondary"
+                    )}
                   >
                     {day}
-                  </Badge>
+                  </div>
                 ))}
               </div>
             </div>
@@ -305,7 +305,7 @@ export default function WorkoutExercise({
               <Label className="text-xs font-medium">
                 Selecciona el ejercicio:
               </Label>
-              <div className="max-h-[300px] rounded-md border p-4 overflow-y-auto scroll-hidden">
+              <div className="rounded-md border p-4">
                 <div className="grid grid-cols-1 gap-4">
                   {Object.entries(
                     exercises.reduce<Record<string, Exercise[]>>(
@@ -324,7 +324,7 @@ export default function WorkoutExercise({
                     ),
                   ).map(([muscleGroup, groupExercises]) => (
                     <div key={muscleGroup} className="space-y-2">
-                      <h3 className="text-xs capitalize tracking-heading font-semibold  text-muted-foreground">
+                      <h3 className="text-xs capitalize tracking-heading font-semibold text-muted-foreground">
                         {muscleGroup}
                       </h3>
                       <div className="flex flex-wrap gap-2">
@@ -338,25 +338,21 @@ export default function WorkoutExercise({
                               onClick={() => {
                                 if (!isDisabled) {
                                   setSelectedExercise(exercise.id);
-                                } else {
-                                  toast.error("Ejercicio ya seleccionado", {
-                                    description: `Este ejercicio ya está en ${currentDay}. No puedes agregarlo dos veces al mismo día.`,
-                                  });
                                 }
                               }}
-                              className={cn(
-                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 border",
-                                isSelected
-                                  ? "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
-                                  : isDisabled
-                                    ? "bg-red-500 text-white cursor-not-allowed border-red-600"
-                                    : "bg-background hover:bg-secondary cursor-pointer border-border",
-                              )}
                               title={
                                 isDisabled
                                   ? `Este ejercicio ya está seleccionado para ${currentDay}`
                                   : ""
                               }
+                              className={cn(
+                                "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-colors duration-200 border cursor-pointer",
+                                isSelected
+                                  ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                                  : isDisabled
+                                    ? "bg-muted text-muted-foreground opacity-50 cursor-not-allowed"
+                                    : "bg-background hover:bg-secondary border-border"
+                              )}
                             >
                               <span>{exercise.name}</span>
                             </div>
