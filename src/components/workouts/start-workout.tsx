@@ -277,26 +277,22 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
             <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
               <div className="flex flex-wrap overflow-hidden pb-1 gap-1.5">
                 {days.map((day: Day) => (
-                  {
-                    days.map((day: Day) => (
-                      <div
-                        key={day.day}
-                        onClick={() => setSelectedDay(day.day)}
-                        className={`
+                  <div
+                    key={day.day}
+                    onClick={() => setSelectedDay(day.day)}
+                    className={`
                       flex items-center gap-1.5 px-3 py-1.5 
                       rounded-full text-xs font-medium 
                       transition-colors duration-200
                       cursor-pointer border border-border
                       ${selectedDay === day.day
-                            ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                            : "bg-background hover:bg-secondary"
-                          }
+                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
+                        : "bg-background hover:bg-secondary"
+                      }
                     `}
-                      >
-                        {day.day}
-                      </div>
-                    ))
-                  }
+                  >
+                    {day.day}
+                  </div>
                 ))}
               </div>
             </div>
