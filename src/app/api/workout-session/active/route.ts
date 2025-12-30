@@ -34,10 +34,7 @@ export async function GET() {
     });
 
     if (!activeWorkoutSession) {
-      return NextResponse.json(
-        { error: "No hay sesión de entrenamiento activa" },
-        { status: 404 },
-      );
+      return NextResponse.json(null);
     }
 
     return NextResponse.json(activeWorkoutSession);

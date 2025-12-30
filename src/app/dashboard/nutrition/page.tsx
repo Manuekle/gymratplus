@@ -128,7 +128,17 @@ export default function NutritionPage() {
 
   const analyticsData = async (type: string) => {
     try {
-      const response = await fetch(`/api/nutrition-analytics?type=${type}`);
+      let url = `/api/nutrition-analytics?type=${type}`;
+
+      if (type === "today") {
+        const now = new Date();
+        const start = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        const end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+        url += `&from=${start.toISOString()}&to=${end.toISOString()}`;
+      }
+
+      const response = await fetch(url);
       if (!response.ok) {
         throw new Error("Error al cargar los datos de análisis");
       }
@@ -357,12 +367,11 @@ export default function NutritionPage() {
                       (user?.nutrition.calorieTarget ?? 1)) *
                     100
                   }
-                  className={`h-3 ${
-                    (todayData?.todayTotals.calories ?? 0) >
-                    (user?.nutrition.calorieTarget ?? 0)
+                  className={`h-3 ${(todayData?.todayTotals.calories ?? 0) >
+                      (user?.nutrition.calorieTarget ?? 0)
                       ? "bg-amber-400"
                       : ""
-                  }`}
+                    }`}
                 />
 
                 <div className="flex justify-between text-xs">
@@ -373,11 +382,10 @@ export default function NutritionPage() {
                     <span className="font-medium text-xs">
                       {(user?.nutrition.calorieTarget ?? 0) -
                         (todayData?.todayTotals.calories ?? 0) >
-                      0
-                        ? `${
-                            (user?.nutrition.calorieTarget ?? 0) -
-                            (todayData?.todayTotals.calories ?? 0)
-                          } kcal`
+                        0
+                        ? `${(user?.nutrition.calorieTarget ?? 0) -
+                        (todayData?.todayTotals.calories ?? 0)
+                        } kcal`
                         : "Superaste tus calorias diarias"}
                     </span>
                   </div>
@@ -391,7 +399,7 @@ export default function NutritionPage() {
                         Math.round(
                           ((todayData?.todayTotals.calories ?? 0) /
                             (user?.nutrition.calorieTarget ?? 1)) *
-                            100,
+                          100,
                         ),
                       )}
                       %
@@ -443,12 +451,11 @@ export default function NutritionPage() {
                         (user?.nutrition.proteinTarget ?? 1)) *
                       100
                     }
-                    className={`h-2 ${
-                      (todayData?.todayTotals.protein ?? 0) >
-                      (user?.nutrition.proteinTarget ?? 0)
+                    className={`h-2 ${(todayData?.todayTotals.protein ?? 0) >
+                        (user?.nutrition.proteinTarget ?? 0)
                         ? "bg-destructive"
                         : ""
-                    }`}
+                      }`}
                   />
                 </div>
 
@@ -478,12 +485,11 @@ export default function NutritionPage() {
                         (user?.nutrition.carbTarget ?? 1)) *
                       100
                     }
-                    className={`h-2 ${
-                      (todayData?.todayTotals.carbs ?? 0) >
-                      (user?.nutrition.carbTarget ?? 0)
+                    className={`h-2 ${(todayData?.todayTotals.carbs ?? 0) >
+                        (user?.nutrition.carbTarget ?? 0)
                         ? "bg-[#578FCA]"
                         : ""
-                    }`}
+                      }`}
                   />
                 </div>
 
@@ -513,12 +519,11 @@ export default function NutritionPage() {
                         (user?.nutrition.fatTarget ?? 1)) *
                       100
                     }
-                    className={`h-2 ${
-                      (todayData?.todayTotals.fat ?? 0) >
-                      (user?.nutrition.fatTarget ?? 0)
+                    className={`h-2 ${(todayData?.todayTotals.fat ?? 0) >
+                        (user?.nutrition.fatTarget ?? 0)
                         ? "bg-[#FBA518]"
                         : ""
-                    }`}
+                      }`}
                   />
                 </div>
               </div>

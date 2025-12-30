@@ -90,8 +90,17 @@ export async function GET(req: NextRequest) {
       };
     } else if (type === "today") {
       // Get start and end of today
-      const todayStart = startOfDay(today);
-      const todayEnd = endOfDay(today);
+      let todayStart = startOfDay(today);
+      let todayEnd = endOfDay(today);
+
+      // If client provided dates, use them
+      const fromParam = req.nextUrl.searchParams.get("from");
+      const toParam = req.nextUrl.searchParams.get("to");
+
+      if (fromParam && toParam) {
+        todayStart = new Date(fromParam);
+        todayEnd = new Date(toParam);
+      }
 
       // Get meal logs for today
       const todayLogs = await prisma.mealLog.findMany({

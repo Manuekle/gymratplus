@@ -5,7 +5,7 @@ import { auth } from "@auth";
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -14,7 +14,7 @@ export async function GET(
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
-    const foodPlanId = params.id;
+    const { id: foodPlanId } = await params;
 
     // Verificar si el usuario es instructor
     const instructorProfile = await prisma.instructorProfile.findFirst({
