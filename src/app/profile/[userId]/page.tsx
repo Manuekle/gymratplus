@@ -412,7 +412,7 @@ export default function PublicProfilePage() {
                       {isRequesting ? "Enviando..." : hasRequested ? "Solicitud Enviada" : "Entrenar con Estudiante"}
                     </Button>
                     {!viewerInfo.hasActiveSubscription && (
-                      <p className="text-[10px] text-red-500 mt-2">Requiere suscripción activa</p>
+                      <p className="text-xs text-red-500 mt-2">Requiere suscripción activa</p>
                     )}
                   </div>
                 )}

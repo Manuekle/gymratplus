@@ -140,7 +140,7 @@ export function WorkoutNew({
                 key={day}
                 variant={currentDay === day ? "default" : "secondary"}
                 size="sm"
-                className="rounded-full flex-shrink-0 text-[10px] h-6 px-3 font-normal"
+                className="rounded-full flex-shrink-0 text-xs h-6 px-3 font-normal"
                 onClick={() => handleDayChange(day)}
               >
                 {day}
