@@ -59,19 +59,20 @@ export function WorkoutShareModal({
                 </DialogHeader>
 
                 <div className="flex flex-col items-center justify-center p-6 space-y-6">
-                    <div className="bg-white p-4 rounded-xl shadow-sm border">
+                    <div className="bg-white p-4 rounded-xl shadow-sm border w-full max-w-[250px] aspect-square flex items-center justify-center">
                         {shareUrl && (
                             <QRCodeSVG
                                 value={shareUrl}
                                 size={200}
+                                className="w-full h-full"
                                 level="H"
                                 includeMargin
                                 imageSettings={{
                                     src: "/icons/favicon-192x192.png",
                                     x: undefined,
                                     y: undefined,
-                                    height: 40,
-                                    width: 40,
+                                    height: 30,
+                                    width: 30,
                                     excavate: true,
                                 }}
                             />
