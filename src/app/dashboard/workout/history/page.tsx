@@ -40,6 +40,38 @@ import {
 } from "@/components/ui/select";
 // import { Icons } from "@/components/icons";
 
+// Custom Tooltip Component
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    // Translate labels
+    const labelMap: Record<string, string> = {
+      volume: "Volumen Total",
+      oneRm: "1RM Estimado",
+    };
+
+    const name = payload[0].name || "";
+    const translatedName = labelMap[name] || name;
+
+    return (
+      <div className="rounded-lg border bg-background p-2 shadow-sm">
+        <p className="text-[0.70rem] uppercase text-muted-foreground mb-1">
+          {label ? format(parseISO(label), "d 'de' MMMM, yyyy", { locale: es }) : ""}
+        </p>
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-primary" />
+          <span className="text-xs font-bold">
+            {payload[0].value} {payload[0].unit || "kg"}
+          </span>
+        </div>
+        <p className="text-[0.65rem] text-muted-foreground capitalize">
+          {translatedName}
+        </p>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function WorkoutHistoryPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -368,18 +400,30 @@ export default function WorkoutHistoryPage() {
               {analyticsData?.volumeHistory && analyticsData.volumeHistory.length > 0 ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={analyticsData.volumeHistory}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 10 }}
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
                       tickFormatter={(val) => format(parseISO(val), "dd/MM", { locale: es })}
                     />
-                    <YAxis tick={{ fontSize: 10 }} />
-                    <Tooltip
-                      contentStyle={{ borderRadius: '8px', fontSize: '12px' }}
-                      labelFormatter={(label) => format(parseISO(label), "PPP", { locale: es })}
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `${value}`}
                     />
-                    <Bar dataKey="volume" fill="currentColor" className="fill-primary" radius={[4, 4, 0, 0]} />
+                    <Tooltip cursor={{ fill: 'transparent' }} content={<CustomTooltip />} />
+                    <Bar
+                      dataKey="volume"
+                      name="volume"
+                      fill="currentColor"
+                      className="fill-primary"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               ) : (
@@ -414,24 +458,32 @@ export default function WorkoutHistoryPage() {
               {analyticsData?.exercises.find(e => e.id === selectedExerciseId)?.history.length ? (
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={analyticsData.exercises.find(e => e.id === selectedExerciseId)?.history}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} className="stroke-muted" />
                     <XAxis
                       dataKey="date"
-                      tick={{ fontSize: 10 }}
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
                       tickFormatter={(val) => format(parseISO(val), "dd/MM", { locale: es })}
                     />
-                    <YAxis domain={['auto', 'auto']} tick={{ fontSize: 10 }} />
-                    <Tooltip
-                      contentStyle={{ borderRadius: '8px', fontSize: '12px' }}
-                      labelFormatter={(label) => format(parseISO(label), "PPP", { locale: es })}
+                    <YAxis
+                      stroke="#888888"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      domain={['auto', 'auto']}
                     />
+                    <Tooltip content={<CustomTooltip />} />
                     <Line
                       type="monotone"
                       dataKey="oneRm"
+                      name="oneRm"
                       stroke="currentColor"
                       className="stroke-primary"
                       strokeWidth={2}
-                      activeDot={{ r: 6 }}
+                      activeDot={{ r: 6, className: "fill-primary" }}
+                      dot={{ r: 4, className: "fill-primary" }}
                     />
                   </LineChart>
                 </ResponsiveContainer>
@@ -572,8 +624,8 @@ export default function WorkoutHistoryPage() {
             );
           })}
         </TabsContent>
-      </Tabs>
-    </div>
+      </Tabs >
+    </div >
   );
 }
 
