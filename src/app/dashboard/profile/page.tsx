@@ -60,6 +60,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { VerifiedBadge } from "@/components/ui/verified-badge";
 import { upload } from "@vercel/blob/client";
+import { NotificationPermissionButton } from "@/components/notifications/notification-permission-button";
 
 // Función para obtener el color de la racha según el número
 const getStreakColor = (streak: number) => {
@@ -1387,6 +1388,16 @@ export default function ProfilePage() {
                   </div>
                 </>
               )}
+              <Separator />
+              <div className="flex items-center justify-between py-2">
+                <div className="space-y-0.5">
+                  <div className="text-xs font-medium">Notificaciones</div>
+                  <div className="text-xs text-muted-foreground">
+                    Recibe alertas sobre tus entrenamientos
+                  </div>
+                </div>
+                <NotificationPermissionButton />
+              </div>
             </CardContent>
           </Card>
         </TabsContent>

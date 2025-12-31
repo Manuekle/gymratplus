@@ -39,6 +39,7 @@ import {
 } from "@hugeicons/core-free-icons";
 
 import { Card } from "@/components/ui/card";
+import { NotificationPermissionButton } from "@/components/notifications/notification-permission-button";
 
 export default function NotificationsPage() {
   const router = useRouter();
@@ -123,6 +124,7 @@ export default function NotificationsPage() {
             Volver al dashboard
           </Button>
         </div>
+        <NotificationPermissionButton />
       </div>
 
       <div className="space-y-4 mb-6">
