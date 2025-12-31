@@ -28,10 +28,10 @@ type UserPublicResponse = {
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const id = params.id;
+    const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
@@ -74,9 +74,9 @@ export async function GET(
       isInstructor: user.isInstructor,
       profile: user.profile
         ? {
-            goal: user.profile.goal,
-            experienceLevel: user.experienceLevel || null,
-          }
+          goal: user.profile.goal,
+          experienceLevel: user.experienceLevel || null,
+        }
         : undefined,
     };
 

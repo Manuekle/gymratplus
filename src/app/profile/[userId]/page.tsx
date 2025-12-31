@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
@@ -18,9 +18,13 @@ import {
   Target02Icon,
   WorkoutGymnasticsIcon,
   ArrowLeft01Icon,
+  CheckmarkBadge01Icon,
+  Calendar03Icon
 } from "@hugeicons/core-free-icons";
 import Image from "next/image";
 import { HugeiconsIcon } from "@hugeicons/react";
+import AnimatedLayout from "@/components/layout/animated-layout";
+import { VerifiedBadge } from "@/components/ui/verified-badge";
 
 type UserPublicData = {
   id: string;
@@ -162,7 +166,7 @@ export default function PublicProfilePage() {
         }
       } catch (error) {
         console.error("Error fetching user:", error);
-        toast.error("Error al cargar la información del usuario");
+        // toast.error("Error al cargar la información del usuario"); // Don't toast on load
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -287,55 +291,38 @@ export default function PublicProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto p-4 md:p-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            <div className="w-full md:w-80 space-y-3">
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col items-center gap-2">
-                    <Skeleton className="h-20 w-20 rounded-full" />
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-3 w-24" />
-                  </div>
-                </CardHeader>
-                <CardContent className="px-4 space-y-2">
-                  <Skeleton className="h-8 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </CardContent>
-              </Card>
+      <AnimatedLayout>
+        <div className="container mx-auto max-w-5xl space-y-6">
+          <div className="flex flex-col md:flex-row gap-6">
+            <div className="w-full md:w-80 space-y-4">
+              <Skeleton className="h-[400px] w-full rounded-2xl" />
             </div>
-            <div className="flex-1 space-y-3">
-              <Skeleton className="h-8 w-48" />
-              <Card>
-                <CardHeader className="pb-2">
-                  <Skeleton className="h-5 w-24" />
-                </CardHeader>
-                <CardContent className="px-4">
-                  <Skeleton className="h-20 w-full" />
-                </CardContent>
-              </Card>
+            <div className="flex-1 space-y-4">
+              <Skeleton className="h-40 w-full rounded-2xl" />
+              <Skeleton className="h-60 w-full rounded-2xl" />
             </div>
           </div>
         </div>
-      </div>
+      </AnimatedLayout>
     );
   }
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold mb-2">Usuario no encontrado</h1>
-          <p className="text-xs text-muted-foreground mb-4">
-            El perfil que estás buscando no existe o hubo un problema de
-            conexión.
+      <AnimatedLayout>
+        <div className="container mx-auto p-4 md:p-6 flex flex-col items-center justify-center min-h-[60vh] text-center space-y-4">
+          <div className="p-4 bg-muted/30 rounded-full">
+            <HugeiconsIcon icon={ArrowLeft01Icon} className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <h1 className="text-2xl font-semibold tracking-tight">Usuario no encontrado</h1>
+          <p className="text-sm text-muted-foreground max-w-md">
+            El perfil que estás buscando no existe o no está disponible públicamente.
           </p>
-          <Button onClick={() => router.push("/")} size="default">
+          <Button onClick={() => router.push("/")} variant="outline">
             Volver al inicio
           </Button>
         </div>
-      </div>
+      </AnimatedLayout>
     );
   }
 
@@ -343,417 +330,244 @@ export default function PublicProfilePage() {
   const isStudent = !user.isInstructor;
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto p-4 md:p-6 max-w-6xl">
-        {/* Header */}
-        <div className="mb-6 w-full">
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => router.push("/")}
-            className="mb-4 text-xs w-full"
-          >
-            <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4 mr-2" />
-            Volver al inicio
-          </Button>
-          <h1 className="text-3xl font-semibold tracking-heading">
-            {isInstructor ? "Perfil de Instructor" : "Perfil de Estudiante"}
-          </h1>
-        </div>
+    <AnimatedLayout>
+      <div className="container mx-auto max-w-5xl space-y-6">
+        {/* Back Button */}
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => router.push("/")}
+          className="text-muted-foreground hover:text-foreground pl-0 gap-2"
+        >
+          <HugeiconsIcon icon={ArrowLeft01Icon} className="h-4 w-4" />
+          Volver al inicio
+        </Button>
 
-        {/* Instructor Profile */}
-        {isInstructor && user.instructorProfile && (
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Sidebar */}
-            <div className="w-full md:w-80 space-y-3">
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col items-center gap-2">
-                    <Avatar className="h-20 w-20">
-                      <AvatarImage
-                        src={user.image || undefined}
-                        alt={user.name || "Instructor"}
+        <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
+          {/* Sidebar / Profile Info */}
+          <div className="space-y-6">
+            <Card className="overflow-hidden border-none shadow-lg bg-gradient-to-b from-white to-zinc-50 dark:from-zinc-900 dark:to-zinc-950">
+              <div className="h-32 bg-gradient-to-r from-indigo-500/10 via-purple-500/10 to-pink-500/10 dark:from-indigo-500/20 dark:to-pink-500/20" />
+              <CardContent className="px-6 pb-6 -mt-16 text-center space-y-4 relative">
+                <Avatar className="h-32 w-32 border-4 border-background mx-auto shadow-sm">
+                  <AvatarImage src={user.image || undefined} alt={user.name || "Usuario"} className="object-cover" />
+                  <AvatarFallback className="text-4xl rounded-none bg-indigo-100 text-indigo-600">
+                    {user.name?.charAt(0) || "U"}
+                  </AvatarFallback>
+                </Avatar>
+
+                <div className="space-y-1">
+                  <h1 className="text-2xl font-bold tracking-tight text-foreground">
+                    {user.name || "Usuario"}
+                  </h1>
+                  <div className="flex items-center justify-center gap-2">
+                    <Badge variant={isInstructor ? "default" : "secondary"} className="rounded-full px-3 font-normal">
+                      {isInstructor ? "Instructor" : "Estudiante"}
+                    </Badge>
+                    {/* Verified Badge if needed logic */}
+                    {isInstructor && <VerifiedBadge variant="instructor" />}
+                  </div>
+                </div>
+
+                {isInstructor && user.instructorProfile && (
+                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                    <HugeiconsIcon icon={MapPinIcon} className="w-4 h-4" />
+                    <span>
+                      {user.instructorProfile.city}
+                      {user.instructorProfile.country && `, ${user.instructorProfile.country}`}
+                    </span>
+                    {countryFlag && (
+                      <Image
+                        src={countryFlag}
+                        alt="Flag"
+                        width={20}
+                        height={15}
+                        className="rounded-sm object-cover"
                       />
-                      <AvatarFallback className="text-xl tracking-heading font-semibold">
-                        {user.name?.charAt(0) || "I"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-center space-y-1">
-                      <h2 className="text-lg tracking-heading font-semibold">
-                        {user.name || "Instructor"}
-                      </h2>
-                      <Badge variant="outline" className="text-xs">
-                        Instructor
-                      </Badge>
-                      <div className="flex items-center justify-center gap-1.5 text-xs text-muted-foreground">
-                        <HugeiconsIcon icon={MapPinIcon} className="h-3 w-3" />
-                        <span>
-                          {user.instructorProfile.city}
-                          {user.instructorProfile.country &&
-                            `, ${user.instructorProfile.country}`}
-                        </span>
-                        {countryFlag && (
-                          <Image
-                            src={countryFlag}
-                            alt={user.instructorProfile.country || ""}
-                            width={16}
-                            height={12}
-                            className="h-3 w-4 object-cover rounded-sm"
-                          />
-                        )}
-                      </div>
-                    </div>
-                    {user.instructorProfile.isRemote && (
-                      <Badge variant="default" className="text-xs">
-                        Clases en línea
-                      </Badge>
                     )}
                   </div>
-                </CardHeader>
-                <CardContent className="px-4 space-y-3">
-                  {/* Stats */}
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {user.instructorProfile.pricePerMonth !== null && (
-                      <div className="flex flex-col p-2 rounded-md bg-muted/50">
-                        <span className="text-muted-foreground">
-                          Precio/mes
-                        </span>
-                        <span className="font-semibold text-xs">
-                          ${user.instructorProfile.pricePerMonth}
-                        </span>
-                      </div>
-                    )}
-                    {user.instructorProfile.totalStudents !== undefined && (
-                      <div className="flex flex-col p-2 rounded-md bg-muted/50">
-                        <span className="text-muted-foreground">
-                          Estudiantes
-                        </span>
-                        <span className="font-semibold text-xs flex items-center gap-1">
-                          <HugeiconsIcon
-                            icon={UserGroupIcon}
-                            className="h-3 w-3"
-                          />
-                          {user.instructorProfile.totalStudents}
-                        </span>
-                      </div>
+                )}
+
+                {/* Instructor Actions */}
+                {isInstructor && user.instructorProfile && !viewerInfo.isInstructor && (
+                  <div className="pt-4 w-full">
+                    <Button
+                      className="w-full font-medium shadow-md shadow-indigo-500/20"
+                      onClick={handleRequestInstructor}
+                      disabled={isRequesting || hasRequested}
+                    >
+                      {isRequesting ? "Enviando..." : hasRequested ? "Solicitud Enviada" : "Solicitar Entrenamiento"}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Student Actions (for instructors) */}
+                {isStudent && viewerInfo.isInstructor && (
+                  <div className="pt-4 w-full">
+                    <Button
+                      className="w-full"
+                      onClick={handleRequestStudent}
+                      disabled={isRequesting || hasRequested}
+                    >
+                      {isRequesting ? "Enviando..." : hasRequested ? "Solicitud Enviada" : "Entrenar con Estudiante"}
+                    </Button>
+                    {!viewerInfo.hasActiveSubscription && (
+                      <p className="text-[10px] text-red-500 mt-2">Requiere suscripción activa</p>
                     )}
                   </div>
+                )}
 
-                  <Separator />
+              </CardContent>
+            </Card>
 
-                  {/* Contact Info - Solo visible si hay sesión y es instructor */}
-                  {viewerInfo.isAuthenticated && viewerInfo.isInstructor && (
-                    <div className="space-y-1.5">
-                      {user.instructorProfile.contactEmail && (
-                        <a
-                          href={`mailto:${user.instructorProfile.contactEmail}`}
-                          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={Mail01Icon}
-                            className="h-3.5 w-3.5"
-                          />
-                          <span className="truncate">
-                            {user.instructorProfile.contactEmail}
-                          </span>
-                        </a>
-                      )}
-                      {user.instructorProfile.contactPhone && (
-                        <a
-                          href={`tel:${user.instructorProfile.contactPhone}`}
-                          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground"
-                        >
-                          <HugeiconsIcon
-                            icon={PhoneLockIcon}
-                            className="h-3.5 w-3.5"
-                          />
-                          <span>{user.instructorProfile.contactPhone}</span>
-                        </a>
-                      )}
-                    </div>
-                  )}
-                  {(!viewerInfo.isAuthenticated ||
-                    !viewerInfo.isInstructor) && (
-                    <div className="space-y-1.5">
-                      <p className="text-xs text-muted-foreground text-center">
-                        {!viewerInfo.isAuthenticated
-                          ? "Inicia sesión como instructor para ver información de contacto"
-                          : "Solo los instructores pueden ver información de contacto"}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Request Button */}
-                  {!viewerInfo.isInstructor && (
-                    <div className="w-full space-y-1">
-                      <Button
-                        size="default"
-                        className="text-xs h-8 w-full"
-                        onClick={handleRequestInstructor}
-                        disabled={isRequesting || hasRequested}
-                      >
-                        {isRequesting
-                          ? "Enviando..."
-                          : hasRequested
-                            ? "Solicitud Enviada"
-                            : "Solicitar Entrenamiento"}
-                      </Button>
-                      {!viewerInfo.isAuthenticated && (
-                        <p className="text-xs text-muted-foreground text-center">
-                          Inicia sesión para solicitar entrenamiento
-                        </p>
-                      )}
-                    </div>
-                  )}
+            {/* Stats Card */}
+            {isInstructor && user.instructorProfile && (
+              <Card>
+                <CardContent className="p-4 grid grid-cols-2 gap-4">
+                  <div className="bg-muted/50 rounded-lg p-3 text-center space-y-1">
+                    <p className="text-xs text-muted-foreground">Estudiantes</p>
+                    <p className="text-lg font-bold flex items-center justify-center gap-1">
+                      <HugeiconsIcon icon={UserGroupIcon} className="w-4 h-4 text-indigo-500" />
+                      {user.instructorProfile.totalStudents}
+                    </p>
+                  </div>
+                  <div className="bg-muted/50 rounded-lg p-3 text-center space-y-1">
+                    <p className="text-xs text-muted-foreground">Tarifa Mensual</p>
+                    <p className="text-lg font-bold text-green-600">
+                      ${user.instructorProfile.pricePerMonth || "0"}
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
-            </div>
+            )}
+          </div>
 
-            {/* Main Content */}
-            <div className="flex-1 space-y-3">
-              <Card>
+          {/* Main Infos */}
+          <div className="space-y-6">
+            {/* About Section */}
+            {isInstructor && user.instructorProfile && (
+              <Card className="h-full border-none shadow-sm bg-white/50 dark:bg-zinc-900/50">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-semibold tracking-heading">
-                    Sobre Mí
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <HugeiconsIcon icon={CheckmarkBadge01Icon} className="w-5 h-5 text-indigo-500" />
+                    Sobre mí
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-4">
-                  {user.instructorProfile.bio ? (
-                    <div className="whitespace-pre-line break-words text-xs text-muted-foreground">
-                      {user.instructorProfile.bio}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">
-                      Sin biografía disponible.
-                    </p>
-                  )}
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                    {user.instructorProfile.bio || "Este instructor aún no ha agregado una biografía."}
+                  </p>
                 </CardContent>
               </Card>
+            )}
 
+            {/* Student Goals */}
+            {isStudent && user.profile && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl font-semibold tracking-heading">
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <HugeiconsIcon icon={Target02Icon} className="w-5 h-5 text-indigo-500" />
+                    Perfil Fitness
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-orange-50 dark:bg-orange-900/10 border border-orange-100 dark:border-orange-900/20">
+                    <p className="text-xs font-medium text-orange-600 dark:text-orange-400 mb-1">Objetivo Principal</p>
+                    <p className="font-semibold text-foreground">
+                      {translateGoal(user.profile.goal)}
+                    </p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/20">
+                    <p className="text-xs font-medium text-blue-600 dark:text-blue-400 mb-1">Experiencia</p>
+                    <p className="font-semibold text-foreground">
+                      {translateExperienceLevel(user.profile.experienceLevel)}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Specialties / Curriculum */}
+            {isInstructor && user.instructorProfile?.curriculum && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <HugeiconsIcon icon={WorkoutGymnasticsIcon} className="w-5 h-5 text-indigo-500" />
                     Especialidades
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="px-4">
-                  {user.instructorProfile.curriculum ? (
-                    <div className="flex flex-wrap gap-1.5">
-                      {user.instructorProfile.curriculum
-                        .split(/[,\n]/)
-                        .map((item) => item.trim())
-                        .filter((item) => item !== "")
-                        .map((item, index) => (
-                          <Badge
-                            key={index}
-                            variant="outline"
-                            className="text-xs px-2 py-0"
-                          >
-                            {item}
-                          </Badge>
-                        ))}
-                    </div>
-                  ) : (
-                    <p className="text-xs text-muted-foreground italic">
-                      Sin información disponible.
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
-
-        {/* Student Profile */}
-        {isStudent && (
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Sidebar */}
-            <div className="w-full md:w-80 space-y-3">
-              <Card>
-                <CardHeader className="pb-3">
-                  <div className="flex flex-col items-center gap-2">
-                    <Avatar className="h-20 w-20">
-                      <AvatarImage
-                        src={user.image || undefined}
-                        alt={user.name || "Estudiante"}
-                      />
-                      <AvatarFallback className="text-xl tracking-heading font-semibold">
-                        {user.name?.charAt(0) || "E"}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div className="text-center space-y-1">
-                      <h2 className="text-lg tracking-heading font-semibold">
-                        {user.name || "Estudiante"}
-                      </h2>
-                      <Badge variant="outline" className="text-xs">
-                        Estudiante
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {user.instructorProfile.curriculum.split(/[,\n]/).map((item, i) => (
+                      <Badge key={i} variant="secondary" className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300">
+                        {item.trim()}
                       </Badge>
-                    </div>
-                    {user.profile?.goal && (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <HugeiconsIcon
-                          icon={Target02Icon}
-                          className="h-3 w-3"
-                        />
-                        <span>
-                          Objetivo: {translateGoal(user.profile.goal)}
-                        </span>
-                      </div>
-                    )}
-                    {user.profile?.experienceLevel && (
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                        <HugeiconsIcon
-                          icon={WorkoutGymnasticsIcon}
-                          className="h-3 w-3"
-                        />
-                        <span>
-                          Nivel:{" "}
-                          {translateExperienceLevel(
-                            user.profile.experienceLevel,
-                          )}
-                        </span>
-                      </div>
-                    )}
+                    ))}
                   </div>
-                </CardHeader>
-                <CardContent className="px-4 space-y-3">
-                  {/* Request Button - Only for instructors with active subscription */}
-                  {viewerInfo.isInstructor &&
-                    viewerInfo.hasActiveSubscription && (
-                      <div className="w-full space-y-1">
-                        <Button
-                          size="default"
-                          className="text-xs h-8 w-full"
-                          onClick={handleRequestStudent}
-                          disabled={isRequesting || hasRequested}
-                        >
-                          {isRequesting
-                            ? "Enviando..."
-                            : hasRequested
-                              ? "Solicitud Enviada"
-                              : "Entrenar con este Estudiante"}
-                        </Button>
-                      </div>
-                    )}
-
-                  {/* Show subscription message if instructor without subscription */}
-                  {viewerInfo.isInstructor &&
-                    !viewerInfo.hasActiveSubscription && (
-                      <Card>
-                        <CardContent className="px-4 space-y-3">
-                          <div className="space-y-1">
-                            <p className="text-xs font-semibold">
-                              Suscripción requerida
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Necesitas una suscripción activa para entrenar con
-                              estudiantes.
-                            </p>
-                          </div>
-                          <Button
-                            size="default"
-                            className="w-full text-xs h-7 bg-green-600 hover:bg-green-700 text-white"
-                            onClick={() => router.push("/pricing")}
-                          >
-                            Ver Planes de Suscripción
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    )}
-
-                  {/* Show login message if not authenticated */}
-                  {!viewerInfo.isAuthenticated && (
-                    <Card className="border-muted bg-muted/30">
-                      <CardContent className="px-4 space-y-3">
-                        <p className="text-xs text-muted-foreground text-center">
-                          Inicia sesión como instructor para entrenar con este
-                          estudiante
-                        </p>
-                        <Button
-                          size="default"
-                          variant="outline"
-                          className="w-full text-xs h-7"
-                          onClick={() =>
-                            router.push(
-                              "/auth/signin?callbackUrl=" +
-                                encodeURIComponent(window.location.href),
-                            )
-                          }
-                        >
-                          Iniciar Sesión
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  )}
-
-                  {/* Show message if viewer is a student */}
-                  {viewerInfo.isAuthenticated && !viewerInfo.isInstructor && (
-                    <Card className="border-muted bg-muted/30">
-                      <CardContent className="px-4">
-                        <p className="text-xs text-muted-foreground text-center">
-                          Solo los instructores pueden entrenar con estudiantes
-                        </p>
-                      </CardContent>
-                    </Card>
-                  )}
                 </CardContent>
               </Card>
-            </div>
+            )}
 
-            {/* Main Content */}
-            <div className="flex-1 space-y-3">
+            {/* Contact Section (Protected) */}
+            {isInstructor && user.instructorProfile && (
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl font-semibold tracking-heading">
-                    Información del Estudiante
+                  <CardTitle className="text-lg flex items-center gap-2">
+                    <HugeiconsIcon icon={PhoneLockIcon} className="w-5 h-5 text-zinc-500" />
+                    Contacto
                   </CardTitle>
+                  <CardDescription>
+                    {viewerInfo.isAuthenticated && viewerInfo.isInstructor ?
+                      "Información visible solo para instructores registrados." :
+                      "Información protegida."
+                    }
+                  </CardDescription>
                 </CardHeader>
-                <CardContent className="px-4">
-                  <div className="space-y-4">
-                    {user.profile?.goal && (
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-2">
-                          <HugeiconsIcon
-                            icon={Target02Icon}
-                            className="h-4 w-4 text-muted-foreground"
-                          />
-                          <h4 className="text-xs font-semibold">Objetivo</h4>
-                        </div>
-                        <p className="text-xs text-muted-foreground pl-6">
-                          {translateGoal(user.profile.goal)}
-                        </p>
-                      </div>
-                    )}
-                    {user.profile?.experienceLevel && (
-                      <div className="space-y-1.5">
-                        <div className="flex items-center gap-2">
-                          <HugeiconsIcon
-                            icon={WorkoutGymnasticsIcon}
-                            className="h-4 w-4 text-muted-foreground"
-                          />
-                          <h4 className="text-xs font-semibold">
-                            Nivel de Experiencia
-                          </h4>
-                        </div>
-                        <p className="text-xs text-muted-foreground pl-6">
-                          {translateExperienceLevel(
-                            user.profile.experienceLevel,
-                          )}
-                        </p>
-                      </div>
-                    )}
-                    {!user.profile?.goal && !user.profile?.experienceLevel && (
-                      <p className="text-xs text-muted-foreground italic">
-                        No hay información adicional disponible.
+                <CardContent>
+                  {viewerInfo.isAuthenticated && viewerInfo.isInstructor ? (
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {user.instructorProfile.contactEmail && (
+                        <a href={`mailto:${user.instructorProfile.contactEmail}`} className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                          <div className="h-8 w-8 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
+                            <HugeiconsIcon icon={Mail01Icon} className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-muted-foreground">Email</p>
+                            <p className="text-sm font-medium truncate">{user.instructorProfile.contactEmail}</p>
+                          </div>
+                        </a>
+                      )}
+                      {user.instructorProfile.contactPhone && (
+                        <a href={`tel:${user.instructorProfile.contactPhone}`} className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors">
+                          <div className="h-8 w-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                            <HugeiconsIcon icon={PhoneLockIcon} className="w-4 h-4" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-muted-foreground">Teléfono</p>
+                            <p className="text-sm font-medium truncate">{user.instructorProfile.contactPhone}</p>
+                          </div>
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="p-6 bg-muted/20 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center space-y-2">
+                      <HugeiconsIcon icon={PhoneLockIcon} className="w-8 h-8 text-muted-foreground/50" />
+                      <p className="text-sm text-muted-foreground font-medium">
+                        {!viewerInfo.isAuthenticated ? "Inicia sesión para ver detalles" : "Solo visible para instructores"}
                       </p>
-                    )}
-                  </div>
+                      {!viewerInfo.isAuthenticated && (
+                        <Button size="sm" variant="outline" onClick={() => router.push("/auth/signin")}>
+                          Iniciar Sesión
+                        </Button>
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
-    </div>
+    </AnimatedLayout>
   );
 }
