@@ -12,8 +12,24 @@ export const WATER_INTAKE_CHANNEL = "water-intake";
 export const WORKOUT_CHANNEL = "workout"; // Add workout channel
 
 // For Upstash Redis, we need to use the HTTP-based approach
+let isSubscriberInitialized = false;
+
+declare global {
+  var _notificationSubscriberInitialized: boolean | undefined;
+}
+
 export async function initNotificationSubscriber() {
+  // Prevent multiple initializations
+  if (global._notificationSubscriberInitialized || isSubscriberInitialized) {
+    console.log("Notification subscriber already initialized, skipping...");
+    return () => { };
+  }
+
+  isSubscriberInitialized = true;
+  global._notificationSubscriberInitialized = true;
+
   try {
+    console.log("Initializing notification subscriber...");
     // Set up a polling mechanism to check for new messages
     const checkForNotifications = async () => {
       try {
@@ -91,7 +107,7 @@ export async function initNotificationSubscriber() {
             console.error("Error clearing notification channel:", error);
           }
         }
-      } catch {}
+      } catch { }
     };
 
     // Check water intake (only update UI, notifications are handled in the water-intake route)
@@ -111,7 +127,7 @@ export async function initNotificationSubscriber() {
             -1,
           );
         }
-      } catch {}
+      } catch { }
     };
 
     // Check workout notifications
@@ -126,10 +142,13 @@ export async function initNotificationSubscriber() {
         for (let i = 0; i < workoutUpdates.length; i++) {
           try {
             // Verificar si el mensaje ya es un objeto
+            const rawMessage = workoutUpdates[i] as unknown;
+            if (!rawMessage) continue;
+
             const data =
-              typeof workoutUpdates[i] === "string"
-                ? JSON.parse(workoutUpdates[i])
-                : workoutUpdates[i];
+              typeof rawMessage === "string"
+                ? JSON.parse(rawMessage)
+                : (rawMessage as any);
             // Remove workoutSessionId from destructuring since it's not used
             const { userId, action, workoutName, day } = data;
 
@@ -140,9 +159,8 @@ export async function initNotificationSubscriber() {
               switch (action) {
                 case "started":
                   title = "Entrenamiento iniciado";
-                  messageText = `Has iniciado una sesión de entrenamiento "${workoutName}" para el día ${
-                    day || "de hoy"
-                  }.`;
+                  messageText = `Has iniciado una sesión de entrenamiento "${workoutName}" para el día ${day || "de hoy"
+                    }.`;
                   break;
                 case "completed":
                   title = "Entrenamiento completado";
@@ -209,7 +227,7 @@ export async function initNotificationSubscriber() {
             -1,
           );
         }
-      } catch {}
+      } catch { }
     };
 
     // Set up interval for polling
@@ -232,6 +250,6 @@ export async function initNotificationSubscriber() {
     };
   } catch {
     // Devolvemos una función vacía en caso de error para mantener consistencia en el tipo de retorno
-    return () => {};
+    return () => { };
   }
 }
