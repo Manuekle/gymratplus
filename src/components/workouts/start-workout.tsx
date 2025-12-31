@@ -257,7 +257,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
             <div className="w-full border rounded-lg p-4 flex flex-col bg-destructive/5 border-destructive/20">
               <span className="flex items-center gap-2 pb-1 text-destructive">
                 <HugeiconsIcon icon={AlertCircleIcon} size={16} />
-                <AlertTitle className="text-sm font-semibold">¡Atención!</AlertTitle>
+                <AlertTitle className="text-xs font-semibold">¡Atención!</AlertTitle>
               </span>
               <AlertDescription className="text-xs text-muted-foreground mb-4">
                 Tienes un entrenamiento sin finalizar. Si inicias uno nuevo, el anterior se marcará como completado automáticamente.
@@ -298,17 +298,25 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                         setTimeout(() => setStep(2), 150);
                       }}
                       className={`
-                        flex items-center justify-between px-4 py-3
-                        rounded-lg border cursor-pointer
-                        transition-all duration-200
+                        w-full rounded-lg border border-border/50 transition-all cursor-pointer
+                        hover:border-border
                         ${selectedDay === day.day
-                          ? "bg-primary/10 border-primary shadow-sm"
-                          : "bg-card hover:bg-accent hover:border-accent-foreground/20"
+                          ? "border-0 bg-zinc-100 dark:bg-zinc-800"
+                          : "bg-transparent"
                         }
                       `}
                     >
-                      <span className="font-medium text-sm">{day.day}</span>
-                      <ChevronRight className={`h-4 w-4 text-muted-foreground ${selectedDay === day.day ? "text-primary" : ""}`} />
+                      <div className="flex items-center justify-between p-3.5">
+                        <span className={`text-xs font-medium transition-colors ${selectedDay === day.day ? "text-black dark:text-white" : "text-foreground"}`}>
+                          {day.day}
+                        </span>
+                        <div className={`
+                          flex-shrink-0 p-1 rounded-full border transition-all
+                          ${selectedDay === day.day ? "border-0 bg-transparent" : "border-border/50 bg-background"}
+                        `}>
+                          <ChevronRight className={`h-3 w-3 transition-colors ${selectedDay === day.day ? "text-black dark:text-white" : "text-muted-foreground"}`} />
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -336,47 +344,77 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     </div>
                   )}
 
-                  <div className="grid gap-3">
+                  <div className="grid gap-2">
                     <button
                       onClick={() => setSelectedMode("simple")}
-                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "simple"
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:border-primary/30 hover:bg-accent/30"
-                        }`}
+                      className={`
+                        w-full rounded-lg border border-border/50 transition-all cursor-pointer text-left
+                        hover:border-border
+                        ${selectedMode === "simple"
+                          ? "border-0 bg-zinc-100 dark:bg-zinc-800"
+                          : "bg-transparent"
+                        }
+                      `}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Principiante</span>
-                        {selectedMode === "simple" && <Check className="h-4 w-4 text-primary" />}
+                      <div className="p-3.5">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-xs font-medium transition-colors ${selectedMode === "simple" ? "text-black dark:text-white" : "text-foreground"}`}>
+                            Principiante
+                          </span>
+                          {selectedMode === "simple" && <Check className="h-3.5 w-3.5 text-black dark:text-white" />}
+                        </div>
+                        <p className={`text-xs transition-colors ${selectedMode === "simple" ? "text-black/70 dark:text-white/80" : "text-muted-foreground"}`}>
+                          Monitorización básica
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">Monitorización básica</p>
                     </button>
 
                     <button
                       onClick={() => setSelectedMode("intermediate")}
-                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "intermediate"
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:border-primary/30 hover:bg-accent/30"
-                        }`}
+                      className={`
+                        w-full rounded-lg border border-border/50 transition-all cursor-pointer text-left
+                        hover:border-border
+                        ${selectedMode === "intermediate"
+                          ? "border-0 bg-zinc-100 dark:bg-zinc-800"
+                          : "bg-transparent"
+                        }
+                      `}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Intermedio</span>
-                        {selectedMode === "intermediate" && <Check className="h-4 w-4 text-primary" />}
+                      <div className="p-3.5">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-xs font-medium transition-colors ${selectedMode === "intermediate" ? "text-black dark:text-white" : "text-foreground"}`}>
+                            Intermedio
+                          </span>
+                          {selectedMode === "intermediate" && <Check className="h-3.5 w-3.5 text-black dark:text-white" />}
+                        </div>
+                        <p className={`text-xs transition-colors ${selectedMode === "intermediate" ? "text-black/70 dark:text-white/80" : "text-muted-foreground"}`}>
+                          Añade esfuerzo percibido (RIR)
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">Añade esfuerzo percibido (RIR)</p>
                     </button>
 
                     <button
                       onClick={() => setSelectedMode("advanced")}
-                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "advanced"
-                        ? "border-primary bg-primary/5 shadow-sm"
-                        : "border-border hover:border-primary/30 hover:bg-accent/30"
-                        }`}
+                      className={`
+                        w-full rounded-lg border border-border/50 transition-all cursor-pointer text-left
+                        hover:border-border
+                        ${selectedMode === "advanced"
+                          ? "border-0 bg-zinc-100 dark:bg-zinc-800"
+                          : "bg-transparent"
+                        }
+                      `}
                     >
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-sm">Avanzado</span>
-                        {selectedMode === "advanced" && <Check className="h-4 w-4 text-primary" />}
+                      <div className="p-3.5">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className={`text-xs font-medium transition-colors ${selectedMode === "advanced" ? "text-black dark:text-white" : "text-foreground"}`}>
+                            Avanzado
+                          </span>
+                          {selectedMode === "advanced" && <Check className="h-3.5 w-3.5 text-black dark:text-white" />}
+                        </div>
+                        <p className={`text-xs transition-colors ${selectedMode === "advanced" ? "text-black/70 dark:text-white/80" : "text-muted-foreground"}`}>
+                          Control total (Tempo + RIR)
+                        </p>
                       </div>
-                      <p className="text-xs text-muted-foreground">Control total (Tempo + RIR)</p>
                     </button>
                   </div>
                 </div>
@@ -394,7 +432,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     {exercises.map((exercise) => (
                       <div key={exercise.id} className="flex flex-col border p-3 rounded-lg bg-card/50">
                         <div className="flex justify-between items-start gap-2">
-                          <h4 className="font-medium text-sm line-clamp-2">{exercise.name}</h4>
+                          <h4 className="font-medium text-xs line-clamp-2">{exercise.name}</h4>
                           <span className="text-xs bg-secondary px-2 py-0.5 rounded-full whitespace-nowrap text-secondary-foreground font-mono">
                             {exercise.sets} x {exercise.reps || "T"}
                           </span>
