@@ -53,7 +53,8 @@ export const authConfig = {
         pathname === "/about" ||
         pathname === "/privacy" ||
         pathname === "/terms" ||
-        pathname === "/terms-of-service";
+        pathname === "/terms-of-service" ||
+        pathname.startsWith("/profile");
 
       const rawVerified = (auth?.user as any)?.emailVerified;
       const isOAuth = !!(auth?.user as any)?.isOAuth;
