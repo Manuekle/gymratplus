@@ -410,18 +410,19 @@ export default function GoalsHistoryPage() {
         defaultValue="all"
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
+        className="w-full"
       >
-        <TabsList className="flex w-full overflow-x-auto justify-start gap-2 bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-lg p-1.5 h-auto rounded-full no-scrollbar">
-          <TabsTrigger value="all" className="flex-1 min-w-fit rounded-full">Todos</TabsTrigger>
-          <TabsTrigger value="weight" className="flex-1 min-w-fit rounded-full">Peso</TabsTrigger>
-          <TabsTrigger value="strength" className="flex-1 min-w-fit rounded-full">Fuerza</TabsTrigger>
-          <TabsTrigger value="measurement" className="flex-1 min-w-fit rounded-full">Medidas</TabsTrigger>
-          <TabsTrigger value="activity" className="flex-1 min-w-fit rounded-full">Actividad</TabsTrigger>
+        <TabsList className="w-full justify-start overflow-x-auto">
+          <TabsTrigger value="all">Todos</TabsTrigger>
+          <TabsTrigger value="weight">Peso</TabsTrigger>
+          <TabsTrigger value="strength">Fuerza</TabsTrigger>
+          <TabsTrigger value="measurement">Medidas</TabsTrigger>
+          <TabsTrigger value="activity">Actividad</TabsTrigger>
         </TabsList>
 
         <TabsContent
           value={activeTab}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
         >
           {Object.entries(groupedGoals)
             .sort(([a], [b]) => b.localeCompare(a))

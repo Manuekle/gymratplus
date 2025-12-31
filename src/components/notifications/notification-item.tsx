@@ -208,7 +208,7 @@ export function NotificationItem({
         !showDeleteButton && "w-full",
       )}
     >
-      <div className="flex-shrink-0 text-lg flex items-center justify-center w-8 h-8 rounded-full bg-zinc-100/50 dark:bg-zinc-800/50">
+      <div className="flex-shrink-0 text-lg flex items-center justify-center w-8 h-8">
         {getTypeIcon()}
       </div>
       <div className="flex-grow min-w-0 overflow-hidden">
