@@ -24,6 +24,7 @@ import {
   HandGripIcon,
   Apple01Icon,
   UserGroupIcon,
+  UserMultipleIcon,
   BubbleChatIcon,
   Door01Icon,
   Menu01Icon,
@@ -79,6 +80,12 @@ export function Navbar() {
       label: "Chat",
       active: pathname.startsWith("/dashboard/chats"),
       isChat: true,
+    },
+    {
+      href: "/dashboard/friends",
+      icon: UserMultipleIcon,
+      label: "Amigos",
+      active: pathname.startsWith("/dashboard/friends"),
     },
     !isInstructor && {
       href: "/dashboard/instructors",

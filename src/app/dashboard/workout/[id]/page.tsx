@@ -10,6 +10,7 @@ import WorkoutSkeleton from "@/components/skeleton/workout-skeleton";
 import { Badge } from "@/components/ui/badge";
 import StartWorkout from "@/components/workouts/start-workout";
 import { WorkoutNew } from "@/components/workout/workout-new";
+import { WorkoutShareModal } from "@/components/workouts/workout-share-modal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -173,6 +174,10 @@ export default function WorkouPage() {
                 {workout.days.length === 1 ? "día" : "días"}
               </span>
             </Badge>
+            <WorkoutShareModal
+              workoutId={workout.id}
+              workoutName={workout.name}
+            />
             <Button
               variant="destructive"
               size="default"
