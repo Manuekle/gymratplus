@@ -1,7 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/database/prisma";
-import { auth } from "@/auth";
+import { auth } from "@auth";
 import { revalidatePath } from "next/cache";
 
 export async function cloneWorkout(originalWorkoutId: string) {
