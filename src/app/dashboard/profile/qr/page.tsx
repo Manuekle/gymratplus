@@ -2,8 +2,8 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
+// import { HugeiconsIcon } from "@hugeicons/react";
+// import { CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
 import { QRCodeCanvas } from "qrcode.react";
 import {
   Card,
@@ -168,29 +168,38 @@ export default function QRCodePage() {
 
               {(session?.user?.subscriptionStatus === "active" ||
                 session?.user?.subscriptionStatus === "trialing") && (
-                <VerifiedBadge
-                  variant={
-                    session?.user?.subscriptionTier === "PRO"
-                      ? "pro"
-                      : isInstructor
-                        ? "instructor"
-                        : "default"
-                  }
-                />
-              )}
+                  <VerifiedBadge
+                    variant={
+                      session?.user?.subscriptionTier === "PRO"
+                        ? "pro"
+                        : isInstructor
+                          ? "instructor"
+                          : "default"
+                    }
+                  />
+                )}
             </div>
           </div>
 
           {/* QR Code */}
           {qrUrl && (
             <div className="flex flex-col items-center gap-4">
-              <div className="p-4 bg-white rounded-lg border border-zinc-200">
+              <div className="bg-white p-4 rounded-xl shadow-sm border w-full max-w-[200px] sm:max-w-[250px] aspect-square flex items-center justify-center mx-auto">
                 <QRCodeCanvas
                   value={qrUrl}
                   size={256}
+                  style={{ width: "100%", height: "100%" }}
                   level="H"
                   includeMargin={true}
                   id="qr-code-canvas"
+                  imageSettings={{
+                    src: "/icons/favicon-192x192.png",
+                    x: undefined,
+                    y: undefined,
+                    height: 35,
+                    width: 35,
+                    excavate: true,
+                  }}
                 />
               </div>
               <p className="text-xs text-muted-foreground text-center max-w-md">
