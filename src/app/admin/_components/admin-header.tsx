@@ -19,7 +19,7 @@ export function AdminHeader() {
             </Button>
           </Link>
           <div className="h-6 w-px bg-border" />
-          <Link href="/admin" className="font-bold text-lg tracking-tight">
+          <Link href="/admin" className="font-bold text-lg tracking-[-0.02em]">
             GymRat+ Admin
           </Link>
         </div>

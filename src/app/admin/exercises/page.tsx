@@ -53,7 +53,7 @@ export default async function ExercisesPage({
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 className="text-3xl font-bold tracking-[-0.02em]">
             Biblioteca de Ejercicios
           </h2>
           <p className="text-muted-foreground mt-1">

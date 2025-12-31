@@ -23,7 +23,7 @@ export default function FriendsPage() {
             <div className="space-y-6">
                 <div className="flex flex-col gap-1">
                     <h1 className="text-2xl font-semibold tracking-heading">Amigos</h1>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                         Conecta y comparte tu progreso con otros entrenadores.
                     </p>
                 </div>
@@ -31,7 +31,7 @@ export default function FriendsPage() {
                 {/* Search Section */}
                 <Card>
                     <CardHeader>
-                        <CardTitle className="text-lg font-medium tracking-tight flex items-center gap-2">
+                        <CardTitle className="text-lg font-medium tracking-[-0.02em] flex items-center gap-2">
                             <HugeiconsIcon icon={UserMultipleIcon} className="w-5 h-5" />
                             Buscar Amigos
                         </CardTitle>
@@ -70,7 +70,7 @@ export default function FriendsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                                 Genera un código QR desde el detalle de tus rutinas para compartir tu entrenamiento con amigos.
                             </p>
                             <Button asChild className="w-full sm:w-auto" variant="outline">
@@ -90,7 +90,7 @@ export default function FriendsPage() {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                                 Usa la cámara de tu móvil para escanear el código QR de un amigo e importar su rutina al instante.
                             </p>
                         </CardContent>

@@ -89,7 +89,7 @@ export default function WorkoutSharePage() {
                 <Badge variant="secondary" className="w-fit">
                     Rutina Compartida
                 </Badge>
-                <h1 className="text-3xl font-bold tracking-tight">{workout.name}</h1>
+                <h1 className="text-3xl font-bold tracking-[-0.02em]">{workout.name}</h1>
                 {workout.description && (
                     <p className="text-muted-foreground">{workout.description}</p>
                 )}

@@ -14,7 +14,7 @@ export default function NewWorkoutPage() {
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-[-0.02em]">
             Nueva Plantilla de Entrenamiento
           </h2>
           <p className="text-muted-foreground">

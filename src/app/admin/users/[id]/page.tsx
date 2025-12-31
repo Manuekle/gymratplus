@@ -56,7 +56,7 @@ export default async function UserDetailPage({
           </Button>
         </Link>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">{user.name}</h2>
+          <h2 className="text-2xl font-bold tracking-[-0.02em]">{user.name}</h2>
           <p className="text-muted-foreground">{user.email}</p>
         </div>
       </div>

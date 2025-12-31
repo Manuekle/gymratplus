@@ -17,7 +17,7 @@ export default async function EditExercisePage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Editar Ejercicio</h2>
+        <h2 className="text-2xl font-bold tracking-[-0.02em]">Editar Ejercicio</h2>
         <p className="text-muted-foreground">Actualizar detalles del ejercicio.</p>
       </div>
       <ExerciseForm exercise={exercise} />

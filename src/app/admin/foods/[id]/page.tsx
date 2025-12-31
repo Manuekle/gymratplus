@@ -17,7 +17,7 @@ export default async function EditFoodPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Editar Alimento</h2>
+        <h2 className="text-2xl font-bold tracking-[-0.02em]">Editar Alimento</h2>
         <p className="text-muted-foreground">Actualizar detalles nutricionales.</p>
       </div>
       <FoodForm food={food} />

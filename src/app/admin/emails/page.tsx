@@ -32,7 +32,7 @@ export default function EmailsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Emails Administrativos</h2>
+        <h2 className="text-2xl font-bold tracking-[-0.02em]">Emails Administrativos</h2>
         <p className="text-muted-foreground">Envía notificaciones y anuncios a tus usuarios.</p>
       </div>
 

@@ -22,7 +22,7 @@ export default async function UsersPage({
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Usuarios</h2>
+        <h2 className="text-2xl font-bold tracking-[-0.02em]">Usuarios</h2>
         <p className="text-muted-foreground">Ver usuarios registrados.</p>
       </div>
 

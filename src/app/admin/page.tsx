@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">
+        <h2 className="text-3xl font-bold tracking-[-0.02em]">
           Panel de Administración
         </h2>
         <p className="mt-2 text-muted-foreground">

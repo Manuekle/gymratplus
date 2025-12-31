@@ -18,7 +18,7 @@ export default async function AdminInstructorsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">
+        <h2 className="text-2xl font-bold tracking-[-0.02em]">
           Verificación de Instructores
         </h2>
         <p className="text-muted-foreground">

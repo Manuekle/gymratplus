@@ -24,7 +24,7 @@ export default async function AdminWorkoutsPage({
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">
+          <h2 className="text-2xl font-bold tracking-[-0.02em]">
             Entrenamientos (Plantillas)
           </h2>
           <p className="text-muted-foreground">
