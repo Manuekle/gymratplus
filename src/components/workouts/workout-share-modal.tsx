@@ -13,7 +13,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { QrCodeIcon, Share01Icon } from "@hugeicons/core-free-icons";
 import { QRCodeSVG } from "qrcode.react";
 import { useEffect, useState } from "react";
-import { cn } from "@/lib/utils/utils";
+// import { cn } from "@/lib/utils/utils";
 
 interface WorkoutShareModalProps {
     workoutId: string;
@@ -79,34 +79,34 @@ export function WorkoutShareModal({
                         )}
                     </div>
 
-                    <div className="w-full space-y-2">
+                    <div className="w-full space-y-3">
                         <p className="text-xs font-medium text-center text-muted-foreground">
-                            O comparte el enlace directo:
+                            Escanea o comparte el enlace:
                         </p>
-                        <div className="flex items-center gap-2">
-                            <code className="flex-1 p-2 text-xs bg-muted rounded border truncate">
-                                {shareUrl}
-                            </code>
+                        <div className="flex gap-2">
                             <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 shrink-0"
+                                className="flex-1 gap-2"
+                                variant="outline"
                                 onClick={handleCopy}
                             >
-                                <HugeiconsIcon
-                                    icon={Share01Icon}
-                                    className={cn(
-                                        "w-4 h-4 transition-all",
-                                        copied ? "text-green-500 scale-110" : ""
-                                    )}
-                                />
+                                <HugeiconsIcon icon={Share01Icon} className="w-4 h-4" />
+                                {copied ? "Copiado" : "Copiar Enlace"}
                             </Button>
+                            {typeof navigator !== "undefined" && navigator.share && (
+                                <Button
+                                    className="flex-1 gap-2"
+                                    onClick={() => {
+                                        navigator.share({
+                                            title: `Rutina: ${workoutName}`,
+                                            text: `¡Mira mi rutina ${workoutName} en GymRat+!`,
+                                            url: shareUrl
+                                        }).catch(console.error);
+                                    }}
+                                >
+                                    Compartir
+                                </Button>
+                            )}
                         </div>
-                        {copied && (
-                            <p className="text-xs text-center text-green-500 animate-in fade-in">
-                                ¡Enlace copiado!
-                            </p>
-                        )}
                     </div>
                 </div>
             </DialogContent>

@@ -4,7 +4,7 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 // import { HugeiconsIcon } from "@hugeicons/react";
 // import { CheckmarkBadge01Icon } from "@hugeicons/core-free-icons";
-import { QRCodeCanvas } from "qrcode.react";
+import { QRCodeCanvas, QRCodeSVG } from "qrcode.react";
 import {
   Card,
   CardContent,
@@ -185,10 +185,27 @@ export default function QRCodePage() {
           {qrUrl && (
             <div className="flex flex-col items-center gap-4">
               <div className="bg-white p-4 rounded-xl shadow-sm border w-full max-w-[200px] sm:max-w-[250px] aspect-square flex items-center justify-center mx-auto">
-                <QRCodeCanvas
+                <QRCodeSVG
                   value={qrUrl}
                   size={256}
                   style={{ width: "100%", height: "100%" }}
+                  level="H"
+                  includeMargin={true}
+                  imageSettings={{
+                    src: "/icons/favicon-192x192.png",
+                    x: undefined,
+                    y: undefined,
+                    height: 35,
+                    width: 35,
+                    excavate: true,
+                  }}
+                />
+              </div>
+              {/* Hidden Canvas for Download */}
+              <div className="hidden">
+                <QRCodeCanvas
+                  value={qrUrl}
+                  size={512} // Higher res for download
                   level="H"
                   includeMargin={true}
                   id="qr-code-canvas"
@@ -196,8 +213,8 @@ export default function QRCodePage() {
                     src: "/icons/favicon-192x192.png",
                     x: undefined,
                     y: undefined,
-                    height: 35,
-                    width: 35,
+                    height: 70, // Scaled for 512 size
+                    width: 70,
                     excavate: true,
                   }}
                 />
