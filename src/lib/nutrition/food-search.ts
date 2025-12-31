@@ -140,6 +140,7 @@ export function searchFoods(
     category: string;
     mealType?: string[];
     synonyms?: string[]; // Sinónimos de la BD
+    servingUnit?: string | null;
   }>,
   searchQuery: string,
   options?: {
@@ -277,7 +278,7 @@ export function getCategoryLabel(category: string): string {
  * Obtiene sugerencias de búsqueda basadas en el query parcial
  */
 export function getSearchSuggestions(
-  foods: Array<{ name: string; category: string }>,
+  foods: Array<{ name: string; category: string; synonyms?: string[] }>,
   partialQuery: string,
   limit: number = 5,
 ): string[] {

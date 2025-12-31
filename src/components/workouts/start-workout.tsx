@@ -3,15 +3,10 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 
-const truncateText = (text: string, maxLength: number = 20): string => {
-  if (text.length <= maxLength) return text;
-  return `${text.substring(0, maxLength)}...`;
-};
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,

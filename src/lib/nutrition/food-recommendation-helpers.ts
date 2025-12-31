@@ -211,8 +211,9 @@ export async function createFoodRecommendationNormalized(data: {
     });
 
     // Crear entries
-    for (let idx = 0; idx < meal.entries.length; idx++) {
-      const entry = meal.entries[idx];
+    let idx = 0;
+    for (const entry of meal.entries) {
+      if (!entry) continue;
       await prisma.mealPlanEntry.create({
         data: {
           mealPlanMealId: mealPlanMeal.id,
@@ -221,6 +222,7 @@ export async function createFoodRecommendationNormalized(data: {
           order: idx,
         },
       });
+      idx++;
     }
   }
 
