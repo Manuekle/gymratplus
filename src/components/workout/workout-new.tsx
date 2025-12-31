@@ -132,18 +132,25 @@ export function WorkoutNew({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         {/* Selector de días */}
-        <div className="flex flex-wrap gap-2">
-          {days.map((day) => (
-            <Button
-              key={day}
-              variant={currentDay === day ? "default" : "outline"}
-              size="default"
-              className="text-xs"
-              onClick={() => handleDayChange(day)}
-            >
-              {day}
-            </Button>
-          ))}
+        {/* Selector de días */}
+        <div className="relative w-full md:w-auto overflow-hidden">
+          {/* Mobile Blur Effects */}
+          <div className="absolute left-0 top-0 bottom-0 w-4 bg-gradient-to-r from-background to-transparent z-10 md:hidden pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-4 bg-gradient-to-l from-background to-transparent z-10 md:hidden pointer-events-none" />
+
+          <div className="flex gap-2 overflow-x-auto pb-2 -mb-2 no-scrollbar px-4 -mx-4 md:px-0 md:mx-0 md:flex-wrap md:overflow-visible">
+            {days.map((day) => (
+              <Button
+                key={day}
+                variant={currentDay === day ? "default" : "secondary"}
+                size="sm"
+                className="rounded-full flex-shrink-0 text-xs font-normal"
+                onClick={() => handleDayChange(day)}
+              >
+                {day}
+              </Button>
+            ))}
+          </div>
         </div>
 
         <Button
