@@ -79,7 +79,7 @@ export default function GoalsHistoryPage() {
         const days = Math.ceil(
           (new Date(goal.completedDate).getTime() -
             new Date(goal.startDate).getTime()) /
-            (1000 * 60 * 60 * 24),
+          (1000 * 60 * 60 * 24),
         );
         return acc + days;
       }
@@ -105,10 +105,10 @@ export default function GoalsHistoryPage() {
     const daysToComplete =
       goal.completedDate && goal.startDate
         ? Math.ceil(
-            (new Date(goal.completedDate).getTime() -
-              new Date(goal.startDate).getTime()) /
-              (1000 * 60 * 60 * 24),
-          )
+          (new Date(goal.completedDate).getTime() -
+            new Date(goal.startDate).getTime()) /
+          (1000 * 60 * 60 * 24),
+        )
         : null;
     const completedDate = goal.completedDate
       ? new Date(goal.completedDate)
@@ -411,12 +411,12 @@ export default function GoalsHistoryPage() {
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as GoalType | "all")}
       >
-        <TabsList className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 mb-4 gap-2 sm:gap-4">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="weight">Peso</TabsTrigger>
-          <TabsTrigger value="strength">Fuerza</TabsTrigger>
-          <TabsTrigger value="measurement">Medidas</TabsTrigger>
-          <TabsTrigger value="activity">Actividad</TabsTrigger>
+        <TabsList className="flex w-full overflow-x-auto justify-start gap-2 bg-zinc-100/50 dark:bg-zinc-900/50 backdrop-blur-lg p-1.5 h-auto rounded-full no-scrollbar">
+          <TabsTrigger value="all" className="flex-1 min-w-fit rounded-full">Todos</TabsTrigger>
+          <TabsTrigger value="weight" className="flex-1 min-w-fit rounded-full">Peso</TabsTrigger>
+          <TabsTrigger value="strength" className="flex-1 min-w-fit rounded-full">Fuerza</TabsTrigger>
+          <TabsTrigger value="measurement" className="flex-1 min-w-fit rounded-full">Medidas</TabsTrigger>
+          <TabsTrigger value="activity" className="flex-1 min-w-fit rounded-full">Actividad</TabsTrigger>
         </TabsList>
 
         <TabsContent
