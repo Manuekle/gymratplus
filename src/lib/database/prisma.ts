@@ -7,11 +7,7 @@ const globalForPrisma = global as unknown as {
 const basePrisma = new PrismaClient({
   datasources: {
     db: {
-      url:
-        process.env.DATABASE_URL ||
-        (process.env.NODE_ENV === "production"
-          ? process.env.DATABASE_URL_PRO
-          : process.env.DATABASE_URL_DEV),
+      url: process.env.DATABASE_URL,
     },
   },
   log:
