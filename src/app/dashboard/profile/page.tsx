@@ -1638,7 +1638,7 @@ export default function ProfilePage() {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 border rounded-lg">
                 <div className="space-y-1">
-                  <div className="font-medium">Plan actual</div>
+                  <div className="font-medium text-xs">Plan actual</div>
                   <div className="text-xs text-muted-foreground">
                     {session?.user?.subscriptionTier === "PRO"
                       ? "Pro"

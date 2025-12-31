@@ -43,16 +43,31 @@ export const metadata: Metadata = {
     },
   }),
   icons: {
-    icon: [
-      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
-      { url: "/favicon.ico", sizes: "any" },
-    ],
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
     apple: [
       {
         url: "/icons/favicon-180x180.png",
         sizes: "180x180",
         type: "image/png",
+      },
+    ],
+    other: [
+      {
+        rel: "apple-touch-icon",
+        url: "/icons/favicon-180x180.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        url: "/icons/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        url: "/icons/favicon-16x16.png",
       },
     ],
   },
@@ -131,6 +146,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           crossOrigin="anonymous"
         ></script>
         {/* End Google AdSense */}
+        <link rel="apple-touch-icon" sizes="180x180" href="/icons/favicon-180x180.png" />
       </head>
       <body
         className="min-h-screen bg-background antialiased"

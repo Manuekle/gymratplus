@@ -162,10 +162,70 @@ function IOSInstallPrompt({ onClose }: { onClose: () => void }) {
   );
 }
 
+// Android Install Popup Component
+function AndroidInstallPrompt({
+  onInstall,
+  onClose,
+}: {
+  onInstall: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+      <div className="w-full max-w-md backdrop-blur-2xl bg-white/95 dark:bg-black/95 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-2xl p-5 sm:p-6 animate-in slide-in-from-bottom duration-300">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-zinc-900 to-zinc-700 dark:from-zinc-100 dark:to-zinc-300 flex items-center justify-center shadow-lg flex-shrink-0">
+            <Image
+              src="/icons/icon-192x192.png"
+              alt="GymRat+ Icon"
+              width={64}
+              height={64}
+              className="w-10 h-10 object-contain brightness-0 invert dark:brightness-100 dark:invert-0"
+              onError={(e) => {
+                // Fallback if image fails
+                e.currentTarget.style.display = 'none';
+              }}
+            />
+            {/* Fallback icon if image missing, hidden by default unless image errors */}
+            <div className="absolute inset-0 flex items-center justify-center" style={{ zIndex: -1 }}>
+              <HugeiconsIcon icon={ChartIcon} className="w-8 h-8 text-white dark:text-black" />
+            </div>
+          </div>
+          <div>
+            <h3 className="font-bold text-lg sm:text-xl tracking-[-0.04em] mb-1">
+              Instalar GymRat+
+            </h3>
+            <p className="text-xs sm:text-xs text-zinc-600 dark:text-zinc-400">
+              Instala la aplicación para una mejor experiencia, acceso offline y notificaciones.
+            </p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Button
+            variant="outline"
+            className="rounded-xl h-12 text-xs font-semibold border-zinc-200 dark:border-zinc-800 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+            onClick={onClose}
+          >
+            Ahora no
+          </Button>
+          <Button
+            className="rounded-xl h-12 text-xs font-semibold bg-zinc-900 dark:bg-zinc-100 text-zinc-50 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+            onClick={onInstall}
+          >
+            Instalar
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function GymRatLanding() {
   const { resolvedTheme, systemTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
   const [showIOSPrompt, setShowIOSPrompt] = useState(false);
+  const [showAndroidPrompt, setShowAndroidPrompt] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [detectedTheme, setDetectedTheme] = useState<"light" | "dark">(() => {
     if (typeof window !== "undefined") {
       return window.matchMedia("(prefers-color-scheme: dark)").matches
@@ -192,7 +252,7 @@ export default function GymRatLanding() {
       const isIOS =
         /iPad|iPhone|iPod/.test(navigator.userAgent) &&
         !(window as any).MSStream;
-      const isStandalone = (window.navigator as any).standalone;
+      const isStandalone = (window.navigator as any).standalone || window.matchMedia('(display-mode: standalone)').matches;
 
       if (isIOS && !isStandalone) {
         // Show prompt after 3 seconds
@@ -202,16 +262,41 @@ export default function GymRatLanding() {
         return () => clearTimeout(timer);
       }
 
+      // Android / Desktop Install Prompt
+      const handleBeforeInstallPrompt = (e: Event) => {
+        // Prevent Chrome 67 and earlier from automatically showing the prompt
+        e.preventDefault();
+        // Stash the event so it can be triggered later.
+        setDeferredPrompt(e);
+        // Update UI to notify the user they can add to home screen
+        setShowAndroidPrompt(true);
+      };
+
+      window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+
       return () => {
         if (mediaQuery.removeEventListener) {
           mediaQuery.removeEventListener("change", handleChange);
         } else {
           mediaQuery.removeListener(handleChange);
         }
+        window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
       };
     }
     return undefined;
   }, []);
+
+  const handleInstallClick = async () => {
+    if (!deferredPrompt) return;
+    // Show the install prompt
+    deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install scroll: ${outcome}`);
+    // We've used the prompt, and can't use it again, throw it away
+    setDeferredPrompt(null);
+    setShowAndroidPrompt(false);
+  };
 
   const currentTheme =
     mounted && resolvedTheme
@@ -222,6 +307,13 @@ export default function GymRatLanding() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-black dark:to-zinc-900 text-zinc-900 dark:text-zinc-50 relative overflow-hidden">
+      {showIOSPrompt && <IOSInstallPrompt onClose={() => setShowIOSPrompt(false)} />}
+      {showAndroidPrompt && (
+        <AndroidInstallPrompt
+          onInstall={handleInstallClick}
+          onClose={() => setShowAndroidPrompt(false)}
+        />
+      )}
       {/* Animated Liquid Glass Blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 -left-40 w-96 h-96 bg-gradient-to-br from-zinc-200/40 to-zinc-300/20 dark:from-zinc-800/40 dark:to-zinc-700/20 rounded-full blur-3xl animate-blob" />
@@ -744,8 +836,8 @@ export default function GymRatLanding() {
               <div
                 key={i}
                 className={`relative p-8 rounded-xl border transition-all duration-300 hover:shadow-xl hover:-translate-y-2 ${plan.popular
-                    ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
-                    : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
+                  ? "backdrop-blur-xl bg-zinc-900/90 dark:bg-zinc-100/90 border-zinc-800/50 dark:border-zinc-200/50 shadow-2xl hover:border-zinc-700 dark:hover:border-zinc-300"
+                  : "backdrop-blur-xl bg-white/80 dark:bg-black/80 border-zinc-200/50 dark:border-zinc-800/50 hover:border-zinc-300 dark:hover:border-zinc-900"
                   }`}
               >
                 {plan.popular && (
@@ -755,23 +847,23 @@ export default function GymRatLanding() {
                 )}
                 <h3
                   className={`text-2xl font-bold tracking-[-0.04em] mb-2 ${plan.popular
-                      ? "text-zinc-100 dark:text-zinc-900"
-                      : "text-zinc-900 dark:text-zinc-100"
+                    ? "text-zinc-100 dark:text-zinc-900"
+                    : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.name}
                 </h3>
                 <div
                   className={`text-4xl font-bold tracking-[-0.04em] mb-6 ${plan.popular
-                      ? "text-zinc-100 dark:text-zinc-900"
-                      : "text-zinc-900 dark:text-zinc-100"
+                    ? "text-zinc-100 dark:text-zinc-900"
+                    : "text-zinc-900 dark:text-zinc-100"
                     }`}
                 >
                   {plan.price}
                   <span
                     className={`text-xs font-normal ${plan.popular
-                        ? "text-zinc-300 dark:text-zinc-700"
-                        : "text-zinc-600 dark:text-zinc-400"
+                      ? "text-zinc-300 dark:text-zinc-700"
+                      : "text-zinc-600 dark:text-zinc-400"
                       }`}
                   >
                     /mes
@@ -783,14 +875,14 @@ export default function GymRatLanding() {
                       <HugeiconsIcon
                         icon={Tick02Icon}
                         className={`w-5 h-5 ${plan.popular
-                            ? "text-zinc-300 dark:text-zinc-700"
-                            : "text-zinc-600 dark:text-zinc-400"
+                          ? "text-zinc-300 dark:text-zinc-700"
+                          : "text-zinc-600 dark:text-zinc-400"
                           }`}
                       />
                       <span
                         className={`text-xs tracking-[-0.02em] ${plan.popular
-                            ? "text-zinc-200 dark:text-zinc-800"
-                            : "text-zinc-700 dark:text-zinc-300"
+                          ? "text-zinc-200 dark:text-zinc-800"
+                          : "text-zinc-700 dark:text-zinc-300"
                           }`}
                       >
                         {feature}
@@ -800,8 +892,8 @@ export default function GymRatLanding() {
                 </ul>
                 <Button
                   className={`w-full ${plan.popular
-                      ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
-                      : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
+                    ? "bg-zinc-100 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-200 dark:hover:bg-zinc-800"
+                    : "bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 hover:bg-zinc-800 dark:hover:bg-zinc-200"
                     }`}
                   asChild
                 >
