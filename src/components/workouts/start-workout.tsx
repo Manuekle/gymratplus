@@ -49,6 +49,10 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [checking, setChecking] = useState(false);
+
+  // State for wizard steps: 1 = Day, 2 = Mode, 3 = Summary/Start
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+
   const [selectedDay, setSelectedDay] = useState<string>("");
   const [selectedMode, setSelectedMode] = useState<"simple" | "intermediate" | "advanced">("simple");
   const [showModeHelp, setShowModeHelp] = useState(false);
@@ -60,7 +64,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
   const workoutData = workout;
   const days = useMemo(() => workoutData.days || [], [workoutData.days]);
 
-  // Verificar si existe una sesión activa cuando se abre el diálogo
+  // Check for active workout on open
   const checkActiveWorkout = async () => {
     setChecking(true);
     try {
@@ -81,10 +85,13 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
     }
   };
 
-  // Cuando se abre el diálogo, verificar si hay una sesión activa
   useEffect(() => {
     if (dialogOpen) {
       checkActiveWorkout();
+      // Reset logic when opening
+      setStep(1);
+      setSelectedDay("");
+      setSelectedMode("simple");
     }
   }, [dialogOpen]);
 
@@ -113,20 +120,17 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       const data = await response.json();
       console.log("Entrenamiento iniciado:", data);
 
-      // Cerrar el diálogo explícitamente
       setDialogOpen(false);
 
       toast.success("Entrenamiento iniciado", {
         description: "Redirigiendo a la página de entrenamiento activo...",
       });
 
-      // Pequeño retraso antes de la redirección para asegurar que el diálogo se cierre
       setTimeout(() => {
         router.push("/dashboard/workout/active");
       }, 500);
     } catch (error) {
       console.error("Error al guardar ejercicios:", error);
-
       toast.error("Error", {
         description: "Error al iniciar entrenamiento",
       });
@@ -134,28 +138,21 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
     }
   };
 
-  // Función para continuar con el entrenamiento activo
   const continueActiveWorkout = () => {
-    // Cerrar el diálogo explícitamente
     setDialogOpen(false);
-
-    toast.error("Continuando entrenamiento", {
+    toast.info("Continuando entrenamiento", {
       description: "Redirigiendo a tu entrenamiento activo...",
     });
-
-    // Pequeño retraso antes de la redirección
     setTimeout(() => {
       router.push("/dashboard/workout/active");
     }, 500);
   };
 
-  // Función para finalizar el entrenamiento activo y luego iniciar uno nuevo
   const finishAndStartNew = async () => {
     if (!activeWorkoutId) return;
 
     setLoading(true);
     try {
-      // Completar el entrenamiento activo
       const completeResponse = await fetch("/api/workout-session/complete", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -173,38 +170,46 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
         );
       }
 
-      toast.error("Entrenamiento anterior finalizado", {
-        description: "Iniciando nuevo entrenamiento...",
-      });
+      // Start new workout
+      await handleStartWorkout();
 
-      // Iniciar el nuevo entrenamiento
-      const startResponse = await fetch("/api/workout-session", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day: selectedDay, exercises, workoutMode: selectedMode }),
-      });
-
-      if (!startResponse.ok) {
-        const errorData = await startResponse.json();
-        throw new Error(
-          errorData.error || "Error al iniciar nuevo entrenamiento",
-        );
-      }
-
-      // Cerrar el diálogo explícitamente
-      setDialogOpen(false);
-
-      // Pequeño retraso antes de la redirección
-      setTimeout(() => {
-        router.push("/dashboard/workout/active");
-      }, 500);
     } catch (error) {
       console.error("Error:", error);
-
       toast.error("Error", {
         description: "Error al procesar la operación",
       });
       setLoading(false);
+    }
+  };
+
+  // Steps Logic
+  const goNext = () => {
+    if (step === 1 && selectedDay) setStep(2);
+    else if (step === 2) setStep(3);
+  };
+
+  const goBack = () => {
+    if (step > 1) setStep((prev) => (prev - 1) as 1 | 2 | 3);
+  };
+
+  // Render Helpers
+  const renderStepTitle = () => {
+    if (activeWorkoutExists) return "Entrenamiento Activo";
+    switch (step) {
+      case 1: return "Selecciona el día";
+      case 2: return "Elige el modo";
+      case 3: return "Resumen";
+      default: return "";
+    }
+  };
+
+  const renderStepDescription = () => {
+    if (activeWorkoutExists) return "Ya tienes una sesión en curso";
+    switch (step) {
+      case 1: return "¿Qué día te toca hoy?";
+      case 2: return "Personaliza tu seguimiento";
+      case 3: return "Revisa los ejercicios antes de empezar";
+      default: return "";
     }
   };
 
@@ -213,9 +218,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
       open={dialogOpen}
       onOpenChange={(open) => {
         setDialogOpen(open);
-        // Si se cierra el diálogo, resetear estados
         if (!open) {
-          setSelectedDay("");
           setLoading(false);
         }
       }}
@@ -225,206 +228,225 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
           Comenzar rutina
         </Button>
       </DialogTrigger>
-      <DialogContent className="space-y-4 w-full max-h-[85vh] overflow-y-auto overflow-x-hidden pt-8 xl:pt-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-semibold  tracking-heading">
-            Selecciona el día de entrenamiento
-          </DialogTitle>
-          <DialogDescription className="text-xs text-muted-foreground">
-            Empieza tu rutina con el día de la semana que prefieras
-          </DialogDescription>
-        </DialogHeader>
 
-        {checking ? (
-          <div className="flex justify-center py-4">
-            <Icons.spinner className="h-6 w-6 animate-spin" />
-          </div>
-        ) : activeWorkoutExists ? (
-          <div className="mb-4 w-full border rounded-lg p-4 flex flex-col">
-            <span className="flex items-center gap-2 pb-1 text-destructive">
-              <HugeiconsIcon icon={AlertCircleIcon} size={14} />
-              <AlertTitle className="text-xs">Entrenamiento activo</AlertTitle>
-            </span>
-            <AlertDescription className="text-xs text-destructive">
-              Ya tienes un entrenamiento en progreso. ¿Qué deseas hacer?
-            </AlertDescription>
-            <div className="flex flex-col md:flex-row gap-2 max-w-full pt-4">
-              <Button
-                variant="outline"
-                size="default"
-                onClick={continueActiveWorkout}
-                className="text-xs"
-                disabled={loading}
-              >
-                Continuar entrenamiento actual
-              </Button>
-              <Button
-                size="default"
-                variant="destructive"
-                onClick={finishAndStartNew}
-                className="text-xs"
-                disabled={loading || !selectedDay}
-              >
-                {loading ? (
-                  <Icons.spinner className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Finalizar actual e iniciar nuevo
-              </Button>
+      {/* 
+        Modified content container:
+        - Fixed height to prevent layout shifts.
+        - Scroll enabled only where needed.
+      */}
+      <DialogContent className="sm:max-w-md w-full max-h-[85vh] flex flex-col p-0 gap-0 overflow-hidden">
+
+        <div className="p-6 pb-2">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-semibold tracking-heading">
+              {renderStepTitle()}
+            </DialogTitle>
+            <DialogDescription className="text-xs text-muted-foreground">
+              {renderStepDescription()}
+            </DialogDescription>
+          </DialogHeader>
+        </div>
+
+        <div className="flex-1 overflow-y-auto overflow-x-hidden p-6 pt-2">
+          {checking ? (
+            <div className="flex h-40 items-center justify-center">
+              <Icons.spinner className="h-6 w-6 animate-spin text-primary" />
             </div>
-          </div>
-        ) : (
-          <>
-            <div className="sticky top-0 bg-background z-10 pb-2 pt-1">
-              <div className="flex flex-wrap overflow-hidden pb-1 gap-1.5">
-                {days.map((day: Day) => (
-                  <div
-                    key={day.day}
-                    onClick={() => setSelectedDay(day.day)}
-                    className={`
-                      flex items-center gap-1.5 px-3 py-1.5 
-                      rounded-full text-xs font-medium 
-                      transition-colors duration-200
-                      cursor-pointer border border-border
-                      ${selectedDay === day.day
-                        ? "bg-primary text-primary-foreground hover:bg-primary/90"
-                        : "bg-background hover:bg-secondary"
-                      }
-                    `}
-                  >
-                    {day.day}
-                  </div>
-                ))}
+          ) : activeWorkoutExists ? (
+            <div className="w-full border rounded-lg p-4 flex flex-col bg-destructive/5 border-destructive/20">
+              <span className="flex items-center gap-2 pb-1 text-destructive">
+                <HugeiconsIcon icon={AlertCircleIcon} size={16} />
+                <AlertTitle className="text-sm font-semibold">¡Atención!</AlertTitle>
+              </span>
+              <AlertDescription className="text-xs text-muted-foreground mb-4">
+                Tienes un entrenamiento sin finalizar. Si inicias uno nuevo, el anterior se marcará como completado automáticamente.
+              </AlertDescription>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={continueActiveWorkout}
+                  disabled={loading}
+                >
+                  Continuar el actual
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={finishAndStartNew}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  disabled={loading}
+                >
+                  {loading && <Icons.spinner className="h-3 w-3 animate-spin mr-2" />}
+                  Finalizar e iniciar nuevo
+                </Button>
               </div>
             </div>
+          ) : (
+            <div className="space-y-4">
 
-            {selectedDay && (
-              <>
-                <div className="space-y-3 pb-4 border-b">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xs font-semibold">Modo de seguimiento</h3>
+              {/* STEP 1: SELECT DAY */}
+              {step === 1 && (
+                <div className="grid grid-cols-1 gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                  {days.map((day: Day) => (
+                    <div
+                      key={day.day}
+                      onClick={() => {
+                        setSelectedDay(day.day);
+                        // Auto advance on selection for smoother UX
+                        setTimeout(() => setStep(2), 150);
+                      }}
+                      className={`
+                        flex items-center justify-between px-4 py-3
+                        rounded-lg border cursor-pointer
+                        transition-all duration-200
+                        ${selectedDay === day.day
+                          ? "bg-primary/10 border-primary shadow-sm"
+                          : "bg-card hover:bg-accent hover:border-accent-foreground/20"
+                        }
+                      `}
+                    >
+                      <span className="font-medium text-sm">{day.day}</span>
+                      <Icons.chevronRight className={`h-4 w-4 text-muted-foreground ${selectedDay === day.day ? "text-primary" : ""}`} />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* STEP 2: SELECT MODE */}
+              {step === 2 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="flex justify-end">
                     <Button
                       variant="ghost"
                       size="sm"
                       onClick={() => setShowModeHelp(!showModeHelp)}
-                      className="text-xs h-7 px-2"
+                      className="text-xs h-6 px-2 text-muted-foreground"
                     >
-                      {showModeHelp ? "Ocultar ayuda" : "¿No estás seguro?"}
+                      {showModeHelp ? "Ocultar ayuda" : "¿Qué significa cada modo?"}
                     </Button>
                   </div>
 
                   {showModeHelp && (
-                    <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-xs">
-                      <p className="font-medium">Elige según tu experiencia:</p>
-                      <ul className="space-y-1.5 ml-4 list-disc">
-                        <li><strong>Principiante:</strong> Si llevas menos de 6 meses entrenando o prefieres algo simple</li>
-                        <li><strong>Intermedio:</strong> Si tienes 6-24 meses de experiencia y quieres más control</li>
-                        <li><strong>Avanzado:</strong> Si tienes más de 2 años entrenando y quieres seguimiento completo</li>
-                      </ul>
+                    <div className="bg-muted/40 rounded-lg p-3 text-xs space-y-2 border border-border/50">
+                      <p><span className="font-semibold text-primary">Principiante:</span> Solo registras Peso y Reps.</p>
+                      <p><span className="font-semibold text-primary">Intermedio:</span> Añade RIR (Repeticiones en Reserva).</p>
+                      <p><span className="font-semibold text-primary">Avanzado:</span> Control total con Tempo y RIR.</p>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div className="grid gap-3">
                     <button
                       onClick={() => setSelectedMode("simple")}
-                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "simple"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "simple"
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border hover:border-primary/30 hover:bg-accent/30"
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs">Principiante</span>
-                        <span className="text-xs text-muted-foreground">Simple</span>
+                        <span className="font-semibold text-sm">Principiante</span>
+                        {selectedMode === "simple" && <Icons.check className="h-4 w-4 text-primary" />}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Solo peso y repeticiones
-                      </p>
+                      <p className="text-xs text-muted-foreground">Monitorización básica</p>
                     </button>
 
                     <button
                       onClick={() => setSelectedMode("intermediate")}
-                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "intermediate"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "intermediate"
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border hover:border-primary/30 hover:bg-accent/30"
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs">Intermedio</span>
-                        <span className="text-xs text-muted-foreground">Balanceado</span>
+                        <span className="font-semibold text-sm">Intermedio</span>
+                        {selectedMode === "intermediate" && <Icons.check className="h-4 w-4 text-primary" />}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Peso, repeticiones y RIR
-                      </p>
+                      <p className="text-xs text-muted-foreground">Añade esfuerzo percibido (RIR)</p>
                     </button>
 
                     <button
                       onClick={() => setSelectedMode("advanced")}
-                      className={`p-3 rounded-lg border-2 text-left transition-all ${selectedMode === "advanced"
-                        ? "border-primary bg-primary/5"
-                        : "border-border hover:border-primary/50"
+                      className={`p-4 rounded-xl border-2 text-left transition-all relative overflow-hidden ${selectedMode === "advanced"
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border hover:border-primary/30 hover:bg-accent/30"
                         }`}
                     >
                       <div className="flex items-center justify-between mb-1">
-                        <span className="font-semibold text-xs">Avanzado</span>
-                        <span className="text-xs text-muted-foreground">Completo</span>
+                        <span className="font-semibold text-sm">Avanzado</span>
+                        {selectedMode === "advanced" && <Icons.check className="h-4 w-4 text-primary" />}
                       </div>
-                      <p className="text-xs text-muted-foreground">
-                        Peso, repeticiones, RIR y Tempo
-                      </p>
+                      <p className="text-xs text-muted-foreground">Control total (Tempo + RIR)</p>
                     </button>
                   </div>
                 </div>
+              )}
 
-                <div className="w-full">
-                  <div className="space-y-1 pr-2">
-                    {days
-                      .find((day: Day) => day.day === selectedDay)
-                      ?.exercises.map((exercise: Exercise) => (
-                        <div
-                          key={exercise.id}
-                          className="flex flex-col border-b py-2 last:border-0"
-                        >
-                          <div className="flex items-center justify-between gap-2">
-                            <h4 className="font-medium text-xs flex-1 truncate pr-2">
-                              {truncateText(exercise.name)}
-                            </h4>
-                            <div className="flex items-center gap-3 text-xs flex-shrink-0">
-                              <span className="text-muted-foreground whitespace-nowrap">
-                                {exercise.sets}×{exercise.reps || "Tiempo"}
-                              </span>
-                              <span className="font-medium whitespace-nowrap">
-                                ⏱️{exercise.restTime}s
-                              </span>
-                            </div>
-                          </div>
-                          {exercise.notes && (
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {exercise.notes}
-                            </p>
-                          )}
+              {/* STEP 3: EXERCISE LIST (SUMMARY) */}
+              {step === 3 && (
+                <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground bg-muted/30 p-2 rounded-lg border">
+                    <span>{selectedDay} • Modo {selectedMode === 'simple' ? 'Principiante' : selectedMode === 'intermediate' ? 'Intermedio' : 'Avanzado'}</span>
+                    <Button variant="link" className="h-auto p-0 text-xs" onClick={() => setStep(1)}>Cambiar</Button>
+                  </div>
+
+                  <div className="space-y-2">
+                    {exercises.map((exercise) => (
+                      <div key={exercise.id} className="flex flex-col border p-3 rounded-lg bg-card/50">
+                        <div className="flex justify-between items-start gap-2">
+                          <h4 className="font-medium text-sm line-clamp-2">{exercise.name}</h4>
+                          <span className="text-xs bg-secondary px-2 py-0.5 rounded-full whitespace-nowrap text-secondary-foreground font-mono">
+                            {exercise.sets} x {exercise.reps || "T"}
+                          </span>
                         </div>
-                      ))}
+                        <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Icons.clock className="h-3 w-3" /> {exercise.restTime}s descanso
+                          </span>
+                        </div>
+                        {exercise.notes && (
+                          <p className="mt-2 text-xs text-muted-foreground italic border-t pt-2 w-full">
+                            "{exercise.notes}"
+                          </p>
+                        )}
+                      </div>
+                    ))}
                   </div>
                 </div>
-              </>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* FOOTER ACTIONS */}
+        {!activeWorkoutExists && !checking && (
+          <div className="p-4 border-t bg-muted/10 flex justify-between gap-3">
+            {step > 1 ? (
+              <Button variant="outline" onClick={goBack} disabled={loading} className="w-1/3">
+                Atrás
+              </Button>
+            ) : (
+              <div className="w-1/3"></div> // Spacer to keep layout
             )}
-            <DialogFooter>
+
+            {step < 3 ? (
+              <Button
+                onClick={goNext}
+                className="w-2/3"
+                disabled={step === 1 ? !selectedDay : false}
+              >
+                Siguiente
+              </Button>
+            ) : (
               <Button
                 onClick={handleStartWorkout}
-                disabled={loading || !selectedDay}
-                className="text-xs w-full"
-                size="default"
+                className="w-2/3"
+                disabled={loading}
               >
-                {loading ? (
-                  <span className="flex flex-row items-center gap-2">
-                    <Icons.spinner className="h-4 w-4 animate-spin" />
-                    <h1>Iniciando</h1>
-                  </span>
-                ) : (
-                  "Iniciar rutina"
-                )}
+                {loading && <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />}
+                Iniciar
               </Button>
-            </DialogFooter>
-          </>
+            )}
+          </div>
         )}
       </DialogContent>
     </Dialog>
