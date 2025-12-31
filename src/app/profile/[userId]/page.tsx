@@ -315,7 +315,7 @@ export default function PublicProfilePage() {
             <HugeiconsIcon icon={ArrowLeft01Icon} className="w-8 h-8 text-muted-foreground" />
           </div>
           <h1 className="text-2xl font-semibold tracking-tight">Usuario no encontrado</h1>
-          <p className="text-sm text-muted-foreground max-w-md">
+          <p className="text-xs text-muted-foreground max-w-md">
             El perfil que estás buscando no existe o no está disponible públicamente.
           </p>
           <Button onClick={() => router.push("/")} variant="outline">
@@ -370,7 +370,7 @@ export default function PublicProfilePage() {
                 </div>
 
                 {isInstructor && user.instructorProfile && (
-                  <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                     <HugeiconsIcon icon={MapPinIcon} className="w-4 h-4" />
                     <span>
                       {user.instructorProfile.city}
@@ -454,7 +454,7 @@ export default function PublicProfilePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
+                  <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-line">
                     {user.instructorProfile.bio || "Este instructor aún no ha agregado una biografía."}
                   </p>
                 </CardContent>
@@ -499,7 +499,7 @@ export default function PublicProfilePage() {
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
                     {user.instructorProfile.curriculum.split(/[,\n]/).map((item, i) => (
-                      <Badge key={i} variant="secondary" className="px-3 py-1 text-sm bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300">
+                      <Badge key={i} variant="secondary" className="px-3 py-1 text-xs bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:text-indigo-300">
                         {item.trim()}
                       </Badge>
                     ))}
@@ -533,7 +533,7 @@ export default function PublicProfilePage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-muted-foreground">Email</p>
-                            <p className="text-sm font-medium truncate">{user.instructorProfile.contactEmail}</p>
+                            <p className="text-xs font-medium truncate">{user.instructorProfile.contactEmail}</p>
                           </div>
                         </a>
                       )}
@@ -544,7 +544,7 @@ export default function PublicProfilePage() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-xs text-muted-foreground">Teléfono</p>
-                            <p className="text-sm font-medium truncate">{user.instructorProfile.contactPhone}</p>
+                            <p className="text-xs font-medium truncate">{user.instructorProfile.contactPhone}</p>
                           </div>
                         </a>
                       )}
@@ -552,7 +552,7 @@ export default function PublicProfilePage() {
                   ) : (
                     <div className="p-6 bg-muted/20 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center space-y-2">
                       <HugeiconsIcon icon={PhoneLockIcon} className="w-8 h-8 text-muted-foreground/50" />
-                      <p className="text-sm text-muted-foreground font-medium">
+                      <p className="text-xs text-muted-foreground font-medium">
                         {!viewerInfo.isAuthenticated ? "Inicia sesión para ver detalles" : "Solo visible para instructores"}
                       </p>
                       {!viewerInfo.isAuthenticated && (
