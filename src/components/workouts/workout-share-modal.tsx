@@ -29,7 +29,7 @@ export function WorkoutShareModal({
 
     useEffect(() => {
         // Generate URL on client side to ensure correct origin
-        setShareUrl(`${window.location.origin}/dashboard/workout/share/${workoutId}`);
+        setShareUrl(`${window.location.origin}/s/${workoutId}`);
     }, [workoutId]);
 
     const handleCopy = async () => {

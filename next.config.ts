@@ -45,6 +45,10 @@ const nextConfig: NextConfig = {
         source: "/robots.txt",
         destination: "/api/robots",
       },
+      {
+        source: "/s/:id",
+        destination: "/dashboard/workout/share/:id",
+      },
     ];
   },
   reactStrictMode: true, // Activa el modo estricto de React
