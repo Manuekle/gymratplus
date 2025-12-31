@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/icons";
 import { AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
+import { Check, ChevronRight, Clock } from "lucide-react";
 
 import { HugeiconsIcon } from "@hugeicons/react";
 import { AlertCircleIcon } from "@hugeicons/core-free-icons";
@@ -307,7 +308,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                       `}
                     >
                       <span className="font-medium text-sm">{day.day}</span>
-                      <Icons.chevronRight className={`h-4 w-4 text-muted-foreground ${selectedDay === day.day ? "text-primary" : ""}`} />
+                      <ChevronRight className={`h-4 w-4 text-muted-foreground ${selectedDay === day.day ? "text-primary" : ""}`} />
                     </div>
                   ))}
                 </div>
@@ -345,7 +346,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-sm">Principiante</span>
-                        {selectedMode === "simple" && <Icons.check className="h-4 w-4 text-primary" />}
+                        {selectedMode === "simple" && <Check className="h-4 w-4 text-primary" />}
                       </div>
                       <p className="text-xs text-muted-foreground">Monitorización básica</p>
                     </button>
@@ -359,7 +360,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-sm">Intermedio</span>
-                        {selectedMode === "intermediate" && <Icons.check className="h-4 w-4 text-primary" />}
+                        {selectedMode === "intermediate" && <Check className="h-4 w-4 text-primary" />}
                       </div>
                       <p className="text-xs text-muted-foreground">Añade esfuerzo percibido (RIR)</p>
                     </button>
@@ -373,7 +374,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                     >
                       <div className="flex items-center justify-between mb-1">
                         <span className="font-semibold text-sm">Avanzado</span>
-                        {selectedMode === "advanced" && <Icons.check className="h-4 w-4 text-primary" />}
+                        {selectedMode === "advanced" && <Check className="h-4 w-4 text-primary" />}
                       </div>
                       <p className="text-xs text-muted-foreground">Control total (Tempo + RIR)</p>
                     </button>
@@ -400,7 +401,7 @@ export default function StartWorkout({ workout }: { workout: WorkoutProps }) {
                         </div>
                         <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <Icons.clock className="h-3 w-3" /> {exercise.restTime}s descanso
+                            <Clock className="h-3 w-3" /> {exercise.restTime}s descanso
                           </span>
                         </div>
                         {exercise.notes && (
