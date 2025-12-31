@@ -14,9 +14,11 @@ import { Progress } from "@/components/ui/progress";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   ArrowLeft01Icon,
+  Calendar01Icon,
   Calendar02Icon,
+  CheckmarkCircle02Icon,
+  Clock02Icon,
   Dumbbell01Icon,
-  ChartLineData01Icon,
 } from "@hugeicons/core-free-icons";
 import {
   BarChart,
@@ -253,40 +255,86 @@ export default function WorkoutHistoryPage() {
       </div>
 
       {/* Tarjetas de estadísticas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border shadow-sm bg-background">
-          <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <span className="text-sm font-medium text-muted-foreground">Total Sesiones</span>
-            <span className="text-4xl font-bold tracking-[-0.04em] mt-2">
-              {stats.totalSessions}
-            </span>
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-pink-50 to-white dark:from-pink-900 dark:to-zinc-800">
+          <CardContent className="px-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="gap-2 flex flex-col">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
+                  Total de sesiones
+                </p>
+                <p className="text-2xl font-semibold  tracking-heading">
+                  {stats.totalSessions}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-pink-100 dark:bg-pink-800 flex items-center justify-center">
+                <HugeiconsIcon
+                  icon={Calendar01Icon}
+                  className="h-6 w-6 text-pink-600 dark:text-pink-300"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border shadow-sm bg-background">
-          <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <span className="text-sm font-medium text-muted-foreground">Ejercicios</span>
-            <span className="text-4xl font-bold tracking-[-0.04em] mt-2">
-              {stats.totalExercises}
-            </span>
+        <Card className="bg-gradient-to-br from-blue-50 to-white dark:from-blue-900 dark:to-zinc-800">
+          <CardContent className="px-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="gap-2 flex flex-col">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
+                  Ejercicios realizados
+                </p>
+                <p className="text-2xl font-semibold ">
+                  {stats.totalExercises}
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center">
+                <HugeiconsIcon
+                  icon={Dumbbell01Icon}
+                  className="h-6 w-6 text-blue-600 dark:text-blue-300"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border shadow-sm bg-background">
-          <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <span className="text-sm font-medium text-muted-foreground">Total Sets</span>
-            <span className="text-4xl font-bold tracking-[-0.04em] mt-2">
-              {stats.totalSets}
-            </span>
+        <Card className="bg-gradient-to-br from-green-50 to-white dark:from-green-900 dark:to-zinc-800">
+          <CardContent className="px-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="gap-2 flex flex-col">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
+                  Sets completados
+                </p>
+                <p className="text-2xl font-semibold ">{stats.totalSets}</p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-green-100 dark:bg-green-800 flex items-center justify-center">
+                <HugeiconsIcon
+                  icon={CheckmarkCircle02Icon}
+                  className="h-6 w-6 text-green-600 dark:text-green-300"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        <Card className="border shadow-sm bg-background">
-          <CardContent className="p-6 flex flex-col items-center justify-center text-center">
-            <span className="text-sm font-medium text-muted-foreground">Promedio (min)</span>
-            <span className="text-4xl font-bold tracking-[-0.04em] mt-2">
-              {stats.averageDuration}
-            </span>
+        <Card className="bg-gradient-to-br from-purple-50 to-white dark:from-purple-900 dark:to-zinc-800">
+          <CardContent className="px-4 pt-2">
+            <div className="flex items-center justify-between">
+              <div className="gap-2 flex flex-col">
+                <p className="text-xs md:text-xs text-muted-foreground dark:text-muted-foreground">
+                  Duración promedio
+                </p>
+                <p className="text-2xl font-semibold ">
+                  {stats.averageDuration} min
+                </p>
+              </div>
+              <div className="h-12 w-12 rounded-full bg-purple-100 dark:bg-purple-800 flex items-center justify-center">
+                <HugeiconsIcon
+                  icon={Clock02Icon}
+                  className="h-6 w-6 text-purple-600 dark:text-purple-300"
+                />
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -313,8 +361,7 @@ export default function WorkoutHistoryPage() {
         <TabsContent value="charts" className="space-y-6">
           {/* Volume Chart */}
           <Card className="p-4 md:p-6">
-            <CardTitle className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <HugeiconsIcon icon={ChartLineData01Icon} className="w-5 h-5 text-primary" />
+            <CardTitle className="text-lg font-bold tracking-[-0.04em] mb-4 flex items-center gap-2">
               Volumen Total por Sesión (kg)
             </CardTitle>
             <div className="h-[300px] w-full">
@@ -346,8 +393,7 @@ export default function WorkoutHistoryPage() {
           {/* Strength Chart */}
           <Card className="p-4 md:p-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <HugeiconsIcon icon={Dumbbell01Icon} className="w-5 h-5 text-primary" />
+              <CardTitle className="text-lg font-bold tracking-[-0.04em] flex items-center gap-2">
                 Progresión de Fuerza (1RM Estimado)
               </CardTitle>
               <Select value={selectedExerciseId} onValueChange={setSelectedExerciseId}>
